@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wooldridge Econometrics Tutorial | Complete Interactive Course</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #1e40af;
+            --secondary-indigo: #4338ca;
+            --accent-emerald: #059669;
+            --warm-slate: #0f172a;
+            --soft-white: #fefefe;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-600: #475569;
+            --gray-800: #1e293b;
+            --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: var(--soft-white);
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-indigo) 50%, var(--accent-emerald) 100%);
+            color: white;
+            padding: 6rem 0 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><pattern id="econometrics" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="1.5" fill="rgba(255,255,255,0.1)"/><path d="M0 20h40M20 0v40" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(%23econometrics)"/></svg>') center/cover;
+            opacity: 0.4;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-family: 'Crimson Text', serif;
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            opacity: 0.95;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            opacity: 0.9;
+            line-height: 1.7;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            display: block;
+            font-family: 'Crimson Text', serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-family: 'Crimson Text', serif;
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .section-description {
+            font-size: 1.1rem;
+            color: var(--gray-600);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .parts-grid {
+            display: grid;
+            gap: 3rem;
+            margin-bottom: 4rem;
+        }
+
+        .part-section {
+            background: var(--gray-50);
+            border-radius: 16px;
+            padding: 3rem;
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s ease;
+        }
+
+        .part-section:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary-blue);
+        }
+
+        .part-header {
+            margin-bottom: 2rem;
+        }
+
+        .part-number {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-indigo));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .part-title {
+            font-family: 'Crimson Text', serif;
+            font-size: 2rem;
+            color: var(--gray-800);
+            margin-bottom: 0.5rem;
+        }
+
+        .part-description {
+            color: var(--gray-600);
+            line-height: 1.7;
+        }
+
+        .chapters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .chapter-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .chapter-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent-emerald);
+        }
+
+        .chapter-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .chapter-number {
+            background: var(--accent-emerald);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .chapter-title {
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .chapter-description {
+            font-size: 0.95rem;
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .chapter-topics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .topic-tag {
+            background: var(--gray-100);
+            color: var(--gray-600);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .features-section {
+            background: var(--gray-50);
+            padding: 4rem 0;
+            margin: 4rem 0;
+            border-radius: 16px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-200);
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-emerald));
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 1rem;
+        }
+
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--gray-800);
+        }
+
+        .feature-description {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .getting-started {
+            background: linear-gradient(135deg, var(--accent-emerald), var(--primary-blue));
+            color: white;
+            padding: 3rem;
+            border-radius: 16px;
+            text-align: center;
+            margin: 4rem 0;
+        }
+
+        .getting-started h3 {
+            font-family: 'Crimson Text', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .getting-started p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary-blue);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255,255,255,0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-outline:hover {
+            background: white;
+            color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            background: var(--warm-slate);
+            color: var(--gray-200);
+            padding: 3rem 0 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: var(--gray-200);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 4rem 0 3rem;
+            }
+
+            .main-content {
+                padding: 3rem 1rem;
+            }
+
+            .part-section {
+                padding: 2rem;
+            }
+
+            .chapters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Animation for page load */
+        .fade-in {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .fade-in.delay-1 { animation-delay: 0.2s; }
+        .fade-in.delay-2 { animation-delay: 0.4s; }
+        .fade-in.delay-3 { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title fade-in">Introductory Econometrics</h1>
+            <p class="hero-subtitle fade-in delay-1">Interactive Tutorial Based on Wooldridge</p>
+            <p class="hero-description fade-in delay-2">
+                Master econometric methods through comprehensive theory, interactive examples, and real-world applications. 
+                This complete tutorial covers all chapters from Wooldridge's renowned textbook with modern computational tools.
+            </p>
+            <div class="hero-stats fade-in delay-3">
+                <div class="hero-stat">
+                    <span class="stat-number">19</span>
+                    <span class="stat-label">Complete Chapters</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="stat-number">150+</span>
+                    <span class="stat-label">Interactive Examples</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="stat-number">500+</span>
+                    <span class="stat-label">Practice Problems</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Real Datasets</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="main-content">
+        <!-- Course Overview -->
+        <div class="section-header">
+            <h2 class="section-title">Complete Econometrics Course</h2>
+            <p class="section-description">
+                Follow the structured progression from basic regression to advanced econometric techniques, 
+                with each chapter building upon previous concepts.
+            </p>
+        </div>
+
+        <!-- Course Parts -->
+        <div class="parts-grid">
+            <!-- Part I: Regression Analysis with Cross-Sectional Data -->
+            <div class="part-section fade-in">
+                <div class="part-header">
+                    <div class="part-number">Part I</div>
+                    <h3 class="part-title">Regression Analysis with Cross-Sectional Data</h3>
+                    <p class="part-description">
+                        Foundation concepts in econometrics, from simple regression through advanced multiple regression topics. 
+                        Master OLS estimation, statistical inference, and key econometric assumptions.
+                    </p>
+                </div>
+                <div class="chapters-grid">
+                    <a href="chapter01.html" class="chapter-card">
+                        <div class="chapter-header">
+                            <div class="chapter-number">1</div>
+                            <div class="chapter-title">Nature of Econometrics</div>
+                        </div>
+                        <p class="chapter-description">Introduction to econometric analysis and types of economic data</p>
+                        <div class="chapter-topics">
+                            <span class="topic-tag">Cross-sectional data</span>
+                            <span class="topic-tag">Time series</span>
+                            <span class="topic-tag">Panel data</span>
+                        </div>
+                    </a>
+
+                    <a href="chapter02.html" class="chapter-card">
+                        <div class="chapter-header">
+                            <div class="chapter-number">2</div>
+                            <div class="chapter-title">Simple Regression Model</div>
+                        </div>
+                        <p class="chapter-description">Two-variable regression model, OLS estimation, and properties</p>
+                        <div class="chapter-topics">
+                            <span class="topic-tag">OLS</span>
+                            <span class="topic-tag">Fitted values</span>
+                            <span class="topic-tag">Residuals</span>
+                            <span class="topic-tag">R-squared</span>
+                        </div>
+                    </a>
+
+                    <a href="chapter03.html" class="chapter-card">
+                        <div class="chapter-header">
+                            <div class="chapter-number">3</div>
+                            <div class="chapter-title">Multiple Regression: Estimation</div>
+                        </div>
+                        <p class="chapter-description">Motivation, mechanics, and interpretation of multiple regression</p>
+                        <div class="chapter-topics">
+                            <span class="topic-tag">Omitted variable bias</span>
+                            <span class="topic-tag">Ceteris paribus</span>
+                            <span class="topic-tag">Goodness of fit</span>
+                        </div>
+                    </a>
+
+                    <a href="chapter04.html" class="chapter-card">
+                        <div class="chapter-header">
+                            <div class="chapter-number">4</div>
+                            <div class="chapter-title">Multiple Regression: Inference</div>
+                        </div>
+                        <p class="chapter-description">Sampling distributions, hypothesis testing, and confidence intervals</p>
+                        <div class="chapter-topics">
+                            <span class="topic-tag">t-tests</span>
+                            <span class="topic-tag">F-tests</span>
+                            <span class="topic-tag">Confidence intervals</span>
+                        </div>
+                    </a>
+
+                    <a href="chapter05.html" class="chapter-card">
+                        <div class="chapter-header">
+                            <div class="chapter-number">5</div>
+                            <div class="chapter-title">OLS Asymptotics</div>
+                        </div>
+                        <p class="chapter-description">Large sample properties of OLS estimators</p>
+                        <div class="chapter-topics">
+                            <span class="topic-tag">Consistency</span>
+                            <span class="topic-tag">Asymptotic normality</span>
+                            <span class="topic-tag">LLN</span>
+                            <span class="topic-tag">CLT</span>
+                        </div>
+                    </a>
+
+                    <a href="chapter06.html" class="chapter-card">
+                        <div class="chapter-header">
+                            <div class="chapter-number">6</div>
+                            <div class="chapter-title">Multiple Regression: Further Issues</div>
+                        </div>
+                        <p class="chapter-description">Data scaling, functional forms, and goodness-of-fit measures</p>
+                        <div class="chapter-topics">
+                            <span class="topic-tag">Beta coefficients</span>
+                            <span class="topic-tag">Logarithms</span>
+                            <span class="topic-tag">Adjusted R²</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Part II: Regression Analysis with Time Series Data -->
+            <div class="part-section fade-in delay-1">
+                <div class="part-header">
+                    <div class="part-number">Part II</div>
+                    <h3 class="part-title">Regression Analysis with Time Series Data</h3>
+                    <p class="part-description">
+                        Extend regression methods to time series data. Learn about trending data, seasonality, 
+                        serial correlation, and heteroskedasticity in time series contexts.
+                    </p>
+                </div>
+                <div class="chapters-grid">
+                    <a href="chapter07.html" class="chapter-card">
+                        <div class="chapter-header">
+                            <div class="chapter-number">7</div>
+                            <div class="chapter-title">Dummy Variables</div>
+                        </div>
+                        <p class="chapter-description">Qualitative information in regression analysis</p>
+                        <div class="chapter-topics">
+                            <span class="topic-tag">Binary variables</span>
+                            <span class="topic-tag">Interaction terms</span>
+                            <span class="topic-tag">Chow test</span>
+                        </div>
+                    </a>
+
+                    <a href="chapter08.html" class="chapter-card">
+                        <div class="chapter-header">
+                            <div class="chapter-number">8</div>
+                            <div class="chapter-title">Heteroskedasticity</div>
+                        </div>
+                        <p class="chapter-description">Detection, consequences, and correction of heteroskedasticity</p>
+                        <div class="chapter-topics">
+                            <span class="topic-tag">White test</span>
+                            <span class="topic-tag">Robust standard errors</span>
+                            <span class="topic-tag">GLS</span>
+                        </div>
+                    </a>
+
+                    <a href="chapter09.html" class="chapter-card">
+                        <div class="chapter-header">
+                            <div class="chapter-number">9</div>
+                            <div class="chapter-title">More on Specification and Data Issues</div>
+                        </div>
+                        <p class="chapter-description">Functional form, measurement error, and missing data</p>
+                        <div class="chapter-topics">
+                            <span class="topic-tag">RESET test</span>
+                            <span class="topic-tag">Measurement error</span>
+                            <span class="topic-tag">Missing data</span>
+                        </div>
+                    </a>
+
+                    <a href="chapter10.html" class="chapter-card">
+                        <div class="chapter-header">
+                            <div class="chapter-number">10</div>
+                            <div class="chapter-title">Basic Regression with Time Series</div>
+                        </div>
+                        <p class="chapter-description">Finite sample properties and functional form issues</p>
+                        <div class="chapter-topics">
+                            <span class="topic-tag">Trending data</span>
+                            <span class="topic-tag">Seasonality</span>
+                            <span class="topic-tag">Static models</span>
+                        </div>
+                    </a>
+
+                    <a href="chapter11.html" class="chapter-card">
+                        <div class="chapter-header">
+                            <div class="chapter-number">11</div>
+                            <div class="chapter-title">Further Issues with OLS</div>
+                        </div>
+                        <p class="chapter-description">Stationary processes, weakly dependent time series, and asymptotics</p>
+                        <div class="chapter-topics">
+                            <span class="topic-tag">Stationarity</span>
+                            <span class="topic-tag">Weak dependence</span>
+                            <span class="topic-tag">Spurious regression</span>
+                        </div>
+                    </a>
+
+                    <a href="chapter12.html" class="chapter-card">
+                        <div class="chapter-header">
+                            <div class="chapter-number">12</div>
+                            <div class="chapter-title">Serial Correlation and Heteroskedasticity</div>
+                        </div>
+                        <p class="chapter-description">Testing for and correcting serial correlation and heteroskedasticity</p>
+                        <div class="chapter-topics">
+                            <span class="topic-tag">Breusch-Godfrey test</span>
+                            <span class="topic-tag">Newey-West</span>
+                            <span class="topic-tag">ARCH</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Part III: Advanced Topics -->
+            <div class="part-section fade-in delay-2">
+                <div class="part-header">
+                    <div class="part-number">Part III</div>
+                    <h3 class="part-title">Advanced Topics</h3>
+                    <p class="part-description">
+                        Advanced econometric techniques including panel data methods, instrumental variables, 
+                        limited dependent variables, and simultaneous equation models.
+                    </p>
+                </div>
+                <div class="chapters-grid">
+                    <a href="chapter13.html" class="chapter-card">
+                        <div class="chapter-header">
+                            <div class="chapter-number">13</div>
+                            <div class="chapter-title">Pooled Cross Sections and Panel Data</div>
+                        </div>
+                        <p class="chapter-description">Combining cross sections over time and panel data methods</p>
+                        <div class="chapter-topics">
+                            <span class="topic-tag">Fixed effects</span>
+                            <span class="topic-tag">Random effects</span>
+                            <span class="topic-tag">First differences</span>
+                        </div>
+                    </a>
+
+                    <a href="chapter14.html" class="chapter-card">
+                        <div class="chapter-header">
+                            <div class="chapter-number">14</div>
+                            <div class="chapter-title">Advanced Panel Data Methods</div>
+                        </div>
+                        <p class="chapter-description">Fixed effects estimation, random effects, and panel data inference</p>
+                        <div class="chapter-topics">
+                            <span class="topic-tag">Within transformation</span>
+                            <span class="topic-tag">Hausman test</span>
+                            <span class="topic-tag">Unbalanced panels</span>
+                        </div>
+                    </a>
+
+                    <a href="chapter15.html" class="chapter-card">
+                        <div class="chapter-header">
+                            <div class="chapter-number">15</div>
+                            <div class="chapter-title">Instrumental Variables Estimation</div>
+                        </div>
+                        <p class="chapter-description">IV estimation, two stage least squares, and testing for endogeneity</p>
+                        <div class="chapter-topics">
+                            <span class="topic-tag">2SLS</span>
+                            <span class="topic-tag">Overidentification</span>
+                            <span class="topic-tag">Weak instruments</span>
+                        </div>
+                    </a>
+
+                    <a href="chapter16.html" class="chapter-card">
+                        <div class="chapter-header">
+                            <div class="chapter-number">16</div>
+                            <div class="chapter-title">Simultaneous Equation Models</div>
+                        </div>
+                        <p class="chapter-description">Systems of equations and identification problems</p>
+                        <div class="chapter-topics">
+                            <span class="topic-tag">Structural form</span>
+                            <span class="topic-tag">Reduced form</span>
+                            <span class="topic-tag">Identification</span>
+                        </div>
+                    </a>
+
+                    <a href="chapter17.html" class="chapter-card">
+                        <div class="chapter-header">
+                            <div class="chapter-number">17</div>
+                            <div class="chapter-title">Limited Dependent Variable Models</div>
+                        </div>
+                        <p class="chapter-description">Binary response models, tobit, and sample selection corrections</p>
+                        <div class="chapter-topics">
+                            <span class="topic-tag">Logit</span>
+                            <span class="topic-tag">Probit</span>
+                            <span class="topic-tag">Tobit</span>
+                            <span class="topic-tag">Heckman</span>
+                        </div>
+                    </a>
+
+                    <a href="chapter18.html" class="chapter-card">
+                        <div class="chapter-header">
+                            <div class="chapter-number">18</div>
+                            <div class="chapter-title">Advanced Time Series Topics</div>
+                        </div>
+                        <p class="chapter-description">Unit roots, cointegration, and vector autoregressions</p>
+                        <div class="chapter-topics">
+                            <span class="topic-tag">Unit root tests</span>
+                            <span class="topic-tag">Cointegration</span>
+                            <span class="topic-tag">VAR</span>
+                            <span class="topic-tag">ECM</span>
+                        </div>
+                    </a>
+
+                    <a href="chapter19.html" class="chapter-card">
+                        <div class="chapter-header">
+                            <div class="chapter-number">19</div>
+                            <div class="chapter-title">Carrying Out an Empirical Project</div>
+                        </div>
+                        <p class="chapter-description">Research design, data collection, and empirical analysis best practices</p>
+                        <div class="chapter-topics">
+                            <span class="topic-tag">Research design</span>
+                            <span class="topic-tag">Data sources</span>
+                            <span class="topic-tag">Model selection</span>
+                            <span class="topic-tag">Reporting</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features-section">
+            <div class="section-header">
+                <h2 class="section-title">Interactive Learning Features</h2>
+                <p class="section-description">
+                    Modern tools and pedagogy to master econometric concepts effectively
+                </p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h4 class="feature-title">Interactive Calculators</h4>
+                    <p class="feature-description">
+                        Built-in regression calculators, hypothesis test tools, and statistical distributions 
+                        to reinforce theoretical concepts with hands-on computation.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4 class="feature-title">Dynamic Visualizations</h4>
+                    <p class="feature-description">
+                        Interactive plots showing regression lines, residual patterns, confidence intervals, 
+                        and the effects of changing parameters on model estimates.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h4 class="feature-title">Real Economic Data</h4>
+                    <p class="feature-description">
+                        Work with actual datasets from labor economics, finance, development, and 
+                        macroeconomics to see econometrics in practice.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h4 class="feature-title">Code Examples</h4>
+                    <p class="feature-description">
+                        R and Python code examples for every technique, enabling students to implement 
+                        econometric methods in popular statistical software.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h4 class="feature-title">Practice Problems</h4>
+                    <p class="feature-description">
+                        Hundreds of practice problems with detailed solutions, ranging from basic 
+                        calculations to comprehensive empirical exercises.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h4 class="feature-title">Progressive Learning</h4>
+                    <p class="feature-description">
+                        Each chapter builds systematically on previous concepts, with clear prerequisites 
+                        and learning objectives to guide your progress.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Getting Started Section -->
+        <div class="getting-started">
+            <h3>Start Your Econometrics Journey</h3>
+            <p>
+                Begin with the fundamentals and progress through advanced topics at your own pace. 
+                Each chapter includes theory, examples, and practical applications.
+            </p>
+            <div class="cta-buttons">
+                <a href="chapter01.html" class="btn btn-primary">Start Chapter 1</a>
+                <a href="#" class="btn btn-outline" onclick="showPrerequisites()">View Prerequisites</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#" class="footer-link">About This Course</a>
+                <a href="#" class="footer-link">Prerequisites</a>
+                <a href="#" class="footer-link">Datasets</a>
+                <a href="#" class="footer-link">Code Repository</a>
+                <a href="#" class="footer-link">Feedback</a>
+            </div>
+            <p>&copy; 2025 Wooldridge Econometrics Tutorial | Based on "Introductory Econometrics" by Jeffrey M. Wooldridge</p>
+            <p>Interactive tutorial for educational purposes | MIT License</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth animations on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all fade-in elements
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Prerequisites modal (placeholder)
+        function showPrerequisites() {
+            alert(`Prerequisites for this course:
+
+📊 Mathematical Background:
+• Calculus (derivatives, basic optimization)
+• Linear algebra (matrix operations, vector spaces)
+• Probability and statistics (distributions, hypothesis testing)
+
+💻 Technical Skills:
+• Basic programming (R or Python recommended)
+• Spreadsheet software (Excel, Google Sheets)
+• Statistical software familiarity helpful but not required
+
+📚 Economic Background:
+• Microeconomics principles
+• Basic understanding of economic relationships
+• Familiarity with economic data and terminology
+
+🎯 Learning Objectives:
+By completing this course, you will be able to:
+• Understand and apply regression analysis
+• Interpret econometric results correctly
+• Recognize and address common estimation problems
+• Conduct empirical research using economic data
+• Make informed policy recommendations based on statistical evidence
+
+Ready to start? Click 'Start Chapter 1' to begin your journey!`);
+        }
+
+        // Track progress through chapters
+        let chaptersCompleted = parseInt(localStorage.getItem('chaptersCompleted') || '0');
+        
+        function updateProgress() {
+            const totalChapters = 19;
+            const progressBar = document.querySelector('.progress-bar');
+            if (progressBar) {
+                const percentage = (chaptersCompleted / totalChapters) * 100;
+                progressBar.style.width = percentage + '%';
+            }
+        }
+
+        // Update progress on page load
+        updateProgress();
+
+        // Add hover effects to chapter cards
+        document.querySelectorAll('.chapter-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-6px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+        });
+    </script>
+</body>
+</html>
