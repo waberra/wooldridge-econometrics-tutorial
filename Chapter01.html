@@ -1,0 +1,2320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 1: The Nature of Econometrics and Economic Data | Wooldridge Tutorial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        :root {
+            --primary-blue: #1e40af;
+            --secondary-indigo: #4338ca;
+            --accent-emerald: #059669;
+            --accent-orange: #ea580c;
+            --warm-slate: #0f172a;
+            --soft-white: #fefefe;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-600: #475569;
+            --gray-800: #1e293b;
+            --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: var(--soft-white);
+        }
+
+        /* Navigation */
+        .nav-header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+
+        .nav-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray-600);
+        }
+
+        .nav-breadcrumb a {
+            color: var(--gray-600);
+            text-decoration: none;
+        }
+
+        .nav-breadcrumb a:hover {
+            color: var(--primary-blue);
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--gray-300);
+            background: white;
+            border-radius: 6px;
+            text-decoration: none;
+            color: var(--gray-600);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        .nav-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Chapter Header */
+        .chapter-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-indigo) 100%);
+            color: white;
+            padding: 4rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chapter-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100%" height="100%" fill="url(%23dots)"/></svg>');
+            opacity: 0.4;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            text-align: center;
+        }
+
+        .chapter-number {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .chapter-title {
+            font-family: 'Crimson Text', serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .chapter-subtitle {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+            line-height: 1.7;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Section Styles */
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-family: 'Crimson Text', serif;
+            font-size: 2rem;
+            color: var(--primary-blue);
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--gray-200);
+            padding-bottom: 0.5rem;
+        }
+
+        .subsection-title {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.5rem;
+            color: var(--gray-800);
+            margin: 2rem 0 1rem 0;
+        }
+
+        /* Content Containers */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .content-card {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .content-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .theory-icon { background: linear-gradient(135deg, var(--primary-blue), var(--secondary-indigo)); }
+        .example-icon { background: linear-gradient(135deg, var(--accent-emerald), #047857); }
+        .interactive-icon { background: linear-gradient(135deg, var(--accent-orange), #c2410c); }
+        .exercise-icon { background: linear-gradient(135deg, #7c3aed, #5b21b6); }
+
+        .card-title {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        /* Special Content Boxes */
+        .definition-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-left: 4px solid var(--primary-blue);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .definition-title {
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-left: 4px solid var(--accent-emerald);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .example-title {
+            font-weight: 600;
+            color: var(--accent-emerald);
+            margin-bottom: 1rem;
+        }
+
+        .formula-box {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .key-insight {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-left: 4px solid var(--accent-orange);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .insight-title {
+            font-weight: 600;
+            color: var(--accent-orange);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Interactive Widgets */
+        .interactive-widget {
+            background: white;
+            border: 2px solid var(--primary-blue);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .widget-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .widget-title {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .widget-description {
+            color: var(--gray-600);
+        }
+
+        .controls-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .control {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-weight: 500;
+            color: var(--gray-800);
+        }
+
+        .control-input {
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .control-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-indigo));
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-200);
+        }
+
+        .results-area {
+            background: var(--gray-50);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            min-height: 100px;
+            display: none;
+        }
+
+        .results-area.show {
+            display: block;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Data Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .data-table th {
+            background: var(--gray-100);
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .data-table tr:hover {
+            background: var(--gray-50);
+        }
+
+        /* Exercise Section */
+        .exercise-section {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 3rem 0;
+            border: 1px solid var(--gray-200);
+        }
+
+        .exercise-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .exercise-number {
+            background: var(--accent-emerald);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .exercise-title {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .exercise-content {
+            line-height: 1.7;
+        }
+
+        .solution-toggle {
+            margin-top: 1rem;
+        }
+
+        .solution-content {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .solution-content.show {
+            display: block;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        /* Navigation Footer */
+        .chapter-nav {
+            border-top: 1px solid var(--gray-200);
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            text-decoration: none;
+            color: var(--gray-800);
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .nav-button:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-button.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .nav-button.primary {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .nav-button.primary:hover {
+            background: var(--secondary-indigo);
+            color: white;
+        }
+
+        .progress-indicator {
+            text-align: center;
+            color: var(--gray-600);
+        }
+
+        /* Chart container */
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .chart-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: var(--gray-800);
+        }
+
+        /* Interactive Quiz Styles */
+        .quiz-question {
+            background: var(--gray-50);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .quiz-options {
+            margin: 1rem 0;
+        }
+
+        .quiz-options label {
+            display: block;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-options label:hover {
+            background: var(--gray-50);
+            border-color: var(--primary-blue);
+        }
+
+        .quiz-options label.selected {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .quiz-options label.correct {
+            background: var(--accent-emerald);
+            color: white;
+            border-color: var(--accent-emerald);
+        }
+
+        .quiz-options label.incorrect {
+            background: #dc2626;
+            color: white;
+            border-color: #dc2626;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            background: var(--gray-50);
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .quiz-feedback.correct {
+            background: #f0fdf4;
+            border-color: var(--accent-emerald);
+            color: #166534;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #fef2f2;
+            border-color: #dc2626;
+            color: #991b1b;
+        }
+
+        /* Success animation for generated questions */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Enhanced styling for generated questions */
+        .quiz-question[style*="border-left: 4px solid var(--accent-emerald)"] {
+            box-shadow: 0 2px 8px rgba(5, 150, 105, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .quiz-question[style*="border-left: 4px solid var(--accent-emerald)"]:hover {
+            box-shadow: 0 4px 16px rgba(5, 150, 105, 0.15);
+            transform: translateY(-1px);
+        }
+
+        /* Button disabled state */
+        .btn:disabled {
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn:disabled:hover {
+            transform: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="nav-header">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">📊 Econometrics Tutorial</a>
+            <div class="nav-breadcrumb">
+                <a href="index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Chapter 1</span>
+            </div>
+            <div class="nav-controls">
+                <a href="#" class="nav-btn disabled">← Previous</a>
+                <a href="#" class="nav-btn" onclick="showChapter2ComingSoon(); return false;">Next →</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Chapter Header -->
+    <header class="chapter-header">
+        <div class="header-content">
+            <div class="chapter-number">Chapter 1</div>
+            <h1 class="chapter-title">The Nature of Econometrics and Economic Data</h1>
+            <p class="chapter-subtitle">
+                Understanding what econometrics is, how it relates to economic theory and statistics, 
+                and the different types of data used in empirical economic analysis.
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <!-- Learning Objectives -->
+        <section class="section">
+            <h2 class="section-title">Learning Objectives</h2>
+            <div class="content-grid">
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-icon theory-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <h3 class="card-title">Knowledge Goals</h3>
+                    </div>
+                    <ul style="line-height: 2;">
+                        <li>Define econometrics and its relationship to economic theory</li>
+                        <li>Distinguish between cross-sectional, time series, and panel data</li>
+                        <li>Understand experimental vs. observational data</li>
+                        <li>Recognize the steps in empirical economic analysis</li>
+                    </ul>
+                </div>
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-icon example-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h3 class="card-title">Practical Skills</h3>
+                    </div>
+                    <ul style="line-height: 2;">
+                        <li>Identify appropriate data structures for research questions</li>
+                        <li>Evaluate the credibility of empirical claims</li>
+                        <li>Design simple empirical studies</li>
+                        <li>Understand limitations of observational data</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- What is Econometrics? -->
+        <section class="section">
+            <h2 class="section-title">1.1 What is Econometrics?</h2>
+            
+            <div class="definition-box">
+                <div class="definition-title">Definition: Econometrics</div>
+                <p>Econometrics is the application of statistical methods to economic data in order to give empirical content to economic relationships.</p>
+            </div>
+
+            <p>Econometrics combines three key elements:</p>
+
+            <div class="content-grid">
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-icon theory-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="card-title">Economic Theory</h3>
+                    </div>
+                    <p>Provides the framework for understanding relationships between economic variables. Theory suggests which variables to include and the expected direction of relationships.</p>
+                    
+                    <div class="example-box">
+                        <div class="example-title">Example: Labor Economics Theory</div>
+                        <p>Human capital theory suggests that education increases wages because it makes workers more productive.</p>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-icon example-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h3 class="card-title">Economic Data</h3>
+                    </div>
+                    <p>Real-world observations on economic variables like wages, education, unemployment rates, GDP, etc. Data allows us to test theoretical predictions.</p>
+                    
+                    <div class="example-box">
+                        <div class="example-title">Example: Wage and Education Data</div>
+                        <p>Survey data showing individual workers' wages, years of education, experience, and other characteristics.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card" style="margin-top: 2rem;">
+                <div class="card-header">
+                    <div class="card-icon interactive-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h3 class="card-title">Statistical Methods</h3>
+                </div>
+                <p>Tools for analyzing relationships in data, quantifying uncertainty, and testing hypotheses. Methods include regression analysis, hypothesis testing, and model specification.</p>
+                
+                <div class="key-insight">
+                    <div class="insight-title">Key Insight</div>
+                    <p>Econometrics is not just statistics applied to economic data. It requires understanding economic theory to properly specify models, interpret results, and recognize potential problems.</p>
+                </div>
+            </div>
+
+            <!-- Interactive Knowledge Check -->
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">💡 Knowledge Check: What is Econometrics? (3 Questions)</h3>
+                    <p class="widget-description">Test your understanding of the key concepts</p>
+                </div>
+                
+                <div class="quiz-question">
+                    <p><strong>Question 1:</strong> Which of the following best describes econometrics?</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer(1, 'A')">
+                            <input type="radio" name="q1" value="A"> 
+                            A) Just statistical analysis of any data
+                        </label>
+                        <label onclick="selectAnswer(1, 'B')">
+                            <input type="radio" name="q1" value="B">
+                            B) The application of statistical methods to economic data guided by economic theory
+                        </label>
+                        <label onclick="selectAnswer(1, 'C')">
+                            <input type="radio" name="q1" value="C">
+                            C) Only the collection of economic data
+                        </label>
+                        <label onclick="selectAnswer(1, 'D')">
+                            <input type="radio" name="q1" value="D">
+                            D) Mathematical modeling without data
+                        </label>
+                    </div>
+                    <div id="feedback1" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div class="quiz-question" style="margin-top: 1.5rem;">
+                    <p><strong>Question 2:</strong> The three key components of econometrics are:</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer(2, 'A')">
+                            <input type="radio" name="q2" value="A">
+                            A) Math, statistics, and computers
+                        </label>
+                        <label onclick="selectAnswer(2, 'B')">
+                            <input type="radio" name="q2" value="B">
+                            B) Economic theory, economic data, and statistical methods
+                        </label>
+                        <label onclick="selectAnswer(2, 'C')">
+                            <input type="radio" name="q2" value="C">
+                            C) Surveys, experiments, and observations
+                        </label>
+                        <label onclick="selectAnswer(2, 'D')">
+                            <input type="radio" name="q2" value="D">
+                            D) Variables, coefficients, and equations
+                        </label>
+                    </div>
+                    <div id="feedback2" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div class="quiz-question" style="margin-top: 1.5rem;">
+                    <p><strong>Question 2a:</strong> In the wage-education example, why is economic theory important before doing statistical analysis?</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('2a', 'A')">
+                            <input type="radio" name="q2a" value="A">
+                            A) Theory is not important for empirical work
+                        </label>
+                        <label onclick="selectAnswer('2a', 'B')">
+                            <input type="radio" name="q2a" value="B">
+                            B) Theory guides which variables to include and expected relationships
+                        </label>
+                        <label onclick="selectAnswer('2a', 'C')">
+                            <input type="radio" name="q2a" value="C">
+                            C) Theory only matters for academic papers
+                        </label>
+                        <label onclick="selectAnswer('2a', 'D')">
+                            <input type="radio" name="q2a" value="D">
+                            D) We should let the data speak for itself
+                        </label>
+                    </div>
+                    <div id="feedback2a" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Generate More Questions for Quiz 1 -->
+                <div style="text-align: center; margin-top: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #f8fafc, #e2e8f0); border-radius: 8px; border: 1px dashed var(--primary-blue);">
+                    <button class="btn" onclick="generateMoreQuestions('econometrics')" style="background: linear-gradient(135deg, var(--primary-blue), var(--secondary-indigo));">
+                        ➕ Generate 3 More Econometrics Questions
+                    </button>
+                    <p style="color: var(--gray-600); font-size: 0.8rem; margin-top: 0.5rem;">
+                        Get additional practice questions on econometrics fundamentals
+                    </p>
+                </div>
+                <div id="generated-econometrics-questions"></div>
+            </div>
+        </section>
+
+        <!-- Steps in Empirical Economic Analysis -->
+        <section class="section">
+            <h2 class="section-title">1.2 Steps in Empirical Economic Analysis</h2>
+            
+            <h3 class="subsection-title">The Seven-Step Process</h3>
+
+            <div style="display: grid; gap: 1.5rem;">
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-icon theory-icon">1</div>
+                        <h4 class="card-title">Formulate the Question</h4>
+                    </div>
+                    <p>Begin with a clear, answerable economic question. The question should be specific enough to guide data collection and model specification.</p>
+                    <div class="example-box">
+                        <div class="example-title">Example Questions</div>
+                        <ul>
+                            <li>How much does an additional year of education increase wages?</li>
+                            <li>Do minimum wage increases reduce employment?</li>
+                            <li>What factors determine house prices?</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-icon example-icon">2</div>
+                        <h4 class="card-title">Economic Model</h4>
+                    </div>
+                    <p>Develop a simple economic model that describes the relationship between variables. This model guides the empirical specification.</p>
+                    <div class="formula-box">
+                        <p><strong>Example Model:</strong></p>
+                        <p>$wage = f(education, experience, ability, other\ factors)$</p>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-icon interactive-icon">3</div>
+                        <h4 class="card-title">Econometric Model</h4>
+                    </div>
+                    <p>Translate the economic model into an econometric specification that can be estimated with data.</p>
+                    <div class="formula-box">
+                        <p><strong>Example Econometric Model:</strong></p>
+                        <p>$wage = \beta_0 + \beta_1 education + \beta_2 experience + \beta_3 experience^2 + u$</p>
+                        <p>where $u$ represents unobserved factors</p>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-icon exercise-icon">4</div>
+                        <h4 class="card-title">Collect Data</h4>
+                    </div>
+                    <p>Obtain appropriate data to estimate the econometric model. Consider data availability, quality, and representativeness.</p>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-icon theory-icon">5</div>
+                        <h4 class="card-title">Estimate Parameters</h4>
+                    </div>
+                    <p>Use statistical methods (often regression analysis) to estimate unknown parameters in the model.</p>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-icon example-icon">6</div>
+                        <h4 class="card-title">Hypothesis Testing</h4>
+                    </div>
+                    <p>Test specific hypotheses about parameters using statistical inference. Assess statistical significance and economic significance.</p>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-icon interactive-icon">7</div>
+                        <h4 class="card-title">Analysis and Conclusion</h4>
+                    </div>
+                    <p>Interpret results in economic terms, discuss limitations, and draw conclusions for policy or theory.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Types of Economic Data -->
+        <section class="section">
+            <h2 class="section-title">1.3 The Structure of Economic Data</h2>
+
+            <div class="content-grid">
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-icon theory-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="card-title">Cross-Sectional Data</h3>
+                    </div>
+                    <p>Data on different units (individuals, firms, countries) at a single point in time.</p>
+                    
+                    <div class="definition-box">
+                        <div class="definition-title">Characteristics</div>
+                        <ul>
+                            <li>Multiple observations at one time period</li>
+                            <li>Units typically sampled randomly</li>
+                            <li>Ordering usually doesn't matter</li>
+                        </ul>
+                    </div>
+
+                    <div class="example-box">
+                        <div class="example-title">Examples</div>
+                        <ul>
+                            <li>Survey of household incomes in 2024</li>
+                            <li>SAT scores of students in graduating class</li>
+                            <li>GDP per capita across countries in 2023</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-icon example-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3 class="card-title">Time Series Data</h3>
+                    </div>
+                    <p>Observations on the same unit over multiple time periods.</p>
+                    
+                    <div class="definition-box">
+                        <div class="definition-title">Characteristics</div>
+                        <ul>
+                            <li>One unit observed over time</li>
+                            <li>Chronological ordering matters</li>
+                            <li>May exhibit trends and seasonality</li>
+                        </ul>
+                    </div>
+
+                    <div class="example-box">
+                        <div class="example-title">Examples</div>
+                        <ul>
+                            <li>Monthly unemployment rate (1990-2024)</li>
+                            <li>Daily stock prices</li>
+                            <li>Annual GDP growth rates</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card" style="margin-top: 2rem;">
+                <div class="card-header">
+                    <div class="card-icon interactive-icon">
+                        <i class="fas fa-table"></i>
+                    </div>
+                    <h3 class="card-title">Panel (Longitudinal) Data</h3>
+                </div>
+                <p>Cross-sectional units observed over multiple time periods. Combines features of both cross-sectional and time series data.</p>
+                
+                <div class="content-grid" style="margin-top: 1rem;">
+                    <div class="definition-box">
+                        <div class="definition-title">Advantages</div>
+                        <ul>
+                            <li>Can control for unobserved heterogeneity</li>
+                            <li>More information than pure cross-section or time series</li>
+                            <li>Can study dynamics of adjustment</li>
+                            <li>Better identification of causal effects</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="example-box">
+                        <div class="example-title">Examples</div>
+                        <ul>
+                            <li>Panel Study of Income Dynamics (PSID)</li>
+                            <li>Firms observed over multiple years</li>
+                            <li>Countries observed annually over decades</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Quiz: Data Structures -->
+        <section class="section">
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">🔍 Knowledge Check: Data Structures (4 Questions)</h3>
+                    <p class="widget-description">Test your understanding of different types of economic data</p>
+                </div>
+                
+                <div class="quiz-question">
+                    <p><strong>Question 3:</strong> A researcher studies the relationship between GDP per capita and life expectancy across 50 countries in 2023. This is an example of:</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer(3, 'A')">
+                            <input type="radio" name="q3" value="A">
+                            A) Time series data
+                        </label>
+                        <label onclick="selectAnswer(3, 'B')">
+                            <input type="radio" name="q3" value="B">
+                            B) Cross-sectional data
+                        </label>
+                        <label onclick="selectAnswer(3, 'C')">
+                            <input type="radio" name="q3" value="C">
+                            C) Panel data
+                        </label>
+                        <label onclick="selectAnswer(3, 'D')">
+                            <input type="radio" name="q3" value="D">
+                            D) Experimental data
+                        </label>
+                    </div>
+                    <div id="feedback3" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div class="quiz-question">
+                    <p><strong>Question 4:</strong> Which data structure is best for studying how individual workers' wages change over their careers?</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer(4, 'A')">
+                            <input type="radio" name="q4" value="A">
+                            A) Cross-sectional data
+                        </label>
+                        <label onclick="selectAnswer(4, 'B')">
+                            <input type="radio" name="q4" value="B">
+                            B) Time series data (aggregate wages over time)
+                        </label>
+                        <label onclick="selectAnswer(4, 'C')">
+                            <input type="radio" name="q4" value="C">
+                            C) Panel data (following individuals over time)
+                        </label>
+                        <label onclick="selectAnswer(4, 'D')">
+                            <input type="radio" name="q4" value="D">
+                            D) Survey data only
+                        </label>
+                    </div>
+                    <div id="feedback4" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div class="quiz-question" style="margin-top: 1.5rem;">
+                    <p><strong>Question 4a:</strong> You have monthly unemployment rates for Canada from 1990-2024. This is an example of:</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('4a', 'A')">
+                            <input type="radio" name="q4a" value="A">
+                            A) Cross-sectional data
+                        </label>
+                        <label onclick="selectAnswer('4a', 'B')">
+                            <input type="radio" name="q4a" value="B">
+                            B) Time series data
+                        </label>
+                        <label onclick="selectAnswer('4a', 'C')">
+                            <input type="radio" name="q4a" value="C">
+                            C) Panel data
+                        </label>
+                        <label onclick="selectAnswer('4a', 'D')">
+                            <input type="radio" name="q4a" value="D">
+                            D) Experimental data
+                        </label>
+                    </div>
+                    <div id="feedback4a" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div class="quiz-question" style="margin-top: 1.5rem;">
+                    <p><strong>Question 4b:</strong> What is the main advantage of panel data over cross-sectional data?</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('4b', 'A')">
+                            <input type="radio" name="q4b" value="A">
+                            A) Panel data is always cheaper to collect
+                        </label>
+                        <label onclick="selectAnswer('4b', 'B')">
+                            <input type="radio" name="q4b" value="B">
+                            B) Panel data can control for unobserved individual characteristics that don't change over time
+                        </label>
+                        <label onclick="selectAnswer('4b', 'C')">
+                            <input type="radio" name="q4b" value="C">
+                            C) Panel data has larger sample sizes
+                        </label>
+                        <label onclick="selectAnswer('4b', 'D')">
+                            <input type="radio" name="q4b" value="D">
+                            D) Panel data is more accurate
+                        </label>
+                    </div>
+                    <div id="feedback4b" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Generate More Questions for Quiz 2 -->
+                <div style="text-align: center; margin-top: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-radius: 8px; border: 1px dashed var(--accent-emerald);">
+                    <button class="btn" onclick="generateMoreQuestions('data-structures')" style="background: linear-gradient(135deg, var(--accent-emerald), #047857);">
+                        ➕ Generate 3 More Data Structure Questions
+                    </button>
+                    <p style="color: var(--gray-600); font-size: 0.8rem; margin-top: 0.5rem;">
+                        Practice identifying different types of economic data
+                    </p>
+                </div>
+                <div id="generated-data-structures-questions"></div>
+            </div>
+        </section>
+
+        <!-- Interactive Data Explorer -->
+        <section class="section">
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">Data Structure Explorer</h3>
+                    <p class="widget-description">
+                        Explore how the same variables can be organized as different data structures
+                    </p>
+                </div>
+                
+                <div class="controls-group">
+                    <div class="control">
+                        <label for="dataType" class="control-label">Data Structure:</label>
+                        <select id="dataType" class="control-input" onchange="updateDataDisplay()">
+                            <option value="cross-section">Cross-Sectional</option>
+                            <option value="time-series">Time Series</option>
+                            <option value="panel">Panel Data</option>
+                        </select>
+                    </div>
+                    <div class="control">
+                        <label for="variable" class="control-label">Focus Variable:</label>
+                        <select id="variable" class="control-input" onchange="updateDataDisplay()">
+                            <option value="wages">Wages</option>
+                            <option value="unemployment">Unemployment Rate</option>
+                            <option value="education">Education Level</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="generateSampleData()">Generate Sample Data</button>
+                
+                <div class="results-area" id="dataDisplay">
+                    <div class="chart-container">
+                        <div class="chart-title">Sample Data Structure</div>
+                        <table class="data-table" id="dataTable">
+                            <thead>
+                                <tr id="tableHeader"></tr>
+                            </thead>
+                            <tbody id="tableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Follow-Up Questions for Data Explorer -->
+        <section class="section">
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">🔬 Data Analysis Follow-Up Questions</h3>
+                    <p class="widget-description">
+                        Answer questions about the data you just explored above ↑
+                    </p>
+                </div>
+
+                <div class="quiz-question" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe);">
+                    <p><strong>Follow-Up Question A:</strong> Looking at the data table you generated above, if you selected "Cross-Sectional" data, what do the rows represent?</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('dataA', 'A')">
+                            <input type="radio" name="qdataA" value="A">
+                            A) Different time periods for the same individual/unit
+                        </label>
+                        <label onclick="selectAnswer('dataA', 'B')">
+                            <input type="radio" name="qdataA" value="B">
+                            B) Different individuals/units observed at the same point in time
+                        </label>
+                        <label onclick="selectAnswer('dataA', 'C')">
+                            <input type="radio" name="qdataA" value="C">
+                            C) Different variables for the same observation
+                        </label>
+                        <label onclick="selectAnswer('dataA', 'D')">
+                            <input type="radio" name="qdataA" value="D">
+                            D) Experimental treatment assignments
+                        </label>
+                    </div>
+                    <div id="feedbackdataA" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div class="quiz-question" style="margin-top: 1.5rem; background: linear-gradient(135deg, #f0f9ff, #e0f2fe);">
+                    <p><strong>Follow-Up Question B:</strong> If you switch the data explorer to "Panel Data" and observe the same person appearing multiple times, what additional research questions does this enable compared to cross-sectional data?</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('dataB', 'A')">
+                            <input type="radio" name="qdataB" value="A">
+                            A) Only allows larger sample sizes
+                        </label>
+                        <label onclick="selectAnswer('dataB', 'B')">
+                            <input type="radio" name="qdataB" value="B">
+                            B) Can study how individuals change over time and control for unobserved individual characteristics
+                        </label>
+                        <label onclick="selectAnswer('dataB', 'C')">
+                            <input type="radio" name="qdataB" value="C">
+                            C) Provides more accurate measurements
+                        </label>
+                        <label onclick="selectAnswer('dataB', 'D')">
+                            <input type="radio" name="qdataB" value="D">
+                            D) No additional benefits over cross-sectional data
+                        </label>
+                    </div>
+                    <div id="feedbackdataB" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div class="quiz-question" style="margin-top: 1.5rem; background: linear-gradient(135deg, #f0f9ff, #e0f2fe);">
+                    <p><strong>Follow-Up Question C:</strong> Looking at the time series data in the explorer (switch to "Time Series" if you haven't), what type of research question would this data structure be MOST appropriate for?</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('dataC', 'A')">
+                            <input type="radio" name="qdataC" value="A">
+                            A) Comparing wages between men and women in 2023
+                        </label>
+                        <label onclick="selectAnswer('dataC', 'B')">
+                            <input type="radio" name="qdataC" value="B">
+                            B) How unemployment rates have changed over business cycles
+                        </label>
+                        <label onclick="selectAnswer('dataC', 'C')">
+                            <input type="radio" name="qdataC" value="C">
+                            C) Individual career progression over a lifetime
+                        </label>
+                        <label onclick="selectAnswer('dataC', 'D')">
+                            <input type="radio" name="qdataC" value="D">
+                            D) Comparing education levels across different cities
+                        </label>
+                    </div>
+                    <div id="feedbackdataC" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div class="quiz-question" style="margin-top: 1.5rem; background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid var(--accent-orange);">
+                    <p><strong>🎯 Challenge Follow-Up:</strong> Based on the data you explored, suppose you want to study "Do workers' wages increase as they gain more experience?" Which data structure would be most appropriate and why?</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('dataD', 'A')">
+                            <input type="radio" name="qdataD" value="A">
+                            A) Cross-sectional: Compare workers of different ages in one year
+                        </label>
+                        <label onclick="selectAnswer('dataD', 'B')">
+                            <input type="radio" name="qdataD" value="B">
+                            B) Panel data: Follow the same workers over time to see their wage growth with experience
+                        </label>
+                        <label onclick="selectAnswer('dataD', 'C')">
+                            <input type="radio" name="qdataD" value="C">
+                            C) Time series: Look at aggregate wage trends over time
+                        </label>
+                        <label onclick="selectAnswer('dataD', 'D')">
+                            <input type="radio" name="qdataD" value="D">
+                            D) Any data structure works equally well
+                        </label>
+                    </div>
+                    <div id="feedbackdataD" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div style="margin-top: 1.5rem; padding: 1rem; background: var(--gray-50); border-radius: 6px; text-align: center;">
+                    <p style="color: var(--primary-blue); font-weight: 600; margin: 0;">
+                        💡 Tip: Use the Data Explorer above to switch between data types as you answer these questions!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Causality and the Ceteris Paribus Problem -->
+        <section class="section">
+            <h2 class="section-title">1.4 Causality and the Notion of Ceteris Paribus</h2>
+            
+            <div class="key-insight">
+                <div class="insight-title">Central Challenge in Econometrics</div>
+                <p>Most economic questions are fundamentally causal: "What is the effect of X on Y?" However, observational data rarely allows us to observe "ceteris paribus" (all else equal) conditions.</p>
+            </div>
+
+            <h3 class="subsection-title">The Problem of Causal Inference</h3>
+
+            <div class="content-grid">
+                <div class="example-box">
+                    <div class="example-title">Example: Returns to Education</div>
+                    <p><strong>Question:</strong> How much does an additional year of schooling increase wages?</p>
+                    <p><strong>Challenge:</strong> People with more education may differ in unmeasured ways (ability, motivation, family background) that also affect wages.</p>
+                    <p><strong>Simple comparison:</strong> Average wage of college graduates vs. high school graduates</p>
+                    <p><strong>Problem:</strong> This captures the effect of education <em>plus</em> all other differences between groups.</p>
+                </div>
+
+                <div class="definition-box">
+                    <div class="definition-title">Ceteris Paribus</div>
+                    <p>"All else being equal" - the condition needed to isolate the causal effect of one variable on another. In observational data, this condition is rarely satisfied naturally.</p>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">Experimental vs. Observational Data</h3>
+
+            <div class="content-grid">
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-icon theory-icon">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <h3 class="card-title">Experimental Data</h3>
+                    </div>
+                    
+                    <div class="definition-box">
+                        <div class="definition-title">Randomized Controlled Trial</div>
+                        <p>Researcher randomly assigns treatment to subjects, ensuring treated and control groups are similar on average in all characteristics (observed and unobserved).</p>
+                    </div>
+
+                    <p><strong>Advantages:</strong></p>
+                    <ul>
+                        <li>Achieves ceteris paribus condition</li>
+                        <li>Strong causal inference</li>
+                        <li>Simple analysis methods</li>
+                    </ul>
+
+                    <p><strong>Limitations:</strong></p>
+                    <ul>
+                        <li>Often impossible or unethical</li>
+                        <li>External validity concerns</li>
+                        <li>Expensive and time-consuming</li>
+                    </ul>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-icon example-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h3 class="card-title">Observational Data</h3>
+                    </div>
+                    
+                    <div class="definition-box">
+                        <div class="definition-title">Naturally Occurring Data</div>
+                        <p>Data generated by individuals, firms, markets, or governments in the normal course of activity, without researcher intervention.</p>
+                    </div>
+
+                    <p><strong>Advantages:</strong></p>
+                    <ul>
+                        <li>Readily available for many questions</li>
+                        <li>Large sample sizes</li>
+                        <li>Real-world settings</li>
+                    </ul>
+
+                    <p><strong>Challenges:</strong></p>
+                    <ul>
+                        <li>Confounding variables</li>
+                        <li>Selection bias</li>
+                        <li>Requires sophisticated methods</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Quiz: Causality and Ceteris Paribus -->
+        <section class="section">
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">⚡ Knowledge Check: Causality and Ceteris Paribus (4 Questions)</h3>
+                    <p class="widget-description">Test your understanding of causal inference challenges</p>
+                </div>
+                
+                <div class="quiz-question">
+                    <p><strong>Question 5:</strong> The main advantage of experimental data over observational data is:</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer(5, 'A')">
+                            <input type="radio" name="q5" value="A">
+                            A) Larger sample sizes
+                        </label>
+                        <label onclick="selectAnswer(5, 'B')">
+                            <input type="radio" name="q5" value="B">
+                            B) Random assignment achieves ceteris paribus conditions
+                        </label>
+                        <label onclick="selectAnswer(5, 'C')">
+                            <input type="radio" name="q5" value="C">
+                            C) Lower costs
+                        </label>
+                        <label onclick="selectAnswer(5, 'D')">
+                            <input type="radio" name="q5" value="D">
+                            D) Real-world settings
+                        </label>
+                    </div>
+                    <div id="feedback5" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div class="quiz-question">
+                    <p><strong>Question 6:</strong> Why might comparing average wages of college graduates vs. high school graduates NOT give us the true causal effect of education?</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer(6, 'A')">
+                            <input type="radio" name="q6" value="A">
+                            A) The sample sizes are too small
+                        </label>
+                        <label onclick="selectAnswer(6, 'B')">
+                            <input type="radio" name="q6" value="B">
+                            B) People who go to college may differ in unobserved ways (ability, motivation) that also affect wages
+                        </label>
+                        <label onclick="selectAnswer(6, 'C')">
+                            <input type="radio" name="q6" value="C">
+                            C) Education doesn't really affect wages
+                        </label>
+                        <label onclick="selectAnswer(6, 'D')">
+                            <input type="radio" name="q6" value="D">
+                            D) The data are too old
+                        </label>
+                    </div>
+                    <div id="feedback6" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div class="quiz-question" style="margin-top: 1.5rem;">
+                    <p><strong>Question 6a:</strong> In an ideal randomized experiment studying the effect of job training on wages, random assignment ensures:</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('6a', 'A')">
+                            <input type="radio" name="q6a" value="A">
+                            A) All participants have the same age and education
+                        </label>
+                        <label onclick="selectAnswer('6a', 'B')">
+                            <input type="radio" name="q6a" value="B">
+                            B) Treated and control groups are similar on average in all characteristics (observed and unobserved)
+                        </label>
+                        <label onclick="selectAnswer('6a', 'C')">
+                            <input type="radio" name="q6a" value="C">
+                            C) The sample size is large enough
+                        </label>
+                        <label onclick="selectAnswer('6a', 'D')">
+                            <input type="radio" name="q6a" value="D">
+                            D) There are no dropouts from the study
+                        </label>
+                    </div>
+                    <div id="feedback6a" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div class="quiz-question" style="margin-top: 1.5rem;">
+                    <p><strong>Question 6b:</strong> The main limitation of randomized experiments in economics is:</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('6b', 'A')">
+                            <input type="radio" name="q6b" value="A">
+                            A) They are too easy to conduct
+                        </label>
+                        <label onclick="selectAnswer('6b', 'B')">
+                            <input type="radio" name="q6b" value="B">
+                            B) They often cannot be conducted for ethical, practical, or cost reasons
+                        </label>
+                        <label onclick="selectAnswer('6b', 'C')">
+                            <input type="radio" name="q6b" value="C">
+                            C) They always give biased results
+                        </label>
+                        <label onclick="selectAnswer('6b', 'D')">
+                            <input type="radio" name="q6b" value="D">
+                            D) They require too much statistical knowledge
+                        </label>
+                    </div>
+                    <div id="feedback6b" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div class="quiz-question" style="margin-top: 1.5rem; border: 2px solid var(--accent-orange); background: #fef7ed;">
+                    <p><strong>🎯 Challenge Question 7:</strong> A researcher wants to study whether smaller class sizes improve student test scores. She compares test scores between schools that naturally have small classes (average 15 students) vs. large classes (average 30 students). What are the main challenges with this approach and how could they be addressed?</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('7', 'A')">
+                            <input type="radio" name="q7" value="A">
+                            A) No problems - this is a perfect study design
+                        </label>
+                        <label onclick="selectAnswer('7', 'B')">
+                            <input type="radio" name="q7" value="B">
+                            B) Selection bias: schools with small classes may differ systematically (better funding, motivated parents). Could use random assignment or control for observable differences.
+                        </label>
+                        <label onclick="selectAnswer('7', 'C')">
+                            <input type="radio" name="q7" value="C">
+                            C) The sample size is too small
+                        </label>
+                        <label onclick="selectAnswer('7', 'D')">
+                            <input type="radio" name="q7" value="D">
+                            D) Class size doesn't affect learning
+                        </label>
+                    </div>
+                    <div id="feedback7" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Generate More Questions for Quiz 3 -->
+                <div style="text-align: center; margin-top: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 8px; border: 1px dashed var(--accent-orange);">
+                    <button class="btn" onclick="generateMoreQuestions('causality')" style="background: linear-gradient(135deg, var(--accent-orange), #c2410c);">
+                        ➕ Generate 3 More Causality Questions
+                    </button>
+                    <p style="color: var(--gray-600); font-size: 0.8rem; margin-top: 0.5rem;">
+                        Additional practice with experimental design and causal inference
+                    </p>
+                </div>
+                <div id="generated-causality-questions"></div>
+
+                <div style="text-align: center; margin-top: 1.5rem; padding: 1rem; background: var(--gray-50); border-radius: 6px;">
+                    <div id="quiz-summary">
+                        <p style="color: var(--gray-600); font-size: 0.9rem;">
+                            📊 <strong>15 Core Interactive Questions Total</strong><br>
+                            Quiz 1: Econometrics Basics (3) • Quiz 2: Data Structures (4) • Data Follow-up (4) • Quiz 3: Causality (4)<br>
+                            💡 Complete all knowledge checks to reinforce your understanding before moving to practice exercises!
+                        </p>
+                    </div>
+                    
+                    <!-- Master Generate All Button -->
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--gray-300);">
+                        <button class="btn" onclick="generateAllAdditionalQuestions()" style="background: linear-gradient(135deg, #7c3aed, #5b21b6); font-size: 1.1rem; padding: 0.75rem 2rem;">
+                            🚀 Generate ALL Additional Questions (9 total)
+                        </button>
+                        <p style="color: var(--gray-600); font-size: 0.8rem; margin-top: 0.5rem;">
+                            Generate 3 additional questions for each topic • Total potential: 24 questions
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exercises -->
+        <section class="section">
+            <h2 class="section-title">Practice Exercises</h2>
+
+            <div class="exercise-section">
+                <div class="exercise-header">
+                    <div class="exercise-number">1</div>
+                    <div class="exercise-title">Data Structure Identification</div>
+                </div>
+                <div class="exercise-content">
+                    <p>For each research scenario below, identify the appropriate data structure (cross-sectional, time series, or panel) and explain your reasoning:</p>
+                    <ol style="margin: 1rem 0; padding-left: 2rem;">
+                        <li>A study examining the relationship between class size and test scores using data from 100 elementary schools in 2023.</li>
+                        <li>Research on how changes in interest rates affect stock market performance using monthly data from 1980-2024.</li>
+                        <li>An analysis of the impact of job training programs on wages using data that follows 500 workers for five years.</li>
+                    </ol>
+                </div>
+                <div class="solution-toggle">
+                    <button class="btn btn-secondary" onclick="toggleSolution('solution1')">Show Solution</button>
+                </div>
+                <div class="solution-content" id="solution1">
+                    <h4>Solution:</h4>
+                    <ol style="margin: 1rem 0; padding-left: 2rem;">
+                        <li><strong>Cross-sectional data:</strong> Multiple schools observed at a single time point (2023).</li>
+                        <li><strong>Time series data:</strong> Same unit (stock market) observed over multiple time periods.</li>
+                        <li><strong>Panel data:</strong> Multiple individuals (500 workers) observed over multiple time periods (5 years).</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="exercise-section">
+                <div class="exercise-header">
+                    <div class="exercise-number">2</div>
+                    <div class="exercise-title">Ceteris Paribus Analysis</div>
+                </div>
+                <div class="exercise-content">
+                    <p>Consider the research question: "Do smaller class sizes improve student performance?"</p>
+                    <ol style="margin: 1rem 0; padding-left: 2rem;">
+                        <li>Why might simply comparing test scores across schools with different class sizes not give us a reliable estimate of the causal effect?</li>
+                        <li>What confounding factors might affect both class size and student performance?</li>
+                        <li>How might you design a study to better identify the causal effect?</li>
+                    </ol>
+                </div>
+                <div class="solution-toggle">
+                    <button class="btn btn-secondary" onclick="toggleSolution('solution2')">Show Solution</button>
+                </div>
+                <div class="solution-content" id="solution2">
+                    <h4>Solution:</h4>
+                    <ol style="margin: 1rem 0; padding-left: 2rem;">
+                        <li><strong>Selection bias:</strong> Schools with smaller class sizes may differ systematically from schools with larger classes in ways that also affect performance.</li>
+                        <li><strong>Confounding factors:</strong> School funding, teacher quality, student socioeconomic background, parental involvement, school resources.</li>
+                        <li><strong>Better design options:</strong> Random assignment of students to different class sizes, natural experiments (policy changes), controlling for observable confounders in regression analysis.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="exercise-section">
+                <div class="exercise-header">
+                    <div class="exercise-number">3</div>
+                    <div class="exercise-title">Economic Model Development</div>
+                </div>
+                <div class="exercise-content">
+                    <p>Suppose you want to study the factors that determine housing prices. Follow the steps in empirical economic analysis:</p>
+                    <ol style="margin: 1rem 0; padding-left: 2rem;">
+                        <li>Formulate a specific research question</li>
+                        <li>Develop a simple economic model</li>
+                        <li>Translate this into an econometric model</li>
+                        <li>What type of data would you need?</li>
+                    </ol>
+                </div>
+                <div class="solution-toggle">
+                    <button class="btn btn-secondary" onclick="toggleSolution('solution3')">Show Solution</button>
+                </div>
+                <div class="solution-content" id="solution3">
+                    <h4>Solution:</h4>
+                    <ol style="margin: 1rem 0; padding-left: 2rem;">
+                        <li><strong>Research question:</strong> "How do house characteristics and location affect housing prices?"</li>
+                        <li><strong>Economic model:</strong> Housing prices depend on structural characteristics (size, bedrooms), location factors (school quality, neighborhood), and market conditions.</li>
+                        <li><strong>Econometric model:</strong> $Price = \beta_0 + \beta_1 SquareFeet + \beta_2 Bedrooms + \beta_3 SchoolRating + \beta_4 DistanceToCenter + u$</li>
+                        <li><strong>Data needed:</strong> Cross-sectional data on house sales including price, characteristics, and location variables.</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter Navigation -->
+        <div class="chapter-nav">
+            <div class="nav-buttons">
+                <a href="index.html" class="nav-button">
+                    <i class="fas fa-chevron-left"></i>
+                    Back to Course Home
+                </a>
+                
+                <div class="progress-indicator">
+                    Chapter 1 of 19 • <span style="color: var(--primary-blue);">Introduction Complete</span>
+                </div>
+                
+                <a href="#" class="nav-button primary" onclick="showChapter2ComingSoon(); return false;">
+                    Next Chapter
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Interactive Data Explorer
+        function updateDataDisplay() {
+            const dataType = document.getElementById('dataType').value;
+            const variable = document.getElementById('variable').value;
+            generateSampleData();
+        }
+
+        function generateSampleData() {
+            const dataType = document.getElementById('dataType').value;
+            const variable = document.getElementById('variable').value;
+            const resultsArea = document.getElementById('dataDisplay');
+            const tableHeader = document.getElementById('tableHeader');
+            const tableBody = document.getElementById('tableBody');
+            
+            resultsArea.classList.add('show');
+            
+            // Clear previous content
+            tableHeader.innerHTML = '';
+            tableBody.innerHTML = '';
+            
+            if (dataType === 'cross-section') {
+                generateCrossSectionData(variable, tableHeader, tableBody);
+            } else if (dataType === 'time-series') {
+                generateTimeSeriesData(variable, tableHeader, tableBody);
+            } else if (dataType === 'panel') {
+                generatePanelData(variable, tableHeader, tableBody);
+            }
+        }
+
+        function generateCrossSectionData(variable, header, body) {
+            // Create headers
+            header.innerHTML = '<th>ID</th><th>Age</th><th>Education</th><th>Experience</th><th>Wages</th>';
+            
+            // Generate sample data
+            for (let i = 1; i <= 8; i++) {
+                const row = document.createElement('tr');
+                const age = 25 + Math.floor(Math.random() * 15);
+                const education = 12 + Math.floor(Math.random() * 6);
+                const experience = Math.max(0, age - education - 18);
+                const wages = 15 + education * 2 + experience * 0.5 + Math.random() * 5;
+                
+                row.innerHTML = `
+                    <td>${i}</td>
+                    <td>${age}</td>
+                    <td>${education}</td>
+                    <td>${experience}</td>
+                    <td>$${wages.toFixed(2)}</td>
+                `;
+                body.appendChild(row);
+            }
+        }
+
+        function generateTimeSeriesData(variable, header, body) {
+            header.innerHTML = '<th>Year</th><th>GDP Growth</th><th>Unemployment</th><th>Inflation</th>';
+            
+            const startYear = 2020;
+            for (let i = 0; i < 5; i++) {
+                const row = document.createElement('tr');
+                const year = startYear + i;
+                const gdp = 2 + Math.random() * 3;
+                const unemployment = 4 + Math.random() * 4;
+                const inflation = 1 + Math.random() * 3;
+                
+                row.innerHTML = `
+                    <td>${year}</td>
+                    <td>${gdp.toFixed(1)}%</td>
+                    <td>${unemployment.toFixed(1)}%</td>
+                    <td>${inflation.toFixed(1)}%</td>
+                `;
+                body.appendChild(row);
+            }
+        }
+
+        function generatePanelData(variable, header, body) {
+            header.innerHTML = '<th>Person</th><th>Year</th><th>Age</th><th>Education</th><th>Wages</th>';
+            
+            for (let person = 1; person <= 3; person++) {
+                for (let year = 2022; year <= 2024; year++) {
+                    const row = document.createElement('tr');
+                    const age = 30 + (year - 2022) + person * 2;
+                    const education = 14 + person;
+                    const wages = 20 + education * 1.5 + (year - 2022) * 2 + Math.random() * 3;
+                    
+                    row.innerHTML = `
+                        <td>${person}</td>
+                        <td>${year}</td>
+                        <td>${age}</td>
+                        <td>${education}</td>
+                        <td>$${wages.toFixed(2)}</td>
+                    `;
+                    body.appendChild(row);
+                }
+            }
+        }
+
+        // Solution toggle function
+        function toggleSolution(solutionId) {
+            const solution = document.getElementById(solutionId);
+            const button = solution.previousElementSibling.querySelector('button');
+            
+            if (solution.classList.contains('show')) {
+                solution.classList.remove('show');
+                button.textContent = 'Show Solution';
+            } else {
+                solution.classList.add('show');
+                button.textContent = 'Hide Solution';
+            }
+        }
+
+        // Progress tracking
+        function markChapterComplete() {
+            localStorage.setItem('chapter1Complete', 'true');
+            let completedChapters = parseInt(localStorage.getItem('chaptersCompleted') || '0');
+            if (completedChapters === 0) {
+                localStorage.setItem('chaptersCompleted', '1');
+            }
+        }
+
+        // Mark chapter as complete when page is loaded and user scrolls to bottom
+        let hasScrolledToBottom = false;
+        window.addEventListener('scroll', function() {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100 && !hasScrolledToBottom) {
+                hasScrolledToBottom = true;
+                markChapterComplete();
+            }
+        });
+
+        // Handle Chapter 2 coming soon
+        function showChapter2ComingSoon() {
+            alert(`🚧 Chapter 2: Simple Regression Model - Coming Soon!
+
+📚 Chapter 2 Content Preview:
+• The Population Regression Function (PRF)
+• Deriving OLS Estimates
+• Algebraic Properties of OLS
+• Units of Measurement and Functional Form
+• Expected Values and Variances of OLS Estimators
+• Regression through the Origin
+
+🔨 Features in Development:
+• Interactive OLS calculator
+• Regression line visualization
+• Algebraic derivation animations
+• Real economic data examples
+• Comprehensive practice problems
+
+✅ Currently Available:
+• Chapter 1: Complete with interactive tools
+• Return to course homepage to explore
+
+📅 Development Status:
+Each chapter follows the same comprehensive format as Chapter 1 with theory, examples, interactive tools, and exercises.
+
+🎯 Continue Learning:
+Return to the course homepage to review Chapter 1 or check prerequisites for upcoming chapters.`);
+        }
+
+        // Generate additional practice questions
+        let generatedQuestionCount = 0;
+        let additionalQuestions = {};
+
+        const questionPools = {
+            'econometrics': [
+                {
+                    question: "Which statement best describes the relationship between economic theory and econometrics?",
+                    options: [
+                        "A) Theory is unnecessary if you have good data",
+                        "B) Theory guides empirical specification and interpretation",
+                        "C) Theory should only be developed after seeing the data",
+                        "D) Theory and data analysis are completely separate"
+                    ],
+                    correct: "B",
+                    explanation: "Economic theory is essential for proper model specification, variable selection, and meaningful interpretation of results."
+                },
+                {
+                    question: "The main goal of econometric analysis is to:",
+                    options: [
+                        "A) Prove economic theories are correct",
+                        "B) Give empirical content to economic relationships",
+                        "C) Replace economic theory with statistical methods",
+                        "D) Show that correlation implies causation"
+                    ],
+                    correct: "B",
+                    explanation: "Econometrics aims to quantify and test economic relationships using data, giving empirical content to theoretical propositions."
+                },
+                {
+                    question: "Why can't we rely solely on economic theory without empirical analysis?",
+                    options: [
+                        "A) Theories are always wrong",
+                        "B) We need to quantify relationships and test theoretical predictions",
+                        "C) Statistics is more reliable than theory",
+                        "D) Empirical work is easier than theory"
+                    ],
+                    correct: "B",
+                    explanation: "Theory provides the framework, but we need data to quantify relationships, test predictions, and determine magnitudes of effects."
+                },
+                {
+                    question: "In the context of econometrics, what does 'empirical content' mean?",
+                    options: [
+                        "A) Using only experimental data",
+                        "B) Quantifying theoretical relationships with real-world data",
+                        "C) Avoiding statistical methods",
+                        "D) Collecting data without theory"
+                    ],
+                    correct: "B",
+                    explanation: "Empirical content means using actual data to quantify, test, and validate theoretical economic relationships."
+                },
+                {
+                    question: "Statistical methods in econometrics serve to:",
+                    options: [
+                        "A) Replace economic reasoning",
+                        "B) Provide tools for analyzing relationships and quantifying uncertainty",
+                        "C) Prove causation from any correlation",
+                        "D) Make economic theory unnecessary"
+                    ],
+                    correct: "B",
+                    explanation: "Statistical methods provide the tools needed to analyze economic relationships in data while accounting for uncertainty and random variation."
+                }
+            ],
+            'data-structures': [
+                {
+                    question: "You study how GDP growth rates change over business cycles using annual data from 1960-2020. This is:",
+                    options: [
+                        "A) Cross-sectional data",
+                        "B) Time series data",
+                        "C) Panel data",
+                        "D) Experimental data"
+                    ],
+                    correct: "B",
+                    explanation: "Time series data observes one unit (the economy) across multiple time periods (1960-2020)."
+                },
+                {
+                    question: "Which data type would be best for studying how the gender wage gap has evolved over time within different industries?",
+                    options: [
+                        "A) Cross-sectional survey from 2023",
+                        "B) Time series of aggregate wages",
+                        "C) Panel data following industries over time",
+                        "D) Experimental data"
+                    ],
+                    correct: "C",
+                    explanation: "Panel data allows you to follow multiple units (industries) over time to study how the wage gap evolves within each industry."
+                },
+                {
+                    question: "The main disadvantage of cross-sectional data compared to panel data is:",
+                    options: [
+                        "A) Smaller sample sizes",
+                        "B) Cannot observe changes over time or control for unobserved individual characteristics",
+                        "C) More expensive to collect",
+                        "D) Less accurate measurements"
+                    ],
+                    correct: "B",
+                    explanation: "Cross-sectional data provides a 'snapshot' at one time and cannot track changes or control for individual fixed effects."
+                },
+                {
+                    question: "Why might panel data be preferred for studying the returns to education?",
+                    options: [
+                        "A) It's cheaper to collect",
+                        "B) It can control for unobserved individual ability that doesn't change over time",
+                        "C) It has larger sample sizes",
+                        "D) It's more accurate"
+                    ],
+                    correct: "B",
+                    explanation: "Panel data allows controlling for time-invariant unobserved characteristics (like ability) that might bias cross-sectional estimates."
+                },
+                {
+                    question: "A study compares healthcare spending per capita across 100 countries in 2023. The key feature of this data is:",
+                    options: [
+                        "A) Multiple time periods for each country",
+                        "B) Multiple countries observed at one point in time",
+                        "C) Experimental treatment assignment",
+                        "D) Longitudinal tracking of individuals"
+                    ],
+                    correct: "B",
+                    explanation: "Cross-sectional data observes many units (countries) at a single point in time (2023)."
+                }
+            ],
+            'causality': [
+                {
+                    question: "A natural experiment occurs when:",
+                    options: [
+                        "A) Researchers randomly assign treatments",
+                        "B) Some external factor randomly or quasi-randomly assigns treatments",
+                        "C) All confounding variables are observed",
+                        "D) The sample size is very large"
+                    ],
+                    correct: "B",
+                    explanation: "Natural experiments exploit external variation (like policy changes, lottery systems, or geographic boundaries) that creates quasi-random assignment."
+                },
+                {
+                    question: "The fundamental problem of causal inference is:",
+                    options: [
+                        "A) Small sample sizes",
+                        "B) We can never observe both potential outcomes for the same individual",
+                        "C) Data collection is expensive",
+                        "D) Statistical software limitations"
+                    ],
+                    correct: "B",
+                    explanation: "We can't observe what would have happened to a treated individual without treatment (or vice versa) - we can only observe one potential outcome per individual."
+                },
+                {
+                    question: "Why might studying the effect of hospital quality on patient outcomes using observational data be problematic?",
+                    options: [
+                        "A) Hospitals are too similar to each other",
+                        "B) Sicker patients may be more likely to go to better hospitals, confounding the relationship",
+                        "C) Hospital data is always inaccurate",
+                        "D) The sample sizes are too small"
+                    ],
+                    correct: "B",
+                    explanation: "Selection bias occurs when patient severity and hospital choice are correlated, making it hard to isolate the causal effect of hospital quality."
+                },
+                {
+                    question: "Randomization in experiments is valuable because it:",
+                    options: [
+                        "A) Increases sample sizes",
+                        "B) Makes treatment and control groups similar on average in all characteristics",
+                        "C) Reduces measurement error",
+                        "D) Eliminates the need for statistical analysis"
+                    ],
+                    correct: "B",
+                    explanation: "Random assignment ensures treatment and control groups have similar distributions of both observed and unobserved characteristics on average."
+                },
+                {
+                    question: "External validity refers to:",
+                    options: [
+                        "A) Whether the statistical analysis is correct",
+                        "B) Whether results generalize to other populations, settings, or time periods",
+                        "C) Whether the sample size is large enough",
+                        "D) Whether the data collection was accurate"
+                    ],
+                    correct: "B",
+                    explanation: "External validity concerns whether findings from a specific study can be generalized to other contexts, populations, or settings."
+                }
+            ]
+        };
+
+        function generateMoreQuestions(topic) {
+            const pool = questionPools[topic];
+            const container = document.getElementById(`generated-${topic}-questions`);
+            const button = event.target;
+            
+            if (!pool || pool.length === 0) {
+                container.innerHTML = '<p style="color: #dc2626; text-align: center; padding: 1rem;">No additional questions available for this topic.</p>';
+                return;
+            }
+
+            // Randomly select 3 questions from the pool
+            const shuffled = [...pool].sort(() => 0.5 - Math.random());
+            const selectedQuestions = shuffled.slice(0, 3);
+            
+            // Generate unique question IDs
+            const startId = generatedQuestionCount + 100; // Start at 100 to avoid conflicts
+            
+            let questionsHTML = '<div style="border-top: 2px dashed var(--gray-300); margin: 1rem 0; padding-top: 1rem;">';
+            questionsHTML += '<h4 style="text-align: center; color: var(--primary-blue); margin-bottom: 1rem;">✨ Additional Practice Questions</h4>';
+            
+            selectedQuestions.forEach((q, index) => {
+                const questionId = `gen${startId + index}`;
+                generatedQuestionCount++;
+                
+                // Store the answer for grading
+                additionalQuestions[questionId] = {
+                    correct: q.correct,
+                    explanation: q.explanation
+                };
+                
+                questionsHTML += `
+                    <div class="quiz-question" style="border-left: 4px solid var(--accent-emerald); background: #fafffe;">
+                        <p><strong>Practice Question ${index + 1}:</strong> ${q.question}</p>
+                        <div class="quiz-options">
+                            ${q.options.map(option => `
+                                <label onclick="selectGeneratedAnswer('${questionId}', '${option.charAt(0)}')">
+                                    <input type="radio" name="q${questionId}" value="${option.charAt(0)}">
+                                    ${option}
+                                </label>
+                            `).join('')}
+                        </div>
+                        <div id="feedback${questionId}" class="quiz-feedback" style="display: none;"></div>
+                    </div>
+                `;
+            });
+            
+            questionsHTML += '</div>';
+            
+            // Add the questions to the page
+            container.innerHTML = questionsHTML;
+            
+            // Update button to show it was used
+            button.style.background = 'linear-gradient(135deg, #10b981, #047857)';
+            button.innerHTML = '✅ 3 Additional Questions Generated';
+            button.disabled = true;
+            button.style.opacity = '0.7';
+            
+            // Scroll to the new questions
+            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Show success message
+            setTimeout(() => {
+                const successMsg = document.createElement('div');
+                successMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: var(--accent-emerald); color: white; padding: 1rem; border-radius: 8px; z-index: 1000; animation: slideIn 0.5s ease-out;';
+                successMsg.innerHTML = `🎉 3 new ${topic.replace('-', ' ')} questions added!`;
+                document.body.appendChild(successMsg);
+                
+                setTimeout(() => successMsg.remove(), 3000);
+            }, 500);
+        }
+
+        function selectGeneratedAnswer(questionId, selectedAnswer) {
+            const question = additionalQuestions[questionId];
+            const feedbackDiv = document.getElementById(`feedback${questionId}`);
+            const options = document.querySelectorAll(`input[name="q${questionId}"]`);
+            
+            // Remove previous selections
+            options.forEach(option => {
+                option.parentElement.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            // Mark selected option
+            const selectedOption = document.querySelector(`input[name="q${questionId}"][value="${selectedAnswer}"]`);
+            selectedOption.parentElement.classList.add('selected');
+            
+            // Show feedback
+            feedbackDiv.style.display = 'block';
+            
+            if (selectedAnswer === question.correct) {
+                selectedOption.parentElement.classList.add('correct');
+                feedbackDiv.className = 'quiz-feedback correct';
+                feedbackDiv.innerHTML = `✅ ${question.explanation}`;
+            } else {
+                selectedOption.parentElement.classList.add('incorrect');
+                feedbackDiv.className = 'quiz-feedback incorrect';
+                
+                // Also highlight correct answer
+                const correctOption = document.querySelector(`input[name="q${questionId}"][value="${question.correct}"]`);
+                correctOption.parentElement.classList.add('correct');
+                
+                feedbackDiv.innerHTML = `❌ Incorrect. ${question.explanation}`;
+            }
+        }
+
+        function generateAllAdditionalQuestions() {
+            const topics = ['econometrics', 'data-structures', 'causality'];
+            const button = event.target;
+            
+            // Disable the button to prevent multiple clicks
+            button.disabled = true;
+            button.innerHTML = '⏳ Generating Questions...';
+            
+            let delay = 0;
+            topics.forEach((topic, index) => {
+                setTimeout(() => {
+                    // Check if individual button is not already used
+                    const individualButton = document.querySelector(`button[onclick="generateMoreQuestions('${topic}')"]`);
+                    if (individualButton && !individualButton.disabled) {
+                        // Simulate clicking the individual button
+                        const mockEvent = { target: individualButton };
+                        window.event = mockEvent;
+                        generateMoreQuestions(topic);
+                    }
+                    
+                    // Update master button after all are complete
+                    if (index === topics.length - 1) {
+                        setTimeout(() => {
+                            button.style.background = 'linear-gradient(135deg, #10b981, #047857)';
+                            button.innerHTML = '✅ All Additional Questions Generated (9 total)';
+                            
+                            // Show comprehensive success message
+                            const successMsg = document.createElement('div');
+                            successMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white; padding: 1.5rem; border-radius: 12px; z-index: 1000; animation: slideIn 0.5s ease-out; box-shadow: 0 8px 32px rgba(124, 58, 237, 0.3);';
+                            successMsg.innerHTML = `
+                                <div style="text-align: center;">
+                                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🎉</div>
+                                    <div style="font-weight: 600; margin-bottom: 0.5rem;">Complete Success!</div>
+                                    <div style="font-size: 0.9rem;">9 additional practice questions generated</div>
+                                    <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.5rem;">Total: 24 interactive questions available</div>
+                                </div>
+                            `;
+                            document.body.appendChild(successMsg);
+                            
+                            setTimeout(() => successMsg.remove(), 5000);
+                        }, 500);
+                    }
+                }, delay);
+                delay += 800; // Stagger the generation for visual effect
+            });
+        }
+
+        // ========================================
+        // ORIGINAL QUIZ FUNCTIONS (Fixed Questions)
+        // ========================================
+        
+        const quizAnswers = {
+            1: { correct: 'B', explanation: 'Correct! Econometrics combines economic theory, economic data, and statistical methods to analyze economic relationships.' },
+            2: { correct: 'B', explanation: 'Correct! The three key components are economic theory (provides framework), economic data (provides observations), and statistical methods (provides tools for analysis).' },
+            '2a': { correct: 'B', explanation: 'Correct! Economic theory guides model specification by suggesting which variables to include, expected signs of relationships, and potential problems to watch for.' },
+            3: { correct: 'B', explanation: 'Correct! This is cross-sectional data because we observe many different countries (units) at a single point in time (2023).' },
+            4: { correct: 'C', explanation: 'Correct! Panel data follows the same individuals over multiple time periods, allowing us to study how wages change within individuals over their careers.' },
+            '4a': { correct: 'B', explanation: 'Correct! Time series data observes one unit (Canada) over multiple time periods (monthly from 1990-2024).' },
+            '4b': { correct: 'B', explanation: 'Correct! Panel data allows us to control for unobserved individual characteristics that are constant over time (like ability or motivation) using fixed effects methods.' },
+            5: { correct: 'B', explanation: 'Correct! Random assignment in experiments ensures that treated and control groups are similar on average in all characteristics (observed and unobserved), achieving ceteris paribus conditions.' },
+            6: { correct: 'B', explanation: 'Correct! This is the fundamental problem of selection bias. College graduates may have higher ability, motivation, or come from better family backgrounds - factors that also increase wages independent of education.' },
+            '6a': { correct: 'B', explanation: 'Correct! Random assignment ensures that treated and control groups have similar distributions of all characteristics on average, creating the ideal ceteris paribus condition for causal inference.' },
+            '6b': { correct: 'B', explanation: 'Correct! Many important economic questions cannot be studied experimentally due to ethical constraints (e.g., cannot randomly assign poverty), practical impossibility (e.g., macroeconomic policies), or prohibitive costs.' },
+            7: { correct: 'B', explanation: 'Excellent! This demonstrates understanding of selection bias and ceteris paribus problems. Schools with small classes might have better funding, more motivated parents, better teachers, or other factors that also improve test scores. Solutions include: (1) Random assignment of class sizes (ideal but often impractical), (2) Control for observable school characteristics in regression, (3) Use natural experiments like policy changes, (4) Instrumental variables approaches.' },
+            // Data Explorer Follow-up Questions
+            'dataA': { correct: 'B', explanation: 'Correct! In cross-sectional data, each row represents a different individual or unit (person, firm, country, etc.) all observed at the same point in time.' },
+            'dataB': { correct: 'B', explanation: 'Exactly! Panel data allows you to study within-individual changes over time and use techniques like fixed effects to control for unobserved characteristics that don\'t change over time (like ability, motivation, family background).' },
+            'dataC': { correct: 'B', explanation: 'Correct! Time series data follows one unit over multiple time periods, making it ideal for studying how macroeconomic variables like unemployment change over business cycles.' },
+            'dataD': { correct: 'B', explanation: 'Outstanding! Panel data is ideal because: (1) It follows the same workers over time, so you observe actual experience gains, (2) It controls for unobserved worker characteristics (ability, motivation), (3) Cross-sectional data would confound age effects with experience effects, (4) Time series would only show aggregate trends, not individual worker progression.' }
+        };
+
+        function selectAnswer(questionNum, selectedAnswer) {
+            const question = quizAnswers[questionNum];
+            const feedbackDiv = document.getElementById(`feedback${questionNum}`);
+            const options = document.querySelectorAll(`input[name="q${questionNum}"]`);
+            
+            // Remove previous selections
+            options.forEach(option => {
+                option.parentElement.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            // Mark selected option
+            const selectedOption = document.querySelector(`input[name="q${questionNum}"][value="${selectedAnswer}"]`);
+            selectedOption.parentElement.classList.add('selected');
+            
+            // Show feedback
+            feedbackDiv.style.display = 'block';
+            
+            if (selectedAnswer === question.correct) {
+                selectedOption.parentElement.classList.add('correct');
+                feedbackDiv.className = 'quiz-feedback correct';
+                feedbackDiv.innerHTML = `✅ ${question.explanation}`;
+            } else {
+                selectedOption.parentElement.classList.add('incorrect');
+                feedbackDiv.className = 'quiz-feedback incorrect';
+                
+                // Also highlight correct answer
+                const correctOption = document.querySelector(`input[name="q${questionNum}"][value="${question.correct}"]`);
+                correctOption.parentElement.classList.add('correct');
+                
+                feedbackDiv.innerHTML = `❌ Incorrect. ${question.explanation}`;
+            }
+            
+            // Track progress
+            updateQuizProgress();
+        }
+
+        function updateQuizProgress() {
+            const totalOriginalQuestions = Object.keys(quizAnswers).length; // 15 questions (11 original + 4 data follow-ups)
+            const totalGeneratedQuestions = Object.keys(additionalQuestions).length;
+            const totalQuestions = totalOriginalQuestions + totalGeneratedQuestions;
+            
+            let answeredQuestions = 0;
+            let correctAnswers = 0;
+            
+            // Check original question IDs (both numbers and strings)
+            const questionIds = Object.keys(quizAnswers);
+            
+            for (const questionId of questionIds) {
+                const answered = document.querySelector(`input[name="q${questionId}"]:checked`);
+                if (answered) {
+                    answeredQuestions++;
+                    if (answered.value === quizAnswers[questionId].correct) {
+                        correctAnswers++;
+                    }
+                }
+            }
+            
+            // Check generated questions
+            const generatedIds = Object.keys(additionalQuestions);
+            for (const questionId of generatedIds) {
+                const answered = document.querySelector(`input[name="q${questionId}"]:checked`);
+                if (answered) {
+                    answeredQuestions++;
+                    if (answered.value === additionalQuestions[questionId].correct) {
+                        correctAnswers++;
+                    }
+                }
+            }
+            
+            const summaryDiv = document.getElementById('quiz-summary');
+            const generatedCount = totalGeneratedQuestions;
+            
+            if (answeredQuestions === totalQuestions && totalQuestions > totalOriginalQuestions) {
+                // All questions including generated ones completed
+                const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+                summaryDiv.innerHTML = `
+                    <p style="color: var(--accent-emerald); font-weight: 600;">
+                        🏆 COMPLETE MASTERY! All ${totalQuestions} Questions Answered!
+                        Score: ${correctAnswers}/${totalQuestions} (${percentage}%)
+                    </p>
+                    <p style="color: var(--gray-600); font-size: 0.9rem; margin-top: 0.5rem;">
+                        Core Questions: 15 • Generated Questions: ${generatedCount}<br>
+                        ${percentage >= 95 ? 
+                            'Outstanding! You have mastered Chapter 1 concepts completely!' : 
+                            percentage >= 90 ?
+                            'Excellent mastery! You have outstanding understanding.' : 
+                            percentage >= 80 ?
+                            'Great work! Strong understanding of the material.' :
+                            'Good progress! Review any incorrect answers for better understanding.'}
+                    </p>
+                `;
+            } else if (answeredQuestions === totalOriginalQuestions) {
+                // Original questions completed
+                const percentage = Math.round((correctAnswers / totalOriginalQuestions) * 100);
+                summaryDiv.innerHTML = `
+                    <p style="color: var(--accent-emerald); font-weight: 600;">
+                        🎉 All Knowledge Checks Complete! 
+                        Score: ${correctAnswers}/${totalOriginalQuestions} (${percentage}%)
+                    </p>
+                    <p style="color: var(--gray-600); font-size: 0.9rem; margin-top: 0.5rem;">
+                        ${percentage >= 90 ? 
+                            'Outstanding mastery! You have excellent understanding of Chapter 1 concepts.' : 
+                            percentage >= 80 ?
+                            'Excellent understanding! Ready for practice exercises.' : 
+                            percentage >= 70 ?
+                            'Good work! Review any incorrect answers, then proceed to practice exercises.' :
+                            'Keep studying! Review the chapter content and retake the quizzes.'}
+                    </p>
+                    <p style="color: var(--primary-blue); font-size: 0.8rem; margin-top: 0.5rem;">
+                        📊 <strong>Breakdown:</strong> Econometrics (3) • Data Structures (4) • Data Follow-ups (4) • Causality (4)
+                        ${generatedCount > 0 ? `<br>🎯 <strong>Bonus:</strong> ${generatedCount} additional practice questions available!` : ''}
+                    </p>
+                `;
+            } else {
+                // In progress
+                summaryDiv.innerHTML = `
+                    <p style="color: var(--gray-600); font-size: 0.9rem;">
+                        📊 <strong>11 Interactive Questions Total</strong>${generatedCount > 0 ? ` + ${generatedCount} Generated Questions` : ''}<br>
+                        Quiz 1: Econometrics Basics (3 questions) • Quiz 2: Data Structures (4 questions) • Quiz 3: Causality (4 questions)<br>
+                        💡 Progress: ${answeredQuestions}/${totalQuestions} knowledge checks completed
+                    </p>
+                `;
+            }
+            
+            // Update localStorage with progress
+            if (answeredQuestions === totalOriginalQuestions) {
+                localStorage.setItem('chapter1KnowledgeChecks', 'complete');
+                localStorage.setItem('chapter1QuizScore', `${correctAnswers}/${totalOriginalQuestions}`);
+                console.log(`Knowledge checks completed! Score: ${Math.round((correctAnswers/totalOriginalQuestions)*100)}%`);
+            }
+        }
+    </script>
+</body>
+</html>
