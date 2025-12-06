@@ -1,0 +1,2486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 9: More on Specification and Data Issues | Wooldridge Econometrics Tutorial</title>
+    
+    <style>
+        /* Specification Analytics Theme for Model Validation */
+        :root {
+            --primary-specification: #7c3aed;
+            --secondary-validation: #6366f1;
+            --accent-testing: #8b5cf6;
+            --accent-diagnostics: #a855f7;
+            --status-correct: #059669;
+            --status-misspec: #dc2626;
+            --status-uncertain: #d97706;
+            --warning-model: #f59e0b;
+            --tech-50: #f8fafc;
+            --tech-100: #f1f5f9;
+            --tech-200: #e2e8f0;
+            --tech-300: #cbd5e1;
+            --tech-600: #475569;
+            --tech-700: #334155;
+            --tech-800: #1e293b;
+            --tech-900: #0f172a;
+            
+            /* Specification-specific colors */
+            --functional-form: #8b5cf6;
+            --measurement-error: #ec4899;
+            --missing-data: #06b6d4;
+            --outliers: #ef4444;
+            --proxy-variables: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--tech-800);
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-specification), var(--secondary-validation));
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="25" cy="25" r="3" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="2" fill="rgba(255,255,255,0.08)"/><rect x="45" y="15" width="2" height="8" fill="rgba(255,255,255,0.06)"/><rect x="20" y="60" width="6" height="2" fill="rgba(255,255,255,0.06)"/></svg>');
+            opacity: 0.4;
+        }
+
+        .page-header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .chapter-title {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .chapter-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .chapter-description {
+            font-size: 1.1rem;
+            opacity: 0.85;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Navigation */
+        .chapter-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--tech-200);
+        }
+
+        .nav-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            border: 2px solid var(--tech-200);
+            background: white;
+            color: var(--primary-specification);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-testing);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+        }
+
+        .nav-home {
+            background: var(--status-correct);
+            color: white;
+            border-color: var(--status-correct);
+        }
+
+        .nav-home:hover {
+            color: white;
+            background: #047857;
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 3rem;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--accent-testing);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.03) 0%, transparent 70%);
+        }
+
+        .section-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-title {
+            color: var(--primary-specification);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--tech-200);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: var(--accent-testing);
+        }
+
+        /* Concept Boxes */
+        .concept-box {
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .concept-box.specification {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(139, 92, 246, 0.02));
+            border-color: var(--functional-form);
+        }
+
+        .concept-box.validation {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.02));
+            border-color: var(--secondary-validation);
+        }
+
+        .concept-box.warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(245, 158, 11, 0.02));
+            border-color: var(--warning-model);
+        }
+
+        .concept-box.error {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.05), rgba(236, 72, 153, 0.02));
+            border-color: var(--measurement-error);
+        }
+
+        .concept-box.missing {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.05), rgba(6, 182, 212, 0.02));
+            border-color: var(--missing-data);
+        }
+
+        .concept-title {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--tech-800);
+            font-size: 1.1rem;
+        }
+
+        .formula {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 2px solid var(--accent-testing);
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            margin: 1rem 0;
+            font-weight: 500;
+            color: var(--tech-800);
+        }
+
+        /* Ensure formula text is always dark and readable */
+        .concept-box .formula {
+            color: var(--tech-800) !important;
+            font-weight: 600;
+        }
+
+        /* Interactive Widgets */
+        .interactive-widget {
+            background: linear-gradient(135deg, var(--tech-50), white);
+            border: 2px solid var(--tech-200);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .interactive-widget:hover {
+            border-color: var(--accent-testing);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .widget-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--tech-200);
+        }
+
+        .widget-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-testing), var(--primary-specification));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 4px 8px rgba(124, 58, 237, 0.3);
+        }
+
+        .widget-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-specification);
+        }
+
+        .widget-description {
+            color: var(--tech-600);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Calculator Controls */
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-weight: 500;
+            color: var(--primary-specification);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .control-select, .control-input {
+            padding: 0.75rem;
+            border: 2px solid var(--tech-200);
+            border-radius: 6px;
+            background: white;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .control-select:focus, .control-input:focus {
+            outline: none;
+            border-color: var(--accent-testing);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--accent-testing), var(--primary-specification));
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 1.5rem auto;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.6s;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .action-button:hover::before {
+            left: 100%;
+        }
+
+        /* Results */
+        .results-panel {
+            background: linear-gradient(135deg, var(--tech-50), white);
+            border: 1px solid var(--tech-200);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            display: none;
+            position: relative;
+        }
+
+        .results-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-testing), var(--primary-specification));
+            border-radius: 8px 8px 0 0;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+            border-top: 3px solid var(--accent-testing);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-specification);
+            margin-bottom: 0.25rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--tech-600);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-interpretation {
+            font-size: 0.75rem;
+            color: var(--tech-500);
+            margin-top: 0.25rem;
+            font-style: italic;
+        }
+
+        /* Diagnostic Indicators */
+        .diagnostic-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-correct {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--status-correct);
+            border: 1px solid rgba(5, 150, 105, 0.3);
+        }
+
+        .status-misspec {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--status-misspec);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .status-uncertain {
+            background: rgba(217, 119, 6, 0.1);
+            color: var(--status-uncertain);
+            border: 1px solid rgba(217, 119, 6, 0.3);
+        }
+
+        /* Test Visualization */
+        .test-visualization {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border: 2px solid var(--accent-testing);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            position: relative;
+            overflow: hidden;
+            min-height: 200px;
+        }
+
+        .test-visualization::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 8px,
+                rgba(139, 92, 246, 0.02) 8px,
+                rgba(139, 92, 246, 0.02) 16px
+            );
+        }
+
+        .viz-header {
+            text-align: center;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .viz-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-specification);
+            margin-bottom: 0.5rem;
+        }
+
+        .viz-canvas {
+            background: white;
+            border-radius: 6px;
+            position: relative;
+            margin: 0.5rem 0;
+            min-height: 120px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+            border: 1px solid var(--tech-200);
+            z-index: 1;
+        }
+
+        /* Quiz Styling */
+        .quiz-section {
+            background: linear-gradient(135deg, var(--tech-50), white);
+            border: 2px solid var(--tech-200);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.02) 0%, transparent 70%);
+        }
+
+        .quiz-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .quiz-question {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--tech-200);
+        }
+
+        .quiz-question:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .quiz-option {
+            padding: 1rem;
+            border: 2px solid var(--tech-200);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-option::before {
+            content: '';
+            position: absolute;
+            left: -100%;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.05), transparent);
+            transition: all 0.4s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent-testing);
+            background: var(--tech-50);
+            transform: translateX(3px);
+        }
+
+        .quiz-option:hover::before {
+            left: 100%;
+        }
+
+        .quiz-option.correct {
+            border-color: var(--status-correct);
+            background: rgba(5, 150, 105, 0.05);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--status-misspec);
+            background: rgba(220, 38, 38, 0.05);
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .quiz-feedback.correct {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--status-correct);
+            border: 1px solid rgba(5, 150, 105, 0.3);
+        }
+
+        .quiz-feedback.incorrect {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--status-misspec);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        /* AI Chat Widget */
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .ai-chat-button {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary-specification), var(--secondary-validation));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-chat-button::before {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+        }
+
+        .ai-chat-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+        }
+
+        .ai-chat-panel {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 300px;
+            height: 400px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--tech-200);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ai-chat-panel.show {
+            display: flex;
+        }
+
+        .ai-chat-header {
+            background: linear-gradient(135deg, var(--primary-specification), var(--secondary-validation));
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            background: var(--tech-50);
+        }
+
+        .ai-message {
+            max-width: 85%;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            line-height: 1.4;
+            font-size: 0.9rem;
+        }
+
+        .ai-message.claude {
+            background: white;
+            color: var(--tech-700);
+            align-self: flex-start;
+            border: 1px solid var(--tech-200);
+        }
+
+        .ai-message.user {
+            background: var(--primary-specification);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .ai-input-area {
+            padding: 1rem;
+            border-top: 1px solid var(--tech-200);
+            display: flex;
+            gap: 0.5rem;
+            background: white;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--tech-200);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .ai-input:focus {
+            outline: none;
+            border-color: var(--accent-testing);
+        }
+
+        .ai-send-btn {
+            background: var(--primary-specification);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .ai-send-btn:hover {
+            background: var(--accent-testing);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .chapter-navigation {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chapter-title {
+                font-size: 2rem;
+            }
+            
+            .ai-chat-panel {
+                width: 280px;
+                height: 350px;
+                right: -10px;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .slide-up {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUp 0.8s ease-out forwards;
+        }
+
+        .specification-animation {
+            opacity: 0;
+            transform: scale(0.95);
+            animation: specificationAnimate 1s ease-out forwards;
+        }
+
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+        .delay-4 { animation-delay: 0.8s; }
+        .delay-5 { animation-delay: 1.0s; }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        @keyframes specificationAnimate {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Specification testing progress indicator */
+        .test-progress {
+            position: relative;
+            height: 40px;
+            background: linear-gradient(to right, var(--status-correct), var(--status-uncertain), var(--status-misspec));
+            border-radius: 6px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .test-progress::after {
+            content: 'Model Specification Quality: Correct → Uncertain → Misspecified';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <h1 class="chapter-title">Chapter 9: More on Specification and Data Issues 🔍</h1>
+                <p class="chapter-subtitle">Advanced Model Validation & Data Quality Analytics</p>
+                <p class="chapter-description">
+                    Master functional form testing, measurement error correction, missing data handling, 
+                    outlier detection, and robust estimation methods for reliable econometric modeling.
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- Navigation -->
+        <div class="chapter-navigation fade-in">
+            <a href="index.html" class="nav-button nav-home">
+                <span>🏠</span>
+                <span>Home</span>
+            </a>
+            <a href="chapter08.html" class="nav-button">
+                <span>←</span>
+                <span>Chapter 8</span>
+            </a>
+            <div class="nav-button" style="opacity: 0.5; cursor: not-allowed;" onclick="alert('Chapter 10 coming soon!')">
+                <span>→</span>
+                <span>Chapter 10</span>
+            </div>
+        </div>
+        
+        <!-- Section 9.1: Functional Form Misspecification -->
+        <section class="section fade-in">
+            <div class="section-content">
+                <h2 class="section-title">9.1 🔍 Functional Form Misspecification</h2>
+                
+                <p>Incorrect functional form specification can lead to biased estimates, inconsistent predictions, and invalid inference. The RESET test provides a systematic way to detect functional form problems.</p>
+                
+                <div class="concept-box specification">
+                    <div class="concept-title">🔍 RESET Test Framework</div>
+                    <p><strong>Regression Equation Specification Error Test (RESET):</strong><br>
+                    H₀: E[y|x] = β₀ + β₁x₁ + ... + βₖxₖ (correct functional form)<br>
+                    H₁: Incorrect functional form</p>
+                    <div class="formula">
+                        Test regression: y = β₀ + β₁x₁ + ... + βₖxₖ + δ₁ŷ² + δ₂ŷ³ + u
+                    </div>
+                    <p><strong>Test statistic:</strong> F-test for H₀: δ₁ = δ₂ = 0</p>
+                </div>
+
+                <div class="concept-box warning">
+                    <div class="concept-title">⚠️ Common Functional Form Issues</div>
+                    <p><strong>Linear vs. Log specifications:</strong> Linear models assume constant marginal effects, while log models assume constant elasticities.<br>
+                    <strong>Interaction terms:</strong> Effects may depend on values of other variables.<br>
+                    <strong>Polynomial terms:</strong> Relationships may be non-linear.<br>
+                    <strong>Threshold effects:</strong> Different regimes for different ranges of variables.</p>
+                </div>
+
+                <!-- RESET Test Widget -->
+                <div class="interactive-widget specification-animation delay-1">
+                    <div class="widget-header">
+                        <div class="widget-icon">🔍</div>
+                        <div>
+                            <h3 class="widget-title">RESET Test Analyzer</h3>
+                            <p class="widget-description">Test for functional form misspecification and explore alternatives</p>
+                        </div>
+                    </div>
+
+                    <div class="calculator-grid">
+                        <div class="control-group">
+                            <label class="control-label">Model Type</label>
+                            <select class="control-select" id="modelType">
+                                <option value="linear">Linear Model</option>
+                                <option value="log_linear" selected>Log-Linear Model</option>
+                                <option value="log_log">Log-Log Model</option>
+                                <option value="polynomial">Polynomial Model</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Economic Context</label>
+                            <select class="control-select" id="resetContext">
+                                <option value="wage_equation">Wage Equation</option>
+                                <option value="production_function" selected>Production Function</option>
+                                <option value="demand_function">Demand Function</option>
+                                <option value="cost_function">Cost Function</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Suspected Issue</label>
+                            <select class="control-select" id="suspectedIssue">
+                                <option value="wrong_logs">Wrong Log Specification</option>
+                                <option value="missing_interaction" selected>Missing Interaction</option>
+                                <option value="nonlinearity">Non-linear Relationships</option>
+                                <option value="threshold_effects">Threshold Effects</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Test Power</label>
+                            <select class="control-select" id="testPower">
+                                <option value="low">Low (α = 0.10)</option>
+                                <option value="standard" selected>Standard (α = 0.05)</option>
+                                <option value="high">High (α = 0.01)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="action-button" onclick="runRESETTest()">Run RESET Test</button>
+
+                    <div class="results-panel" id="resetResults">
+                        <div class="test-visualization">
+                            <div class="viz-header">
+                                <div class="viz-title">Functional Form Assessment</div>
+                                <p style="text-align: center; margin: 0; color: var(--tech-600); font-size: 0.8rem;">
+                                    Higher-order fitted value terms reveal misspecification
+                                </p>
+                            </div>
+                            <div class="viz-canvas" id="resetCanvas">
+                                <!-- RESET test visualization will be drawn here -->
+                            </div>
+                        </div>
+                        
+                        <div class="results-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="resetFStat">-</div>
+                                <div class="stat-label">F-Statistic</div>
+                                <div class="stat-interpretation">RESET test statistic</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="resetPValue">-</div>
+                                <div class="stat-label">p-Value</div>
+                                <div class="stat-interpretation">Significance level</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="functionalFormR2">-</div>
+                                <div class="stat-label">Auxiliary R²</div>
+                                <div class="stat-interpretation">Higher-order terms fit</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="diagnostic-indicator" id="resetConclusion">
+                                    <span>Assessment</span>
+                                </div>
+                                <div class="stat-label">Specification Quality</div>
+                                <div class="stat-interpretation" id="specQualityDesc">-</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <p id="resetAnalysis" style="color: var(--tech-600); line-height: 1.6;"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 9.2: Proxy Variables and Measurement Error -->
+        <section class="section fade-in delay-1">
+            <div class="section-content">
+                <h2 class="section-title">9.2 📏 Proxy Variables and Measurement Error</h2>
+                
+                <p>When key explanatory variables are unobservable or measured with error, proxy variables can help. However, measurement error in explanatory variables causes attenuation bias toward zero.</p>
+
+                <div class="concept-box error">
+                    <div class="concept-title">📏 Measurement Error Framework</div>
+                    <p><strong>True model:</strong> y = β₀ + β₁x₁* + β₂x₂ + u<br>
+                    <strong>Observed model:</strong> y = β₀ + β₁x₁ + β₂x₂ + v<br>
+                    where x₁ = x₁* + e₁ (measurement error)</p>
+                    <div class="formula">
+                        plim β̂₁ = β₁ · [σ²ₓ₁* / (σ²ₓ₁* + σ²ₑ₁)] < β₁ (attenuation bias)
+                    </div>
+                    <p><strong>Solutions:</strong> Instrumental variables, proxy variables, repeated measurements</p>
+                </div>
+
+                <!-- Measurement Error Widget -->
+                <div class="interactive-widget specification-animation delay-2">
+                    <div class="widget-header">
+                        <div class="widget-icon">📏</div>
+                        <div>
+                            <h3 class="widget-title">Measurement Error Analyzer</h3>
+                            <p class="widget-description">Assess attenuation bias and proxy variable effectiveness</p>
+                        </div>
+                    </div>
+
+                    <div class="calculator-grid">
+                        <div class="control-group">
+                            <label class="control-label">Variable Type</label>
+                            <select class="control-select" id="measurementVariable">
+                                <option value="education">Education (years)</option>
+                                <option value="experience" selected>Work Experience</option>
+                                <option value="ability">Cognitive Ability</option>
+                                <option value="capital">Capital Stock</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Error Source</label>
+                            <select class="control-select" id="errorSource">
+                                <option value="survey_response">Survey Response Error</option>
+                                <option value="recall_bias" selected>Recall Bias</option>
+                                <option value="reporting_error">Reporting Error</option>
+                                <option value="proxy_quality">Proxy Quality Issues</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Error Severity</label>
+                            <select class="control-select" id="errorSeverity">
+                                <option value="low">Low (5% noise)</option>
+                                <option value="moderate" selected>Moderate (15% noise)</option>
+                                <option value="high">High (30% noise)</option>
+                                <option value="severe">Severe (50% noise)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Correction Method</label>
+                            <select class="control-select" id="correctionMethod">
+                                <option value="none">No Correction</option>
+                                <option value="proxy" selected>Proxy Variables</option>
+                                <option value="instrumental">Instrumental Variables</option>
+                                <option value="repeated">Repeated Measures</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="action-button" onclick="analyzeMeasurementError()">Analyze Measurement Error</button>
+
+                    <div class="results-panel" id="measurementResults">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <div style="text-align: center; padding: 1rem; background: white; border-radius: 8px;">
+                                <h5 style="color: var(--status-correct); margin-bottom: 0.5rem;">True Effect</h5>
+                                <div class="stat-value" id="trueEffect" style="color: var(--status-correct);">-</div>
+                                <p style="font-size: 0.8rem; color: var(--tech-600);">Population parameter</p>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: white; border-radius: 8px;">
+                                <h5 style="color: var(--status-misspec); margin-bottom: 0.5rem;">Biased Estimate</h5>
+                                <div class="stat-value" id="biasedEffect" style="color: var(--status-misspec);">-</div>
+                                <p style="font-size: 0.8rem; color: var(--tech-600);">With measurement error</p>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: white; border-radius: 8px;">
+                                <h5 style="color: var(--primary-specification); margin-bottom: 0.5rem;">Corrected Estimate</h5>
+                                <div class="stat-value" id="correctedEffect" style="color: var(--primary-specification);">-</div>
+                                <p style="font-size: 0.8rem; color: var(--tech-600);">Post-correction</p>
+                            </div>
+                        </div>
+                        
+                        <div class="results-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="attenuationBias">-</div>
+                                <div class="stat-label">Attenuation Bias</div>
+                                <div class="stat-interpretation">% bias toward zero</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="reliabilityRatio">-</div>
+                                <div class="stat-label">Reliability Ratio</div>
+                                <div class="stat-interpretation">Signal-to-total variance</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="correctionEffectiveness">-</div>
+                                <div class="stat-label">Correction Quality</div>
+                                <div class="stat-interpretation">% bias reduction</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="diagnostic-indicator" id="measurementQuality">
+                                    <span>Data Quality</span>
+                                </div>
+                                <div class="stat-label">Overall Assessment</div>
+                                <div class="stat-interpretation" id="dataQualityDesc">-</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <p id="measurementAnalysis" style="color: var(--tech-600); line-height: 1.6;"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-box validation">
+                    <div class="concept-title">💡 Proxy Variable Guidelines</div>
+                    <p><strong>Good proxy criteria:</strong> Highly correlated with unobserved variable, uncorrelated with error term, available and reliable.<br>
+                    <strong>Examples:</strong> Test scores for ability, parents' education for family background, past performance for motivation.<br>
+                    <strong>Limitations:</strong> Proxy may not capture all relevant aspects, can introduce new sources of bias.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 9.3: Missing Data and Sample Selection -->
+        <section class="section fade-in delay-2">
+            <div class="section-content">
+                <h2 class="section-title">9.3 🔍 Missing Data and Sample Selection</h2>
+                
+                <p>Missing data can cause bias if the missingness is related to the outcome or explanatory variables. Understanding the missing data mechanism is crucial for choosing appropriate correction methods.</p>
+
+                <div class="concept-box missing">
+                    <div class="concept-title">🔍 Missing Data Mechanisms</div>
+                    <p><strong>MCAR (Missing Completely at Random):</strong> Missingness unrelated to observed or unobserved variables - no bias.<br>
+                    <strong>MAR (Missing at Random):</strong> Missingness depends only on observed variables - can be corrected.<br>
+                    <strong>MNAR (Missing Not at Random):</strong> Missingness depends on unobserved variables - potential bias.</p>
+                    <div class="formula">
+                        Sample selection bias: E[y|x, selected] ≠ E[y|x, population]
+                    </div>
+                </div>
+
+                <!-- Missing Data Widget -->
+                <div class="interactive-widget specification-animation delay-3">
+                    <div class="widget-header">
+                        <div class="widget-icon">🔍</div>
+                        <div>
+                            <h3 class="widget-title">Missing Data Diagnostics</h3>
+                            <p class="widget-description">Assess missing data patterns and correction strategies</p>
+                        </div>
+                    </div>
+
+                    <div class="calculator-grid">
+                        <div class="control-group">
+                            <label class="control-label">Dataset Context</label>
+                            <select class="control-select" id="missingContext">
+                                <option value="wage_survey">Wage Survey</option>
+                                <option value="consumer_survey" selected>Consumer Survey</option>
+                                <option value="firm_panel">Firm Panel Data</option>
+                                <option value="experimental">Experimental Study</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Missing Pattern</label>
+                            <select class="control-select" id="missingPattern">
+                                <option value="random">Random Missingness</option>
+                                <option value="income_related" selected>Income-Related</option>
+                                <option value="demographic">Demographic Patterns</option>
+                                <option value="voluntary_nonresponse">Voluntary Non-response</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Missing Rate</label>
+                            <select class="control-select" id="missingRate">
+                                <option value="low">Low (5-10%)</option>
+                                <option value="moderate" selected>Moderate (15-25%)</option>
+                                <option value="high">High (30-40%)</option>
+                                <option value="severe">Severe (>50%)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Correction Strategy</label>
+                            <select class="control-select" id="correctionStrategy">
+                                <option value="listwise">Listwise Deletion</option>
+                                <option value="imputation" selected>Multiple Imputation</option>
+                                <option value="selection_model">Selection Model</option>
+                                <option value="weighting">Inverse Probability Weighting</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="action-button" onclick="analyzeMissingData()">Analyze Missing Data</button>
+
+                    <div class="results-panel" id="missingResults">
+                        <div class="test-visualization">
+                            <div class="viz-header">
+                                <div class="viz-title">Missing Data Pattern Analysis</div>
+                                <p style="text-align: center; margin: 0; color: var(--tech-600); font-size: 0.8rem;">
+                                    Visualization of missing data structure and implications
+                                </p>
+                            </div>
+                            <div class="viz-canvas" id="missingCanvas">
+                                <!-- Missing data visualization will be drawn here -->
+                            </div>
+                        </div>
+                        
+                        <div class="results-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="effectiveSampleSize">-</div>
+                                <div class="stat-label">Effective Sample Size</div>
+                                <div class="stat-interpretation">After corrections</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="selectionBias">-</div>
+                                <div class="stat-label">Selection Bias</div>
+                                <div class="stat-interpretation">% bias magnitude</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="correctionQuality">-</div>
+                                <div class="stat-label">Correction Quality</div>
+                                <div class="stat-interpretation">Bias reduction achieved</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="diagnostic-indicator" id="missingAssessment">
+                                    <span>Data Quality</span>
+                                </div>
+                                <div class="stat-label">Missing Data Impact</div>
+                                <div class="stat-interpretation" id="missingImpactDesc">-</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <p id="missingAnalysis" style="color: var(--tech-600); line-height: 1.6;"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 9.4: Outlying Observations and Robust Methods -->
+        <section class="section fade-in delay-3">
+            <div class="section-content">
+                <h2 class="section-title">9.4 🎯 Outlying Observations and Robust Methods</h2>
+                
+                <p>Outliers can heavily influence OLS estimates. Robust estimation methods like Least Absolute Deviations (LAD) provide alternatives that are less sensitive to extreme observations.</p>
+
+                <div class="concept-box validation">
+                    <div class="concept-title">🎯 Robust Estimation Framework</div>
+                    <p><strong>Least Absolute Deviations (LAD):</strong> Minimizes sum of absolute residuals instead of squared residuals.<br>
+                    <strong>LAD objective:</strong> min Σ|yᵢ - xᵢβ|</p>
+                    <div class="formula">
+                        LAD is more robust to outliers than OLS (median vs. mean)
+                    </div>
+                    <p><strong>Applications:</strong> When data contains outliers, heavy-tailed errors, or you want robust inference</p>
+                </div>
+
+                <!-- Robust Methods Widget -->
+                <div class="interactive-widget specification-animation delay-4">
+                    <div class="widget-header">
+                        <div class="widget-icon">🎯</div>
+                        <div>
+                            <h3 class="widget-title">Robust Estimation Analyzer</h3>
+                            <p class="widget-description">Compare OLS vs. robust methods with outlier sensitivity</p>
+                        </div>
+                    </div>
+
+                    <div class="calculator-grid">
+                        <div class="control-group">
+                            <label class="control-label">Estimation Method</label>
+                            <select class="control-select" id="robustMethod">
+                                <option value="ols">Ordinary Least Squares</option>
+                                <option value="lad" selected>Least Absolute Deviations</option>
+                                <option value="huber">Huber Robust Regression</option>
+                                <option value="trimmed">Trimmed Least Squares</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Data Context</label>
+                            <select class="control-select" id="robustContext">
+                                <option value="financial_returns">Financial Returns</option>
+                                <option value="income_distribution" selected>Income Distribution</option>
+                                <option value="international_trade">International Trade</option>
+                                <option value="medical_costs">Medical Costs</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Outlier Severity</label>
+                            <select class="control-select" id="outlierSeverity">
+                                <option value="mild">Mild Outliers</option>
+                                <option value="moderate" selected>Moderate Outliers</option>
+                                <option value="severe">Severe Outliers</option>
+                                <option value="extreme">Extreme Outliers</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Sample Size</label>
+                            <select class="control-select" id="robustSampleSize">
+                                <option value="small">Small (n<100)</option>
+                                <option value="medium" selected>Medium (100-500)</option>
+                                <option value="large">Large (500-2000)</option>
+                                <option value="very_large">Very Large (n>2000)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="action-button" onclick="analyzeRobustEstimation()">Analyze Robust Methods</button>
+
+                    <div class="results-panel" id="robustEstimationResults">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <div style="text-align: center; padding: 1rem; background: white; border-radius: 8px;">
+                                <h5 style="color: var(--status-misspec); margin-bottom: 0.5rem;">OLS Estimate</h5>
+                                <div class="stat-value" id="olsRobustEst" style="color: var(--status-misspec);">-</div>
+                                <p style="font-size: 0.8rem; color: var(--tech-600);">Outlier-sensitive</p>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: white; border-radius: 8px;">
+                                <h5 style="color: var(--status-correct); margin-bottom: 0.5rem;">Robust Estimate</h5>
+                                <div class="stat-value" id="robustEst" style="color: var(--status-correct);">-</div>
+                                <p style="font-size: 0.8rem; color: var(--tech-600);">Outlier-resistant</p>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: white; border-radius: 8px;">
+                                <h5 style="color: var(--primary-specification); margin-bottom: 0.5rem;">Difference</h5>
+                                <div class="stat-value" id="estimationDifference" style="color: var(--primary-specification);">-</div>
+                                <p style="font-size: 0.8rem; color: var(--tech-600);">Outlier impact</p>
+                            </div>
+                        </div>
+                        
+                        <div class="results-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="outlierInfluence">-</div>
+                                <div class="stat-label">Outlier Influence</div>
+                                <div class="stat-interpretation">% estimate change</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="robustEfficiency">-</div>
+                                <div class="stat-label">Robust Efficiency</div>
+                                <div class="stat-interpretation">vs. OLS under normality</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="outliersDetected">-</div>
+                                <div class="stat-label">Outliers Detected</div>
+                                <div class="stat-interpretation">Count/percentage</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="diagnostic-indicator" id="robustRecommendation">
+                                    <span>Recommendation</span>
+                                </div>
+                                <div class="stat-label">Method Choice</div>
+                                <div class="stat-interpretation" id="methodChoiceDesc">-</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <p id="robustAnalysis" style="color: var(--tech-600); line-height: 1.6;"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-box warning">
+                    <div class="concept-title">⚠️ Outlier Detection Guidelines</div>
+                    <p><strong>Leverage:</strong> Observations with unusual x values (high hᵢᵢ).<br>
+                    <strong>Studentized residuals:</strong> Standardized residuals accounting for leverage.<br>
+                    <strong>Cook's distance:</strong> Combined measure of leverage and residual size.<br>
+                    <strong>Rule of thumb:</strong> Investigate observations with Cook's D > 4/n</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section class="section fade-in delay-4">
+            <div class="quiz-section">
+                <div class="quiz-content">
+                    <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--primary-specification);">
+                        🔍 Chapter 9 Knowledge Check: Specification and Data Issues
+                    </h3>
+                    <p style="text-align: center; color: var(--tech-600); margin-bottom: 2rem;">
+                        Test your understanding of functional form, measurement error, missing data, and robust methods
+                    </p>
+                    
+                    <!-- Question 1 -->
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> The RESET test is designed to detect:</p>
+                        <div class="quiz-options">
+                            <label class="quiz-option" onclick="selectAnswer('q1', 'A')">
+                                <input type="radio" name="q1" value="A">
+                                A) Heteroskedasticity in the error terms
+                            </label>
+                            <label class="quiz-option" onclick="selectAnswer('q1', 'B')">
+                                <input type="radio" name="q1" value="B">
+                                B) Functional form misspecification
+                            </label>
+                            <label class="quiz-option" onclick="selectAnswer('q1', 'C')">
+                                <input type="radio" name="q1" value="C">
+                                C) Serial correlation in time series
+                            </label>
+                            <label class="quiz-option" onclick="selectAnswer('q1', 'D')">
+                                <input type="radio" name="q1" value="D">
+                                D) Multicollinearity between variables
+                            </label>
+                        </div>
+                        <div id="feedback1" class="quiz-feedback"></div>
+                    </div>
+
+                    <!-- Question 2 -->
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Measurement error in explanatory variables typically causes:</p>
+                        <div class="quiz-options">
+                            <label class="quiz-option" onclick="selectAnswer('q2', 'A')">
+                                <input type="radio" name="q2" value="A">
+                                A) Upward bias in coefficient estimates
+                            </label>
+                            <label class="quiz-option" onclick="selectAnswer('q2', 'B')">
+                                <input type="radio" name="q2" value="B">
+                                B) Attenuation bias toward zero
+                            </label>
+                            <label class="quiz-option" onclick="selectAnswer('q2', 'C')">
+                                <input type="radio" name="q2" value="C">
+                                C) No bias but increased variance
+                            </label>
+                            <label class="quiz-option" onclick="selectAnswer('q2', 'D')">
+                                <input type="radio" name="q2" value="D">
+                                D) Heteroskedasticity in residuals
+                            </label>
+                        </div>
+                        <div id="feedback2" class="quiz-feedback"></div>
+                    </div>
+
+                    <!-- Question 3 -->
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> Least Absolute Deviations (LAD) is preferred over OLS when:</p>
+                        <div class="quiz-options">
+                            <label class="quiz-option" onclick="selectAnswer('q3', 'A')">
+                                <input type="radio" name="q3" value="A">
+                                A) Sample size is very large
+                            </label>
+                            <label class="quiz-option" onclick="selectAnswer('q3', 'B')">
+                                <input type="radio" name="q3" value="B">
+                                B) Data contains significant outliers
+                            </label>
+                            <label class="quiz-option" onclick="selectAnswer('q3', 'C')">
+                                <input type="radio" name="q3" value="C">
+                                C) Variables are perfectly correlated
+                            </label>
+                            <label class="quiz-option" onclick="selectAnswer('q3', 'D')">
+                                <input type="radio" name="q3" value="D">
+                                D) Errors are normally distributed
+                            </label>
+                        </div>
+                        <div id="feedback3" class="quiz-feedback"></div>
+                    </div>
+
+                    <!-- Question 4 -->
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> Missing data is MCAR (Missing Completely at Random) when:</p>
+                        <div class="quiz-options">
+                            <label class="quiz-option" onclick="selectAnswer('q4', 'A')">
+                                <input type="radio" name="q4" value="A">
+                                A) Missingness depends on observed variables only
+                            </label>
+                            <label class="quiz-option" onclick="selectAnswer('q4', 'B')">
+                                <input type="radio" name="q4" value="B">
+                                B) Missingness is unrelated to any variables
+                            </label>
+                            <label class="quiz-option" onclick="selectAnswer('q4', 'C')">
+                                <input type="radio" name="q4" value="C">
+                                C) Missingness depends on unobserved variables
+                            </label>
+                            <label class="quiz-option" onclick="selectAnswer('q4', 'D')">
+                                <input type="radio" name="q4" value="D">
+                                D) Missing values can be predicted perfectly
+                            </label>
+                        </div>
+                        <div id="feedback4" class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div class="ai-chat-widget">
+        <button class="ai-chat-button" onclick="toggleAIChat()" title="Ask Claude about Specification and Data Issues">
+            <span id="aiChatIcon">🔍</span>
+        </button>
+        
+        <div class="ai-chat-panel" id="aiChatPanel">
+            <div class="ai-chat-header">
+                <span>🔍 Specification Analytics Tutor</span>
+                <button onclick="toggleAIChat()" style="background: none; border: none; color: white; cursor: pointer;">×</button>
+            </div>
+            
+            <div class="ai-chat-messages" id="aiChatMessages">
+                <div class="ai-message claude">
+                    <strong>🔍 Claude:</strong> Hi! I can help you understand functional form testing, measurement error, missing data, outlier detection, and robust estimation methods. What would you like to explore?
+                </div>
+            </div>
+            
+            <div class="ai-input-area">
+                <input type="text" class="ai-input" id="aiInput" placeholder="Ask about specification issues..." 
+                       onkeydown="if(event.key==='Enter') sendAIMessage()">
+                <button class="ai-send-btn" onclick="sendAIMessage()">→</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // GLOBAL VARIABLES
+        // ========================================
+        
+        let isAIChatOpen = false;
+        
+        // ========================================
+        // RESET TEST ANALYZER
+        // ========================================
+        
+        function runRESETTest() {
+            const modelType = document.getElementById('modelType').value;
+            const context = document.getElementById('resetContext').value;
+            const issue = document.getElementById('suspectedIssue').value;
+            const power = document.getElementById('testPower').value;
+            
+            // Simulate RESET test results
+            const results = simulateRESETTest(modelType, issue, power);
+            
+            // Display results
+            displayRESETResults(results, context, issue);
+        }
+        
+        function simulateRESETTest(modelType, issue, power) {
+            const alpha = power === 'low' ? 0.10 : power === 'standard' ? 0.05 : 0.01;
+            
+            // Generate test statistics based on suspected issue
+            const hasMisspec = issue !== 'none';
+            const severityMultiplier = {
+                'wrong_logs': 2.5,
+                'missing_interaction': 3.2,
+                'nonlinearity': 4.1,
+                'threshold_effects': 3.8
+            }[issue] || 1.0;
+            
+            const baseFStat = hasMisspec ? 8.5 * severityMultiplier : 1.2 + Math.random() * 2;
+            const fStat = Math.max(0.1, baseFStat + (Math.random() - 0.5) * 2);
+            const pValue = 1 - fCDF(fStat, 2, 50); // Approximate F-distribution
+            const auxR2 = Math.min(0.8, 0.1 + (fStat / 20));
+            
+            const reject = pValue < alpha;
+            
+            return {
+                fStat: fStat,
+                pValue: pValue,
+                auxR2: auxR2,
+                reject: reject,
+                alpha: alpha,
+                issue: issue
+            };
+        }
+        
+        function displayRESETResults(results, context, issue) {
+            document.getElementById('resetFStat').textContent = results.fStat.toFixed(3);
+            document.getElementById('resetPValue').textContent = results.pValue.toFixed(4);
+            document.getElementById('functionalFormR2').textContent = results.auxR2.toFixed(4);
+            
+            // Assessment
+            const conclusionEl = document.getElementById('resetConclusion');
+            const qualityEl = document.getElementById('specQualityDesc');
+            
+            if (results.reject) {
+                if (results.fStat > 10) {
+                    conclusionEl.className = 'diagnostic-indicator status-misspec';
+                    conclusionEl.innerHTML = '<span>Strong Misspecification</span>';
+                    qualityEl.textContent = 'Immediate correction needed';
+                } else {
+                    conclusionEl.className = 'diagnostic-indicator status-uncertain';
+                    conclusionEl.innerHTML = '<span>Moderate Misspecification</span>';
+                    qualityEl.textContent = 'Consider alternative forms';
+                }
+            } else {
+                conclusionEl.className = 'diagnostic-indicator status-correct';
+                conclusionEl.innerHTML = '<span>Specification Adequate</span>';
+                qualityEl.textContent = 'Current form acceptable';
+            }
+            
+            // Create visualization
+            createRESETVisualization(results);
+            
+            // Analysis
+            const contextNames = {
+                'wage_equation': 'wage equation analysis',
+                'production_function': 'production function estimation',
+                'demand_function': 'demand function modeling',
+                'cost_function': 'cost function specification'
+            };
+            
+            const issueNames = {
+                'wrong_logs': 'incorrect logarithmic specification',
+                'missing_interaction': 'missing interaction terms',
+                'nonlinearity': 'unmodeled non-linear relationships',
+                'threshold_effects': 'threshold or structural break effects'
+            };
+            
+            const analysis = `
+                RESET test results for ${contextNames[context]}:
+                
+                F-statistic: ${results.fStat.toFixed(3)} (p = ${results.pValue.toFixed(4)})
+                Auxiliary R²: ${results.auxR2.toFixed(4)} (higher-order terms explanatory power)
+                Test conclusion: ${results.reject ? 'Reject' : 'Fail to reject'} null hypothesis at α = ${results.alpha}
+                
+                ${results.reject ? 
+                    `Evidence of functional form misspecification detected. The suspected issue of ${issueNames[issue]} appears supported by the data. Consider alternative specifications such as adding polynomial terms, interaction effects, or logarithmic transformations.` :
+                    `No strong evidence against current functional form. However, RESET test has limited power against some alternatives. Consider substantive theory and other diagnostic tools for complete specification assessment.`
+                }
+                
+                Recommended next steps:
+                ${getRESETRecommendations(results, issue)}
+            `;
+            
+            document.getElementById('resetAnalysis').textContent = analysis;
+            document.getElementById('resetResults').style.display = 'block';
+        }
+        
+        function createRESETVisualization(results) {
+            const canvas = document.getElementById('resetCanvas');
+            canvas.innerHTML = '';
+            
+            // Create F-test visualization
+            const criticalValue = 3.15; // Approximate F(2,50) at 5%
+            const maxX = Math.max(results.fStat + 2, criticalValue + 2);
+            
+            // Draw F-distribution curve (simplified)
+            for (let x = 0; x <= maxX; x += 0.1) {
+                const y = Math.max(0, Math.exp(-x/2) * Math.pow(x, 0.5)); // Simplified F shape
+                const dot = document.createElement('div');
+                dot.style.cssText = `
+                    position: absolute;
+                    left: ${(x / maxX) * 85 + 5}%;
+                    top: ${80 - y * 60}%;
+                    width: 2px;
+                    height: 2px;
+                    background: var(--primary-specification);
+                    border-radius: 50%;
+                    opacity: 0.6;
+                `;
+                canvas.appendChild(dot);
+            }
+            
+            // Mark critical value
+            const criticalLine = document.createElement('div');
+            criticalLine.style.cssText = `
+                position: absolute;
+                left: ${(criticalValue / maxX) * 85 + 5}%;
+                top: 20%;
+                width: 2px;
+                height: 60%;
+                background: var(--status-uncertain);
+                opacity: 0.8;
+            `;
+            canvas.appendChild(criticalLine);
+            
+            // Mark test statistic
+            const testLine = document.createElement('div');
+            testLine.style.cssText = `
+                position: absolute;
+                left: ${(results.fStat / maxX) * 85 + 5}%;
+                top: 20%;
+                width: 3px;
+                height: 60%;
+                background: ${results.reject ? 'var(--status-misspec)' : 'var(--status-correct)'};
+            `;
+            canvas.appendChild(testLine);
+            
+            // Labels
+            const criticalLabel = document.createElement('div');
+            criticalLabel.style.cssText = `
+                position: absolute;
+                left: ${(criticalValue / maxX) * 85 + 5}%;
+                bottom: 5%;
+                font-size: 0.7rem;
+                color: var(--status-uncertain);
+                font-weight: 600;
+                transform: translateX(-50%);
+            `;
+            criticalLabel.textContent = 'Critical';
+            canvas.appendChild(criticalLabel);
+            
+            const testLabel = document.createElement('div');
+            testLabel.style.cssText = `
+                position: absolute;
+                left: ${(results.fStat / maxX) * 85 + 5}%;
+                bottom: 15%;
+                font-size: 0.7rem;
+                color: ${results.reject ? 'var(--status-misspec)' : 'var(--status-correct)'};
+                font-weight: 600;
+                transform: translateX(-50%);
+            `;
+            testLabel.textContent = 'F-stat';
+            canvas.appendChild(testLabel);
+        }
+        
+        function getRESETRecommendations(results, issue) {
+            const recommendations = [];
+            
+            if (results.reject) {
+                switch (issue) {
+                    case 'wrong_logs':
+                        recommendations.push('Try different log transformations (log-linear, log-log, linear-log)');
+                        break;
+                    case 'missing_interaction':
+                        recommendations.push('Add interaction terms between key explanatory variables');
+                        break;
+                    case 'nonlinearity':
+                        recommendations.push('Include quadratic or polynomial terms for key variables');
+                        break;
+                    case 'threshold_effects':
+                        recommendations.push('Test for structural breaks or regime-switching models');
+                        break;
+                }
+                recommendations.push('Compare alternative specifications using information criteria');
+                recommendations.push('Validate functional form using holdout sample or cross-validation');
+            } else {
+                recommendations.push('Current specification appears adequate');
+                recommendations.push('Monitor specification stability across subsamples');
+                recommendations.push('Consider substantive theory for additional specification checks');
+            }
+            
+            return recommendations.join('; ');
+        }
+        
+        // ========================================
+        // MEASUREMENT ERROR ANALYZER
+        // ========================================
+        
+        function analyzeMeasurementError() {
+            const variable = document.getElementById('measurementVariable').value;
+            const errorSource = document.getElementById('errorSource').value;
+            const severity = document.getElementById('errorSeverity').value;
+            const correction = document.getElementById('correctionMethod').value;
+            
+            // Simulate measurement error analysis
+            const results = simulateMeasurementError(variable, severity, correction);
+            
+            // Display results
+            displayMeasurementResults(results, variable, errorSource);
+        }
+        
+        function simulateMeasurementError(variable, severity, correction) {
+            // True effect size
+            const trueEffect = {
+                'education': 0.08,
+                'experience': 0.05,
+                'ability': 0.12,
+                'capital': 0.25
+            }[variable] || 0.10;
+            
+            // Error variance as fraction of signal variance
+            const errorVariance = {
+                'low': 0.05,
+                'moderate': 0.15,
+                'high': 0.30,
+                'severe': 0.50
+            }[severity] || 0.15;
+            
+            // Reliability ratio
+            const reliability = 1 / (1 + errorVariance);
+            const attenuationFactor = reliability;
+            const biasedEffect = trueEffect * attenuationFactor;
+            
+            // Correction effectiveness
+            const correctionQuality = {
+                'none': 0,
+                'proxy': 0.6,
+                'instrumental': 0.9,
+                'repeated': 0.8
+            }[correction] || 0;
+            
+            const correctedEffect = biasedEffect + (trueEffect - biasedEffect) * correctionQuality;
+            const attenuationBias = ((trueEffect - biasedEffect) / trueEffect) * 100;
+            const correctionEffectiveness = correctionQuality * 100;
+            
+            return {
+                trueEffect: trueEffect,
+                biasedEffect: biasedEffect,
+                correctedEffect: correctedEffect,
+                reliability: reliability,
+                attenuationBias: attenuationBias,
+                correctionEffectiveness: correctionEffectiveness,
+                errorVariance: errorVariance
+            };
+        }
+        
+        function displayMeasurementResults(results, variable, errorSource) {
+            document.getElementById('trueEffect').textContent = results.trueEffect.toFixed(4);
+            document.getElementById('biasedEffect').textContent = results.biasedEffect.toFixed(4);
+            document.getElementById('correctedEffect').textContent = results.correctedEffect.toFixed(4);
+            document.getElementById('attenuationBias').textContent = results.attenuationBias.toFixed(1) + '%';
+            document.getElementById('reliabilityRatio').textContent = results.reliability.toFixed(3);
+            document.getElementById('correctionEffectiveness').textContent = results.correctionEffectiveness.toFixed(0) + '%';
+            
+            // Quality assessment
+            const qualityEl = document.getElementById('measurementQuality');
+            const descEl = document.getElementById('dataQualityDesc');
+            
+            if (results.reliability > 0.8) {
+                qualityEl.className = 'diagnostic-indicator status-correct';
+                qualityEl.innerHTML = '<span>High Quality</span>';
+                descEl.textContent = 'Minimal measurement error';
+            } else if (results.reliability > 0.6) {
+                qualityEl.className = 'diagnostic-indicator status-uncertain';
+                qualityEl.innerHTML = '<span>Moderate Quality</span>';
+                descEl.textContent = 'Some bias concerns';
+            } else {
+                qualityEl.className = 'diagnostic-indicator status-misspec';
+                qualityEl.innerHTML = '<span>Poor Quality</span>';
+                descEl.textContent = 'Substantial bias issues';
+            }
+            
+            // Analysis
+            const variableNames = {
+                'education': 'education (years of schooling)',
+                'experience': 'work experience',
+                'ability': 'cognitive ability scores',
+                'capital': 'capital stock measures'
+            };
+            
+            const sourceNames = {
+                'survey_response': 'survey response errors',
+                'recall_bias': 'recall bias in self-reports',
+                'reporting_error': 'systematic reporting errors',
+                'proxy_quality': 'proxy variable quality limitations'
+            };
+            
+            const analysis = `
+                Measurement error analysis for ${variableNames[variable]}:
+                
+                Error source: ${sourceNames[errorSource]}
+                True effect: ${results.trueEffect.toFixed(4)}
+                Biased estimate: ${results.biasedEffect.toFixed(4)} (${results.attenuationBias.toFixed(1)}% attenuation bias)
+                Corrected estimate: ${results.correctedEffect.toFixed(4)}
+                
+                Reliability ratio: ${results.reliability.toFixed(3)} (signal/(signal+noise))
+                Correction effectiveness: ${results.correctionEffectiveness.toFixed(0)}%
+                
+                ${results.attenuationBias > 30 ? 
+                    'Severe attenuation bias detected. Measurement error is substantially biasing estimates toward zero. Correction methods are strongly recommended.' :
+                    results.attenuationBias > 15 ? 
+                    'Moderate attenuation bias present. Consider correction methods to improve estimate reliability.' :
+                    'Mild measurement error detected. Bias is manageable but correction may still improve precision.'
+                }
+                
+                Professional recommendation: ${getMeasurementRecommendation(results)}
+            `;
+            
+            document.getElementById('measurementAnalysis').textContent = analysis;
+            document.getElementById('measurementResults').style.display = 'block';
+        }
+        
+        function getMeasurementRecommendation(results) {
+            if (results.reliability < 0.6) {
+                return "High-priority correction needed. Use instrumental variables or multiple measures.";
+            } else if (results.reliability < 0.8) {
+                return "Correction recommended. Proxy variables or validation studies helpful.";
+            } else {
+                return "Acceptable data quality. Monitor measurement procedures for consistency.";
+            }
+        }
+        
+        // ========================================
+        // MISSING DATA ANALYZER
+        // ========================================
+        
+        function analyzeMissingData() {
+            const context = document.getElementById('missingContext').value;
+            const pattern = document.getElementById('missingPattern').value;
+            const rate = document.getElementById('missingRate').value;
+            const strategy = document.getElementById('correctionStrategy').value;
+            
+            // Simulate missing data analysis
+            const results = simulateMissingData(context, pattern, rate, strategy);
+            
+            // Display results
+            displayMissingResults(results, context, pattern);
+        }
+        
+        function simulateMissingData(context, pattern, rate, strategy) {
+            const originalN = 1000;
+            const missingPct = {
+                'low': 0.075,
+                'moderate': 0.20,
+                'high': 0.35,
+                'severe': 0.55
+            }[rate] || 0.20;
+            
+            const effectiveN = Math.round(originalN * (1 - missingPct));
+            
+            // Selection bias magnitude
+            const selectionBias = {
+                'random': 0,
+                'income_related': 15 * missingPct,
+                'demographic': 10 * missingPct,
+                'voluntary_nonresponse': 25 * missingPct
+            }[pattern] || 0;
+            
+            // Correction quality
+            const correctionQuality = {
+                'listwise': pattern === 'random' ? 1.0 : 0.2,
+                'imputation': 0.8,
+                'selection_model': 0.9,
+                'weighting': 0.7
+            }[strategy] || 0.5;
+            
+            const correctedBias = selectionBias * (1 - correctionQuality);
+            
+            return {
+                originalN: originalN,
+                effectiveN: effectiveN,
+                missingPct: missingPct * 100,
+                selectionBias: selectionBias,
+                correctedBias: correctedBias,
+                correctionQuality: correctionQuality * 100,
+                pattern: pattern,
+                strategy: strategy
+            };
+        }
+        
+        function displayMissingResults(results, context, pattern) {
+            document.getElementById('effectiveSampleSize').textContent = results.effectiveN.toString();
+            document.getElementById('selectionBias').textContent = results.selectionBias.toFixed(1) + '%';
+            document.getElementById('correctionQuality').textContent = results.correctionQuality.toFixed(0) + '%';
+            
+            // Assessment
+            const assessEl = document.getElementById('missingAssessment');
+            const descEl = document.getElementById('missingImpactDesc');
+            
+            if (results.correctedBias < 5) {
+                assessEl.className = 'diagnostic-indicator status-correct';
+                assessEl.innerHTML = '<span>Well Controlled</span>';
+                descEl.textContent = 'Minimal remaining bias';
+            } else if (results.correctedBias < 15) {
+                assessEl.className = 'diagnostic-indicator status-uncertain';
+                assessEl.innerHTML = '<span>Moderate Concern</span>';
+                descEl.textContent = 'Some bias remains';
+            } else {
+                assessEl.className = 'diagnostic-indicator status-misspec';
+                assessEl.innerHTML = '<span>Serious Issue</span>';
+                descEl.textContent = 'Substantial bias likely';
+            }
+            
+            // Create missing data visualization
+            createMissingDataVisualization(results);
+            
+            // Analysis
+            const contextNames = {
+                'wage_survey': 'wage and employment survey',
+                'consumer_survey': 'consumer expenditure survey',
+                'firm_panel': 'firm-level panel study',
+                'experimental': 'experimental research study'
+            };
+            
+            const patternNames = {
+                'random': 'random missingness (MCAR)',
+                'income_related': 'income-related non-response (MAR)',
+                'demographic': 'demographic-based patterns (MAR)',
+                'voluntary_nonresponse': 'voluntary non-response (MNAR)'
+            };
+            
+            const analysis = `
+                Missing data analysis for ${contextNames[context]}:
+                
+                Missing data pattern: ${patternNames[pattern]}
+                Missing rate: ${results.missingPct.toFixed(1)}% of observations
+                Effective sample size: ${results.effectiveN} (from ${results.originalN} original)
+                
+                Uncorrected selection bias: ${results.selectionBias.toFixed(1)}%
+                Correction method effectiveness: ${results.correctionQuality.toFixed(0)}%
+                Remaining bias after correction: ${results.correctedBias.toFixed(1)}%
+                
+                ${getMissingDataInsights(results)}
+                
+                Methodological recommendation: ${getMissingDataRecommendation(results)}
+            `;
+            
+            document.getElementById('missingAnalysis').textContent = analysis;
+            document.getElementById('missingResults').style.display = 'block';
+        }
+        
+        function createMissingDataVisualization(results) {
+            const canvas = document.getElementById('missingCanvas');
+            canvas.innerHTML = '';
+            
+            // Create missing data pattern visualization
+            const gridSize = 15;
+            const totalCells = gridSize * gridSize;
+            const missingCells = Math.round(totalCells * (results.missingPct / 100));
+            
+            // Create grid
+            for (let i = 0; i < totalCells; i++) {
+                const cell = document.createElement('div');
+                const row = Math.floor(i / gridSize);
+                const col = i % gridSize;
+                
+                // Determine if cell should be missing based on pattern
+                let isMissing = false;
+                if (results.pattern === 'random') {
+                    isMissing = Math.random() < (results.missingPct / 100);
+                } else if (results.pattern === 'income_related') {
+                    // Higher probability of missing for certain regions (representing income groups)
+                    isMissing = (row > gridSize * 0.7 && Math.random() < 0.6) || Math.random() < (results.missingPct / 200);
+                } else {
+                    // Other patterns - somewhat structured
+                    isMissing = (row + col) % 5 === 0 && Math.random() < (results.missingPct / 50);
+                }
+                
+                cell.style.cssText = `
+                    position: absolute;
+                    left: ${(col / gridSize) * 85 + 5}%;
+                    top: ${(row / gridSize) * 85 + 5}%;
+                    width: ${85 / gridSize}%;
+                    height: ${85 / gridSize}%;
+                    background: ${isMissing ? 'var(--status-misspec)' : 'var(--status-correct)'};
+                    opacity: ${isMissing ? 0.8 : 0.3};
+                    border-radius: 1px;
+                `;
+                canvas.appendChild(cell);
+            }
+            
+            // Add legend
+            const legend = document.createElement('div');
+            legend.style.cssText = `
+                position: absolute;
+                bottom: 2%;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 0.7rem;
+                color: var(--tech-600);
+                text-align: center;
+            `;
+            legend.innerHTML = `
+                <span style="color: var(--status-correct);">●</span> Observed 
+                <span style="color: var(--status-misspec); margin-left: 1rem;">●</span> Missing
+            `;
+            canvas.appendChild(legend);
+        }
+        
+        function getMissingDataInsights(results) {
+            let insights = "";
+            
+            if (results.missingPct > 40) {
+                insights += "High missing data rate threatens study validity. ";
+            }
+            
+            if (results.pattern === 'random') {
+                insights += "Random missingness simplifies analysis but reduces effective sample size. ";
+            } else {
+                insights += "Non-random missingness pattern requires careful correction to avoid bias. ";
+            }
+            
+            if (results.correctedBias > 15) {
+                insights += "Substantial remaining bias after correction suggests need for alternative approaches. ";
+            }
+            
+            return insights;
+        }
+        
+        function getMissingDataRecommendation(results) {
+            if (results.correctedBias < 5) {
+                return "Current correction strategy appears effective for addressing missing data bias.";
+            } else if (results.correctedBias < 15) {
+                return "Consider supplementary correction methods or sensitivity analysis around missing data assumptions.";
+            } else {
+                return "Serious missing data bias remains. Consider data collection improvements or alternative estimation strategies.";
+            }
+        }
+        
+        // ========================================
+        // ROBUST ESTIMATION ANALYZER
+        // ========================================
+        
+        function analyzeRobustEstimation() {
+            const method = document.getElementById('robustMethod').value;
+            const context = document.getElementById('robustContext').value;
+            const severity = document.getElementById('outlierSeverity').value;
+            const sampleSize = document.getElementById('robustSampleSize').value;
+            
+            // Simulate robust estimation analysis
+            const results = simulateRobustEstimation(method, severity, sampleSize);
+            
+            // Display results
+            displayRobustEstimationResults(results, context, method);
+        }
+        
+        function simulateRobustEstimation(method, severity, sampleSize) {
+            // True parameter value
+            const trueParam = 0.15;
+            
+            // Outlier contamination
+            const contamination = {
+                'mild': 0.05,
+                'moderate': 0.15,
+                'severe': 0.25,
+                'extreme': 0.40
+            }[severity] || 0.15;
+            
+            // OLS estimate (influenced by outliers)
+            const outlierInfluence = contamination * 100;
+            const olsEst = trueParam + (contamination * 0.8 * (Math.random() - 0.5));
+            
+            // Robust estimate (less influenced)
+            const robustInfluenceReduction = {
+                'ols': 1.0,
+                'lad': 0.3,
+                'huber': 0.4,
+                'trimmed': 0.2
+            }[method] || 0.3;
+            
+            const robustEst = trueParam + (contamination * robustInfluenceReduction * (Math.random() - 0.5));
+            
+            // Efficiency under normality
+            const robustEfficiency = {
+                'ols': 1.0,
+                'lad': 0.64,
+                'huber': 0.85,
+                'trimmed': 0.90
+            }[method] || 0.70;
+            
+            const difference = Math.abs(olsEst - robustEst);
+            const outliersDetected = Math.round(contamination * 100);
+            
+            return {
+                trueParam: trueParam,
+                olsEst: olsEst,
+                robustEst: robustEst,
+                difference: difference,
+                outlierInfluence: outlierInfluence,
+                robustEfficiency: robustEfficiency * 100,
+                outliersDetected: outliersDetected,
+                contamination: contamination,
+                method: method
+            };
+        }
+        
+        function displayRobustEstimationResults(results, context, method) {
+            document.getElementById('olsRobustEst').textContent = results.olsEst.toFixed(4);
+            document.getElementById('robustEst').textContent = results.robustEst.toFixed(4);
+            document.getElementById('estimationDifference').textContent = results.difference.toFixed(4);
+            document.getElementById('outlierInfluence').textContent = results.outlierInfluence.toFixed(1) + '%';
+            document.getElementById('robustEfficiency').textContent = results.robustEfficiency.toFixed(0) + '%';
+            document.getElementById('outliersDetected').textContent = results.outliersDetected + '%';
+            
+            // Recommendation
+            const recommendEl = document.getElementById('robustRecommendation');
+            const descEl = document.getElementById('methodChoiceDesc');
+            
+            if (results.difference > 0.05) {
+                recommendEl.className = 'diagnostic-indicator status-correct';
+                recommendEl.innerHTML = '<span>Use Robust</span>';
+                descEl.textContent = 'Outliers significantly affect estimates';
+            } else if (results.difference > 0.02) {
+                recommendEl.className = 'diagnostic-indicator status-uncertain';
+                recommendEl.innerHTML = '<span>Consider Robust</span>';
+                descEl.textContent = 'Moderate outlier influence';
+            } else {
+                recommendEl.className = 'diagnostic-indicator status-misspec';
+                recommendEl.innerHTML = '<span>OLS Adequate</span>';
+                descEl.textContent = 'Minimal outlier impact';
+            }
+            
+            // Analysis
+            const contextNames = {
+                'financial_returns': 'financial returns analysis',
+                'income_distribution': 'income distribution study',
+                'international_trade': 'international trade flows',
+                'medical_costs': 'medical cost analysis'
+            };
+            
+            const methodNames = {
+                'ols': 'Ordinary Least Squares',
+                'lad': 'Least Absolute Deviations',
+                'huber': 'Huber robust regression',
+                'trimmed': 'Trimmed least squares'
+            };
+            
+            const analysis = `
+                Robust estimation analysis for ${contextNames[context]}:
+                
+                Estimation method: ${methodNames[method]}
+                OLS estimate: ${results.olsEst.toFixed(4)} (outlier-sensitive)
+                Robust estimate: ${results.robustEst.toFixed(4)} (outlier-resistant)
+                Difference: ${results.difference.toFixed(4)}
+                
+                Outlier influence on OLS: ${results.outlierInfluence.toFixed(1)}%
+                Robust method efficiency: ${results.robustEfficiency.toFixed(0)}% (relative to OLS under normality)
+                Outliers detected: ${results.outliersDetected}% of observations
+                
+                ${getRobustEstimationInsights(results)}
+                
+                Professional recommendation: ${getRobustEstimationRecommendation(results)}
+            `;
+            
+            document.getElementById('robustAnalysis').textContent = analysis;
+            document.getElementById('robustEstimationResults').style.display = 'block';
+        }
+        
+        function getRobustEstimationInsights(results) {
+            let insights = "";
+            
+            if (results.difference > 0.05) {
+                insights += "Substantial difference between OLS and robust estimates indicates significant outlier influence. ";
+            }
+            
+            if (results.outlierInfluence > 20) {
+                insights += "High outlier contamination detected - robust methods strongly recommended. ";
+            }
+            
+            if (results.robustEfficiency < 70) {
+                insights += "Efficiency loss with robust method is substantial - verify outliers are genuine before proceeding. ";
+            }
+            
+            return insights;
+        }
+        
+        function getRobustEstimationRecommendation(results) {
+            if (results.difference > 0.05 && results.robustEfficiency > 60) {
+                return "Use robust estimation - outliers significantly bias OLS with acceptable efficiency loss.";
+            } else if (results.difference > 0.02) {
+                return "Consider robust methods - moderate outlier influence detected. Investigate outliers first.";
+            } else {
+                return "OLS appears adequate - minimal outlier influence detected. Standard methods recommended.";
+            }
+        }
+        
+        // ========================================
+        // UTILITY FUNCTIONS
+        // ========================================
+        
+        function fCDF(x, df1, df2) {
+            // Simplified F-distribution CDF approximation
+            if (x <= 0) return 0;
+            
+            // Use beta distribution relationship for approximation
+            const y = df1 * x / (df1 * x + df2);
+            return betaCDF(y, df1/2, df2/2);
+        }
+        
+        function betaCDF(x, a, b) {
+            // Simplified beta CDF approximation
+            if (x <= 0) return 0;
+            if (x >= 1) return 1;
+            
+            // Use normal approximation for simplicity
+            const mean = a / (a + b);
+            const variance = (a * b) / ((a + b) * (a + b) * (a + b + 1));
+            const z = (x - mean) / Math.sqrt(variance);
+            
+            return normalCDF(z);
+        }
+        
+        function normalCDF(z) {
+            return 0.5 * (1 + erf(z / Math.sqrt(2)));
+        }
+        
+        function erf(x) {
+            const a1 =  0.254829592;
+            const a2 = -0.284496736;
+            const a3 =  1.421413741;
+            const a4 = -1.453152027;
+            const a5 =  1.061405429;
+            const p  =  0.3275911;
+            
+            const sign = x >= 0 ? 1 : -1;
+            x = Math.abs(x);
+            
+            const t = 1.0 / (1.0 + p * x);
+            const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+            
+            return sign * y;
+        }
+        
+        // ========================================
+        // QUIZ FUNCTIONS
+        // ========================================
+        
+        function selectAnswer(questionId, answer) {
+            const correctAnswers = {
+                'q1': 'B',
+                'q2': 'B',
+                'q3': 'B',
+                'q4': 'B'
+            };
+            
+            const explanations = {
+                'q1': {
+                    correct: 'Correct! The RESET test detects functional form misspecification by testing whether higher-order fitted values (ŷ², ŷ³) have explanatory power.',
+                    incorrect: 'Incorrect. RESET tests for functional form misspecification, not heteroskedasticity, serial correlation, or multicollinearity.'
+                },
+                'q2': {
+                    correct: 'Correct! Measurement error in explanatory variables causes attenuation bias, biasing coefficient estimates toward zero.',
+                    incorrect: 'Incorrect. Classical measurement error in explanatory variables causes attenuation bias (downward bias toward zero), not upward bias.'
+                },
+                'q3': {
+                    correct: 'Correct! LAD minimizes absolute deviations rather than squared deviations, making it more robust to outliers than OLS.',
+                    incorrect: 'Incorrect. LAD is preferred when data contains outliers because it is less sensitive to extreme values than OLS.'
+                },
+                'q4': {
+                    correct: 'Correct! MCAR means missingness is unrelated to both observed and unobserved variables - completely random.',
+                    incorrect: 'Incorrect. MCAR (Missing Completely at Random) means missingness is unrelated to any variables, observed or unobserved.'
+                }
+            };
+            
+            const isCorrect = answer === correctAnswers[questionId];
+            const feedbackNum = questionId.charAt(1);
+            const feedbackEl = document.getElementById(`feedback${feedbackNum}`);
+            
+            // Update option styling
+            const options = document.querySelectorAll(`input[name="${questionId}"]`);
+            options.forEach(option => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (option.value === correctAnswers[questionId]) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            // Show feedback
+            feedbackEl.textContent = isCorrect ? explanations[questionId].correct : explanations[questionId].incorrect;
+            feedbackEl.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackEl.style.display = 'block';
+        }
+        
+        // ========================================
+        // AI CHAT FUNCTIONS
+        // ========================================
+        
+        function toggleAIChat() {
+            const panel = document.getElementById('aiChatPanel');
+            const icon = document.getElementById('aiChatIcon');
+            
+            if (isAIChatOpen) {
+                panel.classList.remove('show');
+                icon.textContent = '🔍';
+                isAIChatOpen = false;
+            } else {
+                panel.classList.add('show');
+                icon.textContent = '✖️';
+                isAIChatOpen = true;
+                document.getElementById('aiInput').focus();
+            }
+        }
+        
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addAIMessage('user', message);
+            input.value = '';
+            
+            setTimeout(() => {
+                const response = getAIResponse(message);
+                addAIMessage('claude', response);
+            }, 500);
+        }
+        
+        function addAIMessage(sender, message) {
+            const container = document.getElementById('aiChatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender}`;
+            
+            if (sender === 'claude') {
+                messageDiv.innerHTML = `<strong>🔍 Claude:</strong> ${message}`;
+            } else {
+                messageDiv.textContent = message;
+            }
+            
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function getAIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            if (message.includes('reset') || message.includes('functional form')) {
+                return "RESET tests for functional form misspecification by adding higher-order fitted values (ŷ², ŷ³) to your regression. If significant, your functional form may be wrong. Try log transformations, interactions, or polynomials!";
+            }
+            
+            if (message.includes('measurement error') || message.includes('attenuation')) {
+                return "Measurement error in explanatory variables causes attenuation bias - estimates are biased toward zero. Solutions: use instrumental variables, proxy variables, or repeated measurements. The bias = β × [signal variance/(signal + noise variance)].";
+            }
+            
+            if (message.includes('missing data') || message.includes('mcar') || message.includes('mar')) {
+                return "Missing data mechanisms: MCAR (random, no bias), MAR (depends on observed variables, correctable), MNAR (depends on unobserved, problematic). Use multiple imputation, selection models, or weighting for correction.";
+            }
+            
+            if (message.includes('outlier') || message.includes('robust') || message.includes('lad')) {
+                return "Outliers can bias OLS estimates. Robust methods like LAD (Least Absolute Deviations) minimize absolute rather than squared residuals, making them less sensitive to extreme values. Trade-off: robustness vs efficiency.";
+            }
+            
+            if (message.includes('proxy') || message.includes('unobserved')) {
+                return "Proxy variables help when key variables are unobserved. Good proxies: highly correlated with unobserved variable, uncorrelated with error. Examples: test scores for ability, parents' education for family background.";
+            }
+            
+            if (message.includes('specification') || message.includes('misspecification')) {
+                return "Specification errors include: wrong functional form, omitted variables, measurement error, sample selection. Use diagnostic tests (RESET, residual plots), theory, and robustness checks to identify and correct.";
+            }
+            
+            return "I can help with functional form testing (RESET), measurement error and attenuation bias, missing data mechanisms, outlier detection, robust estimation methods, and specification diagnostics. What specific topic interests you?";
+        }
+        
+        // Close AI chat when clicking outside
+        document.addEventListener('click', function(event) {
+            const widget = document.querySelector('.ai-chat-widget');
+            if (isAIChatOpen && !widget.contains(event.target)) {
+                toggleAIChat();
+            }
+        });
+        
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Chapter 9: More on Specification and Data Issues loaded successfully!');
+            
+            // Set up fade-in animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0) scale(1)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe all animated elements
+            document.querySelectorAll('.fade-in, .slide-up, .specification-animation').forEach(el => {
+                observer.observe(el);
+            });
+        });
+        
+    </script>
+
+</body>
+</html>
