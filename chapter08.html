@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 8: Heteroskedasticity | Wooldridge Econometrics Tutorial</title>
+    
+    <style>
+        /* Diagnostic Analytics Theme for Heteroskedasticity */
+        :root {
+            --primary-diagnostic: #0ea5e9;
+            --secondary-analysis: #0284c7;
+            --accent-detection: #06b6d4;
+            --status-healthy: #10b981;
+            --status-warning: #f59e0b;
+            --status-critical: #ef4444;
+            --tech-50: #f8fafc;
+            --tech-200: #e2e8f0;
+            --tech-600: #475569;
+            --tech-700: #334155;
+            --tech-800: #1e293b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--tech-800);
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-diagnostic), var(--secondary-analysis));
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="30" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="10" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .page-header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .chapter-title {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .chapter-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .chapter-description {
+            font-size: 1.1rem;
+            opacity: 0.85;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Navigation */
+        .chapter-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--tech-200);
+        }
+
+        .nav-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            border: 2px solid var(--tech-200);
+            background: white;
+            color: var(--primary-diagnostic);
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-detection);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+        }
+
+        .nav-home {
+            background: var(--status-healthy);
+            color: white;
+            border-color: var(--status-healthy);
+        }
+
+        .nav-home:hover {
+            color: white;
+            background: #059669;
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 3rem;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--accent-detection);
+        }
+
+        .section-title {
+            color: var(--primary-diagnostic);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        /* Concept Boxes */
+        .concept-box {
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+        }
+
+        .concept-box.diagnostic {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-color: var(--accent-detection);
+        }
+
+        .concept-box.robust {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-color: var(--status-healthy);
+        }
+
+        .concept-box.warning {
+            background: linear-gradient(135deg, #fefbeb, #fef3c7);
+            border-color: var(--status-warning);
+        }
+
+        .concept-title {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--tech-800);
+        }
+
+        .formula {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 2px solid var(--accent-detection);
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            margin: 1rem 0;
+            font-weight: 500;
+            color: var(--primary-diagnostic);
+        }
+
+        /* Interactive Widgets */
+        .interactive-widget {
+            background: linear-gradient(135deg, var(--tech-50), white);
+            border: 2px solid var(--tech-200);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .widget-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--tech-200);
+        }
+
+        .widget-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-detection), var(--primary-diagnostic));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .widget-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-diagnostic);
+        }
+
+        .widget-description {
+            color: var(--tech-600);
+            font-size: 0.9rem;
+        }
+
+        /* Calculator Controls */
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-weight: 500;
+            color: var(--primary-diagnostic);
+            font-size: 0.9rem;
+        }
+
+        .control-select {
+            padding: 0.75rem;
+            border: 2px solid var(--tech-200);
+            border-radius: 6px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .control-select:focus {
+            outline: none;
+            border-color: var(--accent-detection);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--accent-detection), var(--secondary-analysis));
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 1.5rem auto;
+            display: block;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.3);
+        }
+
+        /* Results */
+        .results-panel {
+            background: linear-gradient(135deg, var(--tech-50), white);
+            border: 1px solid var(--tech-200);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            display: none;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+            border-top: 3px solid var(--accent-detection);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-diagnostic);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--tech-600);
+            font-weight: 500;
+        }
+
+        .diagnostic-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-healthy {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--status-healthy);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--status-warning);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-critical {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--status-critical);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Quiz */
+        .quiz-section {
+            background: linear-gradient(135deg, var(--tech-50), white);
+            border: 2px solid var(--tech-200);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .quiz-question {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--tech-200);
+        }
+
+        .quiz-question:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .quiz-option {
+            padding: 1rem;
+            border: 2px solid var(--tech-200);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent-detection);
+            background: var(--tech-50);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--status-healthy);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--status-critical);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .quiz-feedback.correct {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--status-healthy);
+        }
+
+        .quiz-feedback.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--status-critical);
+        }
+
+        /* AI Chat Widget */
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .ai-chat-button {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary-diagnostic), var(--secondary-analysis));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .ai-chat-button:hover {
+            transform: scale(1.1);
+        }
+
+        .ai-chat-panel {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 300px;
+            height: 400px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--tech-200);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ai-chat-panel.show {
+            display: flex;
+        }
+
+        .ai-chat-header {
+            background: var(--primary-diagnostic);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .ai-message {
+            max-width: 85%;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            line-height: 1.4;
+            font-size: 0.9rem;
+        }
+
+        .ai-message.claude {
+            background: var(--tech-50);
+            color: var(--tech-700);
+            align-self: flex-start;
+        }
+
+        .ai-message.user {
+            background: var(--primary-diagnostic);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .ai-input-area {
+            padding: 1rem;
+            border-top: 1px solid var(--tech-200);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--tech-200);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .ai-send-btn {
+            background: var(--primary-diagnostic);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .chapter-navigation {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <h1 class="chapter-title">Chapter 8: Heteroskedasticity 📊</h1>
+                <p class="chapter-subtitle">Advanced Diagnostic Analytics & Robust Inference</p>
+                <p class="chapter-description">
+                    Master heteroskedasticity detection, testing, and correction with professional tools
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- Navigation -->
+        <div class="chapter-navigation">
+            <a href="index.html" class="nav-button nav-home">
+                <span>🏠</span>
+                <span>Home</span>
+            </a>
+            <a href="chapter07.html" class="nav-button">
+                <span>←</span>
+                <span>Chapter 7</span>
+            </a>
+            <div class="nav-button" style="opacity: 0.5; cursor: not-allowed;" onclick="alert('Chapter 9 coming soon!')">
+                <span>→</span>
+                <span>Chapter 9</span>
+            </div>
+        </div>
+        
+        <!-- Section 8.1: Nature and Consequences -->
+        <section class="section">
+            <h2 class="section-title">8.1 📊 Nature and Consequences of Heteroskedasticity</h2>
+            
+            <p>Heteroskedasticity occurs when error variance is not constant across observations: Var(u|x) ≠ σ². While OLS estimates remain unbiased, they lose efficiency and standard errors become invalid.</p>
+            
+            <div class="concept-box diagnostic">
+                <div class="concept-title">📊 Heteroskedasticity Framework</div>
+                <p><strong>Homoskedasticity (ideal):</strong> Var(u|x) = σ² (constant variance)<br>
+                <strong>Heteroskedasticity (problem):</strong> Var(u|x) = σ²(x) (variance depends on x)</p>
+                <div class="formula">
+                    E[u²|x] = Var(u|x) = σ²(x)
+                </div>
+                <p><strong>Consequences:</strong> OLS unbiased but inefficient, invalid standard errors, incorrect t/F tests</p>
+            </div>
+
+            <!-- Pattern Explorer Widget -->
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <div class="widget-icon">📊</div>
+                    <div>
+                        <h3 class="widget-title">Heteroskedasticity Pattern Explorer</h3>
+                        <p class="widget-description">Explore different variance patterns and their impacts</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="control-group">
+                        <label class="control-label">Variance Pattern</label>
+                        <select class="control-select" id="patternType">
+                            <option value="increasing">Increasing Variance</option>
+                            <option value="decreasing">Decreasing Variance</option>
+                            <option value="quadratic" selected>U-shaped Pattern</option>
+                            <option value="grouped">Grouped Heteroskedasticity</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Economic Context</label>
+                        <select class="control-select" id="economicContext">
+                            <option value="income_variance">Income and Spending</option>
+                            <option value="firm_size">Firm Size Effects</option>
+                            <option value="education_returns" selected>Education Returns</option>
+                            <option value="housing_prices">Housing Markets</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Pattern Severity</label>
+                        <select class="control-select" id="patternSeverity">
+                            <option value="mild">Mild</option>
+                            <option value="moderate" selected>Moderate</option>
+                            <option value="severe">Severe</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="action-button" onclick="explorePatterns()">Explore Pattern</button>
+
+                <div class="results-panel" id="patternResults">
+                    <div class="results-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="varianceRatio">-</div>
+                            <div class="stat-label">Variance Ratio</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="efficiencyLoss">-</div>
+                            <div class="stat-label">Efficiency Loss</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="inferenceImpact">-</div>
+                            <div class="stat-label">Inference Impact</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="diagnostic-indicator" id="severityAssessment">
+                                <span>Assessment</span>
+                            </div>
+                            <div class="stat-label">Severity Level</div>
+                        </div>
+                    </div>
+                    <p id="patternAnalysis" style="margin-top: 1rem; color: var(--tech-600);"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8.2: Robust Inference -->
+        <section class="section">
+            <h2 class="section-title">8.2 🛡️ Heteroskedasticity-Robust Inference</h2>
+            
+            <p>Robust standard errors (White standard errors) provide valid inference under heteroskedasticity without requiring knowledge of the variance function.</p>
+
+            <div class="concept-box robust">
+                <div class="concept-title">🛡️ Robust Standard Errors</div>
+                <p><strong>White estimator:</strong> Var(β̂) = (X'X)⁻¹(X'ΩX)(X'X)⁻¹<br>
+                where Ω = diag(û₁², û₂², ..., ûₙ²)</p>
+                <div class="formula">
+                    SE_robust = √[diagonal elements of robust variance matrix]
+                </div>
+            </div>
+
+            <!-- Robust Calculator Widget -->
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <div class="widget-icon">🛡️</div>
+                    <div>
+                        <h3 class="widget-title">Robust Standard Error Calculator</h3>
+                        <p class="widget-description">Compare OLS vs. robust standard errors</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="control-group">
+                        <label class="control-label">Research Context</label>
+                        <select class="control-select" id="robustContext">
+                            <option value="wage_equation">Wage Equation</option>
+                            <option value="production_function" selected>Production Function</option>
+                            <option value="demand_estimation">Demand Estimation</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Heteroskedasticity Type</label>
+                        <select class="control-select" id="heteroType">
+                            <option value="income_related">Income-Related</option>
+                            <option value="size_dependent" selected>Size-Dependent</option>
+                            <option value="complex_pattern">Complex Pattern</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Sample Size</label>
+                        <select class="control-select" id="sampleSize">
+                            <option value="small">Small (n<200)</option>
+                            <option value="moderate">Moderate (200-1000)</option>
+                            <option value="large" selected>Large (n>1000)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="action-button" onclick="calculateRobust()">Calculate Robust SEs</button>
+
+                <div class="results-panel" id="robustResults">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 8px;">
+                            <h5>OLS Standard Error</h5>
+                            <div class="stat-value" id="olsSE" style="color: var(--status-warning);">-</div>
+                            <p style="font-size: 0.8rem; color: var(--tech-600);">Potentially biased</p>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 8px;">
+                            <h5>Robust Standard Error</h5>
+                            <div class="stat-value" id="robustSE" style="color: var(--status-healthy);">-</div>
+                            <p style="font-size: 0.8rem; color: var(--tech-600);">Heteroskedasticity-consistent</p>
+                        </div>
+                    </div>
+                    <div class="results-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="robustTStat">-</div>
+                            <div class="stat-label">Robust t-Statistic</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="seRatio">-</div>
+                            <div class="stat-label">SE Ratio</div>
+                        </div>
+                    </div>
+                    <p id="robustAnalysis" style="margin-top: 1rem; color: var(--tech-600);"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8.3: Testing for Heteroskedasticity -->
+        <section class="section">
+            <h2 class="section-title">8.3 🧪 Testing for Heteroskedasticity</h2>
+            
+            <p>Formal tests systematically detect heteroskedasticity. The Breusch-Pagan test examines whether squared residuals relate to explanatory variables, while the White test provides robustness.</p>
+
+            <div class="concept-box diagnostic">
+                <div class="concept-title">🧪 Testing Framework</div>
+                <p><strong>Breusch-Pagan test:</strong> H₀: σ²(x) = σ² (homoskedasticity)<br>
+                Auxiliary regression: û² = δ₀ + δ₁x₁ + ... + δₖxₖ + error</p>
+                <div class="formula">
+                    Test statistic: LM = nR² ~ χ²(k) under H₀
+                </div>
+                <p><strong>White test:</strong> Includes squares and cross-products for robustness</p>
+            </div>
+
+            <!-- Testing Suite Widget -->
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <div class="widget-icon">🧪</div>
+                    <div>
+                        <h3 class="widget-title">Heteroskedasticity Testing Suite</h3>
+                        <p class="widget-description">Run comprehensive diagnostic tests</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="control-group">
+                        <label class="control-label">Test Type</label>
+                        <select class="control-select" id="testType">
+                            <option value="breusch_pagan">Breusch-Pagan Test</option>
+                            <option value="white_test" selected>White Test</option>
+                            <option value="both_tests">Both Tests</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Data Context</label>
+                        <select class="control-select" id="testContext">
+                            <option value="wage_data">Wage Data</option>
+                            <option value="firm_data" selected>Firm Data</option>
+                            <option value="financial_data">Financial Data</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Significance Level</label>
+                        <select class="control-select" id="alphaLevel">
+                            <option value="0.10">α = 0.10</option>
+                            <option value="0.05" selected>α = 0.05</option>
+                            <option value="0.01">α = 0.01</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="action-button" onclick="runTests()">Run Diagnostic Tests</button>
+
+                <div class="results-panel" id="testResults">
+                    <div class="results-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="bpStatistic">-</div>
+                            <div class="stat-label">BP Test Statistic</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="whiteStatistic">-</div>
+                            <div class="stat-label">White Test Statistic</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="pValue">-</div>
+                            <div class="stat-label">p-Value</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="diagnostic-indicator" id="testConclusion">
+                                <span>Conclusion</span>
+                            </div>
+                            <div class="stat-label">Test Decision</div>
+                        </div>
+                    </div>
+                    <p id="testAnalysis" style="margin-top: 1rem; color: var(--tech-600);"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8.4: Weighted Least Squares -->
+        <section class="section">
+            <h2 class="section-title">8.4 ⚖️ Weighted Least Squares (WLS)</h2>
+            
+            <p>When the variance function is known, Weighted Least Squares provides efficient estimation by giving appropriate weights to observations.</p>
+
+            <div class="concept-box diagnostic">
+                <div class="concept-title">⚖️ WLS Framework</div>
+                <p><strong>Known variance:</strong> If Var(u|x) = σ²h(x), use weights w = 1/√h(x)<br>
+                <strong>WLS estimator:</strong> β̂_WLS = (X'WX)⁻¹X'Wy</p>
+                <div class="formula">
+                    Efficiency gain: Var(β̂_WLS) ≤ Var(β̂_OLS)
+                </div>
+            </div>
+
+            <!-- WLS Calculator Widget -->
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <div class="widget-icon">⚖️</div>
+                    <div>
+                        <h3 class="widget-title">WLS Calculator</h3>
+                        <p class="widget-description">Implement weighted least squares correction</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="control-group">
+                        <label class="control-label">Variance Function</label>
+                        <select class="control-select" id="varianceFunction">
+                            <option value="linear">σ²(x) ∝ x</option>
+                            <option value="quadratic" selected>σ²(x) ∝ x²</option>
+                            <option value="exponential">σ²(x) ∝ exp(x)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Weight Source</label>
+                        <select class="control-select" id="weightSource">
+                            <option value="known">Known Function</option>
+                            <option value="estimated" selected>Estimated</option>
+                            <option value="external">External Info</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Application</label>
+                        <select class="control-select" id="wlsApplication">
+                            <option value="income_study">Income Study</option>
+                            <option value="production" selected>Production Analysis</option>
+                            <option value="financial">Financial Returns</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="action-button" onclick="calculateWLS()">Calculate WLS</button>
+
+                <div class="results-panel" id="wlsResults">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 8px;">
+                            <h5>OLS Estimate</h5>
+                            <div class="stat-value" id="olsCoeff" style="color: var(--status-warning);">-</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 8px;">
+                            <h5>WLS Estimate</h5>
+                            <div class="stat-value" id="wlsCoeff" style="color: var(--status-healthy);">-</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 8px;">
+                            <h5>Efficiency Gain</h5>
+                            <div class="stat-value" id="efficiencyGain" style="color: var(--primary-diagnostic);">-</div>
+                        </div>
+                    </div>
+                    <div class="results-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="wlsR2">-</div>
+                            <div class="stat-label">WLS R²</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="weightEffectiveness">-</div>
+                            <div class="stat-label">Weight Effectiveness</div>
+                        </div>
+                    </div>
+                    <p id="wlsAnalysis" style="margin-top: 1rem; color: var(--tech-600);"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8.5: Feasible GLS -->
+        <section class="section">
+            <h2 class="section-title">8.5 🔄 Feasible Generalized Least Squares (FGLS)</h2>
+            
+            <p>When the variance function is unknown, FGLS estimates it from data using a two-step procedure, achieving asymptotic efficiency.</p>
+
+            <div class="concept-box diagnostic">
+                <div class="concept-title">🔄 FGLS Two-Step Procedure</div>
+                <p><strong>Step 1:</strong> Run OLS, obtain residuals û<br>
+                <strong>Step 2:</strong> Model variance: log(û²) = δ₀ + δ₁x + error<br>
+                <strong>Step 3:</strong> Apply WLS with estimated weights</p>
+                <div class="formula">
+                    Asymptotic efficiency: plim Var(β̂_FGLS) = Var(β̂_GLS)
+                </div>
+            </div>
+
+            <div class="concept-box warning">
+                <div class="concept-title">⚠️ FGLS Considerations</div>
+                <p><strong>Benefits:</strong> Asymptotically efficient, practical when variance function unknown<br>
+                <strong>Risks:</strong> Misspecified variance model can worsen performance vs. OLS<br>
+                <strong>Best practice:</strong> Compare with robust OLS, validate variance model</p>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section class="section">
+            <div class="quiz-section">
+                <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--primary-diagnostic);">
+                    📊 Chapter 8 Knowledge Check
+                </h3>
+                
+                <!-- Question 1 -->
+                <div class="quiz-question">
+                    <p><strong>Question 1:</strong> What happens to OLS estimates under heteroskedasticity?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option" onclick="selectAnswer('q1', 'A')">
+                            <input type="radio" name="q1" value="A">
+                            A) They become biased and inefficient
+                        </label>
+                        <label class="quiz-option" onclick="selectAnswer('q1', 'B')">
+                            <input type="radio" name="q1" value="B">
+                            B) They remain unbiased but become inefficient
+                        </label>
+                        <label class="quiz-option" onclick="selectAnswer('q1', 'C')">
+                            <input type="radio" name="q1" value="C">
+                            C) They become biased but remain efficient
+                        </label>
+                    </div>
+                    <div id="feedback1" class="quiz-feedback"></div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="quiz-question">
+                    <p><strong>Question 2:</strong> The main advantage of robust standard errors is:</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option" onclick="selectAnswer('q2', 'A')">
+                            <input type="radio" name="q2" value="A">
+                            A) They improve coefficient efficiency
+                        </label>
+                        <label class="quiz-option" onclick="selectAnswer('q2', 'B')">
+                            <input type="radio" name="q2" value="B">
+                            B) Valid inference under heteroskedasticity without knowing variance function
+                        </label>
+                        <label class="quiz-option" onclick="selectAnswer('q2', 'C')">
+                            <input type="radio" name="q2" value="C">
+                            C) They eliminate heteroskedasticity
+                        </label>
+                    </div>
+                    <div id="feedback2" class="quiz-feedback"></div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="quiz-question">
+                    <p><strong>Question 3:</strong> WLS achieves efficiency by:</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option" onclick="selectAnswer('q3', 'A')">
+                            <input type="radio" name="q3" value="A">
+                            A) Giving equal weight to all observations
+                        </label>
+                        <label class="quiz-option" onclick="selectAnswer('q3', 'B')">
+                            <input type="radio" name="q3" value="B">
+                            B) Giving more weight to low-variance observations
+                        </label>
+                        <label class="quiz-option" onclick="selectAnswer('q3', 'C')">
+                            <input type="radio" name="q3" value="C">
+                            C) Eliminating heteroskedasticity completely
+                        </label>
+                    </div>
+                    <div id="feedback3" class="quiz-feedback"></div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div class="ai-chat-widget">
+        <button class="ai-chat-button" onclick="toggleAIChat()" title="Ask Claude about Heteroskedasticity">
+            <span id="aiChatIcon">📊</span>
+        </button>
+        
+        <div class="ai-chat-panel" id="aiChatPanel">
+            <div class="ai-chat-header">
+                <span>📊 Heteroskedasticity Tutor</span>
+                <button onclick="toggleAIChat()" style="background: none; border: none; color: white; cursor: pointer;">×</button>
+            </div>
+            
+            <div class="ai-chat-messages" id="aiChatMessages">
+                <div class="ai-message claude">
+                    <strong>📊 Claude:</strong> Hi! I can help you understand heteroskedasticity, robust inference, testing procedures, and correction methods. What would you like to explore?
+                </div>
+            </div>
+            
+            <div class="ai-input-area">
+                <input type="text" class="ai-input" id="aiInput" placeholder="Ask about heteroskedasticity..." 
+                       onkeydown="if(event.key==='Enter') sendAIMessage()">
+                <button class="ai-send-btn" onclick="sendAIMessage()">→</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // GLOBAL VARIABLES
+        // ========================================
+        
+        let isAIChatOpen = false;
+        
+        // ========================================
+        // PATTERN EXPLORER
+        // ========================================
+        
+        function explorePatterns() {
+            const patternType = document.getElementById('patternType').value;
+            const context = document.getElementById('economicContext').value;
+            const severity = document.getElementById('patternSeverity').value;
+            
+            // Generate pattern analysis
+            const results = simulatePattern(patternType, severity);
+            
+            // Display results
+            document.getElementById('varianceRatio').textContent = results.ratio.toFixed(2);
+            document.getElementById('efficiencyLoss').textContent = (results.efficiency * 100).toFixed(1) + '%';
+            document.getElementById('inferenceImpact').textContent = (results.inference * 100).toFixed(0) + '%';
+            
+            // Severity assessment
+            const severityEl = document.getElementById('severityAssessment');
+            if (results.ratio > 5) {
+                severityEl.className = 'diagnostic-indicator status-critical';
+                severityEl.innerHTML = '<span>Critical</span>';
+            } else if (results.ratio > 2) {
+                severityEl.className = 'diagnostic-indicator status-warning';
+                severityEl.innerHTML = '<span>Moderate</span>';
+            } else {
+                severityEl.className = 'diagnostic-indicator status-healthy';
+                severityEl.innerHTML = '<span>Mild</span>';
+            }
+            
+            // Analysis
+            const contextNames = {
+                income_variance: 'income and spending variance',
+                firm_size: 'firm size effects',
+                education_returns: 'education and wage variance',
+                housing_prices: 'housing price dispersion'
+            };
+            
+            document.getElementById('patternAnalysis').textContent = 
+                `Analysis for ${contextNames[context]}: Variance ratio of ${results.ratio.toFixed(2)} indicates ${severity} heteroskedasticity. ` +
+                `Efficiency loss: ${(results.efficiency * 100).toFixed(1)}%. ` +
+                `${results.ratio > 3 ? 'Robust standard errors strongly recommended.' : 'Consider robust inference as precaution.'}`;
+            
+            document.getElementById('patternResults').style.display = 'block';
+        }
+        
+        function simulatePattern(patternType, severity) {
+            const severityMultiplier = {
+                'mild': 1.5,
+                'moderate': 3.0,
+                'severe': 6.0
+            }[severity] || 2.0;
+            
+            const baseRatio = {
+                'increasing': 1.5,
+                'decreasing': 1.3,
+                'quadratic': 2.2,
+                'grouped': 1.8
+            }[patternType] || 1.5;
+            
+            const ratio = baseRatio * severityMultiplier;
+            const efficiency = Math.min(0.6, 0.2 * Math.log(ratio));
+            const inference = Math.min(0.7, 0.15 * ratio);
+            
+            return { ratio, efficiency, inference };
+        }
+        
+        // ========================================
+        // ROBUST STANDARD ERRORS
+        // ========================================
+        
+        function calculateRobust() {
+            const context = document.getElementById('robustContext').value;
+            const heteroType = document.getElementById('heteroType').value;
+            const sampleSize = document.getElementById('sampleSize').value;
+            
+            // Simulate robust analysis
+            const baseCoeff = {
+                'wage_equation': 0.085,
+                'production_function': 0.65,
+                'demand_estimation': -1.2
+            }[context] || 0.10;
+            
+            const olsSE = baseCoeff * 0.12;
+            const adjustment = {
+                'income_related': 1.3,
+                'size_dependent': 1.5,
+                'complex_pattern': 1.8
+            }[heteroType] || 1.2;
+            
+            const sampleAdj = {
+                'small': 1.3,
+                'moderate': 1.1,
+                'large': 1.0
+            }[sampleSize] || 1.0;
+            
+            const robustSE = olsSE * adjustment * sampleAdj;
+            const robustTStat = baseCoeff / robustSE;
+            const seRatio = robustSE / olsSE;
+            
+            // Display results
+            document.getElementById('olsSE').textContent = olsSE.toFixed(4);
+            document.getElementById('robustSE').textContent = robustSE.toFixed(4);
+            document.getElementById('robustTStat').textContent = robustTStat.toFixed(3);
+            document.getElementById('seRatio').textContent = seRatio.toFixed(3);
+            
+            document.getElementById('robustAnalysis').textContent = 
+                `Robust standard errors are ${((seRatio - 1) * 100).toFixed(0)}% larger than OLS. ` +
+                `${seRatio > 1.4 ? 'Substantial heteroskedasticity detected.' : 'Moderate adjustment needed.'} ` +
+                `Robust t-statistic: ${robustTStat.toFixed(3)}, ${robustTStat > 2 ? 'significant at 5%' : 'not significant'}.`;
+            
+            document.getElementById('robustResults').style.display = 'block';
+        }
+        
+        // ========================================
+        // HETEROSKEDASTICITY TESTING
+        // ========================================
+        
+        function runTests() {
+            const testType = document.getElementById('testType').value;
+            const alpha = parseFloat(document.getElementById('alphaLevel').value);
+            
+            // Simulate test statistics
+            const bpStat = 8.5 + Math.random() * 12;
+            const whiteStat = 12.2 + Math.random() * 15;
+            const pValue = Math.random() * 0.15; // Usually significant for demo
+            
+            // Critical values (approximate)
+            const critical = alpha === 0.05 ? 7.81 : alpha === 0.01 ? 11.34 : 6.25;
+            const reject = Math.max(bpStat, whiteStat) > critical;
+            
+            // Display results
+            document.getElementById('bpStatistic').textContent = bpStat.toFixed(3);
+            document.getElementById('whiteStatistic').textContent = whiteStat.toFixed(3);
+            document.getElementById('pValue').textContent = pValue.toFixed(4);
+            
+            const conclusionEl = document.getElementById('testConclusion');
+            if (reject) {
+                conclusionEl.className = 'diagnostic-indicator status-critical';
+                conclusionEl.innerHTML = '<span>Reject H₀</span>';
+            } else {
+                conclusionEl.className = 'diagnostic-indicator status-healthy';
+                conclusionEl.innerHTML = '<span>Fail to Reject</span>';
+            }
+            
+            document.getElementById('testAnalysis').textContent = 
+                `Test results ${reject ? 'reject' : 'fail to reject'} the null hypothesis of homoskedasticity at α = ${alpha}. ` +
+                `${reject ? 'Evidence of heteroskedasticity detected. Use robust standard errors or consider WLS/FGLS.' : 'No strong evidence of heteroskedasticity, but robust SEs still recommended as precaution.'}`;
+            
+            document.getElementById('testResults').style.display = 'block';
+        }
+        
+        // ========================================
+        // WEIGHTED LEAST SQUARES
+        // ========================================
+        
+        function calculateWLS() {
+            const varianceFunction = document.getElementById('varianceFunction').value;
+            const weightSource = document.getElementById('weightSource').value;
+            const application = document.getElementById('wlsApplication').value;
+            
+            // Simulate WLS results
+            const baseCoeff = {
+                'income_study': 0.75,
+                'production': 0.68,
+                'financial': 0.15
+            }[application] || 0.50;
+            
+            const olsCoeff = baseCoeff + (Math.random() - 0.5) * 0.02;
+            const wlsCoeff = baseCoeff + (Math.random() - 0.5) * 0.01;
+            
+            const efficiencyGain = {
+                'linear': 0.25,
+                'quadratic': 0.35,
+                'exponential': 0.45
+            }[varianceFunction] || 0.30;
+            
+            const wlsR2 = 0.75 + Math.random() * 0.15;
+            const weightEff = {
+                'known': 0.95,
+                'estimated': 0.80,
+                'external': 0.85
+            }[weightSource] || 0.80;
+            
+            // Display results
+            document.getElementById('olsCoeff').textContent = olsCoeff.toFixed(4);
+            document.getElementById('wlsCoeff').textContent = wlsCoeff.toFixed(4);
+            document.getElementById('efficiencyGain').textContent = (efficiencyGain * 100).toFixed(1) + '%';
+            document.getElementById('wlsR2').textContent = wlsR2.toFixed(4);
+            document.getElementById('weightEffectiveness').textContent = (weightEff * 100).toFixed(0) + '%';
+            
+            document.getElementById('wlsAnalysis').textContent = 
+                `WLS achieves ${(efficiencyGain * 100).toFixed(1)}% efficiency gain over OLS. ` +
+                `Weights are ${(weightEff * 100).toFixed(0)}% effective at variance stabilization. ` +
+                `${efficiencyGain > 0.3 ? 'Substantial improvement - WLS recommended.' : 'Modest gains - compare with robust OLS.'}`;
+            
+            document.getElementById('wlsResults').style.display = 'block';
+        }
+        
+        // ========================================
+        // QUIZ FUNCTIONS
+        // ========================================
+        
+        function selectAnswer(questionId, answer) {
+            const correctAnswers = {
+                'q1': 'B',
+                'q2': 'B',
+                'q3': 'B'
+            };
+            
+            const explanations = {
+                'q1': {
+                    correct: 'Correct! Under heteroskedasticity, OLS estimates remain unbiased but lose efficiency, and standard errors become invalid.',
+                    incorrect: 'Incorrect. OLS estimates remain unbiased under heteroskedasticity. The problems are inefficiency and invalid standard errors.'
+                },
+                'q2': {
+                    correct: 'Correct! Robust standard errors provide valid inference under heteroskedasticity without requiring knowledge of the variance function.',
+                    incorrect: 'Incorrect. Robust standard errors don\'t improve efficiency or eliminate heteroskedasticity - they provide valid inference.'
+                },
+                'q3': {
+                    correct: 'Correct! WLS gives more weight to precise (low-variance) observations and less weight to imprecise (high-variance) observations.',
+                    incorrect: 'Incorrect. WLS achieves efficiency by weighting observations inversely to their variances.'
+                }
+            };
+            
+            const isCorrect = answer === correctAnswers[questionId];
+            const feedbackNum = questionId.charAt(1);
+            const feedbackEl = document.getElementById(`feedback${feedbackNum}`);
+            
+            // Update option styling
+            const options = document.querySelectorAll(`input[name="${questionId}"]`);
+            options.forEach(option => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (option.value === correctAnswers[questionId]) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            // Show feedback
+            feedbackEl.textContent = isCorrect ? explanations[questionId].correct : explanations[questionId].incorrect;
+            feedbackEl.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackEl.style.display = 'block';
+        }
+        
+        // ========================================
+        // AI CHAT FUNCTIONS
+        // ========================================
+        
+        function toggleAIChat() {
+            const panel = document.getElementById('aiChatPanel');
+            const icon = document.getElementById('aiChatIcon');
+            
+            if (isAIChatOpen) {
+                panel.classList.remove('show');
+                icon.textContent = '📊';
+                isAIChatOpen = false;
+            } else {
+                panel.classList.add('show');
+                icon.textContent = '✖️';
+                isAIChatOpen = true;
+                document.getElementById('aiInput').focus();
+            }
+        }
+        
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addAIMessage('user', message);
+            input.value = '';
+            
+            setTimeout(() => {
+                const response = getAIResponse(message);
+                addAIMessage('claude', response);
+            }, 500);
+        }
+        
+        function addAIMessage(sender, message) {
+            const container = document.getElementById('aiChatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender}`;
+            
+            if (sender === 'claude') {
+                messageDiv.innerHTML = `<strong>📊 Claude:</strong> ${message}`;
+            } else {
+                messageDiv.textContent = message;
+            }
+            
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function getAIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            if (message.includes('heteroskedasticity') || message.includes('variance')) {
+                return "Heteroskedasticity means non-constant error variance: Var(u|x) ≠ σ². Key consequences: OLS remains unbiased but becomes inefficient, and standard errors become invalid. Always check residual plots!";
+            }
+            
+            if (message.includes('robust') || message.includes('white')) {
+                return "Robust standard errors provide valid inference under heteroskedasticity without knowing the variance function. They're consistent under both homo- and heteroskedasticity - use them as best practice!";
+            }
+            
+            if (message.includes('test') || message.includes('breusch') || message.includes('bp')) {
+                return "Heteroskedasticity tests: Breusch-Pagan tests if squared residuals relate to X variables. White test is more robust. H₀: homoskedasticity. Reject → use corrections!";
+            }
+            
+            if (message.includes('wls') || message.includes('weighted')) {
+                return "WLS gives more weight to low-variance observations. If Var(u|x)=σ²h(x), use weights 1/√h(x). Achieves efficiency when variance function is known or well-estimated.";
+            }
+            
+            if (message.includes('fgls') || message.includes('feasible')) {
+                return "FGLS: Step 1) Run OLS. Step 2) Model variance log(û²)=δX. Step 3) WLS with estimated weights. Asymptotically efficient but sensitive to variance model specification.";
+            }
+            
+            return "I can help with heteroskedasticity detection, robust inference, testing (BP/White), WLS, and FGLS. What specific aspect interests you?";
+        }
+        
+        // Close AI chat when clicking outside
+        document.addEventListener('click', function(event) {
+            const widget = document.querySelector('.ai-chat-widget');
+            if (isAIChatOpen && !widget.contains(event.target)) {
+                toggleAIChat();
+            }
+        });
+        
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Chapter 8: Heteroskedasticity loaded successfully!');
+        });
+        
+    </script>
+
+</body>
+</html>
