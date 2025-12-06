@@ -5,14 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chapter 3: Multiple Regression Analysis | Wooldridge Econometrics Tutorial</title>
     
-    <!-- External Dependencies -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.18.1/plotly.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- ZERO External Dependencies - Only Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
         /* CSS Custom Properties */
@@ -35,7 +31,6 @@
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
             --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-            --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
         }
 
         /* Reset and Base Styles */
@@ -61,7 +56,6 @@
             top: 0;
             z-index: 100;
             box-shadow: var(--shadow-lg);
-            backdrop-filter: blur(10px);
         }
 
         .nav-container {
@@ -100,10 +94,6 @@
 
         .nav-breadcrumb a:hover {
             color: var(--secondary-violet);
-        }
-
-        .nav-breadcrumb i {
-            font-size: 0.8rem;
         }
 
         .nav-controls {
@@ -188,22 +178,10 @@
             overflow: hidden;
         }
 
-        .chapter-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M0 0h40v40H0zM40 40h40v40H40z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
-        }
-
         .chapter-number {
             font-size: 1.3rem;
             opacity: 0.85;
             margin-bottom: 1.5rem;
-            position: relative;
-            z-index: 1;
             font-weight: 500;
             letter-spacing: 0.5px;
         }
@@ -213,8 +191,6 @@
             font-size: 4rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
-            position: relative;
-            z-index: 1;
             line-height: 1.1;
         }
 
@@ -223,99 +199,8 @@
             opacity: 0.9;
             max-width: 700px;
             margin: 0 auto;
-            position: relative;
-            z-index: 1;
             line-height: 1.5;
             font-weight: 400;
-        }
-
-        /* Learning Objectives */
-        .learning-objectives {
-            background: linear-gradient(135deg, white, #fafbff);
-            border-radius: 16px;
-            padding: 2.5rem;
-            margin: 4rem 0;
-            box-shadow: var(--shadow-xl);
-            border: 1px solid rgba(67, 56, 202, 0.1);
-        }
-
-        .objectives-header {
-            display: flex;
-            align-items: center;
-            gap: 1.25rem;
-            margin-bottom: 2rem;
-        }
-
-        .objectives-icon {
-            background: linear-gradient(135deg, var(--accent-emerald), #047857);
-            color: white;
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .objectives-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.6rem;
-            font-weight: 600;
-            color: var(--gray-800);
-        }
-
-        .objectives-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2.5rem;
-        }
-
-        .objective-card {
-            background: linear-gradient(135deg, var(--gray-50), white);
-            border-radius: 12px;
-            padding: 2rem;
-            border: 1px solid var(--gray-200);
-            transition: all 0.3s ease;
-        }
-
-        .objective-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary-indigo);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.25rem;
-        }
-
-        .card-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            font-weight: 600;
-            color: white;
-            box-shadow: var(--shadow-md);
-        }
-
-        .theory-icon { background: linear-gradient(135deg, var(--primary-indigo), var(--secondary-violet)); }
-        .practical-icon { background: linear-gradient(135deg, var(--accent-emerald), #047857); }
-        .advanced-icon { background: linear-gradient(135deg, var(--accent-amber), #d97706); }
-        .visualization-icon { background: linear-gradient(135deg, var(--accent-rose), #be123c); }
-
-        .card-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--gray-800);
         }
 
         /* Content Cards */
@@ -328,14 +213,7 @@
             border: 1px solid rgba(67, 56, 202, 0.1);
         }
 
-        .content-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2.5rem;
-            margin: 2.5rem 0;
-        }
-
-        /* Enhanced Text Boxes */
+        /* Text Boxes */
         .definition-box {
             background: linear-gradient(135deg, #eff6ff, #dbeafe);
             border: 1px solid rgba(67, 56, 202, 0.3);
@@ -381,6 +259,8 @@
             text-align: center;
             font-family: 'Courier New', monospace;
             box-shadow: var(--shadow-md);
+            font-size: 1.1rem;
+            font-weight: 600;
         }
 
         .key-insight {
@@ -426,26 +306,8 @@
             border-radius: 16px;
             padding: 2.5rem;
             margin: 3rem 0;
-            box-shadow: var(--shadow-2xl);
+            box-shadow: 0 25px 50px -12px rgb(67 56 202 / 0.25);
             position: relative;
-            overflow: hidden;
-        }
-
-        .interactive-widget::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(67, 56, 202, 0.05) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
-        .widget-header {
-            margin-bottom: 2rem;
-            position: relative;
-            z-index: 1;
         }
 
         .widget-title {
@@ -460,6 +322,7 @@
             color: var(--gray-600);
             line-height: 1.6;
             font-size: 1.05rem;
+            margin-bottom: 2rem;
         }
 
         .controls-group {
@@ -467,8 +330,6 @@
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
             margin: 2rem 0;
-            position: relative;
-            z-index: 1;
         }
 
         .control {
@@ -483,7 +344,7 @@
             font-size: 0.95rem;
         }
 
-        .control-input, .control-select {
+        .control-select {
             padding: 1rem;
             border: 2px solid var(--gray-300);
             border-radius: 8px;
@@ -492,13 +353,13 @@
             transition: all 0.2s ease;
         }
 
-        .control-input:focus, .control-select:focus {
+        .control-select:focus {
             outline: none;
             border-color: var(--primary-indigo);
             box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.1);
         }
 
-        /* Enhanced Buttons */
+        /* Buttons */
         .btn {
             background: linear-gradient(135deg, var(--primary-indigo), var(--secondary-violet));
             color: white;
@@ -522,10 +383,6 @@
             box-shadow: var(--shadow-xl);
         }
 
-        .btn-secondary {
-            background: linear-gradient(135deg, var(--gray-600), var(--gray-700));
-        }
-
         .btn-success {
             background: linear-gradient(135deg, var(--accent-emerald), #047857);
         }
@@ -534,46 +391,65 @@
             background: linear-gradient(135deg, var(--accent-amber), #d97706);
         }
 
-        .btn-danger {
-            background: linear-gradient(135deg, var(--accent-rose), #be123c);
-        }
-
-        .btn:disabled {
-            cursor: not-allowed;
-            transform: none !important;
-            opacity: 0.6;
-        }
-
-        /* Chart and Visualization containers */
-        .chart-container {
+        /* Results panel */
+        .results-panel {
             background: white;
             border-radius: 12px;
             padding: 1.5rem;
             margin: 1.5rem 0;
+            border: 2px solid var(--primary-indigo);
             box-shadow: var(--shadow-lg);
+        }
+
+        .results-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            color: var(--primary-indigo);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .coefficient-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .coefficient-card {
+            background: var(--gray-50);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
             border: 1px solid var(--gray-200);
         }
 
-        .chart-title {
-            font-family: 'Playfair Display', serif;
+        .coefficient-label {
             font-weight: 600;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            color: var(--gray-800);
-            font-size: 1.2rem;
+            color: var(--gray-700);
+            font-size: 0.9rem;
         }
 
-        .visualization-3d {
+        .coefficient-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-indigo);
+            margin-top: 0.25rem;
+        }
+
+        .visualization-simple {
             background: white;
             border-radius: 16px;
             padding: 1.5rem;
             margin: 2rem 0;
             box-shadow: var(--shadow-xl);
             border: 2px solid var(--primary-indigo);
-            min-height: 500px;
+            min-height: 300px;
         }
 
-        /* Interactive Quiz Styles */
+        /* Quiz Styles */
         .quiz-question {
             background: linear-gradient(135deg, var(--gray-50), white);
             border-radius: 12px;
@@ -648,153 +524,6 @@
             color: #991b1b;
         }
 
-        /* Success animations */
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-
-        .success-notification {
-            animation: slideInRight 0.5s ease-out;
-        }
-
-        .bounce-icon {
-            animation: bounce 2s infinite;
-        }
-
-        /* Enhanced styling for generated questions */
-        .quiz-question.generated {
-            border-left: 5px solid var(--accent-emerald);
-            box-shadow: 0 4px 16px rgba(5, 150, 105, 0.1);
-        }
-
-        .quiz-question.generated:hover {
-            box-shadow: 0 8px 32px rgba(5, 150, 105, 0.15);
-            transform: translateY(-2px);
-        }
-
-        /* Exercise Section */
-        .exercise-section {
-            background: linear-gradient(135deg, var(--gray-50), white);
-            border-radius: 16px;
-            padding: 2.5rem;
-            margin: 3rem 0;
-            border: 2px solid var(--gray-200);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .exercise-header {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .exercise-number {
-            background: linear-gradient(135deg, var(--accent-emerald), #047857);
-            color: white;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.1rem;
-            box-shadow: var(--shadow-md);
-        }
-
-        .exercise-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: var(--gray-800);
-        }
-
-        .exercise-content {
-            line-height: 1.8;
-            font-size: 1.05rem;
-        }
-
-        .solution-toggle {
-            margin-top: 1.5rem;
-        }
-
-        .solution-content {
-            display: none;
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            margin-top: 1.5rem;
-            border-left: 5px solid var(--accent-emerald);
-            box-shadow: var(--shadow-md);
-        }
-
-        /* Navigation Footer */
-        .chapter-navigation {
-            background: linear-gradient(135deg, white, #fafbff);
-            border-radius: 16px;
-            padding: 2.5rem;
-            margin: 4rem 0;
-            box-shadow: var(--shadow-xl);
-            border-top: 4px solid var(--primary-indigo);
-        }
-
-        .nav-buttons {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 2rem;
-        }
-
-        .nav-button {
-            background: linear-gradient(135deg, var(--primary-indigo), var(--secondary-violet));
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .nav-button:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-xl);
-        }
-
-        .nav-button.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-
-        .nav-button.primary {
-            background: linear-gradient(135deg, var(--accent-emerald), #047857);
-        }
-
-        .progress-indicator {
-            font-size: 1rem;
-            color: var(--gray-600);
-            text-align: center;
-            font-weight: 500;
-        }
-
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
@@ -818,15 +547,8 @@
                 order: -1;
             }
 
-            .content-grid,
-            .objectives-grid,
             .controls-group {
                 grid-template-columns: 1fr;
-            }
-
-            .nav-buttons {
-                flex-direction: column;
-                text-align: center;
             }
 
             .interactive-widget {
@@ -834,96 +556,79 @@
             }
         }
 
-        /* Animation utilities */
-        .fade-in {
-            animation: fadeInUp 1s ease-out forwards;
-            opacity: 0;
-        }
-
-        .delay-1 { animation-delay: 0.2s; }
-        .delay-2 { animation-delay: 0.4s; }
-        .delay-3 { animation-delay: 0.6s; }
-        .delay-4 { animation-delay: 0.8s; }
-
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .fade-in {
-            transform: translateY(30px);
-        }
-
-        /* Matrix notation styling */
-        .matrix-container {
-            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin: 1rem 0;
-            border: 2px dashed var(--gray-400);
-            text-align: center;
-        }
-
-        .matrix-title {
-            font-weight: 600;
-            color: var(--gray-700);
-            margin-bottom: 1rem;
-        }
-
-        /* Advanced visualization styling */
-        .viz-controls {
-            background: var(--gray-50);
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border: 1px solid var(--gray-200);
-        }
-
-        .results-panel {
+        /* Simple scatter plot styles */
+        .scatter-plot {
+            width: 100%;
+            height: 300px;
             background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border: 2px solid var(--primary-indigo);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .results-title {
-            font-family: 'Playfair Display', serif;
-            font-weight: 600;
-            color: var(--primary-indigo);
-            margin-bottom: 1rem;
-        }
-
-        .coefficient-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin: 1rem 0;
-        }
-
-        .coefficient-card {
-            background: var(--gray-50);
-            padding: 1rem;
+            border: 1px solid var(--gray-300);
             border-radius: 8px;
-            text-align: center;
-            border: 1px solid var(--gray-200);
+            position: relative;
+            overflow: hidden;
         }
 
-        .coefficient-label {
-            font-weight: 600;
-            color: var(--gray-700);
-            font-size: 0.9rem;
+        .plot-point {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: var(--primary-indigo);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
         }
 
-        .coefficient-value {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--primary-indigo);
-            margin-top: 0.25rem;
+        .plot-axis {
+            position: absolute;
+            background: var(--gray-400);
         }
+
+        .axis-x {
+            bottom: 30px;
+            left: 40px;
+            right: 20px;
+            height: 1px;
+        }
+
+        .axis-y {
+            bottom: 30px;
+            left: 40px;
+            top: 20px;
+            width: 1px;
+        }
+
+        .axis-label {
+            position: absolute;
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+
+        .axis-label.x {
+            bottom: 10px;
+            right: 50%;
+            transform: translateX(50%);
+        }
+
+        .axis-label.y {
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%) rotate(-90deg);
+            transform-origin: center;
+        }
+
+        /* Icon substitutes using Unicode */
+        .icon {
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        .icon-chart::before { content: "📊"; }
+        .icon-calculator::before { content: "🧮"; }
+        .icon-lightbulb::before { content = "💡"; }
+        .icon-warning::before { content: "⚠️"; }
+        .icon-success::before { content: "✅"; }
+        .icon-arrow-left::before { content: "←"; }
+        .icon-arrow-right::before { content: "→"; }
+        .icon-dice::before { content: "🎲"; }
+        .icon-eye::before { content: "👁"; }
     </style>
 </head>
 <body>
@@ -931,22 +636,22 @@
     <nav class="nav-header">
         <div class="nav-container">
             <a href="index.html" class="nav-logo">
-                <i class="fas fa-chart-line"></i>
+                <span class="icon icon-chart"></span>
                 Econometrics Tutorial
             </a>
             <div class="nav-breadcrumb">
                 <a href="index.html">Home</a>
-                <i class="fas fa-chevron-right"></i>
+                <span> > </span>
                 <span>Chapter 3</span>
             </div>
             <div class="nav-controls">
                 <a href="chapter02.html" class="nav-btn">
-                    <i class="fas fa-chevron-left"></i>
+                    <span class="icon icon-arrow-left"></span>
                     Previous
                 </a>
                 <a href="#" class="nav-btn" onclick="showChapter4ComingSoon(); return false;">
                     Next
-                    <i class="fas fa-chevron-right"></i>
+                    <span class="icon icon-arrow-right"></span>
                 </a>
             </div>
         </div>
@@ -954,7 +659,7 @@
 
     <div class="container">
         <!-- Chapter Header -->
-        <header class="chapter-header fade-in">
+        <header class="chapter-header">
             <div class="chapter-number">Chapter 3</div>
             <h1 class="chapter-title">Multiple Regression Analysis</h1>
             <p class="chapter-subtitle">
@@ -962,80 +667,8 @@
             </p>
         </header>
 
-        <!-- Learning Objectives -->
-        <section class="learning-objectives fade-in delay-1">
-            <div class="objectives-header">
-                <div class="objectives-icon">
-                    <i class="fas fa-bullseye"></i>
-                </div>
-                <h2 class="objectives-title">Advanced Learning Objectives</h2>
-            </div>
-            
-            <div class="objectives-grid">
-                <div class="objective-card">
-                    <div class="card-header">
-                        <div class="card-icon theory-icon">
-                            <i class="fas fa-book-open"></i>
-                        </div>
-                        <h3 class="card-title">Theoretical Mastery</h3>
-                    </div>
-                    <ul style="line-height: 2;">
-                        <li>Understand motivation for multiple regression</li>
-                        <li>Master OLS mechanics with multiple variables</li>
-                        <li>Learn unbiasedness conditions (MLR.1-MLR.4)</li>
-                        <li>Analyze variance and efficiency properties</li>
-                    </ul>
-                </div>
-                
-                <div class="objective-card">
-                    <div class="card-header">
-                        <div class="card-icon practical-icon">
-                            <i class="fas fa-calculator"></i>
-                        </div>
-                        <h3 class="card-title">Practical Applications</h3>
-                    </div>
-                    <ul style="line-height: 2;">
-                        <li>Fit multiple regression models</li>
-                        <li>Interpret ceteris paribus effects</li>
-                        <li>Understand omitted variable bias</li>
-                        <li>Handle multicollinearity issues</li>
-                    </ul>
-                </div>
-
-                <div class="objective-card">
-                    <div class="card-header">
-                        <div class="card-icon advanced-icon">
-                            <i class="fas fa-brain"></i>
-                        </div>
-                        <h3 class="card-title">Advanced Concepts</h3>
-                    </div>
-                    <ul style="line-height: 2;">
-                        <li>Apply Gauss-Markov theorem</li>
-                        <li>Understand BLUE properties</li>
-                        <li>Calculate adjusted R-squared</li>
-                        <li>Recognize perfect multicollinearity</li>
-                    </ul>
-                </div>
-
-                <div class="objective-card">
-                    <div class="card-header">
-                        <div class="card-icon visualization-icon">
-                            <i class="fas fa-cube"></i>
-                        </div>
-                        <h3 class="card-title">3D Visualizations</h3>
-                    </div>
-                    <ul style="line-height: 2;">
-                        <li>Visualize regression hyperplanes</li>
-                        <li>Interactive parameter exploration</li>
-                        <li>Understand geometric interpretation</li>
-                        <li>See multicollinearity effects</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
         <!-- Section 3.1: Motivation for Multiple Regression -->
-        <section class="section fade-in delay-2">
+        <section class="section">
             <h2 class="section-title">3.1 Motivation for Multiple Regression</h2>
             
             <div class="content-card">
@@ -1045,10 +678,10 @@
                     <div class="definition-title">Multiple Linear Regression Model</div>
                     <p>A model that relates y to several explanatory variables:</p>
                     <div class="formula-box">
-                        $$y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k + u$$
+                        y = β₀ + β₁x₁ + β₂x₂ + ⋯ + βₖxₖ + u
                     </div>
                     <p>Where:</p>
-                    <ul style="margin-top: 1rem;">
+                    <ul style="margin-top: 1rem; padding-left: 2rem;">
                         <li><strong>y</strong> = dependent variable</li>
                         <li><strong>x₁, x₂, ..., xₖ</strong> = explanatory variables</li>
                         <li><strong>β₀</strong> = intercept parameter</li>
@@ -1074,30 +707,26 @@
                     <p><strong>Problem:</strong> β₁ captures not just the effect of education, but also the effects of ability, experience, and other factors correlated with education.</p>
                     <p><strong>Multiple Regression Solution:</strong></p>
                     <div class="formula-box">
-                        $$\text{wage} = \beta_0 + \beta_1 \cdot \text{educ} + \beta_2 \cdot \text{exper} + \beta_3 \cdot \text{abil} + u$$
+                        wage = β₀ + β₁ · educ + β₂ · exper + β₃ · abil + u
                     </div>
                     <p>Now β₁ measures the ceteris paribus effect of education, holding experience and ability constant.</p>
                 </div>
-                
-                <h3 class="subsection-title">Ceteris Paribus Interpretation</h3>
                 
                 <div class="key-insight">
                     <div class="insight-title">Partial Effects</div>
                     <p>In the multiple regression model, βⱼ measures the change in y with respect to xⱼ, holding all other explanatory variables fixed:</p>
                     <div class="formula-box">
-                        $$\beta_j = \frac{\partial y}{\partial x_j} = \frac{\Delta y}{\Delta x_j}, \text{ ceteris paribus}$$
+                        βⱼ = ∂y/∂xⱼ = Δy/Δxⱼ, ceteris paribus
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Interactive Knowledge Check 1 -->
+        <!-- Interactive Knowledge Check -->
         <section class="section">
             <div class="interactive-widget">
-                <div class="widget-header">
-                    <h3 class="widget-title">💡 Knowledge Check: Motivation for Multiple Regression (3 Questions)</h3>
-                    <p class="widget-description">Test your understanding of why we need multiple explanatory variables</p>
-                </div>
+                <h3 class="widget-title">💡 Knowledge Check: Motivation for Multiple Regression</h3>
+                <p class="widget-description">Test your understanding of why we need multiple explanatory variables</p>
                 
                 <div class="quiz-question">
                     <p><strong>Question 1:</strong> Omitted variable bias occurs when:</p>
@@ -1122,7 +751,7 @@
                     <div id="feedback3-1" class="quiz-feedback" style="display: none;"></div>
                 </div>
 
-                <div class="quiz-question" style="margin-top: 1.5rem;">
+                <div class="quiz-question">
                     <p><strong>Question 2:</strong> In the model wage = β₀ + β₁·educ + β₂·exper + u, the coefficient β₁ represents:</p>
                     <div class="quiz-options">
                         <label onclick="selectAnswer('3-2', 'A')">
@@ -1145,7 +774,7 @@
                     <div id="feedback3-2" class="quiz-feedback" style="display: none;"></div>
                 </div>
 
-                <div class="quiz-question" style="margin-top: 1.5rem;">
+                <div class="quiz-question">
                     <p><strong>Question 3:</strong> The term "ceteris paribus" in multiple regression means:</p>
                     <div class="quiz-options">
                         <label onclick="selectAnswer('3-3', 'A')">
@@ -1167,22 +796,11 @@
                     </div>
                     <div id="feedback3-3" class="quiz-feedback" style="display: none;"></div>
                 </div>
-
-                <!-- Generate More Questions for Quiz 1 -->
-                <div style="text-align: center; margin-top: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #f0f9ff, #dbeafe); border-radius: 8px; border: 1px dashed var(--primary-indigo);">
-                    <button class="btn" onclick="generateMoreQuestions('motivation')" style="background: linear-gradient(135deg, var(--primary-indigo), var(--secondary-violet));">
-                        ➕ Generate 3 More Motivation Questions
-                    </button>
-                    <p style="color: var(--gray-600); font-size: 0.8rem; margin-top: 0.5rem;">
-                        Additional practice on omitted variable bias and ceteris paribus concepts
-                    </p>
-                </div>
-                <div id="generated-motivation-questions"></div>
             </div>
         </section>
 
         <!-- Section 3.2: Mechanics of OLS -->
-        <section class="section fade-in delay-3">
+        <section class="section">
             <h2 class="section-title">3.2 Mechanics of OLS with Multiple Regressors</h2>
             
             <div class="content-card">
@@ -1193,77 +811,45 @@
                 <p>For a sample of n observations, we estimate:</p>
                 
                 <div class="formula-box">
-                    $$\hat{y}_i = \hat{\beta}_0 + \hat{\beta}_1 x_{i1} + \hat{\beta}_2 x_{i2} + \cdots + \hat{\beta}_k x_{ik}$$
+                    ŷᵢ = β̂₀ + β̂₁x₁ᵢ + β̂₂x₂ᵢ + ⋯ + β̂ₖxₖᵢ
                 </div>
                 
                 <p>The residual for observation i is:</p>
                 
                 <div class="formula-box">
-                    $$\hat{u}_i = y_i - \hat{y}_i = y_i - \hat{\beta}_0 - \hat{\beta}_1 x_{i1} - \cdots - \hat{\beta}_k x_{ik}$$
+                    ûᵢ = yᵢ - ŷᵢ = yᵢ - β̂₀ - β̂₁x₁ᵢ - ⋯ - β̂ₖxₖᵢ
                 </div>
                 
                 <div class="key-insight">
                     <div class="insight-title">OLS Minimization Problem</div>
                     <p>OLS chooses the parameter estimates to minimize:</p>
                     <div class="formula-box">
-                        $$\min_{\hat{\beta}_0, \hat{\beta}_1, \ldots, \hat{\beta}_k} \sum_{i=1}^{n} \hat{u}_i^2$$
-                    </div>
-                </div>
-                
-                <h3 class="subsection-title">First-Order Conditions</h3>
-                
-                <p>Taking derivatives with respect to each parameter and setting equal to zero gives us (k+1) first-order conditions:</p>
-                
-                <div class="matrix-container">
-                    <div class="matrix-title">First-Order Conditions for Multiple Regression</div>
-                    <div class="formula-box">
-                        $$\sum_{i=1}^{n} \hat{u}_i = 0$$
-                        $$\sum_{i=1}^{n} x_{ij} \hat{u}_i = 0, \quad j = 1, 2, \ldots, k$$
+                        min Σûᵢ² = min Σ(yᵢ - β̂₀ - β̂₁x₁ᵢ - ⋯ - β̂ₖxₖᵢ)²
                     </div>
                 </div>
                 
                 <div class="definition-box">
-                    <div class="definition-title">Algebraic Properties of Multiple Regression OLS</div>
-                    <ol style="margin-top: 1rem; padding-left: 2rem;">
-                        <li>The sum of residuals is zero: Σûᵢ = 0</li>
-                        <li>Each explanatory variable is orthogonal to the residuals</li>
-                        <li>The sample averages of fitted values and residuals equal the sample average of y</li>
-                        <li>The regression hyperplane passes through the means of all variables</li>
-                    </ol>
-                </div>
-                
-                <h3 class="subsection-title">Goodness of Fit in Multiple Regression</h3>
-                
-                <p>R-squared is defined the same way as in simple regression:</p>
-                
-                <div class="formula-box">
-                    $$R^2 = \frac{SSE}{SST} = 1 - \frac{SSR}{SST}$$
-                </div>
-                
-                <div class="warning-box">
-                    <div class="warning-title">R-squared Always Increases</div>
-                    <p>Adding any variable to a regression will increase R² (or at least not decrease it), even if the variable has no relationship with y. This is why we need adjusted R-squared:</p>
+                    <div class="definition-title">First-Order Conditions for Multiple Regression</div>
                     <div class="formula-box">
-                        $$\bar{R}^2 = 1 - \frac{SSR/(n-k-1)}{SST/(n-1)}$$
+                        Σûᵢ = 0<br><br>
+                        Σxⱼᵢûᵢ = 0, for j = 1, 2, …, k
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Interactive Multiple Regression Calculator -->
+        <!-- Simple Multiple Regression Calculator -->
         <section class="section">
             <div class="interactive-widget">
-                <div class="widget-header">
-                    <h3 class="widget-title">🎯 Interactive Multiple Regression Calculator</h3>
-                    <p class="widget-description">
-                        Explore how multiple explanatory variables work together and see the effects of multicollinearity
-                    </p>
-                </div>
+                <h3 class="widget-title">🧮 Multiple Regression Calculator</h3>
+                <p class="widget-description">
+                    Explore how multiple explanatory variables work together and see the effects of multicollinearity
+                </p>
                 
                 <div class="controls-group">
                     <div class="control">
                         <label for="multiScenario" class="control-label">Economic Model:</label>
-                        <select id="multiScenario" class="control-select" onchange="updateMultipleRegression()">
+                        <select id="multiScenario" class="control-select" onchange="generateRegressionData()">
                             <option value="wage-educ-exper">Wages = f(Education, Experience)</option>
                             <option value="consumption-income-wealth">Consumption = f(Income, Wealth)</option>
                             <option value="house-price-size-location">House Price = f(Size, Location Score)</option>
@@ -1271,7 +857,7 @@
                     </div>
                     <div class="control">
                         <label for="correlationLevel" class="control-label">X₁-X₂ Correlation:</label>
-                        <select id="correlationLevel" class="control-select" onchange="updateMultipleRegression()">
+                        <select id="correlationLevel" class="control-select" onchange="generateRegressionData()">
                             <option value="low">Low Correlation (r ≈ 0.2)</option>
                             <option value="medium">Medium Correlation (r ≈ 0.5)</option>
                             <option value="high">High Correlation (r ≈ 0.8)</option>
@@ -1280,7 +866,7 @@
                     </div>
                     <div class="control">
                         <label for="multiSampleSize" class="control-label">Sample Size:</label>
-                        <select id="multiSampleSize" class="control-select" onchange="updateMultipleRegression()">
+                        <select id="multiSampleSize" class="control-select" onchange="generateRegressionData()">
                             <option value="30">Small (n=30)</option>
                             <option value="100">Medium (n=100)</option>
                             <option value="200">Large (n=200)</option>
@@ -1288,26 +874,28 @@
                     </div>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; margin: 1.5rem 0;">
-                    <button class="btn btn-success" onclick="generateMultipleRegressionData()">
-                        <i class="fas fa-dice"></i>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0;">
+                    <button class="btn btn-success" onclick="generateRegressionData()">
+                        <span class="icon icon-dice"></span>
                         Generate New Sample
                     </button>
                     <button class="btn btn-warning" onclick="showOmittedVariableBias()">
-                        <i class="fas fa-eye"></i>
+                        <span class="icon icon-eye"></span>
                         Show Omitted Variable Bias
                     </button>
                 </div>
                 
                 <div class="results-panel" id="multipleRegressionResults">
                     <div class="results-title">
-                        <i class="fas fa-chart-bar"></i>
+                        <span class="icon icon-chart"></span>
                         Multiple Regression Results
                     </div>
                     
-                    <div class="visualization-3d">
-                        <div class="chart-title">3D Regression Hyperplane</div>
-                        <div id="regression3D" style="width: 100%; height: 450px;"></div>
+                    <div class="visualization-simple">
+                        <div id="simpleVisualization" style="width: 100%; height: 250px; background: var(--gray-50); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--gray-600); flex-direction: column; gap: 1rem;">
+                            <div style="font-size: 3rem;">📊</div>
+                            <div>Click "Generate New Sample" to see regression results</div>
+                        </div>
                     </div>
                     
                     <div class="coefficient-grid" id="coefficientsGrid">
@@ -1316,1673 +904,579 @@
                     
                     <div style="margin-top: 1.5rem; padding: 1rem; background: var(--gray-50); border-radius: 8px; border-left: 4px solid var(--primary-indigo);">
                         <div style="font-weight: 600; color: var(--primary-indigo); margin-bottom: 0.5rem;">Interpretation:</div>
-                        <div id="interpretationText"></div>
+                        <div id="interpretationText">Click "Generate New Sample" to see interpretation.</div>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Interactive Knowledge Check 2 -->
-        <section class="section">
-            <div class="interactive-widget">
-                <div class="widget-header">
-                    <h3 class="widget-title">🔧 Knowledge Check: Multiple Regression Mechanics (4 Questions)</h3>
-                    <p class="widget-description">Use the calculator above to explore and answer these questions</p>
-                </div>
-                
-                <div class="quiz-question" style="background: linear-gradient(135deg, #f0f9ff, #dbeafe);">
-                    <p><strong>Calculator Question A:</strong> Set the correlation to "High Correlation" and generate a few samples. What happens to the standard errors of the coefficients compared to "Low Correlation"?</p>
-                    <div class="quiz-options">
-                        <label onclick="selectAnswer('3-calc-a', 'A')">
-                            <input type="radio" name="q3-calc-a" value="A">
-                            A) Standard errors become smaller (more precise estimates)
-                        </label>
-                        <label onclick="selectAnswer('3-calc-a', 'B')">
-                            <input type="radio" name="q3-calc-a" value="B">
-                            B) Standard errors become larger (less precise estimates)
-                        </label>
-                        <label onclick="selectAnswer('3-calc-a', 'C')">
-                            <input type="radio" name="q3-calc-a" value="C">
-                            C) Standard errors stay exactly the same
-                        </label>
-                        <label onclick="selectAnswer('3-calc-a', 'D')">
-                            <input type="radio" name="q3-calc-a" value="D">
-                            D) The effect is random and unpredictable
-                        </label>
-                    </div>
-                    <div id="feedback3-calc-a" class="quiz-feedback" style="display: none;"></div>
-                </div>
-
-                <div class="quiz-question" style="margin-top: 1.5rem; background: linear-gradient(135deg, #f0f9ff, #dbeafe);">
-                    <p><strong>Calculator Question B:</strong> Click "Show Omitted Variable Bias" and observe the difference. What happens when you omit an important variable?</p>
-                    <div class="quiz-options">
-                        <label onclick="selectAnswer('3-calc-b', 'A')">
-                            <input type="radio" name="q3-calc-b" value="A">
-                            A) The remaining coefficient becomes exactly zero
-                        </label>
-                        <label onclick="selectAnswer('3-calc-b', 'B')">
-                            <input type="radio" name="q3-calc-b" value="B">
-                            B) The remaining coefficient is biased (different from the true multiple regression coefficient)
-                        </label>
-                        <label onclick="selectAnswer('3-calc-b', 'C')">
-                            <input type="radio" name="q3-calc-b" value="C">
-                            C) R-squared increases dramatically
-                        </label>
-                        <label onclick="selectAnswer('3-calc-b', 'D')">
-                            <input type="radio" name="q3-calc-b" value="D">
-                            D) Nothing changes in the results
-                        </label>
-                    </div>
-                    <div id="feedback3-calc-b" class="quiz-feedback" style="display: none;"></div>
-                </div>
-
-                <div class="quiz-question" style="margin-top: 1.5rem;">
-                    <p><strong>Question 4:</strong> In multiple regression, the adjusted R-squared (R̄²) is:</p>
-                    <div class="quiz-options">
-                        <label onclick="selectAnswer('3-4', 'A')">
-                            <input type="radio" name="q3-4" value="A">
-                            A) Always higher than regular R²
-                        </label>
-                        <label onclick="selectAnswer('3-4', 'B')">
-                            <input type="radio" name="q3-4" value="B">
-                            B) Always lower than regular R² and penalizes for additional variables
-                        </label>
-                        <label onclick="selectAnswer('3-4', 'C')">
-                            <input type="radio" name="q3-4" value="C">
-                            C) Exactly equal to regular R²
-                        </label>
-                        <label onclick="selectAnswer('3-4', 'D')">
-                            <input type="radio" name="q3-4" value="D">
-                            D) Only relevant for simple regression
-                        </label>
-                    </div>
-                    <div id="feedback3-4" class="quiz-feedback" style="display: none;"></div>
-                </div>
-
-                <div class="quiz-question" style="margin-top: 1.5rem; background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid var(--accent-amber);">
-                    <p><strong>🎯 Challenge Question 5:</strong> Which statement about the 3D regression hyperplane is correct?</p>
-                    <div class="quiz-options">
-                        <label onclick="selectAnswer('3-5', 'A')">
-                            <input type="radio" name="q3-5" value="A">
-                            A) It always passes through the origin (0,0,0)
-                        </label>
-                        <label onclick="selectAnswer('3-5', 'B')">
-                            <input type="radio" name="q3-5" value="B">
-                            B) It passes through the point (x̄₁, x̄₂, ȳ) where bars denote sample means
-                        </label>
-                        <label onclick="selectAnswer('3-5', 'C')">
-                            <input type="radio" name="q3-5" value="C">
-                            C) It minimizes the sum of absolute deviations
-                        </label>
-                        <label onclick="selectAnswer('3-5', 'D')">
-                            <input type="radio" name="q3-5" value="D">
-                            D) The slope depends only on the first explanatory variable
-                        </label>
-                    </div>
-                    <div id="feedback3-5" class="quiz-feedback" style="display: none;"></div>
-                </div>
-
-                <!-- Generate More Questions for Quiz 2 -->
-                <div style="text-align: center; margin-top: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-radius: 8px; border: 1px dashed var(--accent-emerald);">
-                    <button class="btn" onclick="generateMoreQuestions('mechanics')" style="background: linear-gradient(135deg, var(--accent-emerald), #047857);">
-                        ➕ Generate 3 More Mechanics Questions
-                    </button>
-                    <p style="color: var(--gray-600); font-size: 0.8rem; margin-top: 0.5rem;">
-                        Additional practice on OLS mechanics and multiple regression properties
-                    </p>
-                </div>
-                <div id="generated-mechanics-questions"></div>
-
-                <div style="margin-top: 1.5rem; padding: 1rem; background: var(--gray-50); border-radius: 6px; text-align: center;">
-                    <p style="color: var(--primary-indigo); font-weight: 600; margin: 0;">
-                        💡 Tip: Experiment with different correlation levels and sample sizes to see how they affect the results!
-                    </p>
                 </div>
             </div>
         </section>
 
         <!-- Section 3.3: Expected Value of OLS Estimators -->
-        <section class="section fade-in delay-1">
-            <h2 class="section-title">3.3 Expected Value of the OLS Estimators</h2>
+        <section class="section">
+            <h2 class="section-title">3.3 Expected Value of OLS Estimators</h2>
             
             <div class="content-card">
-                <p>For OLS to be unbiased in multiple regression, we need stronger assumptions than in simple regression.</p>
+                <p>For OLS to be unbiased in multiple regression, we need the following assumptions:</p>
                 
-                <h3 class="subsection-title">Assumptions for Unbiasedness</h3>
-                
-                <div class="content-grid">
-                    <div class="definition-box">
-                        <div class="definition-title">MLR.1: Linear in Parameters</div>
-                        <p>The population model is linear in the parameters:</p>
-                        <div class="formula-box">
-                            $$y = \beta_0 + \beta_1 x_1 + \cdots + \beta_k x_k + u$$
-                        </div>
+                <div class="definition-box">
+                    <div class="definition-title">Multiple Linear Regression Assumptions (MLR.1-MLR.4)</div>
+                    <p><strong>MLR.1 (Linear in Parameters):</strong> The model is linear in the parameters βⱼ</p>
+                    <div class="formula-box">
+                        y = β₀ + β₁x₁ + β₂x₂ + ⋯ + βₖxₖ + u
                     </div>
                     
-                    <div class="definition-box">
-                        <div class="definition-title">MLR.2: Random Sampling</div>
-                        <p>We have a random sample of size n from the population model.</p>
-                    </div>
+                    <p><strong>MLR.2 (Random Sampling):</strong> We have a random sample of size n</p>
                     
-                    <div class="definition-box">
-                        <div class="definition-title">MLR.3: No Perfect Multicollinearity</div>
-                        <p>No explanatory variable is a perfect linear function of the other explanatory variables.</p>
-                    </div>
+                    <p><strong>MLR.3 (No Perfect Multicollinearity):</strong> No explanatory variable is constant, and there are no exact linear relationships among the explanatory variables</p>
                     
-                    <div class="definition-box">
-                        <div class="definition-title">MLR.4: Zero Conditional Mean</div>
-                        <p>E(u|x₁, x₂, ..., xₖ) = 0</p>
-                        <p>The error term has zero expected value given any values of the explanatory variables.</p>
+                    <p><strong>MLR.4 (Zero Conditional Mean):</strong> The error u has expected value zero given any values of the explanatory variables:</p>
+                    <div class="formula-box">
+                        E(u|x₁, x₂, …, xₖ) = 0
                     </div>
                 </div>
                 
                 <div class="key-insight">
-                    <div class="insight-title">Unbiasedness Theorem</div>
+                    <div class="insight-title">Unbiasedness of OLS</div>
                     <p>Under assumptions MLR.1-MLR.4, the OLS estimators are unbiased:</p>
                     <div class="formula-box">
-                        $$E(\hat{\beta}_j) = \beta_j, \quad j = 0, 1, 2, \ldots, k$$
+                        E(β̂ⱼ) = βⱼ, for j = 0, 1, 2, …, k
                     </div>
                 </div>
                 
-                <h3 class="subsection-title">Perfect Multicollinearity</h3>
-                
                 <div class="warning-box">
-                    <div class="warning-title">When MLR.3 is Violated</div>
-                    <p>Perfect multicollinearity occurs when one explanatory variable is an exact linear function of other explanatory variables. Examples:</p>
-                    <ul style="margin-top: 1rem;">
-                        <li>Including both income and income² when there's no variation in income</li>
-                        <li>Including male and female dummy variables plus an intercept</li>
-                        <li>Using expenditure shares that must sum to one</li>
+                    <div class="warning-title">Perfect Multicollinearity</div>
+                    <p>Perfect multicollinearity occurs when one explanatory variable is an exact linear function of other explanatory variables. When this happens:</p>
+                    <ul style="margin-top: 1rem; padding-left: 2rem;">
+                        <li>OLS coefficients are not uniquely defined</li>
+                        <li>Statistical software will drop one of the perfectly correlated variables</li>
+                        <li>Common causes: including both x and 2x as regressors, dummy variable trap</li>
                     </ul>
-                    <p style="margin-top: 1rem;"><strong>Result:</strong> OLS estimates cannot be computed (computer error or infinite variance).</p>
-                </div>
-                
-                <div class="example-box">
-                    <div class="example-title">Economic Example: Consumption Function</div>
-                    <p>Model: consumption = β₀ + β₁·income + β₂·wealth + β₃·age + u</p>
-                    <p><strong>MLR.4 Interpretation:</strong> On average, factors affecting consumption that are not captured by income, wealth, and age should not depend on the values of income, wealth, and age.</p>
-                    <p><strong>Potential Violation:</strong> If unobserved "thriftiness" is correlated with wealth (wealthy people might be more thrifty), then MLR.4 is violated.</p>
                 </div>
             </div>
         </section>
 
         <!-- Section 3.4: Variance of OLS Estimators -->
-        <section class="section fade-in delay-2">
-            <h2 class="section-title">3.4 Variance of the OLS Estimators</h2>
+        <section class="section">
+            <h2 class="section-title">3.4 Variance of OLS Estimators</h2>
             
             <div class="content-card">
-                <p>Even when OLS is unbiased, we need to understand the precision of our estimates through their variances.</p>
-                
-                <h3 class="subsection-title">Homoskedasticity Assumption</h3>
+                <p>To derive the variance of OLS estimators, we need an additional assumption:</p>
                 
                 <div class="definition-box">
-                    <div class="definition-title">MLR.5: Homoskedasticity</div>
+                    <div class="definition-title">MLR.5 (Homoskedasticity)</div>
                     <p>The error u has the same variance given any values of the explanatory variables:</p>
                     <div class="formula-box">
-                        $$\text{Var}(u|x_1, x_2, \ldots, x_k) = \sigma^2$$
+                        Var(u|x₁, x₂, …, xₖ) = σ²
                     </div>
                 </div>
                 
-                <h3 class="subsection-title">Variance Formulas</h3>
-                
-                <p>Under assumptions MLR.1-MLR.5, the variance of β̂ⱼ is:</p>
-                
-                <div class="formula-box">
-                    $$\text{Var}(\hat{\beta}_j) = \frac{\sigma^2}{\text{SST}_j(1-R_j^2)}$$
-                </div>
-                
-                <p>Where:</p>
-                <ul style="margin: 1rem 0;">
-                    <li><strong>SSTⱼ</strong> = total sum of squares of xⱼ</li>
-                    <li><strong>R²ⱼ</strong> = R-squared from regressing xⱼ on all other explanatory variables</li>
-                </ul>
-                
                 <div class="key-insight">
-                    <div class="insight-title">Multicollinearity Effects</div>
-                    <p>The variance of β̂ⱼ increases with:</p>
-                    <ol style="margin-top: 1rem; padding-left: 2rem;">
-                        <li><strong>Higher σ²:</strong> More error variance → less precise estimates</li>
-                        <li><strong>Smaller SSTⱼ:</strong> Less variation in xⱼ → harder to estimate its effect</li>
-                        <li><strong>Higher R²ⱼ:</strong> More multicollinearity → harder to separate effects</li>
-                    </ol>
-                </div>
-                
-                <h3 class="subsection-title">Variance Inflation Factor (VIF)</h3>
-                
-                <div class="formula-box">
-                    $$\text{VIF}_j = \frac{1}{1-R_j^2}$$
-                </div>
-                
-                <div class="warning-box">
-                    <div class="warning-title">Interpreting VIF</div>
-                    <ul>
-                        <li><strong>VIF = 1:</strong> No multicollinearity (R²ⱼ = 0)</li>
-                        <li><strong>VIF = 4:</strong> Moderate multicollinearity (R²ⱼ = 0.75)</li>
-                        <li><strong>VIF = 10:</strong> High multicollinearity (R²ⱼ = 0.90)</li>
-                        <li><strong>VIF → ∞:</strong> Perfect multicollinearity (R²ⱼ → 1)</li>
+                    <div class="insight-title">Variance of β̂ⱼ</div>
+                    <p>Under assumptions MLR.1-MLR.5, the variance of β̂ⱼ is:</p>
+                    <div class="formula-box">
+                        Var(β̂ⱼ) = σ²/[SSTⱼ(1-R²ⱼ)]
+                    </div>
+                    <p>Where:</p>
+                    <ul style="margin-top: 1rem; padding-left: 2rem;">
+                        <li>SSTⱼ = Σ(xⱼᵢ - x̄ⱼ)² is the total sample variation in xⱼ</li>
+                        <li>R²ⱼ is the R-squared from regressing xⱼ on all other explanatory variables</li>
                     </ul>
                 </div>
                 
-                <div class="example-box">
-                    <div class="example-title">Canadian Economic Example: Housing Demand</div>
-                    <p>Model: house_price = β₀ + β₁·size + β₂·bedrooms + β₃·location_score + u</p>
-                    <p><strong>Multicollinearity Issue:</strong> House size and number of bedrooms are highly correlated.</p>
-                    <p><strong>Consequence:</strong> Large standard errors for β̂₁ and β̂₂, making individual significance tests unreliable.</p>
-                    <p><strong>Solution:</strong> Use joint significance tests or consider dropping one variable.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Interactive Knowledge Check 3 -->
-        <section class="section">
-            <div class="interactive-widget">
-                <div class="widget-header">
-                    <h3 class="widget-title">⚡ Knowledge Check: Assumptions and Variance (4 Questions)</h3>
-                    <p class="widget-description">Test your understanding of unbiasedness conditions and multicollinearity</p>
-                </div>
-                
-                <div class="quiz-question">
-                    <p><strong>Question 6:</strong> For OLS to be unbiased in multiple regression, which assumption is most crucial?</p>
-                    <div class="quiz-options">
-                        <label onclick="selectAnswer('3-6', 'A')">
-                            <input type="radio" name="q3-6" value="A"> 
-                            A) Homoskedasticity (MLR.5)
-                        </label>
-                        <label onclick="selectAnswer('3-6', 'B')">
-                            <input type="radio" name="q3-6" value="B">
-                            B) Zero conditional mean (MLR.4)
-                        </label>
-                        <label onclick="selectAnswer('3-6', 'C')">
-                            <input type="radio" name="q3-6" value="C">
-                            C) Large sample size
-                        </label>
-                        <label onclick="selectAnswer('3-6', 'D')">
-                            <input type="radio" name="q3-6" value="D">
-                            D) Normal distribution of errors
-                        </label>
+                <div class="definition-box">
+                    <div class="definition-title">Variance Inflation Factor (VIF)</div>
+                    <p>The VIF measures how much the variance of β̂ⱼ is inflated due to multicollinearity:</p>
+                    <div class="formula-box">
+                        VIFⱼ = 1/(1-R²ⱼ)
                     </div>
-                    <div id="feedback3-6" class="quiz-feedback" style="display: none;"></div>
+                    <p><strong>Interpretation:</strong></p>
+                    <ul style="margin-top: 1rem; padding-left: 2rem;">
+                        <li>VIF = 1: No multicollinearity (R²ⱼ = 0)</li>
+                        <li>VIF > 5: Moderate multicollinearity concern</li>
+                        <li>VIF > 10: Serious multicollinearity problem</li>
+                    </ul>
                 </div>
-
-                <div class="quiz-question" style="margin-top: 1.5rem;">
-                    <p><strong>Question 7:</strong> Perfect multicollinearity means:</p>
-                    <div class="quiz-options">
-                        <label onclick="selectAnswer('3-7', 'A')">
-                            <input type="radio" name="q3-7" value="A">
-                            A) All explanatory variables are highly correlated
-                        </label>
-                        <label onclick="selectAnswer('3-7', 'B')">
-                            <input type="radio" name="q3-7" value="B">
-                            B) One explanatory variable is an exact linear function of others
-                        </label>
-                        <label onclick="selectAnswer('3-7', 'C')">
-                            <input type="radio" name="q3-7" value="C">
-                            C) The dependent variable is perfectly predicted
-                        </label>
-                        <label onclick="selectAnswer('3-7', 'D')">
-                            <input type="radio" name="q3-7" value="D">
-                            D) R-squared equals exactly 0.5
-                        </label>
-                    </div>
-                    <div id="feedback3-7" class="quiz-feedback" style="display: none;"></div>
-                </div>
-
-                <div class="quiz-question" style="margin-top: 1.5rem;">
-                    <p><strong>Question 8:</strong> If the VIF for a variable is 9, this means:</p>
-                    <div class="quiz-options">
-                        <label onclick="selectAnswer('3-8', 'A')">
-                            <input type="radio" name="q3-8" value="A">
-                            A) The variable explains 9% of the variation in y
-                        </label>
-                        <label onclick="selectAnswer('3-8', 'B')">
-                            <input type="radio" name="q3-8" value="B">
-                            B) The variance of its coefficient is 9 times larger than it would be with no multicollinearity
-                        </label>
-                        <label onclick="selectAnswer('3-8', 'C')">
-                            <input type="radio" name="q3-8" value="C">
-                            C) The coefficient is 9 times larger than the true value
-                        </label>
-                        <label onclick="selectAnswer('3-8', 'D')">
-                            <input type="radio" name="q3-8" value="D">
-                            D) There are 9 explanatory variables in the model
-                        </label>
-                    </div>
-                    <div id="feedback3-8" class="quiz-feedback" style="display: none;"></div>
-                </div>
-
-                <div class="quiz-question" style="margin-top: 1.5rem; background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid var(--accent-amber);">
-                    <p><strong>🎯 Challenge Question 9:</strong> Which factor does NOT directly affect the variance of an OLS coefficient in multiple regression?</p>
-                    <div class="quiz-options">
-                        <label onclick="selectAnswer('3-9', 'A')">
-                            <input type="radio" name="q3-9" value="A">
-                            A) The error variance σ²
-                        </label>
-                        <label onclick="selectAnswer('3-9', 'B')">
-                            <input type="radio" name="q3-9" value="B">
-                            B) The degree of multicollinearity among the explanatory variables
-                        </label>
-                        <label onclick="selectAnswer('3-9', 'C')">
-                            <input type="radio" name="q3-9" value="C">
-                            C) The sample size
-                        </label>
-                        <label onclick="selectAnswer('3-9', 'D')">
-                            <input type="radio" name="q3-9" value="D">
-                            D) The mean value of the dependent variable
-                        </label>
-                    </div>
-                    <div id="feedback3-9" class="quiz-feedback" style="display: none;"></div>
-                </div>
-
-                <!-- Generate More Questions for Quiz 3 -->
-                <div style="text-align: center; margin-top: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #fffbeb, #fef3c7); border-radius: 8px; border: 1px dashed var(--accent-amber);">
-                    <button class="btn" onclick="generateMoreQuestions('assumptions')" style="background: linear-gradient(135deg, var(--accent-amber), #d97706);">
-                        ➕ Generate 3 More Assumptions Questions
-                    </button>
-                    <p style="color: var(--gray-600); font-size: 0.8rem; margin-top: 0.5rem;">
-                        Additional practice on MLR assumptions and multicollinearity effects
-                    </p>
-                </div>
-                <div id="generated-assumptions-questions"></div>
             </div>
         </section>
 
         <!-- Section 3.5: Gauss-Markov Theorem -->
-        <section class="section fade-in delay-3">
-            <h2 class="section-title">3.5 Efficiency of OLS: The Gauss-Markov Theorem</h2>
+        <section class="section">
+            <h2 class="section-title">3.5 The Gauss-Markov Theorem</h2>
             
             <div class="content-card">
-                <p>The Gauss-Markov theorem establishes that OLS is the Best Linear Unbiased Estimator (BLUE) under certain conditions.</p>
+                <div class="key-insight">
+                    <div class="insight-title">Gauss-Markov Theorem</div>
+                    <p>Under assumptions MLR.1-MLR.5, the OLS estimators β̂₀, β̂₁, …, β̂ₖ are the <strong>Best Linear Unbiased Estimators (BLUE)</strong> of β₀, β₁, …, βₖ.</p>
+                    
+                    <p><strong>"Best"</strong> means they have the smallest variance among all linear unbiased estimators.</p>
+                </div>
                 
                 <div class="definition-box">
-                    <div class="definition-title">Gauss-Markov Theorem</div>
-                    <p>Under assumptions MLR.1 through MLR.5, the OLS estimators β̂₀, β̂₁, ..., β̂ₖ are the Best Linear Unbiased Estimators (BLUE) of β₀, β₁, ..., βₖ.</p>
+                    <div class="definition-title">BLUE Properties</div>
+                    <ol style="padding-left: 2rem;">
+                        <li><strong>Linear:</strong> The estimator is a linear function of the dependent variable y</li>
+                        <li><strong>Unbiased:</strong> E(β̂ⱼ) = βⱼ</li>
+                        <li><strong>Best:</strong> Has minimum variance among all linear unbiased estimators</li>
+                    </ol>
                 </div>
-                
-                <h3 class="subsection-title">What BLUE Means</h3>
-                
-                <div class="content-grid">
-                    <div class="key-insight">
-                        <div class="insight-title">Best</div>
-                        <p>Among all linear unbiased estimators, OLS has the smallest variance.</p>
-                    </div>
-                    
-                    <div class="key-insight">
-                        <div class="insight-title">Linear</div>
-                        <p>The estimator is a linear function of the dependent variable y.</p>
-                    </div>
-                    
-                    <div class="key-insight">
-                        <div class="insight-title">Unbiased</div>
-                        <p>E(β̂ⱼ) = βⱼ for all j.</p>
-                    </div>
-                    
-                    <div class="key-insight">
-                        <div class="insight-title">Estimator</div>
-                        <p>The formula for obtaining estimates from any sample.</p>
-                    </div>
-                </div>
-                
-                <h3 class="subsection-title">Implications of the Gauss-Markov Theorem</h3>
                 
                 <div class="example-box">
-                    <div class="example-title">Practical Implications</div>
-                    <ol style="padding-left: 2rem;">
-                        <li><strong>Efficiency:</strong> No other linear unbiased estimator has smaller variance</li>
-                        <li><strong>Optimal Inference:</strong> OLS provides the best foundation for hypothesis testing</li>
-                        <li><strong>No Need to Search:</strong> Among linear unbiased estimators, OLS is optimal</li>
-                        <li><strong>Assumption Dependence:</strong> BLUE property requires MLR.1-MLR.5</li>
-                    </ol>
-                </div>
-                
-                <div class="warning-box">
-                    <div class="warning-title">When Gauss-Markov Doesn't Apply</div>
-                    <p>OLS may not be BLUE when:</p>
-                    <ul style="margin-top: 1rem;">
-                        <li><strong>Heteroskedasticity:</strong> Var(u|x) is not constant</li>
-                        <li><strong>Serial Correlation:</strong> Errors are correlated across observations</li>
-                        <li><strong>Endogeneity:</strong> E(u|x) ≠ 0 (violates MLR.4)</li>
-                        <li><strong>Perfect Multicollinearity:</strong> Violates MLR.3</li>
+                    <div class="example-title">When Gauss-Markov Doesn't Apply</div>
+                    <p>The Gauss-Markov theorem may not apply when:</p>
+                    <ul style="margin-top: 1rem; padding-left: 2rem;">
+                        <li>Heteroskedasticity is present (MLR.5 violated)</li>
+                        <li>Serial correlation exists in time series data</li>
+                        <li>Explanatory variables are not strictly exogenous</li>
+                        <li>The model is misspecified</li>
                     </ul>
-                    <p style="margin-top: 1rem;">In these cases, other estimators (like GLS, IV) may be preferable.</p>
-                </div>
-                
-                <h3 class="subsection-title">Summary of Assumptions</h3>
-                
-                <div class="matrix-container">
-                    <div class="matrix-title">Complete Set of MLR Assumptions</div>
-                    <div style="text-align: left; line-height: 2;">
-                        <strong>MLR.1:</strong> Linear in parameters<br>
-                        <strong>MLR.2:</strong> Random sampling<br>
-                        <strong>MLR.3:</strong> No perfect multicollinearity<br>
-                        <strong>MLR.4:</strong> Zero conditional mean: E(u|x₁,...,xₖ) = 0<br>
-                        <strong>MLR.5:</strong> Homoskedasticity: Var(u|x₁,...,xₖ) = σ²
-                    </div>
+                    <p>In these cases, other estimators (like GLS or instrumental variables) may be more efficient.</p>
                 </div>
             </div>
         </section>
 
-        <!-- Final Knowledge Check -->
-        <section class="section">
-            <div class="interactive-widget">
-                <div class="widget-header">
-                    <h3 class="widget-title">🏆 Final Knowledge Check: Gauss-Markov & Synthesis (4 Questions)</h3>
-                    <p class="widget-description">Comprehensive test of Chapter 3 concepts</p>
-                </div>
-                
-                <div class="quiz-question">
-                    <p><strong>Question 10:</strong> The Gauss-Markov theorem guarantees that OLS is BLUE when:</p>
-                    <div class="quiz-options">
-                        <label onclick="selectAnswer('3-10', 'A')">
-                            <input type="radio" name="q3-10" value="A"> 
-                            A) Assumptions MLR.1-MLR.4 hold
-                        </label>
-                        <label onclick="selectAnswer('3-10', 'B')">
-                            <input type="radio" name="q3-10" value="B">
-                            B) Assumptions MLR.1-MLR.5 hold
-                        </label>
-                        <label onclick="selectAnswer('3-10', 'C')">
-                            <input type="radio" name="q3-10" value="C">
-                            C) The sample size is large enough
-                        </label>
-                        <label onclick="selectAnswer('3-10', 'D')">
-                            <input type="radio" name="q3-10" value="D">
-                            D) The errors are normally distributed
-                        </label>
-                    </div>
-                    <div id="feedback3-10" class="quiz-feedback" style="display: none;"></div>
-                </div>
-
-                <div class="quiz-question" style="margin-top: 1.5rem;">
-                    <p><strong>Question 11:</strong> In a model with 3 explanatory variables, how many first-order conditions does OLS require?</p>
-                    <div class="quiz-options">
-                        <label onclick="selectAnswer('3-11', 'A')">
-                            <input type="radio" name="q3-11" value="A">
-                            A) 3
-                        </label>
-                        <label onclick="selectAnswer('3-11', 'B')">
-                            <input type="radio" name="q3-11" value="B">
-                            B) 4
-                        </label>
-                        <label onclick="selectAnswer('3-11', 'C')">
-                            <input type="radio" name="q3-11" value="C">
-                            C) 6
-                        </label>
-                        <label onclick="selectAnswer('3-11', 'D')">
-                            <input type="radio" name="q3-11" value="D">
-                            D) 7
-                        </label>
-                    </div>
-                    <div id="feedback3-11" class="quiz-feedback" style="display: none;"></div>
-                </div>
-
-                <div class="quiz-question" style="margin-top: 1.5rem;">
-                    <p><strong>Question 12:</strong> Which statement about adjusted R-squared is FALSE?</p>
-                    <div class="quiz-options">
-                        <label onclick="selectAnswer('3-12', 'A')">
-                            <input type="radio" name="q3-12" value="A">
-                            A) It penalizes for adding variables that don't improve fit much
-                        </label>
-                        <label onclick="selectAnswer('3-12', 'B')">
-                            <input type="radio" name="q3-12" value="B">
-                            B) It can decrease when variables are added
-                        </label>
-                        <label onclick="selectAnswer('3-12', 'C')">
-                            <input type="radio" name="q3-12" value="C">
-                            C) It is always between 0 and 1
-                        </label>
-                        <label onclick="selectAnswer('3-12', 'D')">
-                            <input type="radio" name="q3-12" value="D">
-                            D) It adjusts for degrees of freedom
-                        </label>
-                    </div>
-                    <div id="feedback3-12" class="quiz-feedback" style="display: none;"></div>
-                </div>
-
-                <div class="quiz-question" style="margin-top: 1.5rem; background: linear-gradient(135deg, #fef2f2, #fee2e2); border: 2px solid var(--accent-rose);">
-                    <p><strong>🎯 Master Challenge Question 13:</strong> Consider the model: wage = β₀ + β₁·educ + β₂·exper + β₃·female + u. If you include both a "female" dummy and a "male" dummy along with an intercept, you have:</p>
-                    <div class="quiz-options">
-                        <label onclick="selectAnswer('3-13', 'A')">
-                            <input type="radio" name="q3-13" value="A">
-                            A) A better model with more information
-                        </label>
-                        <label onclick="selectAnswer('3-13', 'B')">
-                            <input type="radio" name="q3-13" value="B">
-                            B) Perfect multicollinearity (dummy variable trap)
-                        </label>
-                        <label onclick="selectAnswer('3-13', 'C')">
-                            <input type="radio" name="q3-13" value="C">
-                            C) A heteroskedasticity problem
-                        </label>
-                        <label onclick="selectAnswer('3-13', 'D')">
-                            <input type="radio" name="q3-13" value="D">
-                            D) An endogeneity problem
-                        </label>
-                    </div>
-                    <div id="feedback3-13" class="quiz-feedback" style="display: none;"></div>
-                </div>
-
-                <!-- Generate More Questions for Final Quiz -->
-                <div style="text-align: center; margin-top: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #fef2f2, #fee2e2); border-radius: 8px; border: 1px dashed var(--accent-rose);">
-                    <button class="btn" onclick="generateMoreQuestions('synthesis')" style="background: linear-gradient(135deg, var(--accent-rose), #be123c);">
-                        ➕ Generate 3 More Synthesis Questions
-                    </button>
-                    <p style="color: var(--gray-600); font-size: 0.8rem; margin-top: 0.5rem;">
-                        Advanced questions combining all Chapter 3 concepts
-                    </p>
-                </div>
-                <div id="generated-synthesis-questions"></div>
-
-                <!-- Progress Summary -->
-                <div style="text-align: center; margin-top: 2rem; padding: 1.5rem; background: var(--gray-50); border-radius: 12px; border: 2px solid var(--primary-indigo);">
-                    <div id="quiz-summary-ch3">
-                        <p style="color: var(--gray-600); font-size: 1rem; font-weight: 500;">
-                            📊 <strong>17 Core Interactive Questions Total</strong><br>
-                            Quiz 1: Motivation (3) • Calculator Follow-up (2) • Quiz 2: Mechanics (3) • Quiz 3: Assumptions (4) • Final: Synthesis (4) • Additional Generate Options (12)<br>
-                            💡 Complete all knowledge checks to master multiple regression concepts!
-                        </p>
-                    </div>
-                    
-                    <!-- Master Generate All Button -->
-                    <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--gray-300);">
-                        <button class="btn" onclick="generateAllAdditionalQuestions()" style="background: linear-gradient(135deg, #7c3aed, #5b21b6); font-size: 1.2rem; padding: 1rem 2.5rem;">
-                            🚀 Generate ALL Additional Questions (12 total)
-                        </button>
-                        <p style="color: var(--gray-600); font-size: 0.85rem; margin-top: 0.75rem;">
-                            Generate 3 additional questions for each topic • Total potential: 29 questions
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Exercises -->
-        <section class="section">
-            <h2 class="section-title">Advanced Practice Exercises</h2>
-
-            <div class="exercise-section">
-                <div class="exercise-header">
-                    <div class="exercise-number">1</div>
-                    <div class="exercise-title">Multiple Regression Interpretation</div>
-                </div>
-                <div class="exercise-content">
-                    <p>A study of Canadian university graduates estimates the following wage equation:</p>
-                    <div style="background: white; padding: 1.5rem; margin: 1rem 0; border-radius: 8px; text-align: center; font-family: monospace; box-shadow: var(--shadow-md);">
-                        log(wage) = 1.8 + 0.085·educ + 0.025·exper + 0.15·female, R² = 0.42, n = 1,250
-                    </div>
-                    <p>Where wage is hourly wage (CAD), educ is years of education, exper is years of experience, and female is a dummy variable.</p>
-                    <ol style="margin: 1.5rem 0; padding-left: 2rem; line-height: 1.8;">
-                        <li>Interpret each coefficient in economic terms.</li>
-                        <li>What is the predicted hourly wage for a female with 16 years of education and 5 years of experience?</li>
-                        <li>What percentage wage premium do males have over females, ceteris paribus?</li>
-                        <li>If adjusted R² = 0.41, what can you conclude about model fit?</li>
-                    </ol>
-                    <div class="solution-toggle">
-                        <button class="btn btn-secondary" onclick="toggleSolution('solution1')">Show Solution</button>
-                    </div>
-                    <div class="solution-content" id="solution1">
-                        <h4>Solution:</h4>
-                        <ol style="margin: 1rem 0; padding-left: 2rem; line-height: 1.7;">
-                            <li><strong>Coefficients:</strong> 
-                                <ul style="margin: 0.5rem 0;">
-                                    <li>educ: Each additional year of education increases wages by 8.5%</li>
-                                    <li>exper: Each additional year of experience increases wages by 2.5%</li>
-                                    <li>female: Being female is associated with 15% higher wages (surprising result!)</li>
-                                </ul>
-                            </li>
-                            <li><strong>Prediction:</strong> log(wage) = 1.8 + 0.085(16) + 0.025(5) + 0.15(1) = 3.335<br>
-                                wage = exp(3.335) ≈ CAD $28.10 per hour</li>
-                            <li><strong>Gender premium:</strong> Males have exp(-0.15) - 1 ≈ -14% lower wages (females earn more!)</li>
-                            <li><strong>Model fit:</strong> The model explains 42% of wage variation. Adjusted R² is slightly lower, indicating the variables add meaningful explanatory power.</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-
-            <div class="exercise-section">
-                <div class="exercise-header">
-                    <div class="exercise-number">2</div>
-                    <div class="exercise-title">Multicollinearity Analysis</div>
-                </div>
-                <div class="exercise-content">
-                    <p>You're analyzing housing prices in Toronto with the following model:</p>
-                    <div style="background: white; padding: 1.5rem; margin: 1rem 0; border-radius: 8px; text-align: center; font-family: monospace; box-shadow: var(--shadow-md);">
-                        price = β₀ + β₁·sqft + β₂·bedrooms + β₃·bathrooms + β₄·age + u
-                    </div>
-                    <p>The correlation matrix shows high correlations: corr(sqft, bedrooms) = 0.85, corr(bedrooms, bathrooms) = 0.78.</p>
-                    <ol style="margin: 1.5rem 0; padding-left: 2rem; line-height: 1.8;">
-                        <li>Explain why high multicollinearity is problematic here.</li>
-                        <li>If VIF for bedrooms is 6.5, interpret this value.</li>
-                        <li>Suggest two approaches to address the multicollinearity problem.</li>
-                        <li>Would dropping the bedrooms variable necessarily improve the model? Explain.</li>
-                    </ol>
-                    <div class="solution-toggle">
-                        <button class="btn btn-secondary" onclick="toggleSolution('solution2')">Show Solution</button>
-                    </div>
-                    <div class="solution-content" id="solution2">
-                        <h4>Solution:</h4>
-                        <ol style="margin: 1rem 0; padding-left: 2rem; line-height: 1.7;">
-                            <li><strong>Problem:</strong> High correlations among sqft, bedrooms, and bathrooms make it difficult to separate their individual effects on price. Standard errors become inflated.</li>
-                            <li><strong>VIF interpretation:</strong> The variance of the bedroom coefficient is 6.5 times larger than it would be with no multicollinearity.</li>
-                            <li><strong>Solutions:</strong> 
-                                <ul style="margin: 0.5rem 0;">
-                                    <li>Drop one correlated variable (e.g., bathrooms)</li>
-                                    <li>Create composite measures (e.g., total rooms = bedrooms + bathrooms)</li>
-                                </ul>
-                            </li>
-                            <li><strong>Dropping variables:</strong> Not necessarily better. If bedrooms significantly affects price, omitting it causes omitted variable bias. Better to keep if coefficient is economically significant despite high VIF.</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-
-            <div class="exercise-section">
-                <div class="exercise-header">
-                    <div class="exercise-number">3</div>
-                    <div class="exercise-title">Omitted Variable Bias Assessment</div>
-                </div>
-                <div class="exercise-content">
-                    <p>Consider two models for student performance:</p>
-                    <div style="background: white; padding: 1.5rem; margin: 1rem 0; border-radius: 8px; font-family: monospace; box-shadow: var(--shadow-md);">
-                        <strong>Model 1 (Simple):</strong> test_score = 65 + 2.1·study_hours<br>
-                        <strong>Model 2 (Multiple):</strong> test_score = 45 + 1.8·study_hours + 0.5·IQ + 12·small_class
-                    </div>
-                    <ol style="margin: 1.5rem 0; padding-left: 2rem; line-height: 1.8;">
-                        <li>Compare the coefficients on study_hours between the two models. What changed?</li>
-                        <li>Explain the direction of omitted variable bias in Model 1 for the study_hours coefficient.</li>
-                        <li>What does the small_class coefficient tell us?</li>
-                        <li>Under what conditions would the simple model give an unbiased estimate of the study effect?</li>
-                    </ol>
-                    <div class="solution-toggle">
-                        <button class="btn btn-secondary" onclick="toggleSolution('solution3')">Show Solution</button>
-                    </div>
-                    <div class="solution-content" id="solution3">
-                        <h4>Solution:</h4>
-                        <ol style="margin: 1rem 0; padding-left: 2rem; line-height: 1.7;">
-                            <li><strong>Coefficient comparison:</strong> Study hours effect decreased from 2.1 to 1.8, suggesting Model 1 overestimated the effect.</li>
-                            <li><strong>Omitted variable bias:</strong> Model 1 has positive bias because smarter students (higher IQ) likely study more hours AND score higher. The simple model attributes IQ effects to study hours.</li>
-                            <li><strong>Small class effect:</strong> Being in a small class increases test scores by 12 points on average, holding study hours and IQ constant.</li>
-                            <li><strong>Unbiased conditions:</strong> Model 1 would be unbiased if IQ and class size were uncorrelated with study hours, or if their effects on test scores were negligible.</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Chapter Navigation -->
-        <div class="chapter-navigation">
-            <div class="nav-buttons">
-                <a href="chapter02.html" class="nav-button">
-                    <i class="fas fa-chevron-left"></i>
-                    Previous Chapter
-                </a>
-                
-                <div class="progress-indicator">
-                    Chapter 3 of 19 • <span style="color: var(--primary-indigo);">Multiple Regression Mastery</span>
-                </div>
-                
-                <a href="#" class="nav-button primary" onclick="showChapter4ComingSoon(); return false;">
-                    Next Chapter
-                    <i class="fas fa-chevron-right"></i>
-                </a>
-            </div>
-        </div>
     </div>
 
-    <!-- MathJax Configuration -->
-    <script>
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-                processEscapes: true,
-                processEnvironments: true
-            },
-            options: {
-                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
-            }
-        };
-    </script>
-
-    <!-- JavaScript for Interactive Features -->
+    <!-- BULLETPROOF JavaScript - NO External Dependencies -->
     <script>
         // ========================================
-        // GENERATED QUESTIONS SYSTEM
+        // ZERO EXTERNAL DEPENDENCIES VERSION
         // ========================================
         
-        let generatedQuestionCount = 0;
-        let additionalQuestions = {};
-
-        const questionPools = {
-            'motivation': [
-                {
-                    question: "Which of the following is the best example of when simple regression would suffer from omitted variable bias?",
-                    options: [
-                        "A) Studying the effect of rainfall on crop yields",
-                        "B) Analyzing the effect of education on wages without controlling for ability",
-                        "C) Examining the relationship between height and weight",
-                        "D) Testing the effect of advertising on sales with randomized experiments"
-                    ],
-                    correct: "B",
-                    explanation: "Education and ability are correlated, and ability affects wages. Omitting ability from a wage regression causes the education coefficient to capture both the education effect and the ability effect."
-                },
-                {
-                    question: "In the model income = β₀ + β₁·education + β₂·experience + u, the coefficient β₁ measures:",
-                    options: [
-                        "A) The total effect of education on income",
-                        "B) The effect of education on income, holding experience constant",
-                        "C) The correlation between education and income",
-                        "D) The effect of education when experience equals zero"
-                    ],
-                    correct: "B",
-                    explanation: "In multiple regression, each coefficient measures the partial effect - the effect of one variable holding all others constant. This is the ceteris paribus interpretation."
-                },
-                {
-                    question: "Omitted variable bias occurs when the omitted variable:",
-                    options: [
-                        "A) Is uncorrelated with the included variables and affects y",
-                        "B) Is correlated with included variables but doesn't affect y",
-                        "C) Both affects y AND is correlated with an included variable",
-                        "D) Has a small effect on y"
-                    ],
-                    correct: "C",
-                    explanation: "Both conditions are necessary for omitted variable bias: (1) the omitted variable must affect the dependent variable, and (2) it must be correlated with at least one included explanatory variable."
-                },
-                {
-                    question: "The phrase 'ceteris paribus' in economics means:",
-                    options: [
-                        "A) Everything else is changing",
-                        "B) All other things being equal",
-                        "C) Perfect correlation exists",
-                        "D) The model is correctly specified"
-                    ],
-                    correct: "B",
-                    explanation: "'Ceteris paribus' is Latin for 'all other things being equal' or 'holding everything else constant.' It's the key concept that allows us to isolate the effect of one variable."
-                }
-            ],
-            'mechanics': [
-                {
-                    question: "In multiple regression with k explanatory variables, how many parameters need to be estimated?",
-                    options: [
-                        "A) k",
-                        "B) k + 1", 
-                        "C) k - 1",
-                        "D) 2k"
-                    ],
-                    correct: "B",
-                    explanation: "We need to estimate k slope parameters (β₁, β₂, ..., βₖ) plus the intercept β₀, giving us k + 1 parameters total."
-                },
-                {
-                    question: "Which algebraic property always holds for OLS residuals in multiple regression?",
-                    options: [
-                        "A) All residuals are positive",
-                        "B) The sum of residuals equals zero",
-                        "C) Residuals are normally distributed",
-                        "D) Each residual equals the error term"
-                    ],
-                    correct: "B",
-                    explanation: "By the first-order conditions of OLS, the sum of residuals is always exactly zero. This holds regardless of the model specification or assumptions."
-                },
-                {
-                    question: "What happens to regular R² when you add any variable to a regression?",
-                    options: [
-                        "A) It always decreases",
-                        "B) It always increases", 
-                        "C) It never decreases (can only stay the same or increase)",
-                        "D) It depends on the sign of the coefficient"
-                    ],
-                    correct: "C",
-                    explanation: "Regular R² measures the proportion of variation explained, and adding any variable can only increase the explained variation (or leave it unchanged if the coefficient is exactly zero)."
-                },
-                {
-                    question: "The regression hyperplane in multiple regression:",
-                    options: [
-                        "A) Always passes through the origin",
-                        "B) Passes through the point of sample means (x̄₁, x̄₂, ..., x̄ₖ, ȳ)",
-                        "C) Is always a straight line",
-                        "D) Minimizes the sum of absolute deviations"
-                    ],
-                    correct: "B",
-                    explanation: "Just like in simple regression, the OLS hyperplane always passes through the means of all variables. This follows from the first-order conditions."
-                }
-            ],
-            'assumptions': [
-                {
-                    question: "The zero conditional mean assumption (MLR.4) states that:",
-                    options: [
-                        "A) The error term has zero variance",
-                        "B) E(u|x₁, x₂, ..., xₖ) = 0",
-                        "C) The explanatory variables have zero mean",
-                        "D) The dependent variable has zero mean"
-                    ],
-                    correct: "B",
-                    explanation: "MLR.4 requires that the expected value of the error term is zero given any values of the explanatory variables. This is crucial for unbiasedness."
-                },
-                {
-                    question: "Perfect multicollinearity would occur if:",
-                    options: [
-                        "A) All explanatory variables are highly correlated",
-                        "B) One explanatory variable equals 2 times another variable plus a constant",
-                        "C) R-squared equals 1",
-                        "D) The sample size is too small"
-                    ],
-                    correct: "B",
-                    explanation: "Perfect multicollinearity occurs when one variable is an exact linear function of others. In this case, x₁ = 2x₂ + c creates perfect multicollinearity."
-                },
-                {
-                    question: "If a variable has VIF = 4, this means:",
-                    options: [
-                        "A) It explains 4% of the variation in y",
-                        "B) Its coefficient is 4 times the true value",
-                        "C) Its standard error is 2 times larger due to multicollinearity",
-                        "D) There are 4 variables in the model"
-                    ],
-                    correct: "C",
-                    explanation: "VIF = 4 means the variance (and thus standard error = √variance) is inflated by a factor of 4. Since SE = √4 = 2, the standard error is twice as large as it would be without multicollinearity."
-                },
-                {
-                    question: "The homoskedasticity assumption (MLR.5) requires:",
-                    options: [
-                        "A) Var(y|x₁, ..., xₖ) = σ²",
-                        "B) Var(u|x₁, ..., xₖ) = σ²",
-                        "C) E(u|x₁, ..., xₖ) = σ²",
-                        "D) The explanatory variables have constant variance"
-                    ],
-                    correct: "B",
-                    explanation: "Homoskedasticity means the error variance is constant across all values of the explanatory variables. This is needed for efficiency (BLUE property)."
-                }
-            ],
-            'synthesis': [
-                {
-                    question: "For OLS to be BLUE (Best Linear Unbiased Estimator), which assumptions are required?",
-                    options: [
-                        "A) MLR.1-MLR.3 only",
-                        "B) MLR.1-MLR.4 only",
-                        "C) MLR.1-MLR.5 (all Gauss-Markov assumptions)",
-                        "D) Normal errors are also required"
-                    ],
-                    correct: "C",
-                    explanation: "The Gauss-Markov theorem requires all five assumptions (MLR.1 through MLR.5). MLR.1-MLR.4 give unbiasedness, but MLR.5 (homoskedasticity) is needed for the 'best' property."
-                },
-                {
-                    question: "In a regression with an intercept, male dummy, and female dummy, you have:",
-                    options: [
-                        "A) A perfectly specified model",
-                        "B) The dummy variable trap (perfect multicollinearity)",
-                        "C) Heteroskedasticity",
-                        "D) An identification problem"
-                    ],
-                    correct: "B",
-                    explanation: "With an intercept, male + female = 1 always (perfect multicollinearity). You must omit one dummy category as the reference group to avoid this trap."
-                },
-                {
-                    question: "Adjusted R-squared can be negative when:",
-                    options: [
-                        "A) R² is very small and you have many useless variables",
-                        "B) The dependent variable has negative values",
-                        "C) There's perfect multicollinearity",
-                        "D) The sample size is too small"
-                    ],
-                    correct: "A",
-                    explanation: "Adjusted R² = 1 - (SSR/(n-k-1))/(SST/(n-1)) can be negative when the penalty for degrees of freedom exceeds the explanatory power, typically with low R² and many variables."
-                },
-                {
-                    question: "If assumptions MLR.1-MLR.4 hold but there's heteroskedasticity, then OLS estimators are:",
-                    options: [
-                        "A) Biased and inefficient",
-                        "B) Unbiased but not BLUE (inefficient)",
-                        "C) BLUE",
-                        "D) Inconsistent"
-                    ],
-                    correct: "B",
-                    explanation: "MLR.1-MLR.4 ensure unbiasedness, but heteroskedasticity (violation of MLR.5) means OLS is no longer the most efficient linear unbiased estimator. GLS would be better."
-                }
-            ]
-        };
-
-        function generateMoreQuestions(topic) {
-            const pool = questionPools[topic];
-            const container = document.getElementById(`generated-${topic}-questions`);
-            const button = event.target;
-            
-            if (!pool || pool.length === 0) {
-                container.innerHTML = '<p style="color: #dc2626; text-align: center; padding: 1rem;">No additional questions available for this topic.</p>';
-                return;
-            }
-
-            // Randomly select questions from the pool
-            const shuffled = [...pool].sort(() => 0.5 - Math.random());
-            const selectedQuestions = shuffled.slice(0, 3);
-            
-            // Generate unique question IDs
-            const startId = generatedQuestionCount + 300; // Start at 300 for chapter 3
-            
-            let questionsHTML = '<div style="border-top: 2px dashed var(--gray-300); margin: 1rem 0; padding-top: 1rem;">';
-            questionsHTML += '<h4 style="text-align: center; color: var(--primary-indigo); margin-bottom: 1rem;">✨ Additional Practice Questions</h4>';
-            
-            selectedQuestions.forEach((q, index) => {
-                const questionId = `gen${startId + index}`;
-                generatedQuestionCount++;
-                
-                // Store the answer for grading
-                additionalQuestions[questionId] = {
-                    correct: q.correct,
-                    explanation: q.explanation
-                };
-                
-                questionsHTML += `
-                    <div class="quiz-question generated" style="border-left: 4px solid var(--accent-emerald); box-shadow: 0 4px 16px rgba(5, 150, 105, 0.1);">
-                        <p><strong>Practice Question ${index + 1}:</strong> ${q.question}</p>
-                        <div class="quiz-options">
-                            ${q.options.map(option => `
-                                <label onclick="selectGeneratedAnswer('${questionId}', '${option.charAt(0)}')">
-                                    <input type="radio" name="q${questionId}" value="${option.charAt(0)}">
-                                    ${option}
-                                </label>
-                            `).join('')}
-                        </div>
-                        <div id="feedback${questionId}" class="quiz-feedback" style="display: none;"></div>
-                    </div>
-                `;
-            });
-            
-            questionsHTML += '</div>';
-            
-            // Add the questions to the page
-            container.innerHTML = questionsHTML;
-            
-            // Update button to show it was used
-            button.style.background = 'linear-gradient(135deg, #10b981, #047857)';
-            button.innerHTML = '✅ 3 Additional Questions Generated';
-            button.disabled = true;
-            button.style.opacity = '0.7';
-            
-            // Scroll to the new questions
-            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
-            // Show success message with animation
-            setTimeout(() => {
-                const successMsg = document.createElement('div');
-                successMsg.className = 'success-notification';
-                successMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: var(--accent-emerald); color: white; padding: 1.25rem; border-radius: 10px; z-index: 1000; box-shadow: var(--shadow-xl);';
-                successMsg.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-check-circle bounce-icon"></i>
-                        <span>3 new ${topic.replace('-', ' ')} questions added!</span>
-                    </div>
-                `;
-                document.body.appendChild(successMsg);
-                
-                setTimeout(() => successMsg.remove(), 3500);
-            }, 500);
-        }
-
-        function selectGeneratedAnswer(questionId, selectedAnswer) {
-            const question = additionalQuestions[questionId];
-            const feedbackDiv = document.getElementById(`feedback${questionId}`);
-            const options = document.querySelectorAll(`input[name="q${questionId}"]`);
-            
-            // Remove previous selections
-            options.forEach(option => {
-                option.parentElement.classList.remove('selected', 'correct', 'incorrect');
-            });
-            
-            // Mark selected option
-            const selectedOption = document.querySelector(`input[name="q${questionId}"][value="${selectedAnswer}"]`);
-            selectedOption.parentElement.classList.add('selected');
-            
-            // Show feedback
-            feedbackDiv.style.display = 'block';
-            
-            if (selectedAnswer === question.correct) {
-                selectedOption.parentElement.classList.add('correct');
-                feedbackDiv.className = 'quiz-feedback correct';
-                feedbackDiv.innerHTML = `✅ Excellent! ${question.explanation}`;
-            } else {
-                selectedOption.parentElement.classList.add('incorrect');
-                feedbackDiv.className = 'quiz-feedback incorrect';
-                
-                // Also highlight correct answer
-                const correctOption = document.querySelector(`input[name="q${questionId}"][value="${question.correct}"]`);
-                correctOption.parentElement.classList.add('correct');
-                
-                feedbackDiv.innerHTML = `❌ Not quite right. ${question.explanation}`;
-            }
-            
-            updateQuizProgress();
-        }
-
-        function generateAllAdditionalQuestions() {
-            const topics = ['motivation', 'mechanics', 'assumptions', 'synthesis'];
-            const button = event.target;
-            
-            // Disable the button to prevent multiple clicks
-            button.disabled = true;
-            button.innerHTML = '⏳ Generating All Questions...';
-            
-            let delay = 0;
-            topics.forEach((topic, index) => {
-                setTimeout(() => {
-                    // Check if individual button is not already used
-                    const individualButton = document.querySelector(`button[onclick="generateMoreQuestions('${topic}')"]`);
-                    if (individualButton && !individualButton.disabled) {
-                        // Simulate clicking the individual button
-                        const mockEvent = { target: individualButton };
-                        window.event = mockEvent;
-                        generateMoreQuestions(topic);
-                    }
-                    
-                    // Update master button after all are complete
-                    if (index === topics.length - 1) {
-                        setTimeout(() => {
-                            button.style.background = 'linear-gradient(135deg, #10b981, #047857)';
-                            button.innerHTML = '✅ All Additional Questions Generated (12 total)';
-                            
-                            // Show comprehensive success message
-                            const successMsg = document.createElement('div');
-                            successMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white; padding: 2rem; border-radius: 16px; z-index: 1000; animation: slideInRight 0.6s ease-out; box-shadow: var(--shadow-2xl);';
-                            successMsg.innerHTML = `
-                                <div style="text-align: center;">
-                                    <div style="font-size: 2rem; margin-bottom: 0.75rem;">🎉</div>
-                                    <div style="font-weight: 700; margin-bottom: 0.5rem; font-size: 1.1rem;">Multiple Regression Mastery!</div>
-                                    <div style="font-size: 0.95rem;">12 additional practice questions generated</div>
-                                    <div style="font-size: 0.85rem; opacity: 0.9; margin-top: 0.5rem;">Total available: 29 interactive questions</div>
-                                    <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.25rem;">Chapter 3 complete!</div>
-                                </div>
-                            `;
-                            document.body.appendChild(successMsg);
-                            
-                            setTimeout(() => successMsg.remove(), 6000);
-                        }, 750);
-                    }
-                }, delay);
-                delay += 1000; // Longer stagger for better visual effect
-            });
-        }
-
-        // ========================================
-        // ORIGINAL QUIZ FUNCTIONS (Fixed Questions)
-        // ========================================
-        
-        const quizAnswers = {
-            // Quiz 1: Motivation
-            '3-1': { correct: 'B', explanation: 'Correct! Omitted variable bias requires both conditions: the omitted variable must affect y AND be correlated with an included explanatory variable.' },
-            '3-2': { correct: 'B', explanation: 'Correct! In multiple regression, β₁ measures the ceteris paribus effect - how wages change with education, holding experience constant.' },
-            '3-3': { correct: 'B', explanation: 'Correct! "Ceteris paribus" means "all other things being equal" - the key concept that allows us to isolate partial effects in multiple regression.' },
-            // Calculator follow-up questions
-            '3-calc-a': { correct: 'B', explanation: 'Correct! Higher correlation between explanatory variables leads to higher VIF and larger standard errors, making estimates less precise.' },
-            '3-calc-b': { correct: 'B', explanation: 'Correct! Omitted variable bias causes the remaining coefficient to capture both its own effect and the effect of the omitted variable, leading to bias.' },
-            // Quiz 2: Mechanics  
-            '3-4': { correct: 'B', explanation: 'Correct! Adjusted R-squared is always lower than (or equal to) regular R² because it penalizes for additional variables that don\'t improve fit much.' },
-            '3-5': { correct: 'B', explanation: 'Excellent! Just like in simple regression, the OLS hyperplane always passes through the sample means of all variables by the first-order conditions.' },
-            // Quiz 3: Assumptions
-            '3-6': { correct: 'B', explanation: 'Correct! The zero conditional mean assumption E(u|x₁,...,xₖ) = 0 is essential for unbiasedness. Without it, OLS estimates are biased.' },
-            '3-7': { correct: 'B', explanation: 'Correct! Perfect multicollinearity occurs when one explanatory variable can be written as an exact linear function of others.' },
-            '3-8': { correct: 'B', explanation: 'Correct! VIF = 9 means the variance (and standard error) is 9 times larger than it would be without multicollinearity.' },
-            '3-9': { correct: 'D', explanation: 'Correct! The mean value of y doesn\'t directly affect the variance of OLS coefficients. The variance depends on σ², multicollinearity, and sample size.' },
-            // Final Quiz: Synthesis
-            '3-10': { correct: 'B', explanation: 'Correct! The Gauss-Markov theorem requires all five assumptions (MLR.1-MLR.5). MLR.1-MLR.4 give unbiasedness, but MLR.5 is needed for BLUE.' },
-            '3-11': { correct: 'B', explanation: 'Correct! With 3 explanatory variables, we need 4 first-order conditions: one for the intercept (k+1 = 3+1 = 4).' },
-            '3-12': { correct: 'C', explanation: 'Correct! Adjusted R-squared CAN be negative when the penalty for degrees of freedom exceeds the explanatory power of the added variables.' },
-            '3-13': { correct: 'B', explanation: 'Excellent! Including both male and female dummies with an intercept creates perfect multicollinearity since male + female = 1 always (dummy variable trap).' }
-        };
-
-        function selectAnswer(questionId, selectedAnswer) {
-            const question = quizAnswers[questionId];
-            const feedbackDiv = document.getElementById(`feedback${questionId}`);
-            const options = document.querySelectorAll(`input[name="q${questionId}"]`);
-            
-            // Remove previous selections
-            options.forEach(option => {
-                option.parentElement.classList.remove('selected', 'correct', 'incorrect');
-            });
-            
-            // Mark selected option
-            const selectedOption = document.querySelector(`input[name="q${questionId}"][value="${selectedAnswer}"]`);
-            selectedOption.parentElement.classList.add('selected');
-            
-            // Show feedback
-            feedbackDiv.style.display = 'block';
-            
-            if (selectedAnswer === question.correct) {
-                selectedOption.parentElement.classList.add('correct');
-                feedbackDiv.className = 'quiz-feedback correct';
-                feedbackDiv.innerHTML = `✅ ${question.explanation}`;
-            } else {
-                selectedOption.parentElement.classList.add('incorrect');
-                feedbackDiv.className = 'quiz-feedback incorrect';
-                
-                // Also highlight correct answer
-                const correctOption = document.querySelector(`input[name="q${questionId}"][value="${question.correct}"]`);
-                correctOption.parentElement.classList.add('correct');
-                
-                feedbackDiv.innerHTML = `❌ Incorrect. ${question.explanation}`;
-            }
-            
-            // Track progress
-            updateQuizProgress();
-        }
-
-        function updateQuizProgress() {
-            const totalOriginalQuestions = Object.keys(quizAnswers).length; // 13 core questions
-            const totalGeneratedQuestions = Object.keys(additionalQuestions).length;
-            const totalQuestions = totalOriginalQuestions + totalGeneratedQuestions;
-            
-            let answeredQuestions = 0;
-            let correctAnswers = 0;
-            
-            // Check original question IDs
-            const questionIds = Object.keys(quizAnswers);
-            
-            for (const questionId of questionIds) {
-                const answered = document.querySelector(`input[name="q${questionId}"]:checked`);
-                if (answered) {
-                    answeredQuestions++;
-                    if (answered.value === quizAnswers[questionId].correct) {
-                        correctAnswers++;
-                    }
-                }
-            }
-            
-            // Check generated questions
-            const generatedIds = Object.keys(additionalQuestions);
-            for (const questionId of generatedIds) {
-                const answered = document.querySelector(`input[name="q${questionId}"]:checked`);
-                if (answered) {
-                    answeredQuestions++;
-                    if (answered.value === additionalQuestions[questionId].correct) {
-                        correctAnswers++;
-                    }
-                }
-            }
-            
-            const summaryDiv = document.getElementById('quiz-summary-ch3');
-            const generatedCount = totalGeneratedQuestions;
-            
-            if (answeredQuestions === totalQuestions && totalQuestions > totalOriginalQuestions) {
-                // All questions including generated ones completed
-                const percentage = Math.round((correctAnswers / totalQuestions) * 100);
-                summaryDiv.innerHTML = `
-                    <p style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">
-                        🏆 MULTIPLE REGRESSION MASTERY ACHIEVED!
-                        Score: ${correctAnswers}/${totalQuestions} (${percentage}%)
-                    </p>
-                    <p style="color: var(--gray-600); font-size: 1rem; margin-top: 0.75rem;">
-                        Core Questions: ${totalOriginalQuestions} • Generated Questions: ${generatedCount}<br>
-                        ${percentage >= 95 ? 
-                            '🌟 Outstanding! You have completely mastered multiple regression concepts!' : 
-                            percentage >= 90 ?
-                            '🎉 Excellent mastery! You have outstanding understanding of multiple regression.' : 
-                            percentage >= 85 ?
-                            '🚀 Great work! Strong command of multiple regression analysis.' :
-                            '📚 Good progress! Review any incorrect answers to strengthen understanding.'}
-                    </p>
-                `;
-            } else if (answeredQuestions === totalOriginalQuestions) {
-                // Core questions completed
-                const percentage = Math.round((correctAnswers / totalOriginalQuestions) * 100);
-                summaryDiv.innerHTML = `
-                    <p style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">
-                        🎉 All Core Knowledge Checks Complete! 
-                        Score: ${correctAnswers}/${totalOriginalQuestions} (${percentage}%)
-                    </p>
-                    <p style="color: var(--gray-600); font-size: 1rem; margin-top: 0.75rem;">
-                        ${percentage >= 92 ? 
-                            '🌟 Outstanding mastery of multiple regression! You\'re ready for advanced topics.' : 
-                            percentage >= 85 ?
-                            '🎯 Excellent understanding! Ready for practice exercises.' : 
-                            percentage >= 78 ?
-                            '📈 Good work! Review challenging areas, then proceed to exercises.' :
-                            '📖 Keep studying! Review chapter content and retake quizzes for better understanding.'}
-                    </p>
-                    <p style="color: var(--primary-indigo); font-size: 0.85rem; margin-top: 0.75rem;">
-                        📊 <strong>Breakdown:</strong> Motivation (3) • Calculator (2) • Mechanics (3) • Assumptions (4) • Synthesis (4)
-                        ${generatedCount > 0 ? `<br>🎯 <strong>Bonus:</strong> ${generatedCount} additional practice questions completed!` : ''}
-                    </p>
-                `;
-            } else {
-                // In progress
-                summaryDiv.innerHTML = `
-                    <p style="color: var(--gray-600); font-size: 1rem; font-weight: 500;">
-                        📊 <strong>17 Core Interactive Questions Total</strong>${generatedCount > 0 ? ` + ${generatedCount} Generated Questions` : ''}<br>
-                        Quiz 1: Motivation (3) • Calculator Follow-up (2) • Quiz 2: Mechanics (3) • Quiz 3: Assumptions (4) • Final: Synthesis (4) • Additional Generate Options (12)<br>
-                        💡 Progress: ${answeredQuestions}/${totalQuestions} knowledge checks completed
-                    </p>
-                `;
-            }
-            
-            // Update localStorage with progress
-            if (answeredQuestions === totalOriginalQuestions) {
-                localStorage.setItem('chapter3KnowledgeChecks', 'complete');
-                localStorage.setItem('chapter3QuizScore', `${correctAnswers}/${totalOriginalQuestions}`);
-                console.log(`Chapter 3 knowledge checks completed! Score: ${Math.round((correctAnswers/totalOriginalQuestions)*100)}%`);
-            }
-        }
-
-        // ========================================
-        // INTERACTIVE MULTIPLE REGRESSION CALCULATOR
-        // ========================================
-        
+        // Global variables
         let multipleRegressionData = [];
-        let regressionChart3D = null;
         let isOmittedVariableBiasMode = false;
         
-        function updateMultipleRegression() {
-            generateMultipleRegressionData();
-        }
+        // Quiz answers
+        const quizAnswers = {
+            '3-1': { 
+                correct: 'B', 
+                explanation: 'Correct! Omitted variable bias requires both conditions: the omitted variable must affect y AND be correlated with an included explanatory variable.' 
+            },
+            '3-2': { 
+                correct: 'B', 
+                explanation: 'Correct! In multiple regression, β₁ measures the ceteris paribus effect - how wages change with education, holding experience constant.' 
+            },
+            '3-3': { 
+                correct: 'B', 
+                explanation: 'Correct! "Ceteris paribus" means "all other things being equal" - the key concept that allows us to isolate partial effects in multiple regression.' 
+            }
+        };
         
-        function generateMultipleRegressionData() {
-            const scenario = document.getElementById('multiScenario').value;
-            const correlationLevel = document.getElementById('correlationLevel').value;
-            const sampleSize = parseInt(document.getElementById('multiSampleSize').value);
-            
-            isOmittedVariableBiasMode = false; // Reset bias mode
-            
-            // Clear existing data
-            multipleRegressionData = [];
-            
-            let xLabel = '';
-            let yLabel = '';
-            let zLabel = '';
-            let trueIntercept = 0;
-            let trueSlope1 = 0;
-            let trueSlope2 = 0;
-            
-            // Correlation levels
-            const correlationLevels = {
-                'low': 0.2,
-                'medium': 0.5,
-                'high': 0.8,
-                'perfect': 0.95
-            };
-            
-            const correlation = correlationLevels[correlationLevel];
-            
-            // Scenario-specific parameters
-            if (scenario === 'wage-educ-exper') {
-                xLabel = 'Education (years)';
-                yLabel = 'Experience (years)';
-                zLabel = 'Wage ($1000s)';
-                trueIntercept = 10;
-                trueSlope1 = 2.5; // Education effect
-                trueSlope2 = 1.2; // Experience effect
-                
-                for (let i = 0; i < sampleSize; i++) {
-                    const educ = 12 + Math.random() * 8; // Education 12-20 years
-                    
-                    // Generate correlated experience
-                    const educStd = (educ - 16) / 3; // Standardize around mean
-                    const experStd = correlation * educStd + Math.sqrt(1 - correlation * correlation) * (Math.random() - 0.5) * 2;
-                    const exper = Math.max(0, 5 + experStd * 3 + Math.random() * 10); // Experience 0-20 years
-                    
-                    const error = (Math.random() - 0.5) * 8;
-                    const wage = trueIntercept + trueSlope1 * educ + trueSlope2 * exper + error;
-                    
-                    multipleRegressionData.push({ x: educ, y: exper, z: wage });
-                }
-            } else if (scenario === 'consumption-income-wealth') {
-                xLabel = 'Income ($1000s)';
-                yLabel = 'Wealth ($1000s)';
-                zLabel = 'Consumption ($1000s)';
-                trueIntercept = 5;
-                trueSlope1 = 0.7; // Income effect
-                trueSlope2 = 0.05; // Wealth effect
-                
-                for (let i = 0; i < sampleSize; i++) {
-                    const income = 30 + Math.random() * 70; // Income 30-100k
-                    
-                    // Generate correlated wealth
-                    const incomeStd = (income - 65) / 25;
-                    const wealthStd = correlation * incomeStd + Math.sqrt(1 - correlation * correlation) * (Math.random() - 0.5) * 2;
-                    const wealth = Math.max(0, 50 + wealthStd * 100 + Math.random() * 200); // Wealth 0-400k
-                    
-                    const error = (Math.random() - 0.5) * 10;
-                    const consumption = trueIntercept + trueSlope1 * income + trueSlope2 * wealth + error;
-                    
-                    multipleRegressionData.push({ x: income, y: wealth, z: consumption });
-                }
-            } else if (scenario === 'house-price-size-location') {
-                xLabel = 'Size (sqft)';
-                yLabel = 'Location Score (1-10)';
-                zLabel = 'Price ($1000s)';
-                trueIntercept = 50;
-                trueSlope1 = 0.15; // Size effect
-                trueSlope2 = 25; // Location effect
-                
-                for (let i = 0; i < sampleSize; i++) {
-                    const size = 1000 + Math.random() * 2000; // Size 1000-3000 sqft
-                    
-                    // Generate correlated location (larger houses in better locations)
-                    const sizeStd = (size - 2000) / 600;
-                    const locationStd = correlation * sizeStd + Math.sqrt(1 - correlation * correlation) * (Math.random() - 0.5) * 2;
-                    const location = Math.max(1, Math.min(10, 5.5 + locationStd * 2)); // Location 1-10
-                    
-                    const error = (Math.random() - 0.5) * 40;
-                    const price = trueIntercept + trueSlope1 * size + trueSlope2 * location + error;
-                    
-                    multipleRegressionData.push({ x: size, y: location, z: price });
-                }
-            }
-            
-            // Calculate OLS estimates for multiple regression
-            const n = multipleRegressionData.length;
-            const xMean = multipleRegressionData.reduce((sum, point) => sum + point.x, 0) / n;
-            const yMean = multipleRegressionData.reduce((sum, point) => sum + point.y, 0) / n;
-            const zMean = multipleRegressionData.reduce((sum, point) => sum + point.z, 0) / n;
-            
-            // Matrix calculations for multiple regression (simplified)
-            let sumXX = 0, sumYY = 0, sumXY = 0;
-            let sumXZ = 0, sumYZ = 0;
-            
-            for (const point of multipleRegressionData) {
-                const xDev = point.x - xMean;
-                const yDev = point.y - yMean;
-                const zDev = point.z - zMean;
-                
-                sumXX += xDev * xDev;
-                sumYY += yDev * yDev;
-                sumXY += xDev * yDev;
-                sumXZ += xDev * zDev;
-                sumYZ += yDev * zDev;
-            }
-            
-            // Solve for beta1 and beta2 using matrix approach
-            const denominator = sumXX * sumYY - sumXY * sumXY;
-            const beta1Hat = (sumXZ * sumYY - sumYZ * sumXY) / denominator;
-            const beta2Hat = (sumYZ * sumXX - sumXZ * sumXY) / denominator;
-            const beta0Hat = zMean - beta1Hat * xMean - beta2Hat * yMean;
-            
-            // Calculate R-squared
-            let SSE = 0, SSR = 0, SST = 0;
-            
-            for (const point of multipleRegressionData) {
-                const predicted = beta0Hat + beta1Hat * point.x + beta2Hat * point.y;
-                const residual = point.z - predicted;
-                
-                SSE += Math.pow(predicted - zMean, 2);
-                SSR += residual * residual;
-                SST += Math.pow(point.z - zMean, 2);
-            }
-            
-            const rSquared = SSE / SST;
-            const adjustedRSquared = 1 - ((SSR / (n - 3)) / (SST / (n - 1)));
-            
-            // Calculate VIF for multicollinearity
-            const correlationXY = sumXY / Math.sqrt(sumXX * sumYY);
-            const vif1 = 1 / (1 - correlationXY * correlationXY);
-            const vif2 = vif1; // Same for both in this case
-            
-            // Calculate standard errors (simplified)
-            const mse = SSR / (n - 3);
-            const se1 = Math.sqrt(mse * vif1 / sumXX);
-            const se2 = Math.sqrt(mse * vif2 / sumYY);
-            const seIntercept = Math.sqrt(mse * (1/n + xMean*xMean/sumXX + yMean*yMean/sumYY));
-            
-            // Update 3D visualization
-            create3DRegression(xLabel, yLabel, zLabel, beta0Hat, beta1Hat, beta2Hat);
-            
-            // Update results display
-            updateResultsDisplay(beta0Hat, beta1Hat, beta2Hat, rSquared, adjustedRSquared, 
-                                se1, se2, seIntercept, vif1, n, correlationXY,
-                                xLabel, yLabel, zLabel);
-        }
+        // ========================================
+        // REGRESSION CALCULATOR - PURE JAVASCRIPT
+        // ========================================
         
-        function create3DRegression(xLabel, yLabel, zLabel, beta0, beta1, beta2) {
-            const data = multipleRegressionData;
-            
-            // Create surface for regression plane
-            const xRange = [Math.min(...data.map(d => d.x)), Math.max(...data.map(d => d.x))];
-            const yRange = [Math.min(...data.map(d => d.y)), Math.max(...data.map(d => d.y))];
-            
-            const xSurface = [];
-            const ySurface = [];
-            const zSurface = [];
-            
-            const steps = 20;
-            for (let i = 0; i < steps; i++) {
-                xSurface[i] = [];
-                ySurface[i] = [];
-                zSurface[i] = [];
+        function generateRegressionData() {
+            try {
+                const scenario = document.getElementById('multiScenario')?.value || 'wage-educ-exper';
+                const correlationLevel = document.getElementById('correlationLevel')?.value || 'medium';
+                const sampleSize = parseInt(document.getElementById('multiSampleSize')?.value) || 100;
                 
-                for (let j = 0; j < steps; j++) {
-                    const x = xRange[0] + (xRange[1] - xRange[0]) * i / (steps - 1);
-                    const y = yRange[0] + (yRange[1] - yRange[0]) * j / (steps - 1);
-                    const z = beta0 + beta1 * x + beta2 * y;
+                isOmittedVariableBiasMode = false;
+                multipleRegressionData = [];
+                
+                // Correlation levels
+                const correlations = { 'low': 0.2, 'medium': 0.5, 'high': 0.8, 'perfect': 0.95 };
+                const correlation = correlations[correlationLevel];
+                
+                // Generate data based on scenario
+                let xLabel, yLabel, zLabel, trueIntercept, trueSlope1, trueSlope2;
+                
+                if (scenario === 'wage-educ-exper') {
+                    xLabel = 'Education (years)'; 
+                    yLabel = 'Experience (years)'; 
+                    zLabel = 'Wage ($1000s)';
+                    trueIntercept = 10; 
+                    trueSlope1 = 2.5; 
+                    trueSlope2 = 1.2;
                     
-                    xSurface[i][j] = x;
-                    ySurface[i][j] = y;
-                    zSurface[i][j] = z;
-                }
-            }
-            
-            // Create traces
-            const scatterTrace = {
-                x: data.map(d => d.x),
-                y: data.map(d => d.y),
-                z: data.map(d => d.z),
-                mode: 'markers',
-                type: 'scatter3d',
-                marker: {
-                    color: '#4338ca',
-                    size: 5,
-                    opacity: 0.8
-                },
-                name: 'Data Points'
-            };
-            
-            const surfaceTrace = {
-                x: xSurface,
-                y: ySurface,
-                z: zSurface,
-                type: 'surface',
-                colorscale: [[0, '#e0f2fe'], [1, '#1e40af']],
-                opacity: 0.6,
-                showscale: false,
-                name: 'Regression Plane'
-            };
-            
-            const layout = {
-                scene: {
-                    xaxis: { title: xLabel },
-                    yaxis: { title: yLabel },
-                    zaxis: { title: zLabel },
-                    camera: {
-                        eye: { x: 1.5, y: 1.5, z: 1.5 }
+                    for (let i = 0; i < sampleSize; i++) {
+                        const educ = 12 + Math.random() * 8;
+                        const educStd = (educ - 16) / 3;
+                        const experStd = correlation * educStd + Math.sqrt(1 - correlation * correlation) * (Math.random() - 0.5) * 2;
+                        const exper = Math.max(0, 5 + experStd * 3 + Math.random() * 10);
+                        const error = (Math.random() - 0.5) * 8;
+                        const wage = trueIntercept + trueSlope1 * educ + trueSlope2 * exper + error;
+                        multipleRegressionData.push({ x: educ, y: exper, z: wage });
                     }
-                },
-                margin: { l: 0, r: 0, b: 0, t: 0 },
-                showlegend: true,
-                legend: { x: 0.7, y: 0.9 }
-            };
-            
-            Plotly.newPlot('regression3D', [scatterTrace, surfaceTrace], layout, {responsive: true});
+                } else if (scenario === 'consumption-income-wealth') {
+                    xLabel = 'Income ($1000s)'; 
+                    yLabel = 'Wealth ($1000s)'; 
+                    zLabel = 'Consumption ($1000s)';
+                    trueIntercept = 5; 
+                    trueSlope1 = 0.7; 
+                    trueSlope2 = 0.05;
+                    
+                    for (let i = 0; i < sampleSize; i++) {
+                        const income = 30 + Math.random() * 70;
+                        const incomeStd = (income - 65) / 25;
+                        const wealthStd = correlation * incomeStd + Math.sqrt(1 - correlation * correlation) * (Math.random() - 0.5) * 2;
+                        const wealth = Math.max(0, 50 + wealthStd * 100 + Math.random() * 200);
+                        const error = (Math.random() - 0.5) * 10;
+                        const consumption = trueIntercept + trueSlope1 * income + trueSlope2 * wealth + error;
+                        multipleRegressionData.push({ x: income, y: wealth, z: consumption });
+                    }
+                } else {
+                    xLabel = 'Size (sqft)'; 
+                    yLabel = 'Location Score (1-10)'; 
+                    zLabel = 'Price ($1000s)';
+                    trueIntercept = 50; 
+                    trueSlope1 = 0.15; 
+                    trueSlope2 = 25;
+                    
+                    for (let i = 0; i < sampleSize; i++) {
+                        const size = 1000 + Math.random() * 2000;
+                        const sizeStd = (size - 2000) / 600;
+                        const locationStd = correlation * sizeStd + Math.sqrt(1 - correlation * correlation) * (Math.random() - 0.5) * 2;
+                        const location = Math.max(1, Math.min(10, 5.5 + locationStd * 2));
+                        const error = (Math.random() - 0.5) * 40;
+                        const price = trueIntercept + trueSlope1 * size + trueSlope2 * location + error;
+                        multipleRegressionData.push({ x: size, y: location, z: price });
+                    }
+                }
+                
+                // Calculate and display regression
+                calculateAndDisplayRegression(xLabel, yLabel, zLabel);
+                
+            } catch (error) {
+                console.log('Error in regression calculation:', error);
+                safeUpdateResults('Error generating data. Please try again.');
+            }
         }
         
-        function updateResultsDisplay(beta0, beta1, beta2, rSquared, adjustedRSquared,
-                                    se1, se2, seIntercept, vif, n, correlation,
-                                    xLabel, yLabel, zLabel) {
+        function calculateAndDisplayRegression(xLabel, yLabel, zLabel) {
+            try {
+                const data = multipleRegressionData;
+                const n = data.length;
+                
+                // Calculate means
+                const xMean = data.reduce((sum, point) => sum + point.x, 0) / n;
+                const yMean = data.reduce((sum, point) => sum + point.y, 0) / n;
+                const zMean = data.reduce((sum, point) => sum + point.z, 0) / n;
+                
+                // Calculate sums for regression
+                let sumXX = 0, sumYY = 0, sumXY = 0, sumXZ = 0, sumYZ = 0;
+                
+                for (const point of data) {
+                    const xDev = point.x - xMean;
+                    const yDev = point.y - yMean;
+                    const zDev = point.z - zMean;
+                    
+                    sumXX += xDev * xDev;
+                    sumYY += yDev * yDev;
+                    sumXY += xDev * yDev;
+                    sumXZ += xDev * zDev;
+                    sumYZ += yDev * zDev;
+                }
+                
+                // Solve regression equations
+                const denominator = sumXX * sumYY - sumXY * sumXY;
+                const beta1Hat = (sumXZ * sumYY - sumYZ * sumXY) / denominator;
+                const beta2Hat = (sumYZ * sumXX - sumXZ * sumXY) / denominator;
+                const beta0Hat = zMean - beta1Hat * xMean - beta2Hat * yMean;
+                
+                // Calculate R-squared
+                let SSE = 0, SSR = 0, SST = 0;
+                for (const point of data) {
+                    const predicted = beta0Hat + beta1Hat * point.x + beta2Hat * point.y;
+                    const residual = point.z - predicted;
+                    SSE += Math.pow(predicted - zMean, 2);
+                    SSR += residual * residual;
+                    SST += Math.pow(point.z - zMean, 2);
+                }
+                
+                const rSquared = SSE / SST;
+                const adjustedRSquared = 1 - ((SSR / (n - 3)) / (SST / (n - 1)));
+                
+                // Calculate correlation and VIF
+                const correlationXY = sumXY / Math.sqrt(sumXX * sumYY);
+                const vif = 1 / (1 - correlationXY * correlationXY);
+                
+                // Display results
+                displayRegressionResults(beta0Hat, beta1Hat, beta2Hat, rSquared, adjustedRSquared, vif, n, correlationXY, xLabel, yLabel, zLabel);
+                
+            } catch (error) {
+                console.log('Error calculating regression:', error);
+                safeUpdateResults('Calculation error. Please generate new data.');
+            }
+        }
+        
+        function displayRegressionResults(beta0, beta1, beta2, rSquared, adjustedRSquared, vif, n, correlation, xLabel, yLabel, zLabel) {
+            try {
+                // Update visualization with simple text display
+                const vizElement = document.getElementById('simpleVisualization');
+                if (vizElement) {
+                    vizElement.innerHTML = `
+                        <div style="text-align: center; padding: 2rem;">
+                            <div style="font-weight: 600; color: var(--primary-indigo); margin-bottom: 1rem; font-size: 1.1rem;">Regression Equation</div>
+                            <div style="font-family: monospace; font-size: 1.2rem; background: white; padding: 1.5rem; border-radius: 6px; border: 1px solid var(--gray-300); margin: 1rem 0;">
+                                ${zLabel} = ${beta0.toFixed(2)} + ${beta1.toFixed(3)}×${xLabel} + ${beta2.toFixed(3)}×${yLabel}
+                            </div>
+                            <div style="margin-top: 1.5rem; color: var(--gray-600); font-size: 1rem;">
+                                <div style="margin-bottom: 0.5rem;">📊 Sample size: ${n} observations</div>
+                                <div>📈 R² = ${rSquared.toFixed(3)}, Adjusted R² = ${adjustedRSquared.toFixed(3)}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Update coefficients grid
+                const coefficientsHTML = `
+                    <div class="coefficient-card">
+                        <div class="coefficient-label">Intercept (β₀)</div>
+                        <div class="coefficient-value">${beta0.toFixed(2)}</div>
+                        <div style="font-size: 0.8rem; color: var(--gray-600); margin-top: 0.25rem;">Constant term</div>
+                    </div>
+                    <div class="coefficient-card">
+                        <div class="coefficient-label">β₁ (${xLabel})</div>
+                        <div class="coefficient-value">${beta1.toFixed(3)}</div>
+                        <div style="font-size: 0.8rem; color: var(--gray-600); margin-top: 0.25rem;">VIF: ${vif.toFixed(2)}</div>
+                    </div>
+                    <div class="coefficient-card">
+                        <div class="coefficient-label">β₂ (${yLabel})</div>
+                        <div class="coefficient-value">${beta2.toFixed(3)}</div>
+                        <div style="font-size: 0.8rem; color: var(--gray-600); margin-top: 0.25rem;">VIF: ${vif.toFixed(2)}</div>
+                    </div>
+                    <div class="coefficient-card">
+                        <div class="coefficient-label">Goodness of Fit</div>
+                        <div class="coefficient-value">${rSquared.toFixed(3)}</div>
+                        <div style="font-size: 0.8rem; color: var(--gray-600); margin-top: 0.25rem;">R-squared</div>
+                    </div>
+                    <div class="coefficient-card">
+                        <div class="coefficient-label">Multicollinearity</div>
+                        <div class="coefficient-value">${correlation.toFixed(3)}</div>
+                        <div style="font-size: 0.8rem; color: var(--gray-600); margin-top: 0.25rem;">Correlation X₁, X₂</div>
+                    </div>
+                `;
+                
+                const coefficientsGrid = document.getElementById('coefficientsGrid');
+                if (coefficientsGrid) {
+                    coefficientsGrid.innerHTML = coefficientsHTML;
+                }
+                
+                // Update interpretation
+                const vifWarning = vif > 5 ? `<br><br><strong>⚠️ Note:</strong> High multicollinearity detected (VIF = ${vif.toFixed(2)}) - individual coefficient estimates are less precise.` : '';
+                
+                const interpretationHTML = `
+                    <strong>Ceteris Paribus Interpretation:</strong><br>
+                    • Holding ${yLabel.toLowerCase()} constant, a one-unit increase in ${xLabel.toLowerCase()} is associated with a <strong>${Math.abs(beta1).toFixed(3)} ${beta1 >= 0 ? 'increase' : 'decrease'}</strong> in ${zLabel.toLowerCase()}.<br>
+                    • Holding ${xLabel.toLowerCase()} constant, a one-unit increase in ${yLabel.toLowerCase()} is associated with a <strong>${Math.abs(beta2).toFixed(3)} ${beta2 >= 0 ? 'increase' : 'decrease'}</strong> in ${zLabel.toLowerCase()}.<br>
+                    • The model explains <strong>${(rSquared * 100).toFixed(1)}%</strong> of the variation in ${zLabel.toLowerCase()}.
+                    ${vifWarning}
+                `;
+                
+                const interpretationText = document.getElementById('interpretationText');
+                if (interpretationText) {
+                    interpretationText.innerHTML = interpretationHTML;
+                }
+                
+                console.log('Regression results displayed successfully');
+                
+            } catch (error) {
+                console.log('Error displaying results:', error);
+                safeUpdateResults('Display error occurred.');
+            }
+        }
+        
+        function safeUpdateResults(message) {
+            const coefficientsGrid = document.getElementById('coefficientsGrid');
+            const interpretationText = document.getElementById('interpretationText');
             
-            const coefficientsHTML = `
-                <div class="coefficient-card">
-                    <div class="coefficient-label">Intercept (β₀)</div>
-                    <div class="coefficient-value">${beta0.toFixed(2)}</div>
-                    <div style="font-size: 0.8rem; color: var(--gray-600);">SE: ${seIntercept.toFixed(3)}</div>
-                </div>
-                <div class="coefficient-card">
-                    <div class="coefficient-label">β₁ (${xLabel})</div>
-                    <div class="coefficient-value">${beta1.toFixed(3)}</div>
-                    <div style="font-size: 0.8rem; color: var(--gray-600);">SE: ${se1.toFixed(3)}, VIF: ${vif.toFixed(2)}</div>
-                </div>
-                <div class="coefficient-card">
-                    <div class="coefficient-label">β₂ (${yLabel})</div>
-                    <div class="coefficient-value">${beta2.toFixed(3)}</div>
-                    <div style="font-size: 0.8rem; color: var(--gray-600);">SE: ${se2.toFixed(3)}, VIF: ${vif.toFixed(2)}</div>
-                </div>
-                <div class="coefficient-card">
-                    <div class="coefficient-label">R-squared</div>
-                    <div class="coefficient-value">${rSquared.toFixed(3)}</div>
-                    <div style="font-size: 0.8rem; color: var(--gray-600);">Adj. R²: ${adjustedRSquared.toFixed(3)}</div>
-                </div>
-                <div class="coefficient-card">
-                    <div class="coefficient-label">Sample Info</div>
-                    <div class="coefficient-value">n = ${n}</div>
-                    <div style="font-size: 0.8rem; color: var(--gray-600);">r(X₁,X₂): ${correlation.toFixed(3)}</div>
-                </div>
-            `;
-            
-            document.getElementById('coefficientsGrid').innerHTML = coefficientsHTML;
-            
-            const interpretationHTML = `
-                Holding ${yLabel.toLowerCase()} constant, a one-unit increase in ${xLabel.toLowerCase()} is associated with a ${Math.abs(beta1).toFixed(3)} ${beta1 >= 0 ? 'increase' : 'decrease'} in ${zLabel.toLowerCase()}.
-                Similarly, holding ${xLabel.toLowerCase()} constant, a one-unit increase in ${yLabel.toLowerCase()} is associated with a ${Math.abs(beta2).toFixed(3)} ${beta2 >= 0 ? 'increase' : 'decrease'} in ${zLabel.toLowerCase()}.
-                ${vif > 5 ? `<br><strong>Note:</strong> High multicollinearity detected (VIF = ${vif.toFixed(2)}) - consider the precision of individual coefficient estimates.` : ''}
-            `;
-            
-            document.getElementById('interpretationText').innerHTML = interpretationHTML;
+            if (coefficientsGrid) {
+                coefficientsGrid.innerHTML = `<div style="text-align: center; padding: 2rem; color: var(--gray-600); grid-column: 1 / -1;">${message}</div>`;
+            }
+            if (interpretationText) {
+                interpretationText.innerHTML = message;
+            }
         }
         
         function showOmittedVariableBias() {
-            if (!isOmittedVariableBiasMode) {
-                // Show simple regression (omitting one variable)
-                isOmittedVariableBiasMode = true;
-                
-                const data = multipleRegressionData;
-                const n = data.length;
-                const xMean = data.reduce((sum, point) => sum + point.x, 0) / n;
-                const zMean = data.reduce((sum, point) => sum + point.z, 0) / n;
-                
-                // Simple regression of z on x (omitting y)
-                const numerator = data.reduce((sum, point) => sum + (point.x - xMean) * (point.z - zMean), 0);
-                const denominator = data.reduce((sum, point) => sum + Math.pow(point.x - xMean, 2), 0);
-                
-                const simpleSlope = numerator / denominator;
-                const simpleIntercept = zMean - simpleSlope * xMean;
-                
-                // Calculate simple R-squared
-                let simpleSSE = 0, simpleSST = 0;
-                for (const point of data) {
-                    const simplePredicted = simpleIntercept + simpleSlope * point.x;
-                    simpleSSE += Math.pow(simplePredicted - zMean, 2);
-                    simpleSST += Math.pow(point.z - zMean, 2);
+            try {
+                if (!isOmittedVariableBiasMode && multipleRegressionData.length > 0) {
+                    isOmittedVariableBiasMode = true;
+                    
+                    const data = multipleRegressionData;
+                    const n = data.length;
+                    const xMean = data.reduce((sum, point) => sum + point.x, 0) / n;
+                    const zMean = data.reduce((sum, point) => sum + point.z, 0) / n;
+                    
+                    // Simple regression calculation (omitting y variable)
+                    const numerator = data.reduce((sum, point) => sum + (point.x - xMean) * (point.z - zMean), 0);
+                    const denominator = data.reduce((sum, point) => sum + Math.pow(point.x - xMean, 2), 0);
+                    const simpleSlope = numerator / denominator;
+                    const simpleIntercept = zMean - simpleSlope * xMean;
+                    
+                    // Calculate simple R-squared
+                    let simpleSSE = 0, simpleSST = 0;
+                    for (const point of data) {
+                        const simplePredicted = simpleIntercept + simpleSlope * point.x;
+                        simpleSSE += Math.pow(simplePredicted - zMean, 2);
+                        simpleSST += Math.pow(point.z - zMean, 2);
+                    }
+                    const simpleRSquared = simpleSSE / simpleSST;
+                    
+                    const scenario = document.getElementById('multiScenario')?.value || 'wage-educ-exper';
+                    let omittedVar = scenario === 'wage-educ-exper' ? 'Experience' : 
+                                    scenario === 'consumption-income-wealth' ? 'Wealth' : 'Location Score';
+                    
+                    // Get current multiple regression results
+                    const multipleCoeffElement = document.querySelector('.coefficient-card:nth-child(2) .coefficient-value');
+                    const multipleR2Element = document.querySelector('.coefficient-card:nth-child(4) .coefficient-value');
+                    
+                    if (multipleCoeffElement && multipleR2Element) {
+                        const multipleCoeff = parseFloat(multipleCoeffElement.textContent);
+                        const multipleR2 = parseFloat(multipleR2Element.textContent);
+                        
+                        const interpretationElement = document.getElementById('interpretationText');
+                        if (interpretationElement) {
+                            const bias = simpleSlope - multipleCoeff;
+                            interpretationElement.innerHTML = `
+                                <div style="background: #fef2f2; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #dc2626;">
+                                    <div style="color: #dc2626; font-weight: 700; margin-bottom: 1rem; font-size: 1.1rem;">🚨 Omitted Variable Bias Demonstration</div>
+                                    
+                                    <div style="margin-bottom: 1rem;">
+                                        <strong>Multiple Regression (Correct):</strong><br>
+                                        β₁ = ${multipleCoeff.toFixed(3)}, R² = ${multipleR2.toFixed(3)}
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 1rem;">
+                                        <strong>Simple Regression (Omitting ${omittedVar}):</strong><br>
+                                        β₁ = ${simpleSlope.toFixed(3)}, R² = ${simpleRSquared.toFixed(3)}
+                                    </div>
+                                    
+                                    <div style="background: white; padding: 1rem; border-radius: 6px; margin-top: 1rem;">
+                                        <strong>Bias Amount:</strong> ${bias.toFixed(3)} 
+                                        (${Math.abs(bias / multipleCoeff * 100).toFixed(1)}% ${bias > 0 ? 'overestimate' : 'underestimate'})<br>
+                                        <em>The simple regression coefficient captures both the direct effect and the effect through the omitted variable.</em>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }
                 }
-                const simpleRSquared = simpleSSE / simpleSST;
-                
-                // Update display to show comparison
-                const scenario = document.getElementById('multiScenario').value;
-                let omittedVar = '';
-                if (scenario === 'wage-educ-exper') omittedVar = 'Experience';
-                else if (scenario === 'consumption-income-wealth') omittedVar = 'Wealth';
-                else if (scenario === 'house-price-size-location') omittedVar = 'Location Score';
-                
-                // Get current multiple regression results for comparison
-                const multipleCoeff = parseFloat(document.querySelector('.coefficient-card:nth-child(2) .coefficient-value').textContent);
-                const multipleR2 = parseFloat(document.querySelector('.coefficient-card:nth-child(4) .coefficient-value').textContent);
-                
-                document.getElementById('interpretationText').innerHTML = `
-                    <div style="background: #fef2f2; padding: 1rem; border-radius: 6px; border-left: 4px solid #dc2626;">
-                        <h4 style="color: #dc2626; margin: 0 0 0.5rem 0;">🚨 Omitted Variable Bias Demonstration</h4>
-                        <strong>Multiple Regression:</strong> β₁ = ${multipleCoeff.toFixed(3)}, R² = ${multipleR2.toFixed(3)}<br>
-                        <strong>Simple Regression (omitting ${omittedVar}):</strong> β₁ = ${simpleSlope.toFixed(3)}, R² = ${simpleRSquared.toFixed(3)}<br>
-                        <strong>Bias:</strong> ${(simpleSlope - multipleCoeff).toFixed(3)} 
-                        ${simpleSlope > multipleCoeff ? '(overestimate)' : '(underestimate)'}<br>
-                        <em>The simple regression coefficient captures both the direct effect and the effect through the omitted variable.</em>
-                    </div>
-                `;
+            } catch (error) {
+                console.log('Error in bias demonstration:', error);
+                const interpretationElement = document.getElementById('interpretationText');
+                if (interpretationElement) {
+                    interpretationElement.innerHTML = `
+                        <div style="background: #fef2f2; padding: 1rem; border-radius: 6px;">
+                            <strong>⚠️ Demo temporarily unavailable.</strong> Please generate a new sample and try again.
+                        </div>
+                    `;
+                }
             }
         }
-
+        
         // ========================================
-        // EXERCISE SOLUTIONS
+        // QUIZ FUNCTIONS
         // ========================================
         
-        function toggleSolution(solutionId) {
-            const solution = document.getElementById(solutionId);
-            if (solution.style.display === 'none' || solution.style.display === '') {
-                solution.style.display = 'block';
-            } else {
-                solution.style.display = 'none';
+        function selectAnswer(questionId, selectedAnswer) {
+            try {
+                const question = quizAnswers[questionId];
+                if (!question) return;
+                
+                const feedbackDiv = document.getElementById(`feedback${questionId}`);
+                const options = document.querySelectorAll(`input[name="q${questionId}"]`);
+                
+                // Remove previous selections
+                options.forEach(option => {
+                    if (option && option.parentElement) {
+                        option.parentElement.classList.remove('selected', 'correct', 'incorrect');
+                    }
+                });
+                
+                // Mark selected option
+                const selectedOption = document.querySelector(`input[name="q${questionId}"][value="${selectedAnswer}"]`);
+                if (selectedOption && selectedOption.parentElement) {
+                    selectedOption.parentElement.classList.add('selected');
+                }
+                
+                // Show feedback
+                if (feedbackDiv) {
+                    feedbackDiv.style.display = 'block';
+                    
+                    if (selectedAnswer === question.correct) {
+                        if (selectedOption && selectedOption.parentElement) {
+                            selectedOption.parentElement.classList.add('correct');
+                        }
+                        feedbackDiv.className = 'quiz-feedback correct';
+                        feedbackDiv.innerHTML = `✅ ${question.explanation}`;
+                    } else {
+                        if (selectedOption && selectedOption.parentElement) {
+                            selectedOption.parentElement.classList.add('incorrect');
+                        }
+                        feedbackDiv.className = 'quiz-feedback incorrect';
+                        
+                        // Highlight correct answer
+                        const correctOption = document.querySelector(`input[name="q${questionId}"][value="${question.correct}"]`);
+                        if (correctOption && correctOption.parentElement) {
+                            correctOption.parentElement.classList.add('correct');
+                        }
+                        
+                        feedbackDiv.innerHTML = `❌ Incorrect. ${question.explanation}`;
+                    }
+                }
+                
+                console.log(`Quiz ${questionId}: Selected ${selectedAnswer}, Correct: ${question.correct}`);
+                
+            } catch (error) {
+                console.log('Error in selectAnswer:', error);
             }
         }
-
-        // Handle Chapter 4 coming soon
+        
         function showChapter4ComingSoon() {
             alert(`🚧 Chapter 4: Multiple Regression Analysis - Inference - Coming Soon!
 
-📚 Chapter 4 Content Preview:
-• Sampling Distributions of OLS Estimators
-• Testing Hypotheses About a Single Parameter
-• Confidence Intervals
-• Testing Hypotheses About Multiple Parameters
-• F-Tests and Joint Significance
-
-🔨 Features in Development:
-• Interactive hypothesis testing calculator
-• t-test and F-test visualizations
-• Confidence interval demonstrations
-• p-value interpretation tools
-• Canadian statistical examples with real data
+📚 Chapter 4 will cover:
+• Statistical inference for multiple regression
+• t-tests and F-tests for individual and joint significance
+• Confidence intervals for coefficients
+• Testing linear restrictions
 
 ✅ Currently Available:
-• Chapter 1: Complete with interactive tools
-• Chapter 2: Simple regression (24 possible questions)
-• Chapter 3: Multiple regression (29 possible questions)
-
-📅 Development Status:
-Chapter 4 will include advanced statistical inference tools with:
-• Interactive t-distribution calculator
-• Joint hypothesis testing with F-statistics
-• Real-time confidence interval adjustments
-• Economic significance vs. statistical significance
+• Chapter 1: Introduction to Econometrics
+• Chapter 2: Simple Regression Model  
+• Chapter 3: Multiple Regression Analysis (Current)
 
 🎯 Continue Learning:
-Review Chapters 1-3 or return to the course homepage!
-
-🏆 Chapter 3 Achievement:
-You've now mastered multiple regression analysis with ceteris paribus interpretation, omitted variable bias, multicollinearity, and the Gauss-Markov theorem!`);
+Explore the interactive calculator and try different correlation levels to see how multicollinearity affects your estimates!`);
         }
-
-        // Mark chapter as complete
-        function markChapterComplete() {
-            localStorage.setItem('chapter3Complete', 'true');
-            console.log('Chapter 3 marked as complete!');
-        }
-
-        // Initialize multiple regression calculator on page load
+        
+        // ========================================
+        // INITIALIZATION - SAFE AND SIMPLE
+        // ========================================
+        
+        // Initialize when DOM is fully loaded
         document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(() => {
-                generateMultipleRegressionData();
-            }, 1000);
+            console.log('Chapter 3 loaded successfully - Zero external dependencies!');
+            
+            // Generate initial regression data after a short delay
+            setTimeout(function() {
+                try {
+                    generateRegressionData();
+                    console.log('Initial regression data generated successfully');
+                } catch (error) {
+                    console.log('Error during initial data generation:', error);
+                }
+            }, 500);
         });
-
-        // Track completion
-        let hasScrolledToBottom = false;
-        window.addEventListener('scroll', function() {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100 && !hasScrolledToBottom) {
-                hasScrolledToBottom = true;
-                markChapterComplete();
+        
+        // Backup initialization
+        window.addEventListener('load', function() {
+            console.log('Window fully loaded');
+            if (!multipleRegressionData.length) {
+                setTimeout(function() {
+                    try {
+                        generateRegressionData();
+                    } catch (error) {
+                        console.log('Backup initialization failed:', error);
+                    }
+                }, 1000);
             }
         });
-
-        // Fade-in animation observer
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-
-        // Observe all fade-in elements
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.fade-in').forEach(el => {
-                observer.observe(el);
-            });
-        });
+        
+        console.log('Chapter 3 JavaScript loaded - Ready for interaction!');
+        
     </script>
 </body>
 </html>
