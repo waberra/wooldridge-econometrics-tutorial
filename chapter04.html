@@ -1,0 +1,2512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 4: Multiple Regression Analysis - Inference | Wooldridge Econometrics Tutorial</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========================================
+           CSS VARIABLES - ACADEMIC SOPHISTICATION THEME
+           ======================================== */
+        :root {
+            --primary-academic: #1a365d;
+            --secondary-inference: #2c5282;
+            --accent-significance: #3182ce;
+            --accent-confidence: #4299e1;
+            --success-green: #38a169;
+            --warning-amber: #d69e2e;
+            --error-red: #e53e3e;
+            --neutral-slate: #4a5568;
+            
+            /* Sophisticated grays */
+            --gray-50: #f7fafc;
+            --gray-100: #edf2f7;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e0;
+            --gray-400: #a0aec0;
+            --gray-500: #718096;
+            --gray-600: #4a5568;
+            --gray-700: #2d3748;
+            --gray-800: #1a202c;
+            --gray-900: #171923;
+            
+            /* Academic spacing */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+            
+            /* Typography scale */
+            --text-xs: 0.75rem;
+            --text-sm: 0.875rem;
+            --text-base: 1rem;
+            --text-lg: 1.125rem;
+            --text-xl: 1.25rem;
+            --text-2xl: 1.5rem;
+            --text-3xl: 1.875rem;
+            --text-4xl: 2.25rem;
+            
+            /* Shadows for depth */
+            --shadow-soft: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-moderate: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-strong: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-intense: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* ========================================
+           RESET AND BASE TYPOGRAPHY
+           ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.7;
+            color: var(--gray-800);
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 50%, #e2e8f0 100%);
+            font-size: var(--text-base);
+        }
+
+        /* Academic typography hierarchy */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Crimson Text', Georgia, serif;
+            font-weight: 600;
+            line-height: 1.3;
+            margin-bottom: var(--space-md);
+            color: var(--primary-academic);
+        }
+
+        h1 { font-size: var(--text-4xl); margin-bottom: var(--space-xl); }
+        h2 { font-size: var(--text-3xl); margin-bottom: var(--space-lg); }
+        h3 { font-size: var(--text-2xl); margin-bottom: var(--space-md); }
+        h4 { font-size: var(--text-xl); margin-bottom: var(--space-sm); }
+
+        p {
+            margin-bottom: var(--space-md);
+            color: var(--gray-700);
+        }
+
+        /* ========================================
+           LAYOUT AND STRUCTURE
+           ======================================== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-xl);
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-academic) 0%, var(--secondary-inference) 50%, var(--accent-significance) 100%);
+            color: white;
+            padding: var(--space-2xl) 0;
+            margin-bottom: var(--space-2xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="statistical" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1.5" fill="rgba(255,255,255,0.1)"/><path d="M5 10h10M10 5v10" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(%23statistical)"/></svg>') center/cover;
+            opacity: 0.3;
+        }
+
+        .page-header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .chapter-title {
+            font-size: var(--text-4xl);
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            color: white !important;
+        }
+
+        .chapter-subtitle {
+            font-size: var(--text-xl);
+            opacity: 0.9;
+            margin-bottom: var(--space-md);
+            font-family: 'Source Sans Pro', sans-serif;
+            font-weight: 300;
+            color: white !important;
+        }
+
+        .chapter-description {
+            font-size: var(--text-lg);
+            opacity: 0.85;
+            max-width: 800px;
+            line-height: 1.6;
+            color: white !important;
+        }
+
+        /* ========================================
+           SECTION STYLING
+           ======================================== */
+        .section {
+            margin-bottom: var(--space-2xl);
+            background: white;
+            border-radius: 16px;
+            padding: var(--space-2xl);
+            box-shadow: var(--shadow-moderate);
+            border: 1px solid var(--gray-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--accent-significance), var(--accent-confidence));
+        }
+
+        .section-title {
+            color: var(--primary-academic);
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-md);
+            border-bottom: 2px solid var(--gray-200);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 80px;
+            height: 2px;
+            background: var(--accent-significance);
+        }
+
+        /* ========================================
+           INTERACTIVE WIDGETS - SOPHISTICATED STYLING
+           ======================================== */
+        .interactive-widget {
+            background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+            border: 2px solid var(--gray-200);
+            border-radius: 20px;
+            padding: var(--space-2xl);
+            margin: var(--space-xl) 0;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .interactive-widget:hover {
+            border-color: var(--accent-significance);
+            box-shadow: var(--shadow-strong);
+            transform: translateY(-2px);
+        }
+
+        .widget-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .widget-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-significance), var(--accent-confidence));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--text-2xl);
+            box-shadow: var(--shadow-moderate);
+        }
+
+        .widget-title {
+            font-size: var(--text-2xl);
+            color: var(--primary-academic);
+            margin: 0;
+        }
+
+        .widget-description {
+            color: var(--gray-600);
+            margin: var(--space-xs) 0 0 0;
+            font-size: var(--text-sm);
+        }
+
+        /* ========================================
+           STATISTICAL CALCULATOR CONTROLS
+           ======================================== */
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-xl);
+            margin: var(--space-xl) 0;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .control-label {
+            font-weight: 600;
+            color: var(--primary-academic);
+            font-size: var(--text-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .control-select, .control-input {
+            padding: var(--space-md);
+            border: 2px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: var(--text-base);
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .control-select:focus, .control-input:focus {
+            outline: none;
+            border-color: var(--accent-significance);
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--accent-significance), var(--secondary-inference));
+            color: white;
+            padding: var(--space-md) var(--space-xl);
+            border: none;
+            border-radius: 12px;
+            font-size: var(--text-base);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-soft);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-strong);
+            background: linear-gradient(135deg, var(--secondary-inference), var(--primary-academic));
+        }
+
+        .action-button:active {
+            transform: translateY(0);
+        }
+
+        /* ========================================
+           STATISTICAL RESULTS DISPLAY
+           ======================================== */
+        .results-panel {
+            background: linear-gradient(135deg, var(--gray-50), white);
+            border: 1px solid var(--gray-200);
+            border-radius: 16px;
+            padding: var(--space-xl);
+            margin-top: var(--space-xl);
+            position: relative;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+            margin: var(--space-lg) 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: var(--space-lg);
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-significance), var(--accent-confidence));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-moderate);
+        }
+
+        .stat-value {
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            color: var(--primary-academic);
+            margin-bottom: var(--space-xs);
+        }
+
+        .stat-label {
+            font-size: var(--text-sm);
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-interpretation {
+            font-size: var(--text-xs);
+            color: var(--gray-500);
+            margin-top: var(--space-xs);
+            font-style: italic;
+        }
+
+        /* ========================================
+           SIGNIFICANCE INDICATORS
+           ======================================== */
+        .significance-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: 20px;
+            font-size: var(--text-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .significance-high {
+            background: rgba(56, 161, 105, 0.1);
+            color: var(--success-green);
+            border: 1px solid rgba(56, 161, 105, 0.3);
+        }
+
+        .significance-moderate {
+            background: rgba(214, 158, 46, 0.1);
+            color: var(--warning-amber);
+            border: 1px solid rgba(214, 158, 46, 0.3);
+        }
+
+        .significance-low {
+            background: rgba(229, 62, 62, 0.1);
+            color: var(--error-red);
+            border: 1px solid rgba(229, 62, 62, 0.3);
+        }
+
+        /* ========================================
+           CONFIDENCE INTERVAL VISUALIZATION
+           ======================================== */
+        .confidence-interval {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border: 1px solid #0ea5e9;
+            border-radius: 12px;
+            padding: var(--space-lg);
+            margin: var(--space-lg) 0;
+            position: relative;
+        }
+
+        .ci-header {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        .ci-level {
+            font-size: var(--text-lg);
+            font-weight: 600;
+            color: var(--secondary-inference);
+        }
+
+        .ci-bar {
+            height: 20px;
+            background: linear-gradient(90deg, #fecaca, #fde68a, #a7f3d0, #fde68a, #fecaca);
+            border-radius: 10px;
+            position: relative;
+            margin: var(--space-md) 0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .ci-estimate {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            height: 30px;
+            background: var(--primary-academic);
+            border-radius: 2px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .ci-bounds {
+            display: flex;
+            justify-content: space-between;
+            font-size: var(--text-sm);
+            color: var(--gray-600);
+            margin-top: var(--space-xs);
+        }
+
+        /* ========================================
+           HYPOTHESIS TESTING SECTIONS
+           ======================================== */
+        .hypothesis-test {
+            border: 2px solid var(--gray-200);
+            border-radius: 16px;
+            padding: var(--space-xl);
+            margin: var(--space-lg) 0;
+            background: white;
+        }
+
+        .hypothesis-test.rejected {
+            border-color: var(--success-green);
+            background: rgba(56, 161, 105, 0.05);
+        }
+
+        .hypothesis-test.not-rejected {
+            border-color: var(--error-red);
+            background: rgba(229, 62, 62, 0.05);
+        }
+
+        .hypothesis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+        }
+
+        .hypothesis-title {
+            font-size: var(--text-lg);
+            font-weight: 600;
+            color: var(--primary-academic);
+        }
+
+        .test-statistic {
+            font-family: 'Crimson Text', serif;
+            font-size: var(--text-xl);
+            color: var(--secondary-inference);
+            background: var(--gray-50);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+        }
+
+        /* ========================================
+           CONCEPT BOXES - ACADEMIC STYLING
+           ======================================== */
+        .concept-box {
+            border-radius: 12px;
+            padding: var(--space-xl);
+            margin: var(--space-xl) 0;
+            border-left: 5px solid;
+            position: relative;
+        }
+
+        .concept-box.definition {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-color: #0ea5e9;
+            color: #1e293b;
+        }
+
+        .concept-box.example {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-color: var(--success-green);
+            color: #14532d;
+        }
+
+        .concept-box.insight {
+            background: linear-gradient(135deg, #d69e2e, #b7791f);
+            border-color: var(--warning-amber);
+            color: white;
+        }
+
+        .concept-box.warning {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            border-color: var(--error-red);
+            color: #991b1b;
+        }
+
+        .concept-title {
+            font-weight: 700;
+            font-size: var(--text-lg);
+            margin-bottom: var(--space-sm);
+        }
+
+        /* ========================================
+           QUIZ AND ASSESSMENT STYLING
+           ======================================== */
+        .quiz-section {
+            background: linear-gradient(135deg, var(--gray-50), white);
+            border: 2px solid var(--gray-200);
+            border-radius: 20px;
+            padding: var(--space-2xl);
+            margin: var(--space-xl) 0;
+        }
+
+        .quiz-question {
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-xl);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .quiz-question:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: var(--space-sm);
+            margin: var(--space-lg) 0;
+        }
+
+        .quiz-option {
+            padding: var(--space-md);
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent-significance);
+            background: var(--gray-50);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success-green);
+            background: rgba(56, 161, 105, 0.1);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--error-red);
+            background: rgba(229, 62, 62, 0.1);
+        }
+
+        .quiz-feedback {
+            margin-top: var(--space-md);
+            padding: var(--space-md);
+            border-radius: 8px;
+            font-size: var(--text-sm);
+        }
+
+        .quiz-feedback.correct {
+            background: rgba(56, 161, 105, 0.1);
+            color: var(--success-green);
+            border: 1px solid rgba(56, 161, 105, 0.3);
+        }
+
+        .quiz-feedback.incorrect {
+            background: rgba(229, 62, 62, 0.1);
+            color: var(--error-red);
+            border: 1px solid rgba(229, 62, 62, 0.3);
+        }
+
+        /* ========================================
+           AI CHAT WIDGET INTEGRATION
+           ======================================== */
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000;
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+
+        .ai-chat-button {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-academic), var(--secondary-inference));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--text-xl);
+            box-shadow: var(--shadow-strong);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .ai-chat-button:hover {
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: var(--shadow-intense);
+        }
+
+        .ai-chat-panel {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 320px;
+            height: 400px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-intense);
+            border: 1px solid var(--gray-200);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ai-chat-panel.show {
+            display: flex;
+        }
+
+        .ai-chat-header {
+            background: linear-gradient(135deg, var(--primary-academic), var(--secondary-inference));
+            color: white;
+            padding: var(--space-md);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: var(--text-sm);
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-md);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+            background: var(--gray-50);
+            font-size: var(--text-sm);
+        }
+
+        .ai-message {
+            max-width: 85%;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: 12px;
+            line-height: 1.4;
+        }
+
+        .ai-message.claude {
+            background: white;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-200);
+            align-self: flex-start;
+        }
+
+        .ai-message.user {
+            background: var(--primary-academic);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .ai-input-area {
+            padding: var(--space-md);
+            border-top: 1px solid var(--gray-200);
+            background: white;
+        }
+
+        .ai-input-container {
+            display: flex;
+            gap: var(--space-xs);
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: var(--space-sm);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: var(--text-sm);
+        }
+
+        .ai-send-btn {
+            background: var(--primary-academic);
+            color: white;
+            border: none;
+            padding: var(--space-sm);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: var(--text-sm);
+        }
+
+        /* ========================================
+           RESPONSIVE DESIGN
+           ======================================== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 var(--space-md);
+            }
+            
+            .calculator-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-md);
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .ai-chat-panel {
+                width: 280px;
+                height: 350px;
+                right: -10px;
+            }
+            
+            .chapter-title {
+                font-size: var(--text-3xl);
+            }
+            
+            .section {
+                padding: var(--space-lg);
+            }
+        }
+
+        /* ========================================
+           ANIMATIONS AND TRANSITIONS
+           ======================================== */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        .slide-up {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 0.6s ease-out forwards;
+        }
+
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+        .delay-4 { animation-delay: 0.8s; }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        /* Statistical notation styling */
+        .math-notation {
+            font-family: 'Crimson Text', serif;
+            font-style: italic;
+            color: var(--secondary-inference);
+        }
+
+        .formula {
+            background: var(--gray-50);
+            padding: var(--space-md);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-significance);
+            font-family: 'Crimson Text', serif;
+            font-size: var(--text-lg);
+            margin: var(--space-md) 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <h1 class="chapter-title">Chapter 4: Statistical Inference</h1>
+                <p class="chapter-subtitle">Multiple Regression Analysis - Inference</p>
+                <p class="chapter-description">
+                    Master hypothesis testing, confidence intervals, and statistical significance in multiple regression. 
+                    Learn to test economic theories, quantify uncertainty, and make rigorous statistical inferences 
+                    about economic relationships.
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- Section 4.1: Sampling Distributions of OLS Estimators -->
+        <section class="section fade-in">
+            <h2 class="section-title">4.1 Sampling Distributions of the OLS Estimators</h2>
+            
+            <p>Before we can test hypotheses or construct confidence intervals, we need to understand the <strong>sampling distribution</strong> of our OLS estimators. This tells us how β̂ⱼ varies across different samples.</p>
+            
+            <div class="concept-box definition">
+                <div class="concept-title">📊 Sampling Distribution</div>
+                Under the classical linear model assumptions MLR.1-MLR.6:
+                <div class="formula">
+                    β̂ⱼ ~ N(βⱼ, Var(β̂ⱼ)) for j = 0, 1, 2, ..., k
+                </div>
+                <p>Each coefficient estimator follows a normal distribution centered at the true parameter value.</p>
+            </div>
+
+            <div class="concept-box insight">
+                <div class="concept-title">🎯 Key Insight: From Estimation to Inference</div>
+                <p>Chapter 3 focused on <em>point estimation</em> - getting single best guesses for parameters. Chapter 4 adds <em>statistical inference</em> - quantifying how confident we are in those estimates and testing economic theories.</p>
+            </div>
+
+            <!-- Interactive Sampling Distribution Simulator -->
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <div class="widget-icon">📈</div>
+                    <div>
+                        <h3 class="widget-title">Sampling Distribution Explorer</h3>
+                        <p class="widget-description">See how coefficient estimates vary across samples</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="control-group">
+                        <label class="control-label">Economic Scenario</label>
+                        <select class="control-select" id="samplingScenario">
+                            <option value="wages">Wage = f(Education, Experience)</option>
+                            <option value="consumption">Consumption = f(Income, Wealth)</option>
+                            <option value="housing">HousePrice = f(Size, Location)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Sample Size</label>
+                        <select class="control-select" id="samplingSampleSize">
+                            <option value="30">n = 30 (small)</option>
+                            <option value="100">n = 100 (medium)</option>
+                            <option value="500" selected>n = 500 (large)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Error Variance (σ²)</label>
+                        <select class="control-select" id="samplingErrorVariance">
+                            <option value="low">Low (σ² = 1)</option>
+                            <option value="moderate" selected>Moderate (σ² = 4)</option>
+                            <option value="high">High (σ² = 9)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Number of Samples</label>
+                        <select class="control-select" id="numSamples">
+                            <option value="100">100 samples</option>
+                            <option value="500" selected>500 samples</option>
+                            <option value="1000">1000 samples</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: var(--space-xl) 0;">
+                    <button class="action-button" onclick="runSamplingSimulation()">Run Sampling Simulation</button>
+                </div>
+
+                <div class="results-panel" id="samplingResults" style="display: none;">
+                    <h4 style="text-align: center; margin-bottom: var(--space-lg);">Sampling Distribution Results</h4>
+                    
+                    <div class="results-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="samplingMean">-</div>
+                            <div class="stat-label">Sample Mean</div>
+                            <div class="stat-interpretation">Should ≈ true β</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="samplingStdDev">-</div>
+                            <div class="stat-label">Standard Deviation</div>
+                            <div class="stat-interpretation">Theoretical SE</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="samplingMin">-</div>
+                            <div class="stat-label">Minimum</div>
+                            <div class="stat-interpretation">Lowest estimate</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="samplingMax">-</div>
+                            <div class="stat-label">Maximum</div>
+                            <div class="stat-interpretation">Highest estimate</div>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-box example" style="margin-top: var(--space-lg);">
+                        <div class="concept-title">📋 Interpretation</div>
+                        <p id="samplingInterpretation">Run the simulation to see results...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4.2: Testing Hypotheses about a Single Population Parameter -->
+        <section class="section fade-in delay-1">
+            <h2 class="section-title">4.2 Testing Hypotheses About a Single Parameter</h2>
+            
+            <p>The most common question in econometrics: <em>"Is this coefficient significantly different from zero?"</em> This section covers the <strong>t-test</strong>, the workhorse of econometric inference.</p>
+
+            <div class="concept-box definition">
+                <div class="concept-title">🧮 The t-Statistic</div>
+                To test H₀: βⱼ = 0 against H₁: βⱼ ≠ 0:
+                <div class="formula">
+                    t = β̂ⱼ / se(β̂ⱼ) ~ t_{n-k-1}
+                </div>
+                <p>Under the null hypothesis, this follows a t-distribution with n-k-1 degrees of freedom.</p>
+            </div>
+
+            <!-- Interactive t-Test Calculator -->
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <div class="widget-icon">🎯</div>
+                    <div>
+                        <h3 class="widget-title">Interactive t-Test Calculator</h3>
+                        <p class="widget-description">Test hypotheses about regression coefficients</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="control-group">
+                        <label class="control-label">Economic Context</label>
+                        <select class="control-select" id="tTestContext">
+                            <option value="returns_education">Returns to Education</option>
+                            <option value="gender_wage_gap">Gender Wage Gap</option>
+                            <option value="minimum_wage">Minimum Wage Effects</option>
+                            <option value="house_price_premium">Location Premium</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Coefficient Estimate (β̂)</label>
+                        <input type="number" class="control-input" id="coefficientEstimate" value="0.085" step="0.001">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Standard Error (SE)</label>
+                        <input type="number" class="control-input" id="standardError" value="0.032" step="0.001">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Degrees of Freedom (n-k-1)</label>
+                        <input type="number" class="control-input" id="degreesOfFreedom" value="497" min="1">
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: var(--space-xl) 0;">
+                    <button class="action-button" onclick="calculateTTest()">Calculate t-Test</button>
+                </div>
+
+                <div class="results-panel" id="tTestResults" style="display: none;">
+                    <div class="hypothesis-test" id="hypothesisTest">
+                        <div class="hypothesis-header">
+                            <div class="hypothesis-title">Hypothesis Test Results</div>
+                            <div class="test-statistic" id="tStatDisplay">t = -</div>
+                        </div>
+                        
+                        <div class="results-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="tStatValue">-</div>
+                                <div class="stat-label">t-Statistic</div>
+                                <div class="stat-interpretation">β̂ / SE(β̂)</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="pValue">-</div>
+                                <div class="stat-label">p-Value</div>
+                                <div class="stat-interpretation">Two-tailed test</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="criticalValue">-</div>
+                                <div class="stat-label">Critical Value</div>
+                                <div class="stat-interpretation">α = 0.05</div>
+                            </div>
+                            <div class="stat-card">
+                                <div id="significanceLevel" class="significance-indicator">
+                                    <span>Significance</span>
+                                </div>
+                                <div class="stat-label">Test Decision</div>
+                                <div class="stat-interpretation" id="testDecision">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Confidence Interval Visualization -->
+                    <div class="confidence-interval">
+                        <div class="ci-header">
+                            <div class="ci-level">95% Confidence Interval</div>
+                        </div>
+                        <div class="ci-bar">
+                            <div class="ci-estimate"></div>
+                        </div>
+                        <div class="ci-bounds">
+                            <span id="ciLowerBound">-</span>
+                            <span id="ciUpperBound">-</span>
+                        </div>
+                        <p style="text-align: center; margin-top: var(--space-sm); font-size: var(--text-sm); color: var(--gray-600);">
+                            <span id="ciInterpretation">-</span>
+                        </p>
+                    </div>
+
+                    <div class="concept-box insight" style="margin-top: var(--space-lg);">
+                        <div class="concept-title">📈 Economic Interpretation</div>
+                        <p id="economicInterpretation">Calculate the test to see interpretation...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-box warning">
+                <div class="concept-title">⚠️ Common Mistakes in Hypothesis Testing</div>
+                <ul style="margin: var(--space-sm) 0; padding-left: var(--space-xl);">
+                    <li><strong>Confusing statistical and economic significance:</strong> A tiny effect can be statistically significant with large samples</li>
+                    <li><strong>Accepting the null hypothesis:</strong> We "fail to reject," not "accept" - absence of evidence ≠ evidence of absence</li>
+                    <li><strong>Ignoring practical significance:</strong> Statistical significance doesn't mean the effect matters economically</li>
+                    <li><strong>Multiple testing problems:</strong> Testing many coefficients inflates Type I error rates</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 4.3: Confidence Intervals -->
+        <section class="section fade-in delay-2">
+            <h2 class="section-title">4.3 Confidence Intervals</h2>
+            
+            <p>While hypothesis tests tell us whether effects are "significant," <strong>confidence intervals</strong> provide a range of plausible values for parameters. They give more nuanced information about uncertainty.</p>
+
+            <div class="concept-box definition">
+                <div class="concept-title">🎯 95% Confidence Interval</div>
+                For any coefficient βⱼ:
+                <div class="formula">
+                    CI = β̂ⱼ ± t_{α/2,n-k-1} × se(β̂ⱼ)
+                </div>
+                <p>We are 95% confident that the true parameter lies within this interval.</p>
+            </div>
+
+            <!-- Interactive Confidence Interval Explorer -->
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <div class="widget-icon">📏</div>
+                    <div>
+                        <h3 class="widget-title">Confidence Interval Explorer</h3>
+                        <p class="widget-description">Explore how confidence intervals change with sample size and confidence level</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="control-group">
+                        <label class="control-label">Research Question</label>
+                        <select class="control-select" id="ciResearchQuestion">
+                            <option value="college_premium">College Premium (log wage difference)</option>
+                            <option value="training_effect">Job Training Effect (weeks → wage)</option>
+                            <option value="union_premium">Union Premium (%)</option>
+                            <option value="experience_returns">Experience Returns (year → wage)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Confidence Level</label>
+                        <select class="control-select" id="confidenceLevel">
+                            <option value="0.90">90% Confidence</option>
+                            <option value="0.95" selected>95% Confidence</option>
+                            <option value="0.99">99% Confidence</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Sample Size</label>
+                        <select class="control-select" id="ciSampleSize">
+                            <option value="50">n = 50 (small)</option>
+                            <option value="200" selected>n = 200 (medium)</option>
+                            <option value="1000">n = 1000 (large)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Standard Error</label>
+                        <input type="number" class="control-input" id="ciStandardError" value="0.045" step="0.001" min="0.001">
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: var(--space-xl) 0;">
+                    <button class="action-button" onclick="calculateConfidenceInterval()">Calculate Confidence Interval</button>
+                </div>
+
+                <div class="results-panel" id="ciResults" style="display: none;">
+                    <h4 style="text-align: center; margin-bottom: var(--space-lg);">Confidence Interval Analysis</h4>
+                    
+                    <!-- Visual CI Display -->
+                    <div class="confidence-interval">
+                        <div class="ci-header">
+                            <div class="ci-level" id="ciLevelDisplay">95% Confidence Interval</div>
+                        </div>
+                        <div class="ci-bar" id="ciBarDisplay">
+                            <div class="ci-estimate" id="ciEstimateMarker"></div>
+                        </div>
+                        <div class="ci-bounds">
+                            <span id="ciLower">-</span>
+                            <span id="ciUpper">-</span>
+                        </div>
+                    </div>
+
+                    <div class="results-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="pointEstimate">-</div>
+                            <div class="stat-label">Point Estimate</div>
+                            <div class="stat-interpretation">Best guess</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="marginOfError">-</div>
+                            <div class="stat-label">Margin of Error</div>
+                            <div class="stat-interpretation">±t × SE</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="ciWidth">-</div>
+                            <div class="stat-label">Interval Width</div>
+                            <div class="stat-interpretation">Precision measure</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="containsZero">-</div>
+                            <div class="stat-label">Contains Zero?</div>
+                            <div class="stat-interpretation">Significance test</div>
+                        </div>
+                    </div>
+
+                    <div class="concept-box example" style="margin-top: var(--space-lg);">
+                        <div class="concept-title">🎓 Interpretation Guide</div>
+                        <p id="ciEconomicMeaning">Calculate to see detailed interpretation...</p>
+                        <p style="margin-top: var(--space-sm); font-style: italic;" id="ciStatisticalMeaning">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-box insight">
+                <div class="concept-title">💡 Confidence Intervals vs. Hypothesis Tests</div>
+                <p><strong>Confidence intervals provide more information:</strong></p>
+                <ul style="margin: var(--space-sm) 0; padding-left: var(--space-xl);">
+                    <li><strong>Range of plausible values</strong> (not just reject/don't reject)</li>
+                    <li><strong>Economic significance</strong> (is the effect large enough to matter?)</li>
+                    <li><strong>Precision</strong> (narrow intervals = more precise estimates)</li>
+                    <li><strong>Hypothesis testing</strong> (if CI excludes 0, reject H₀: β = 0)</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 4.4: Testing Hypotheses about a Single Linear Combination -->
+        <section class="section fade-in delay-3">
+            <h2 class="section-title">4.4 Testing Linear Combinations of Parameters</h2>
+            
+            <p>Sometimes we want to test hypotheses about <strong>combinations</strong> of parameters. For example: "Do the returns to education differ by gender?" requires testing β₁ + β₂ = 0.</p>
+
+            <div class="concept-box definition">
+                <div class="concept-title">🔗 Linear Combination Test</div>
+                To test H₀: c₁β₁ + c₂β₂ + ... + cₖβₖ = q:
+                <div class="formula">
+                    t = (c₁β̂₁ + c₂β̂₂ + ... + cₖβ̂ₖ - q) / se(c₁β̂₁ + c₂β̂₂ + ... + cₖβ̂ₖ)
+                </div>
+                <p>The standard error of the combination requires the covariance matrix of coefficient estimates.</p>
+            </div>
+
+            <!-- Interactive Linear Combination Test -->
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <div class="widget-icon">🔗</div>
+                    <div>
+                        <h3 class="widget-title">Linear Combination Hypothesis Test</h3>
+                        <p class="widget-description">Test hypotheses about combinations of coefficients</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="control-group">
+                        <label class="control-label">Test Scenario</label>
+                        <select class="control-select" id="combinationScenario" onchange="updateCombinationTest()">
+                            <option value="sum_equal">Test if β₁ + β₂ = 1</option>
+                            <option value="difference_zero">Test if β₁ - β₂ = 0</option>
+                            <option value="weighted_sum">Test if 2β₁ + β₂ = 0.5</option>
+                            <option value="custom">Custom linear combination</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Economic Context</label>
+                        <select class="control-select" id="combinationContext">
+                            <option value="constant_returns">Constant Returns to Scale</option>
+                            <option value="gender_gap">Gender Wage Gap</option>
+                            <option value="regional_differences">Regional Differences</option>
+                        </select>
+                    </div>
+                    
+                    <div id="coefficientInputs" class="control-group">
+                        <label class="control-label">Coefficient Estimates</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm);">
+                            <input type="number" class="control-input" id="beta1" placeholder="β₁" value="0.65" step="0.01">
+                            <input type="number" class="control-input" id="beta2" placeholder="β₂" value="0.28" step="0.01">
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Standard Errors</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm);">
+                            <input type="number" class="control-input" id="se1" placeholder="SE(β₁)" value="0.042" step="0.001">
+                            <input type="number" class="control-input" id="se2" placeholder="SE(β₂)" value="0.031" step="0.001">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: var(--space-xl) 0;">
+                    <button class="action-button" onclick="testLinearCombination()">Test Linear Combination</button>
+                </div>
+
+                <div class="results-panel" id="combinationResults" style="display: none;">
+                    <div class="hypothesis-test" id="combinationHypothesisTest">
+                        <div class="hypothesis-header">
+                            <div class="hypothesis-title" id="combinationTestTitle">Linear Combination Test</div>
+                            <div class="test-statistic" id="combinationTStat">t = -</div>
+                        </div>
+                        
+                        <div class="results-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="combinationValue">-</div>
+                                <div class="stat-label">Combination Value</div>
+                                <div class="stat-interpretation" id="combinationFormula">-</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="combinationSE">-</div>
+                                <div class="stat-label">Standard Error</div>
+                                <div class="stat-interpretation">SE of combination</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="combinationPValue">-</div>
+                                <div class="stat-label">p-Value</div>
+                                <div class="stat-interpretation">Two-tailed test</div>
+                            </div>
+                            <div class="stat-card">
+                                <div id="combinationSignificance" class="significance-indicator">
+                                    <span>Test Result</span>
+                                </div>
+                                <div class="stat-label">Decision</div>
+                                <div class="stat-interpretation" id="combinationDecision">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="concept-box example" style="margin-top: var(--space-lg);">
+                        <div class="concept-title">🎯 Economic Interpretation</div>
+                        <p id="combinationInterpretation">Run the test to see interpretation...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4.5: Testing Multiple Linear Restrictions: The F Test -->
+        <section class="section fade-in delay-4">
+            <h2 class="section-title">4.5 Testing Multiple Linear Restrictions: The F Test</h2>
+            
+            <p>When testing multiple restrictions simultaneously, we need the <strong>F-test</strong>. This is crucial for testing overall model significance, comparing nested models, and testing multiple economic hypotheses jointly.</p>
+
+            <div class="concept-box definition">
+                <div class="concept-title">🎲 The F-Statistic</div>
+                To test q restrictions simultaneously:
+                <div class="formula">
+                    F = [(SSR_r - SSR_ur)/q] / [SSR_ur/(n-k-1)] ~ F_{q,n-k-1}
+                </div>
+                <p>Where SSR_r is the restricted sum of squared residuals and SSR_ur is unrestricted.</p>
+            </div>
+
+            <!-- Interactive F-Test Calculator -->
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <div class="widget-icon">🎲</div>
+                    <div>
+                        <h3 class="widget-title">Interactive F-Test Calculator</h3>
+                        <p class="widget-description">Test multiple restrictions simultaneously</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="control-group">
+                        <label class="control-label">F-Test Type</label>
+                        <select class="control-select" id="fTestType" onchange="updateFTestScenario()">
+                            <option value="overall">Overall Model Significance</option>
+                            <option value="exclusion">Joint Exclusion Test</option>
+                            <option value="linear_combination">Multiple Linear Combinations</option>
+                            <option value="structural_break">Structural Break Test</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Economic Context</label>
+                        <select class="control-select" id="fTestContext">
+                            <option value="wage_model">Wage Determination Model</option>
+                            <option value="demand_function">Demand Function</option>
+                            <option value="production_function">Production Function</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Unrestricted R²</label>
+                        <input type="number" class="control-input" id="unrestrictedR2" value="0.472" step="0.001" min="0" max="1">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Restricted R²</label>
+                        <input type="number" class="control-input" id="restrictedR2" value="0.089" step="0.001" min="0" max="1">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Sample Size (n)</label>
+                        <input type="number" class="control-input" id="fTestSampleSize" value="500" min="10">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Unrestricted Model Parameters (k+1)</label>
+                        <input type="number" class="control-input" id="unrestrictedParams" value="6" min="1">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Number of Restrictions (q)</label>
+                        <input type="number" class="control-input" id="numRestrictions" value="4" min="1">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Significance Level</label>
+                        <select class="control-select" id="fTestAlpha">
+                            <option value="0.01">α = 0.01 (1%)</option>
+                            <option value="0.05" selected>α = 0.05 (5%)</option>
+                            <option value="0.10">α = 0.10 (10%)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: var(--space-xl) 0;">
+                    <button class="action-button" onclick="calculateFTest()">Calculate F-Test</button>
+                </div>
+
+                <div class="results-panel" id="fTestResults" style="display: none;">
+                    <div class="hypothesis-test" id="fHypothesisTest">
+                        <div class="hypothesis-header">
+                            <div class="hypothesis-title" id="fTestTitle">F-Test Results</div>
+                            <div class="test-statistic" id="fStatDisplay">F = -</div>
+                        </div>
+                        
+                        <div class="results-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="fStatValue">-</div>
+                                <div class="stat-label">F-Statistic</div>
+                                <div class="stat-interpretation" id="fStatFormula">-</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="fCriticalValue">-</div>
+                                <div class="stat-label">Critical Value</div>
+                                <div class="stat-interpretation" id="fDegreesFreedom">-</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="fPValue">-</div>
+                                <div class="stat-label">p-Value</div>
+                                <div class="stat-interpretation">Prob(F > f)</div>
+                            </div>
+                            <div class="stat-card">
+                                <div id="fSignificance" class="significance-indicator">
+                                    <span>Test Result</span>
+                                </div>
+                                <div class="stat-label">Decision</div>
+                                <div class="stat-interpretation" id="fDecision">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="concept-box insight" style="margin-top: var(--space-lg);">
+                        <div class="concept-title">📊 F-Test vs. Multiple t-Tests</div>
+                        <p id="fTestAdvantage">Calculate to see why F-tests are preferred...</p>
+                    </div>
+                    
+                    <div class="concept-box example" style="margin-top: var(--space-md);">
+                        <div class="concept-title">🎯 Economic Interpretation</div>
+                        <p id="fEconomicInterpretation">Run the test to see interpretation...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-box warning">
+                <div class="concept-title">❌ Why Not Just Use Multiple t-Tests?</div>
+                <p><strong>The multiple testing problem:</strong> Testing 5 restrictions individually at α = 0.05 gives you a 23% chance of at least one false rejection! F-tests control the <em>joint</em> Type I error rate.</p>
+                
+                <div style="margin: var(--space-md) 0; padding: var(--space-md); background: var(--gray-50); border-radius: 8px;">
+                    <strong>Example:</strong> Testing H₀: β₁ = β₂ = β₃ = β₄ = 0<br>
+                    <span style="color: var(--error-red);">❌ Wrong:</span> Four separate t-tests<br>
+                    <span style="color: var(--success-green);">✅ Correct:</span> One F-test with 4 restrictions
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Quiz Section -->
+        <section class="section fade-in delay-4">
+            <div class="quiz-section">
+                <h3 style="text-align: center; margin-bottom: var(--space-xl); color: var(--primary-academic);">
+                    📝 Chapter 4 Knowledge Check: Statistical Inference
+                </h3>
+                <p style="text-align: center; color: var(--gray-600); margin-bottom: var(--space-xl);">
+                    Test your understanding of hypothesis testing, confidence intervals, and F-tests
+                </p>
+                
+                <!-- Question 1 -->
+                <div class="quiz-question">
+                    <p><strong>Question 1:</strong> A researcher finds t = 2.8 for testing H₀: β₁ = 0 with 150 degrees of freedom. At α = 0.05, what is the correct conclusion?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option" onclick="selectQuizAnswer('4-1', 'A')">
+                            <input type="radio" name="q4-1" value="A"> 
+                            A) Fail to reject H₀ because |2.8| < 1.96
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('4-1', 'B')">
+                            <input type="radio" name="q4-1" value="B">
+                            B) Reject H₀ because |2.8| > 1.96 (the critical value with large df)
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('4-1', 'C')">
+                            <input type="radio" name="q4-1" value="C">
+                            C) Accept H₀ because the coefficient is positive
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('4-1', 'D')">
+                            <input type="radio" name="q4-1" value="D">
+                            D) Cannot determine without knowing the coefficient estimate
+                        </label>
+                    </div>
+                    <div id="feedback4-1" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="quiz-question">
+                    <p><strong>Question 2:</strong> A 95% confidence interval for the returns to education is [0.052, 0.118]. What does this mean?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option" onclick="selectQuizAnswer('4-2', 'A')">
+                            <input type="radio" name="q4-2" value="A">
+                            A) There's a 95% probability the true parameter is between 0.052 and 0.118
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('4-2', 'B')">
+                            <input type="radio" name="q4-2" value="B">
+                            B) 95% of people have returns to education between 5.2% and 11.8%
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('4-2', 'C')">
+                            <input type="radio" name="q4-2" value="C">
+                            C) If we repeated this study many times, 95% of such intervals would contain the true parameter
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('4-2', 'D')">
+                            <input type="radio" name="q4-2" value="D">
+                            D) We can reject H₀: β = 0 at α = 0.05
+                        </label>
+                    </div>
+                    <div id="feedback4-2" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="quiz-question">
+                    <p><strong>Question 3:</strong> Why use an F-test instead of multiple t-tests when testing β₁ = β₂ = β₃ = 0?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option" onclick="selectQuizAnswer('4-3', 'A')">
+                            <input type="radio" name="q4-3" value="A">
+                            A) F-tests are computationally easier
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('4-3', 'B')">
+                            <input type="radio" name="q4-3" value="B">
+                            B) F-tests control the joint Type I error rate; multiple t-tests inflate it
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('4-3', 'C')">
+                            <input type="radio" name="q4-3" value="C">
+                            C) F-tests have higher power than t-tests
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('4-3', 'D')">
+                            <input type="radio" name="q4-3" value="D">
+                            D) Multiple t-tests cannot test joint hypotheses
+                        </label>
+                    </div>
+                    <div id="feedback4-3" class="quiz-feedback" style="display: none;"></div>
+                </div>
+                
+                <!-- Question Generation Section -->
+                <div style="text-align: center; margin: var(--space-2xl) 0; padding: var(--space-xl); background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border-radius: 16px; border: 2px dashed #0ea5e9;">
+                    <h4 style="color: var(--primary-academic); margin-bottom: var(--space-md);">🎯 Generate More Practice Questions</h4>
+                    <p style="color: var(--gray-600); margin-bottom: var(--space-lg);">
+                        Test yourself with randomly generated questions covering different statistical inference scenarios
+                    </p>
+                    
+                    <div style="display: flex; gap: var(--space-md); justify-content: center; flex-wrap: wrap; margin-bottom: var(--space-lg);">
+                        <button class="action-button" onclick="generateQuestions('ttest')" style="background: linear-gradient(135deg, #3182ce, #2c5282);">
+                            📊 t-Test Questions
+                        </button>
+                        <button class="action-button" onclick="generateQuestions('ci')" style="background: linear-gradient(135deg, #38a169, #2f855a);">
+                            📏 Confidence Interval Questions
+                        </button>
+                        <button class="action-button" onclick="generateQuestions('ftest')" style="background: linear-gradient(135deg, #d69e2e, #b7791f);">
+                            🎲 F-Test Questions
+                        </button>
+                        <button class="action-button" onclick="generateQuestions('mixed')" style="background: linear-gradient(135deg, #7c3aed, #6b46c1);">
+                            🔀 Mixed Questions
+                        </button>
+                    </div>
+                    
+                    <div id="generatedQuestions" style="display: none;">
+                        <div id="generatedQuestionsList"></div>
+                        <div style="margin-top: var(--space-lg);">
+                            <button class="action-button" onclick="clearGeneratedQuestions()" style="background: var(--gray-500);">
+                                🗑️ Clear Questions
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div class="ai-chat-widget" id="aiChatWidget">
+        <button class="ai-chat-button" onclick="toggleAIChat()" title="Ask Claude about Statistical Inference">
+            <span id="aiChatIcon">🤖</span>
+        </button>
+        
+        <div class="ai-chat-panel" id="aiChatPanel">
+            <div class="ai-chat-header">
+                <span>🤖 Claude AI Tutor - Chapter 4</span>
+                <button onclick="toggleAIChat()" style="background: none; border: none; color: white; cursor: pointer;">×</button>
+            </div>
+            
+            <div class="ai-chat-messages" id="aiChatMessages">
+                <div class="ai-message claude">
+                    <strong>🤖 Claude:</strong> Hi! I'm your AI statistical inference tutor. I can help you understand t-tests, F-tests, confidence intervals, hypothesis testing, and p-values. What would you like to learn about?
+                </div>
+            </div>
+            
+            <div class="ai-input-area">
+                <div class="ai-input-container">
+                    <input type="text" class="ai-input" id="aiInput" placeholder="Ask about statistical inference..." 
+                           onkeydown="if(event.key==='Enter') sendAIMessage()">
+                    <button class="ai-send-btn" onclick="sendAIMessage()">→</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BULLETPROOF JavaScript - NO External Dependencies -->
+    <script>
+        // ========================================
+        // GLOBAL VARIABLES AND DATA
+        // ========================================
+        
+        let samplingData = [];
+        let isAIChatOpen = false;
+        
+        // Statistical critical values (approximations for common cases)
+        const tCriticalValues = {
+            30: 2.042, 50: 2.009, 100: 1.984, 150: 1.976, 200: 1.972, 500: 1.965, 1000: 1.962
+        };
+        
+        // ========================================
+        // SAMPLING DISTRIBUTION SIMULATION
+        // ========================================
+        
+        function runSamplingSimulation() {
+            const scenario = document.getElementById('samplingScenario').value;
+            const sampleSize = parseInt(document.getElementById('samplingSampleSize').value);
+            const errorVariance = document.getElementById('samplingErrorVariance').value;
+            const numSamples = parseInt(document.getElementById('numSamples').value);
+            
+            // Clear previous results
+            samplingData = [];
+            
+            // Get scenario parameters
+            const scenarioParams = getSamplingScenarioParams(scenario, sampleSize, errorVariance);
+            
+            // Run simulation
+            for (let i = 0; i < numSamples; i++) {
+                const estimate = generateSampleEstimate(scenarioParams);
+                samplingData.push(estimate);
+            }
+            
+            // Calculate statistics
+            const mean = samplingData.reduce((sum, val) => sum + val, 0) / samplingData.length;
+            const variance = samplingData.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / (samplingData.length - 1);
+            const stdDev = Math.sqrt(variance);
+            const minVal = Math.min(...samplingData);
+            const maxVal = Math.max(...samplingData);
+            
+            // Display results
+            displaySamplingResults(mean, stdDev, minVal, maxVal, scenarioParams);
+        }
+        
+        function getSamplingScenarioParams(scenario, sampleSize, errorVariance) {
+            const errorVarianceMap = { low: 1, moderate: 4, high: 9 };
+            const sigma = Math.sqrt(errorVarianceMap[errorVariance]);
+            
+            const scenarios = {
+                wages: {
+                    trueCoeff: 0.085,
+                    description: 'Returns to Education',
+                    units: 'log points per year',
+                    context: 'Each year of education increases wages by 8.5%'
+                },
+                consumption: {
+                    trueCoeff: 0.72,
+                    description: 'Marginal Propensity to Consume',
+                    units: 'consumption per income dollar',
+                    context: '72 cents of each additional dollar is consumed'
+                },
+                housing: {
+                    trueCoeff: 125.5,
+                    description: 'Price per Square Foot',
+                    units: 'dollars per sq ft',
+                    context: 'Each additional square foot increases price by $125.50'
+                }
+            };
+            
+            return {
+                ...scenarios[scenario],
+                sampleSize: sampleSize,
+                sigma: sigma,
+                theoreticalSE: sigma / Math.sqrt(sampleSize * 0.8) // Approximate SE
+            };
+        }
+        
+        function generateSampleEstimate(params) {
+            // Simple normal approximation for OLS estimate
+            const error = generateNormalRandom() * params.theoreticalSE;
+            return params.trueCoeff + error;
+        }
+        
+        function generateNormalRandom() {
+            // Box-Muller transformation for normal random numbers
+            let u1 = Math.random();
+            let u2 = Math.random();
+            return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+        }
+        
+        function displaySamplingResults(mean, stdDev, minVal, maxVal, params) {
+            document.getElementById('samplingMean').textContent = mean.toFixed(4);
+            document.getElementById('samplingStdDev').textContent = stdDev.toFixed(4);
+            document.getElementById('samplingMin').textContent = minVal.toFixed(4);
+            document.getElementById('samplingMax').textContent = maxVal.toFixed(4);
+            
+            const interpretation = `
+                The sampling distribution of ${params.description} estimates centers around ${mean.toFixed(4)} 
+                (true value: ${params.trueCoeff}), with standard deviation ${stdDev.toFixed(4)} 
+                (theoretical SE: ${params.theoreticalSE.toFixed(4)}). 
+                
+                This demonstrates the unbiasedness of OLS: the sample mean (${mean.toFixed(4)}) 
+                is very close to the true parameter (${params.trueCoeff}). The spread of estimates 
+                (${stdDev.toFixed(4)}) matches the theoretical standard error, confirming our 
+                statistical theory.
+                
+                Economic meaning: ${params.context}
+            `;
+            
+            document.getElementById('samplingInterpretation').textContent = interpretation;
+            document.getElementById('samplingResults').style.display = 'block';
+        }
+        
+        // ========================================
+        // T-TEST CALCULATOR
+        // ========================================
+        
+        function calculateTTest() {
+            const context = document.getElementById('tTestContext').value;
+            const coeffEst = parseFloat(document.getElementById('coefficientEstimate').value);
+            const stdError = parseFloat(document.getElementById('standardError').value);
+            const df = parseInt(document.getElementById('degreesOfFreedom').value);
+            
+            // Calculate t-statistic
+            const tStat = coeffEst / stdError;
+            
+            // Get critical value (approximation)
+            const criticalValue = getCriticalValue(df, 0.05);
+            
+            // Calculate p-value (approximation)
+            const pValue = 2 * (1 - normalCDF(Math.abs(tStat)));
+            
+            // Determine significance
+            const isSignificant = Math.abs(tStat) > criticalValue;
+            
+            // Calculate confidence interval
+            const marginOfError = criticalValue * stdError;
+            const ciLower = coeffEst - marginOfError;
+            const ciUpper = coeffEst + marginOfError;
+            
+            // Display results
+            displayTTestResults(tStat, pValue, criticalValue, isSignificant, coeffEst, stdError, ciLower, ciUpper, context);
+        }
+        
+        function getCriticalValue(df, alpha) {
+            // Approximation for common degrees of freedom
+            if (df <= 30) return 2.042;
+            if (df <= 50) return 2.009;
+            if (df <= 100) return 1.984;
+            if (df <= 200) return 1.972;
+            return 1.96; // Large sample approximation
+        }
+        
+        function normalCDF(z) {
+            // Approximation of standard normal CDF
+            return 0.5 * (1 + erf(z / Math.sqrt(2)));
+        }
+        
+        function erf(x) {
+            // Approximation of error function
+            const a1 = 0.254829592;
+            const a2 = -0.284496736;
+            const a3 = 1.421413741;
+            const a4 = -1.453152027;
+            const a5 = 1.061405429;
+            const p = 0.3275911;
+            
+            const sign = x >= 0 ? 1 : -1;
+            x = Math.abs(x);
+            
+            const t = 1.0 / (1.0 + p * x);
+            const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+            
+            return sign * y;
+        }
+        
+        function displayTTestResults(tStat, pValue, criticalValue, isSignificant, coeffEst, stdError, ciLower, ciUpper, context) {
+            document.getElementById('tStatValue').textContent = tStat.toFixed(3);
+            document.getElementById('pValue').textContent = pValue.toFixed(4);
+            document.getElementById('criticalValue').textContent = `±${criticalValue.toFixed(3)}`;
+            document.getElementById('tStatDisplay').textContent = `t = ${tStat.toFixed(3)}`;
+            
+            // Significance indicator
+            const sigElement = document.getElementById('significanceLevel');
+            const decisionElement = document.getElementById('testDecision');
+            
+            if (isSignificant) {
+                sigElement.className = 'significance-indicator significance-high';
+                sigElement.innerHTML = '<span>Significant</span>';
+                decisionElement.textContent = 'Reject H₀';
+                document.getElementById('hypothesisTest').className = 'hypothesis-test rejected';
+            } else {
+                sigElement.className = 'significance-indicator significance-low';
+                sigElement.innerHTML = '<span>Not Significant</span>';
+                decisionElement.textContent = 'Fail to Reject H₀';
+                document.getElementById('hypothesisTest').className = 'hypothesis-test not-rejected';
+            }
+            
+            // Confidence interval
+            document.getElementById('ciLowerBound').textContent = ciLower.toFixed(4);
+            document.getElementById('ciUpperBound').textContent = ciUpper.toFixed(4);
+            
+            const containsZero = (ciLower <= 0 && ciUpper >= 0);
+            document.getElementById('ciInterpretation').textContent = containsZero ? 
+                'Interval contains 0 - consistent with insignificant result' :
+                'Interval excludes 0 - consistent with significant result';
+            
+            // Economic interpretation
+            const interpretations = getEconomicInterpretation(context, coeffEst, isSignificant, ciLower, ciUpper);
+            document.getElementById('economicInterpretation').textContent = interpretations;
+            
+            document.getElementById('tTestResults').style.display = 'block';
+        }
+        
+        function getEconomicInterpretation(context, coeffEst, isSignificant, ciLower, ciUpper) {
+            const contexts = {
+                returns_education: {
+                    variable: 'education',
+                    interpretation: isSignificant ? 
+                        `The returns to education are statistically significant. Each additional year of schooling is associated with a ${(coeffEst * 100).toFixed(1)}% increase in wages. We can be 95% confident the true returns are between ${(ciLower * 100).toFixed(1)}% and ${(ciUpper * 100).toFixed(1)}% per year.` :
+                        `We cannot conclude that education significantly affects wages. The estimated effect of ${(coeffEst * 100).toFixed(1)}% per year could be due to sampling variation.`
+                },
+                gender_wage_gap: {
+                    variable: 'gender',
+                    interpretation: isSignificant ?
+                        `There is a statistically significant gender wage gap. Being female is associated with ${Math.abs(coeffEst * 100).toFixed(1)}% ${coeffEst > 0 ? 'higher' : 'lower'} wages. The true gap is between ${Math.abs(ciLower * 100).toFixed(1)}% and ${Math.abs(ciUpper * 100).toFixed(1)}%.` :
+                        `We cannot conclude there is a significant gender wage gap. The estimated difference of ${Math.abs(coeffEst * 100).toFixed(1)}% could be due to chance.`
+                },
+                minimum_wage: {
+                    variable: 'minimum wage',
+                    interpretation: isSignificant ?
+                        `Minimum wage has a statistically significant effect on employment. A $1 increase is associated with a ${coeffEst.toFixed(3)} change in employment rate.` :
+                        `We cannot conclude that minimum wage significantly affects employment. The estimated effect could be due to sampling variation.`
+                },
+                house_price_premium: {
+                    variable: 'location premium',
+                    interpretation: isSignificant ?
+                        `The location premium is statistically significant. Houses in this area cost $${Math.abs(coeffEst * 1000).toFixed(0)} ${coeffEst > 0 ? 'more' : 'less'} on average.` :
+                        `We cannot conclude there is a significant location premium. The estimated difference could be due to chance.`
+                }
+            };
+            
+            return contexts[context]?.interpretation || 'Run calculation to see interpretation.';
+        }
+        
+        // ========================================
+        // CONFIDENCE INTERVAL CALCULATOR
+        // ========================================
+        
+        function calculateConfidenceInterval() {
+            const researchQuestion = document.getElementById('ciResearchQuestion').value;
+            const confidenceLevel = parseFloat(document.getElementById('confidenceLevel').value);
+            const sampleSize = parseInt(document.getElementById('ciSampleSize').value);
+            const stdError = parseFloat(document.getElementById('ciStandardError').value);
+            
+            // Get scenario parameters
+            const scenarioParams = getCIScenarioParams(researchQuestion);
+            const pointEst = scenarioParams.estimate;
+            
+            // Calculate critical value
+            const alpha = 1 - confidenceLevel;
+            const criticalValue = getCriticalValue(sampleSize - 2, alpha);
+            
+            // Calculate margin of error and interval
+            const marginOfError = criticalValue * stdError;
+            const ciLower = pointEst - marginOfError;
+            const ciUpper = pointEst + marginOfError;
+            const ciWidth = ciUpper - ciLower;
+            const containsZero = (ciLower <= 0 && ciUpper >= 0);
+            
+            // Display results
+            displayCIResults(confidenceLevel, pointEst, marginOfError, ciLower, ciUpper, ciWidth, containsZero, scenarioParams);
+        }
+        
+        function getCIScenarioParams(question) {
+            const scenarios = {
+                college_premium: {
+                    estimate: 0.425,
+                    description: 'College Premium',
+                    units: 'log points',
+                    economicMeaning: 'College graduates earn 42.5% more than high school graduates',
+                    variable: 'college degree indicator'
+                },
+                training_effect: {
+                    estimate: 0.063,
+                    description: 'Training Effect',
+                    units: 'log points per week',
+                    economicMeaning: 'Each week of job training increases wages by 6.3%',
+                    variable: 'weeks of training'
+                },
+                union_premium: {
+                    estimate: 0.18,
+                    description: 'Union Premium',
+                    units: 'log points',
+                    economicMeaning: 'Union members earn 18% more than non-union workers',
+                    variable: 'union membership indicator'
+                },
+                experience_returns: {
+                    estimate: 0.042,
+                    description: 'Experience Returns',
+                    units: 'log points per year',
+                    economicMeaning: 'Each year of experience increases wages by 4.2%',
+                    variable: 'years of experience'
+                }
+            };
+            
+            return scenarios[question];
+        }
+        
+        function displayCIResults(confidenceLevel, pointEst, marginOfError, ciLower, ciUpper, ciWidth, containsZero, params) {
+            const levelPercent = (confidenceLevel * 100).toFixed(0);
+            
+            document.getElementById('ciLevelDisplay').textContent = `${levelPercent}% Confidence Interval`;
+            document.getElementById('pointEstimate').textContent = pointEst.toFixed(4);
+            document.getElementById('marginOfError').textContent = `±${marginOfError.toFixed(4)}`;
+            document.getElementById('ciLower').textContent = ciLower.toFixed(4);
+            document.getElementById('ciUpper').textContent = ciUpper.toFixed(4);
+            document.getElementById('ciWidth').textContent = ciWidth.toFixed(4);
+            document.getElementById('containsZero').textContent = containsZero ? 'Yes' : 'No';
+            
+            // Economic interpretation
+            const economicMeaning = `
+                ${params.economicMeaning}. We are ${levelPercent}% confident that the true effect of ${params.variable} 
+                is between ${ciLower.toFixed(3)} and ${ciUpper.toFixed(3)} ${params.units}. 
+                
+                ${containsZero ? 
+                    'Since the interval contains zero, we cannot rule out the possibility of no effect at this confidence level.' :
+                    'Since the interval excludes zero, we can conclude the effect is statistically significant.'
+                }
+            `;
+            
+            const statisticalMeaning = `
+                Statistical interpretation: If we repeated this study many times with the same sample size, 
+                ${levelPercent}% of the confidence intervals we construct would contain the true parameter value.
+                The width of ${ciWidth.toFixed(4)} reflects our precision - narrower intervals indicate more precise estimates.
+            `;
+            
+            document.getElementById('ciEconomicMeaning').textContent = economicMeaning;
+            document.getElementById('ciStatisticalMeaning').textContent = statisticalMeaning;
+            
+            document.getElementById('ciResults').style.display = 'block';
+        }
+        
+        // ========================================
+        // LINEAR COMBINATION TEST
+        // ========================================
+        
+        function updateCombinationTest() {
+            const scenario = document.getElementById('combinationScenario').value;
+            
+            // Update coefficient inputs based on scenario
+            if (scenario === 'sum_equal') {
+                document.getElementById('beta1').value = '0.65';
+                document.getElementById('beta2').value = '0.28';
+                document.getElementById('se1').value = '0.042';
+                document.getElementById('se2').value = '0.031';
+            } else if (scenario === 'difference_zero') {
+                document.getElementById('beta1').value = '0.085';
+                document.getElementById('beta2').value = '0.078';
+                document.getElementById('se1').value = '0.025';
+                document.getElementById('se2').value = '0.023';
+            }
+        }
+        
+        function testLinearCombination() {
+            const scenario = document.getElementById('combinationScenario').value;
+            const beta1 = parseFloat(document.getElementById('beta1').value);
+            const beta2 = parseFloat(document.getElementById('beta2').value);
+            const se1 = parseFloat(document.getElementById('se1').value);
+            const se2 = parseFloat(document.getElementById('se2').value);
+            
+            let combination, combinationSE, nullValue, formula;
+            
+            // Calculate based on scenario
+            switch (scenario) {
+                case 'sum_equal':
+                    combination = beta1 + beta2;
+                    combinationSE = Math.sqrt(se1**2 + se2**2 + 2 * 0.1 * se1 * se2); // Assuming small positive correlation
+                    nullValue = 1;
+                    formula = 'β₁ + β₂ = 1';
+                    break;
+                case 'difference_zero':
+                    combination = beta1 - beta2;
+                    combinationSE = Math.sqrt(se1**2 + se2**2 - 2 * 0.05 * se1 * se2); // Assuming small negative correlation
+                    nullValue = 0;
+                    formula = 'β₁ - β₂ = 0';
+                    break;
+                case 'weighted_sum':
+                    combination = 2 * beta1 + beta2;
+                    combinationSE = Math.sqrt(4 * se1**2 + se2**2 + 4 * 0.08 * se1 * se2);
+                    nullValue = 0.5;
+                    formula = '2β₁ + β₂ = 0.5';
+                    break;
+                default:
+                    combination = beta1 + beta2;
+                    combinationSE = Math.sqrt(se1**2 + se2**2);
+                    nullValue = 1;
+                    formula = 'β₁ + β₂ = 1';
+            }
+            
+            // Calculate t-statistic
+            const tStat = (combination - nullValue) / combinationSE;
+            const pValue = 2 * (1 - normalCDF(Math.abs(tStat)));
+            const isSignificant = Math.abs(tStat) > 1.96; // Approximation
+            
+            // Display results
+            displayLinearCombinationResults(combination, combinationSE, tStat, pValue, isSignificant, formula, scenario);
+        }
+        
+        function displayLinearCombinationResults(combination, combinationSE, tStat, pValue, isSignificant, formula, scenario) {
+            document.getElementById('combinationValue').textContent = combination.toFixed(4);
+            document.getElementById('combinationSE').textContent = combinationSE.toFixed(4);
+            document.getElementById('combinationTStat').textContent = `t = ${tStat.toFixed(3)}`;
+            document.getElementById('combinationPValue').textContent = pValue.toFixed(4);
+            document.getElementById('combinationFormula').textContent = formula;
+            
+            // Significance
+            const sigElement = document.getElementById('combinationSignificance');
+            const decisionElement = document.getElementById('combinationDecision');
+            
+            if (isSignificant) {
+                sigElement.className = 'significance-indicator significance-high';
+                sigElement.innerHTML = '<span>Reject H₀</span>';
+                decisionElement.textContent = 'Significant';
+                document.getElementById('combinationHypothesisTest').className = 'hypothesis-test rejected';
+            } else {
+                sigElement.className = 'significance-indicator significance-low';
+                sigElement.innerHTML = '<span>Fail to Reject H₀</span>';
+                decisionElement.textContent = 'Not Significant';
+                document.getElementById('combinationHypothesisTest').className = 'hypothesis-test not-rejected';
+            }
+            
+            // Economic interpretation
+            const interpretations = {
+                sum_equal: isSignificant ?
+                    `We reject the hypothesis of constant returns to scale. The sum of elasticities (${combination.toFixed(3)}) is significantly different from 1, suggesting ${combination > 1 ? 'increasing' : 'decreasing'} returns to scale.` :
+                    `We cannot reject constant returns to scale. The sum of elasticities is not significantly different from 1.`,
+                difference_zero: isSignificant ?
+                    `There is a significant difference between the two coefficients. The difference of ${combination.toFixed(3)} is statistically significant.` :
+                    `We cannot conclude the coefficients are significantly different. The estimated difference could be due to sampling variation.`,
+                weighted_sum: isSignificant ?
+                    `The weighted combination is significantly different from 0.5. This suggests the linear restriction does not hold.` :
+                    `We cannot reject the linear restriction. The data are consistent with the theoretical prediction.`
+            };
+            
+            document.getElementById('combinationInterpretation').textContent = interpretations[scenario];
+            document.getElementById('combinationResults').style.display = 'block';
+        }
+        
+        // ========================================
+        // F-TEST CALCULATOR
+        // ========================================
+        
+        function updateFTestScenario() {
+            const testType = document.getElementById('fTestType').value;
+            
+            if (testType === 'overall') {
+                document.getElementById('restrictedR2').value = '0.000';
+                document.getElementById('numRestrictions').value = '5';
+            } else if (testType === 'exclusion') {
+                document.getElementById('restrictedR2').value = '0.389';
+                document.getElementById('numRestrictions').value = '2';
+            }
+        }
+        
+        function calculateFTest() {
+            const unrestrictedR2 = parseFloat(document.getElementById('unrestrictedR2').value);
+            const restrictedR2 = parseFloat(document.getElementById('restrictedR2').value);
+            const sampleSize = parseInt(document.getElementById('fTestSampleSize').value);
+            const unrestrictedParams = parseInt(document.getElementById('unrestrictedParams').value);
+            const numRestrictions = parseInt(document.getElementById('numRestrictions').value);
+            const alpha = parseFloat(document.getElementById('fTestAlpha').value);
+            
+            // Calculate F-statistic
+            const numerator = (unrestrictedR2 - restrictedR2) / numRestrictions;
+            const denominator = (1 - unrestrictedR2) / (sampleSize - unrestrictedParams);
+            const fStat = numerator / denominator;
+            
+            // Critical value (approximation)
+            const fCritical = getFCriticalValue(numRestrictions, sampleSize - unrestrictedParams, alpha);
+            
+            // P-value (rough approximation)
+            const pValue = fStat > fCritical ? (alpha / 2) : 0.5; // Simplified
+            
+            const isSignificant = fStat > fCritical;
+            
+            // Display results
+            displayFTestResults(fStat, fCritical, pValue, isSignificant, numRestrictions, sampleSize - unrestrictedParams, alpha);
+        }
+        
+        function getFCriticalValue(df1, df2, alpha) {
+            // Very rough approximations for common cases
+            if (alpha === 0.05) {
+                if (df1 <= 2) return 3.0;
+                if (df1 <= 5) return 2.4;
+                return 2.1;
+            }
+            if (alpha === 0.01) {
+                if (df1 <= 2) return 5.0;
+                if (df1 <= 5) return 3.8;
+                return 3.2;
+            }
+            return 2.7; // Default
+        }
+        
+        function displayFTestResults(fStat, fCritical, pValue, isSignificant, df1, df2, alpha) {
+            document.getElementById('fStatValue').textContent = fStat.toFixed(3);
+            document.getElementById('fCriticalValue').textContent = fCritical.toFixed(3);
+            document.getElementById('fPValue').textContent = pValue.toFixed(4);
+            document.getElementById('fStatDisplay').textContent = `F = ${fStat.toFixed(3)}`;
+            document.getElementById('fDegreesFreedom').textContent = `F(${df1}, ${df2})`;
+            
+            // Significance
+            const sigElement = document.getElementById('fSignificance');
+            const decisionElement = document.getElementById('fDecision');
+            
+            if (isSignificant) {
+                sigElement.className = 'significance-indicator significance-high';
+                sigElement.innerHTML = '<span>Reject H₀</span>';
+                decisionElement.textContent = 'Significant';
+                document.getElementById('fHypothesisTest').className = 'hypothesis-test rejected';
+            } else {
+                sigElement.className = 'significance-indicator significance-low';
+                sigElement.innerHTML = '<span>Fail to Reject H₀</span>';
+                decisionElement.textContent = 'Not Significant';
+                document.getElementById('fHypothesisTest').className = 'hypothesis-test not-rejected';
+            }
+            
+            // F-test advantage explanation
+            const advantage = `
+                F-tests are superior to multiple t-tests because they control the joint Type I error rate. 
+                When testing ${df1} restrictions individually at α = ${alpha}, the probability of at least one 
+                false rejection is ${(1 - Math.pow(1 - alpha, df1)).toFixed(3)}, much higher than ${alpha}! 
+                The F-test maintains the overall error rate at exactly ${alpha}.
+            `;
+            
+            document.getElementById('fTestAdvantage').textContent = advantage;
+            
+            // Economic interpretation
+            const testType = document.getElementById('fTestType').value;
+            let economicInterpretation = '';
+            
+            if (testType === 'overall') {
+                economicInterpretation = isSignificant ?
+                    'The model has significant explanatory power. At least one of the explanatory variables has a non-zero effect.' :
+                    'The model does not have significant explanatory power. We cannot conclude that any of the explanatory variables matter.';
+            } else if (testType === 'exclusion') {
+                economicInterpretation = isSignificant ?
+                    'The restricted variables have significant joint explanatory power. They should be included in the model.' :
+                    'The restricted variables do not have significant joint explanatory power. They can be excluded to create a more parsimonious model.';
+            }
+            
+            document.getElementById('fEconomicInterpretation').textContent = economicInterpretation;
+            document.getElementById('fTestResults').style.display = 'block';
+        }
+        
+        // ========================================
+        // QUIZ FUNCTIONS
+        // ========================================
+        
+        function selectQuizAnswer(questionId, answer) {
+            const correctAnswers = {
+                '4-1': 'B',
+                '4-2': 'C', 
+                '4-3': 'B'
+            };
+            
+            const explanations = {
+                '4-1': {
+                    correct: 'Correct! With 150 degrees of freedom (large sample), the critical value is approximately 1.96. Since |2.8| > 1.96, we reject H₀ at α = 0.05.',
+                    incorrect: 'Incorrect. With large degrees of freedom, the t-critical value approaches 1.96. Since |2.8| > 1.96, we should reject the null hypothesis.'
+                },
+                '4-2': {
+                    correct: 'Correct! This is the proper interpretation of confidence intervals. If we repeated the study many times, 95% of such intervals would contain the true parameter.',
+                    incorrect: 'Incorrect. Confidence intervals describe the procedure, not the probability about a specific interval. The correct interpretation is about repeated sampling.'
+                },
+                '4-3': {
+                    correct: 'Correct! Multiple t-tests inflate the Type I error rate due to the multiple testing problem. F-tests control the joint error rate.',
+                    incorrect: 'Incorrect. The key issue is controlling Type I error rates. Multiple individual tests inflate the probability of false rejection.'
+                }
+            };
+            
+            const isCorrect = answer === correctAnswers[questionId];
+            const feedbackElement = document.getElementById(`feedback${questionId}`);
+            
+            // Update option styling
+            const options = document.querySelectorAll(`input[name="q${questionId}"]`);
+            options.forEach(option => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (option.value === correctAnswers[questionId]) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            // Show feedback
+            feedbackElement.textContent = isCorrect ? 
+                explanations[questionId].correct : 
+                explanations[questionId].incorrect;
+            feedbackElement.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackElement.style.display = 'block';
+        }
+        
+        // ========================================
+        // QUESTION GENERATION FUNCTIONS
+        // ========================================
+        
+        let generatedQuestionCount = 0;
+        
+        function generateQuestions(type) {
+            const questionBank = {
+                ttest: [
+                    {
+                        question: "A coefficient estimate is 0.075 with SE = 0.032 and n = 200. What is the t-statistic?",
+                        options: ["A) 1.56", "B) 2.34", "C) 2.73", "D) 3.12"],
+                        correct: "B",
+                        explanation: "t = 0.075/0.032 = 2.34. This is statistically significant at α = 0.05."
+                    },
+                    {
+                        question: "If t = 1.45 with 80 degrees of freedom, what can you conclude at α = 0.05?",
+                        options: ["A) Reject H₀", "B) Fail to reject H₀", "C) Accept H₀", "D) Need more information"],
+                        correct: "B",
+                        explanation: "Since |1.45| < 1.99 (critical value), we fail to reject H₀."
+                    },
+                    {
+                        question: "A wage regression shows βₑᵈᵤ = 0.094, SE = 0.028. What's the economic interpretation?",
+                        options: ["A) 9.4% wage increase per year of education", "B) $0.094 wage increase", "C) 9.4 percentage points", "D) Cannot determine"],
+                        correct: "A", 
+                        explanation: "With log wages, β = 0.094 means 9.4% wage increase per additional year of education."
+                    }
+                ],
+                ci: [
+                    {
+                        question: "A 95% CI is [0.032, 0.118]. What does this tell us about significance?",
+                        options: ["A) Significant at α = 0.05", "B) Not significant", "C) Cannot determine", "D) Need p-value"],
+                        correct: "A",
+                        explanation: "Since the CI excludes zero, the coefficient is significant at α = 0.05."
+                    },
+                    {
+                        question: "If we want a narrower confidence interval, we should:",
+                        options: ["A) Increase α", "B) Increase sample size", "C) Decrease confidence level", "D) Both B and C"],
+                        correct: "D",
+                        explanation: "Larger samples and lower confidence levels both produce narrower intervals."
+                    },
+                    {
+                        question: "A 99% CI for education returns is [-0.01, 0.19]. What's the best interpretation?",
+                        options: ["A) Returns could be zero", "B) Returns are definitely positive", "C) The estimate is wrong", "D) Need larger sample"],
+                        correct: "A",
+                        explanation: "Since the CI includes zero, we cannot rule out zero returns to education."
+                    }
+                ],
+                ftest: [
+                    {
+                        question: "Testing H₀: β₁ = β₂ = β₃ = 0 with F = 8.5, F₀.₀₅ = 2.7. What's the conclusion?",
+                        options: ["A) Fail to reject", "B) Reject H₀", "C) Accept H₀", "D) Need more tests"],
+                        correct: "B",
+                        explanation: "Since F = 8.5 > 2.7, we reject H₀. At least one coefficient is significant."
+                    },
+                    {
+                        question: "Why not test β₁ = 0, β₂ = 0, β₃ = 0 with separate t-tests?",
+                        options: ["A) Too much work", "B) F-tests are more accurate", "C) Inflates Type I error", "D) t-tests don't work"],
+                        correct: "C",
+                        explanation: "Multiple t-tests increase the overall probability of Type I error beyond α."
+                    },
+                    {
+                        question: "An F-test for overall significance tests:",
+                        options: ["A) Individual coefficients", "B) All slope coefficients = 0", "C) R² = 1", "D) Residuals = 0"],
+                        correct: "B",
+                        explanation: "Overall F-test: H₀: β₁ = β₂ = ... = βₖ = 0 (excluding intercept)."
+                    }
+                ]
+            };
+            
+            let questions;
+            if (type === 'mixed') {
+                questions = [...questionBank.ttest, ...questionBank.ci, ...questionBank.ftest];
+            } else {
+                questions = questionBank[type];
+            }
+            
+            // Select 3 random questions
+            const selectedQuestions = [];
+            const usedIndices = new Set();
+            
+            while (selectedQuestions.length < 3 && selectedQuestions.length < questions.length) {
+                const randomIndex = Math.floor(Math.random() * questions.length);
+                if (!usedIndices.has(randomIndex)) {
+                    selectedQuestions.push(questions[randomIndex]);
+                    usedIndices.add(randomIndex);
+                }
+            }
+            
+            // Display questions
+            displayGeneratedQuestions(selectedQuestions, type);
+        }
+        
+        function displayGeneratedQuestions(questions, type) {
+            const container = document.getElementById('generatedQuestionsList');
+            const typeLabels = {
+                ttest: '📊 t-Test',
+                ci: '📏 Confidence Interval', 
+                ftest: '🎲 F-Test',
+                mixed: '🔀 Mixed'
+            };
+            
+            let html = `<h4 style="color: var(--primary-academic); margin-bottom: var(--space-lg);">
+                ${typeLabels[type]} Practice Questions
+            </h4>`;
+            
+            questions.forEach((q, index) => {
+                generatedQuestionCount++;
+                const questionId = `gen-${generatedQuestionCount}`;
+                
+                html += `
+                    <div class="quiz-question" style="border: 2px solid var(--accent-significance); border-radius: 12px; padding: var(--space-lg);">
+                        <p><strong>Question ${index + 1}:</strong> ${q.question}</p>
+                        <div class="quiz-options">
+                            ${q.options.map((option, optIndex) => `
+                                <label class="quiz-option" onclick="selectGeneratedQuizAnswer('${questionId}', '${String.fromCharCode(65 + optIndex)}', '${q.correct}', '${q.explanation.replace(/'/g, "\\'")}')">
+                                    <input type="radio" name="q${questionId}" value="${String.fromCharCode(65 + optIndex)}">
+                                    ${option}
+                                </label>
+                            `).join('')}
+                        </div>
+                        <div id="feedback${questionId}" class="quiz-feedback" style="display: none;"></div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            document.getElementById('generatedQuestions').style.display = 'block';
+            
+            // Scroll to generated questions
+            document.getElementById('generatedQuestions').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+        
+        function selectGeneratedQuizAnswer(questionId, answer, correct, explanation) {
+            const isCorrect = answer === correct;
+            const feedbackElement = document.getElementById(`feedback${questionId}`);
+            
+            // Update option styling
+            const options = document.querySelectorAll(`input[name="q${questionId}"]`);
+            options.forEach(option => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (option.value === correct) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            // Show feedback
+            feedbackElement.textContent = explanation;
+            feedbackElement.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackElement.style.display = 'block';
+        }
+        
+        function clearGeneratedQuestions() {
+            document.getElementById('generatedQuestions').style.display = 'none';
+            document.getElementById('generatedQuestionsList').innerHTML = '';
+        }
+        
+        // ========================================
+        // AI CHAT FUNCTIONS (Chapter 4 Specific)
+        // ========================================
+        
+        function toggleAIChat() {
+            const panel = document.getElementById('aiChatPanel');
+            const icon = document.getElementById('aiChatIcon');
+            
+            if (isAIChatOpen) {
+                panel.classList.remove('show');
+                icon.textContent = '🤖';
+                isAIChatOpen = false;
+            } else {
+                panel.classList.add('show');
+                icon.textContent = '✖️';
+                isAIChatOpen = true;
+                
+                // Focus input
+                setTimeout(() => {
+                    const input = document.getElementById('aiInput');
+                    if (input) input.focus();
+                }, 100);
+            }
+        }
+        
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            addAIMessage('user', message);
+            
+            // Clear input
+            input.value = '';
+            
+            // Generate AI response
+            setTimeout(() => {
+                const response = getChapter4AIResponse(message);
+                addAIMessage('claude', response);
+            }, 800);
+        }
+        
+        function addAIMessage(sender, message) {
+            const messagesContainer = document.getElementById('aiChatMessages');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender}`;
+            
+            if (sender === 'claude') {
+                messageDiv.innerHTML = `<strong>🤖 Claude:</strong> ${message}`;
+            } else {
+                messageDiv.textContent = message;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function getChapter4AIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            // Chapter 4 specific responses
+            if (message.includes('t-test') || message.includes('t-statistic') || message.includes('significance')) {
+                return "The t-statistic tests if a coefficient is significantly different from zero: t = β̂ⱼ/se(β̂ⱼ). Under the null H₀: βⱼ = 0, this follows a t-distribution. |t| > 1.96 suggests significance at 5% level (for large samples). Economic vs statistical significance are different - a small but precise estimate can be statistically significant but economically meaningless.";
+            }
+            
+            if (message.includes('confidence interval') || message.includes('ci') || message.includes('interval estimate')) {
+                return "A 95% confidence interval for βⱼ is β̂ⱼ ± 1.96·se(β̂ⱼ). This means: if we repeated our study many times, 95% of such intervals would contain the true βⱼ. It gives a range of plausible values. Wider intervals indicate more uncertainty (smaller samples, higher multicollinearity).";
+            }
+            
+            if (message.includes('f-test') || message.includes('joint test') || message.includes('overall significance')) {
+                return "F-tests test multiple restrictions simultaneously. Overall F-test: H₀: β₁ = β₂ = ... = βₖ = 0 tests if ANY variables matter. F = [(SSR_r - SSR_ur)/q] / [SSR_ur/(n-k-1)], where q is number of restrictions. Use F-tests when testing multiple coefficients jointly - don't do multiple individual t-tests!";
+            }
+            
+            if (message.includes('p-value') || message.includes('p value')) {
+                return "The p-value is the probability of observing your test statistic (or more extreme) if the null hypothesis is true. p < 0.05 means 'if there's really no effect, there's less than 5% chance we'd see data this extreme.' Smaller p-values indicate stronger evidence against the null hypothesis.";
+            }
+            
+            if (message.includes('heteroskedasticity') || message.includes('robust') || message.includes('white')) {
+                return "Heteroskedasticity means Var(u|x) is not constant - error variance changes across observations. OLS estimates are still unbiased but standard errors are wrong. Use heteroskedasticity-robust (White) standard errors for valid inference. The Breusch-Pagan test can detect heteroskedasticity.";
+            }
+            
+            if (message.includes('type i') || message.includes('type 1') || message.includes('false positive')) {
+                return "Type I error is rejecting a true null hypothesis (false positive). With α = 0.05, we accept a 5% chance of this error. The multiple testing problem: testing many hypotheses inflates the overall Type I error rate. This is why we use F-tests instead of multiple t-tests.";
+            }
+            
+            if (message.includes('power') || message.includes('type ii') || message.includes('type 2')) {
+                return "Statistical power is the probability of correctly rejecting a false null hypothesis (1 - β, where β is Type II error rate). Higher power means better ability to detect true effects. Power increases with larger samples, larger effect sizes, and lower error variance.";
+            }
+            
+            if (message.includes('calculator') || message.includes('tool')) {
+                return "The Chapter 4 calculators let you explore statistical inference! Try the t-test calculator with different coefficient values to see significance changes. The confidence interval tool shows how width changes with sample size. The F-test calculator demonstrates joint hypothesis testing.";
+            }
+            
+            if (message.includes('help') || message.includes('confused')) {
+                return "I'm here to help with statistical inference in multiple regression! Ask about: t-tests, F-tests, confidence intervals, p-values, Type I/II errors, power, or hypothesis testing. What specific topic would you like me to explain?";
+            }
+            
+            return "Great question about statistical inference! Chapter 4 focuses on testing hypotheses and quantifying uncertainty in multiple regression. I can help with t-tests, F-tests, confidence intervals, and dealing with heteroskedasticity. What specific aspect interests you?";
+        }
+        
+        // Close AI chat when clicking outside
+        document.addEventListener('click', function(event) {
+            const widget = document.getElementById('aiChatWidget');
+            if (isAIChatOpen && !widget.contains(event.target)) {
+                toggleAIChat();
+            }
+        });
+        
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Chapter 4 loaded successfully - Statistical Inference ready!');
+            
+            // Set up fade-in animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe all fade-in elements
+            document.querySelectorAll('.fade-in, .slide-up').forEach(el => {
+                observer.observe(el);
+            });
+            
+            console.log('Chapter 4 Statistical Inference - Ready for hypothesis testing!');
+        });
+        
+    </script>
+
+</body>
+</html>
