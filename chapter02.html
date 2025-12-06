@@ -1,0 +1,2215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 2: The Simple Regression Model | Wooldridge Econometrics Tutorial</title>
+    
+    <!-- External Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Custom Properties */
+        :root {
+            --primary-blue: #1e40af;
+            --secondary-indigo: #4338ca;
+            --accent-emerald: #059669;
+            --accent-orange: #ea580c;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .nav-header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+
+        .nav-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray-600);
+        }
+
+        .nav-breadcrumb a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+
+        .nav-breadcrumb i {
+            font-size: 0.8rem;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-indigo));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Main Content Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section {
+            margin: 3rem 0;
+        }
+
+        .section-title {
+            font-family: 'Crimson Text', serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 0;
+            width: 4rem;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-emerald), var(--accent-orange));
+            border-radius: 2px;
+        }
+
+        .subsection-title {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin: 2rem 0 1rem 0;
+        }
+
+        /* Chapter Header */
+        .chapter-header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-indigo));
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chapter-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+        }
+
+        .chapter-number {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chapter-title {
+            font-family: 'Crimson Text', serif;
+            font-size: 3.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chapter-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Learning Objectives */
+        .learning-objectives {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 3rem 0;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .objectives-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .objectives-icon {
+            background: linear-gradient(135deg, var(--accent-emerald), #047857);
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .objectives-title {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .objectives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .objective-card {
+            background: var(--gray-50);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .theory-icon { background: linear-gradient(135deg, var(--primary-blue), var(--secondary-indigo)); }
+        .example-icon { background: linear-gradient(135deg, var(--accent-emerald), #047857); }
+        .interactive-icon { background: linear-gradient(135deg, var(--accent-orange), #c2410c); }
+        .exercise-icon { background: linear-gradient(135deg, #7c3aed, #5b21b6); }
+
+        .card-title {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        /* Content Cards */
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        /* Text Boxes */
+        .definition-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-left: 4px solid var(--primary-blue);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .definition-title {
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-left: 4px solid var(--accent-emerald);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .example-title {
+            font-weight: 600;
+            color: var(--accent-emerald);
+            margin-bottom: 0.5rem;
+        }
+
+        .formula-box {
+            background: var(--gray-100);
+            border: 1px solid var(--gray-300);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+
+        .key-insight {
+            background: linear-gradient(135deg, #fefbef, #fef3c7);
+            border-left: 4px solid var(--accent-orange);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .insight-title {
+            font-weight: 600;
+            color: var(--accent-orange);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Interactive Widgets */
+        .interactive-widget {
+            background: white;
+            border: 2px solid var(--primary-blue);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .widget-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .widget-title {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .widget-description {
+            color: var(--gray-600);
+            line-height: 1.6;
+        }
+
+        .controls-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .control {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .control-input {
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            background: white;
+            font-size: 1rem;
+        }
+
+        .control-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-indigo));
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--gray-600), var(--gray-700));
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        /* Chart container */
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .chart-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: var(--gray-800);
+        }
+
+        /* Interactive Quiz Styles */
+        .quiz-question {
+            background: var(--gray-50);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .quiz-options {
+            margin: 1rem 0;
+        }
+
+        .quiz-options label {
+            display: block;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-options label:hover {
+            background: var(--gray-50);
+            border-color: var(--primary-blue);
+        }
+
+        .quiz-options label.selected {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .quiz-options label.correct {
+            background: var(--accent-emerald);
+            color: white;
+            border-color: var(--accent-emerald);
+        }
+
+        .quiz-options label.incorrect {
+            background: #dc2626;
+            color: white;
+            border-color: #dc2626;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            background: var(--gray-50);
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .quiz-feedback.correct {
+            background: #f0fdf4;
+            border-color: var(--accent-emerald);
+            color: #166534;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #fef2f2;
+            border-color: #dc2626;
+            color: #991b1b;
+        }
+
+        /* Success animation for generated questions */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Enhanced styling for generated questions */
+        .quiz-question[style*="border-left: 4px solid var(--accent-emerald)"] {
+            box-shadow: 0 2px 8px rgba(5, 150, 105, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .quiz-question[style*="border-left: 4px solid var(--accent-emerald)"]:hover {
+            box-shadow: 0 4px 16px rgba(5, 150, 105, 0.15);
+            transform: translateY(-1px);
+        }
+
+        /* Button disabled state */
+        .btn:disabled {
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn:disabled:hover {
+            transform: none !important;
+        }
+
+        /* Exercise Section */
+        .exercise-section {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 3rem 0;
+            border: 1px solid var(--gray-200);
+        }
+
+        .exercise-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .exercise-number {
+            background: var(--accent-emerald);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .exercise-title {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .exercise-content {
+            line-height: 1.7;
+        }
+
+        .solution-toggle {
+            margin-top: 1rem;
+        }
+
+        .solution-content {
+            display: none;
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            border-left: 4px solid var(--accent-emerald);
+        }
+
+        /* Navigation Footer */
+        .chapter-navigation {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 3rem 0;
+            box-shadow: var(--shadow-lg);
+            border-top: 3px solid var(--primary-blue);
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-indigo));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-button.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .nav-button.primary {
+            background: linear-gradient(135deg, var(--accent-emerald), #047857);
+        }
+
+        .progress-indicator {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            text-align: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .chapter-title {
+                font-size: 2.5rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-controls {
+                order: -1;
+            }
+
+            .content-grid,
+            .objectives-grid,
+            .controls-group {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* Animation utilities */
+        .fade-in {
+            animation: fadeIn 1s ease-out forwards;
+            opacity: 0;
+        }
+
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            transform: translateY(20px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="nav-header">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">📊 Econometrics Tutorial</a>
+            <div class="nav-breadcrumb">
+                <a href="index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Chapter 2</span>
+            </div>
+            <div class="nav-controls">
+                <a href="chapter01.html" class="nav-btn">← Previous</a>
+                <a href="#" class="nav-btn" onclick="showChapter3ComingSoon(); return false;">Next →</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Chapter Header -->
+        <header class="chapter-header fade-in">
+            <div class="chapter-number">Chapter 2</div>
+            <h1 class="chapter-title">The Simple Regression Model</h1>
+            <p class="chapter-subtitle">
+                Learn to estimate and interpret the relationship between two variables using OLS regression
+            </p>
+        </header>
+
+        <!-- Learning Objectives -->
+        <section class="learning-objectives fade-in delay-1">
+            <div class="objectives-header">
+                <div class="objectives-icon">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <h2 class="objectives-title">Learning Objectives</h2>
+            </div>
+            
+            <div class="objectives-grid">
+                <div class="objective-card">
+                    <div class="card-header">
+                        <div class="card-icon theory-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h3 class="card-title">Theoretical Knowledge</h3>
+                    </div>
+                    <ul style="line-height: 2;">
+                        <li>Understand the population regression function (PRF)</li>
+                        <li>Derive ordinary least squares (OLS) estimators</li>
+                        <li>Learn properties of OLS estimation</li>
+                        <li>Interpret regression coefficients correctly</li>
+                    </ul>
+                </div>
+                
+                <div class="objective-card">
+                    <div class="card-header">
+                        <div class="card-icon interactive-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h3 class="card-title">Practical Skills</h3>
+                    </div>
+                    <ul style="line-height: 2;">
+                        <li>Fit regression lines to data</li>
+                        <li>Calculate and interpret R-squared</li>
+                        <li>Understand units of measurement effects</li>
+                        <li>Recognize when simple regression is appropriate</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2.1: The Simple Regression Model -->
+        <section class="section fade-in delay-2">
+            <h2 class="section-title">2.1 Definition of the Simple Regression Model</h2>
+            
+            <div class="content-card">
+                <p>Simple regression analysis studies the relationship between two variables: one explanatory variable and one dependent variable.</p>
+                
+                <div class="definition-box">
+                    <div class="definition-title">Simple Regression Model</div>
+                    <p>A model that explains variable y in terms of variable x:</p>
+                    <div class="formula-box">
+                        $$y = \beta_0 + \beta_1 x + u$$
+                    </div>
+                    <p>Where:</p>
+                    <ul style="margin-top: 1rem;">
+                        <li><strong>y</strong> = dependent variable (explained variable)</li>
+                        <li><strong>x</strong> = independent variable (explanatory variable)</li>
+                        <li><strong>β₀</strong> = intercept parameter</li>
+                        <li><strong>β₁</strong> = slope parameter</li>
+                        <li><strong>u</strong> = error term (unobserved factors)</li>
+                    </ul>
+                </div>
+                
+                <h3 class="subsection-title">The Population Regression Function (PRF)</h3>
+                
+                <p>The population regression function describes how the expected value of y varies with x:</p>
+                
+                <div class="formula-box">
+                    $$E(y|x) = \beta_0 + \beta_1 x$$
+                </div>
+                
+                <div class="example-box">
+                    <div class="example-title">Economic Example: Wage Equation</div>
+                    <p><strong>Model:</strong> wage = β₀ + β₁ · educ + u</p>
+                    <ul style="margin-top: 1rem;">
+                        <li><strong>wage</strong> = hourly wage in dollars</li>
+                        <li><strong>educ</strong> = years of education</li>
+                        <li><strong>β₁</strong> = additional hourly wage from one more year of education</li>
+                        <li><strong>u</strong> = unobserved factors affecting wage (ability, experience, etc.)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Knowledge Check 1 -->
+        <section class="section">
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">💡 Knowledge Check: Simple Regression Model (3 Questions)</h3>
+                    <p class="widget-description">Test your understanding of the basic regression model</p>
+                </div>
+                
+                <div class="quiz-question">
+                    <p><strong>Question 1:</strong> In the wage equation wage = β₀ + β₁ · educ + u, what does β₁ represent?</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('2-1', 'A')">
+                            <input type="radio" name="q2-1" value="A"> 
+                            A) The wage of someone with zero education
+                        </label>
+                        <label onclick="selectAnswer('2-1', 'B')">
+                            <input type="radio" name="q2-1" value="B">
+                            B) The change in wage for each additional year of education
+                        </label>
+                        <label onclick="selectAnswer('2-1', 'C')">
+                            <input type="radio" name="q2-1" value="C">
+                            C) The average wage in the population
+                        </label>
+                        <label onclick="selectAnswer('2-1', 'D')">
+                            <input type="radio" name="q2-1" value="D">
+                            D) The unobserved error in the model
+                        </label>
+                    </div>
+                    <div id="feedback2-1" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div class="quiz-question" style="margin-top: 1.5rem;">
+                    <p><strong>Question 2:</strong> The error term u in a regression model represents:</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('2-2', 'A')">
+                            <input type="radio" name="q2-2" value="A">
+                            A) Measurement errors in the data only
+                        </label>
+                        <label onclick="selectAnswer('2-2', 'B')">
+                            <input type="radio" name="q2-2" value="B">
+                            B) All factors that affect y but are not included in the model
+                        </label>
+                        <label onclick="selectAnswer('2-2', 'C')">
+                            <input type="radio" name="q2-2" value="C">
+                            C) The difference between predicted and actual values
+                        </label>
+                        <label onclick="selectAnswer('2-2', 'D')">
+                            <input type="radio" name="q2-2" value="D">
+                            D) Statistical noise that should be ignored
+                        </label>
+                    </div>
+                    <div id="feedback2-2" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div class="quiz-question" style="margin-top: 1.5rem;">
+                    <p><strong>Question 3:</strong> The population regression function E(y|x) = β₀ + β₁x represents:</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('2-3', 'A')">
+                            <input type="radio" name="q2-3" value="A">
+                            A) The exact relationship between x and y for all observations
+                        </label>
+                        <label onclick="selectAnswer('2-3', 'B')">
+                            <input type="radio" name="q2-3" value="B">
+                            B) The average value of y for each given value of x in the population
+                        </label>
+                        <label onclick="selectAnswer('2-3', 'C')">
+                            <input type="radio" name="q2-3" value="C">
+                            C) The sample regression line we estimate from data
+                        </label>
+                        <label onclick="selectAnswer('2-3', 'D')">
+                            <input type="radio" name="q2-3" value="D">
+                            D) A random approximation of the true relationship
+                        </label>
+                    </div>
+                    <div id="feedback2-3" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Generate More Questions for Quiz 1 -->
+                <div style="text-align: center; margin-top: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #f8fafc, #e2e8f0); border-radius: 8px; border: 1px dashed var(--primary-blue);">
+                    <button class="btn" onclick="generateMoreQuestions('simple-regression')" style="background: linear-gradient(135deg, var(--primary-blue), var(--secondary-indigo));">
+                        ➕ Generate 3 More Simple Regression Questions
+                    </button>
+                    <p style="color: var(--gray-600); font-size: 0.8rem; margin-top: 0.5rem;">
+                        Get additional practice questions on regression fundamentals
+                    </p>
+                </div>
+                <div id="generated-simple-regression-questions"></div>
+            </div>
+        </section>
+
+        <!-- Section 2.2: Deriving OLS Estimators -->
+        <section class="section fade-in delay-3">
+            <h2 class="section-title">2.2 Deriving the Ordinary Least Squares Estimates</h2>
+            
+            <div class="content-card">
+                <p>Since we cannot observe the population parameters β₀ and β₁, we must estimate them using sample data.</p>
+                
+                <h3 class="subsection-title">The Sample Regression Function</h3>
+                
+                <p>For a sample of n observations, we estimate:</p>
+                
+                <div class="formula-box">
+                    $$\hat{y}_i = \hat{\beta}_0 + \hat{\beta}_1 x_i$$
+                </div>
+                
+                <p>Where the "hat" notation indicates estimated values. The residual for observation i is:</p>
+                
+                <div class="formula-box">
+                    $$\hat{u}_i = y_i - \hat{y}_i = y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i$$
+                </div>
+                
+                <div class="key-insight">
+                    <div class="insight-title">OLS Principle</div>
+                    <p>Ordinary Least Squares chooses β̂₀ and β̂₁ to minimize the sum of squared residuals:</p>
+                    <div class="formula-box">
+                        $$\min_{\hat{\beta}_0, \hat{\beta}_1} \sum_{i=1}^{n} \hat{u}_i^2 = \min_{\hat{\beta}_0, \hat{\beta}_1} \sum_{i=1}^{n} (y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i)^2$$
+                    </div>
+                </div>
+                
+                <h3 class="subsection-title">OLS Estimator Formulas</h3>
+                
+                <p>Taking derivatives and setting them equal to zero yields the OLS estimators:</p>
+                
+                <div class="formula-box">
+                    $$\hat{\beta}_1 = \frac{\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n}(x_i - \bar{x})^2}$$
+                    
+                    $$\hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}$$
+                </div>
+                
+                <div class="example-box">
+                    <div class="example-title">Economic Interpretation</div>
+                    <ul>
+                        <li><strong>β̂₁</strong> = estimated slope = sample covariance of x and y divided by sample variance of x</li>
+                        <li><strong>β̂₀</strong> = estimated intercept = ensures the regression line passes through (x̄, ȳ)</li>
+                        <li>The regression line always passes through the sample means</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Regression Calculator -->
+        <section class="section">
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">🔧 Interactive OLS Regression Calculator</h3>
+                    <p class="widget-description">
+                        Explore how changes in data affect the regression line and R-squared
+                    </p>
+                </div>
+                
+                <div class="controls-group">
+                    <div class="control">
+                        <label for="scenario" class="control-label">Economic Scenario:</label>
+                        <select id="scenario" class="control-input" onchange="updateRegressionDisplay()">
+                            <option value="wage-educ">Wages vs Education</option>
+                            <option value="consumption-income">Consumption vs Income</option>
+                            <option value="price-demand">Price vs Demand</option>
+                        </select>
+                    </div>
+                    <div class="control">
+                        <label for="noise" class="control-label">Data Noise Level:</label>
+                        <select id="noise" class="control-input" onchange="updateRegressionDisplay()">
+                            <option value="low">Low Noise (Strong Relationship)</option>
+                            <option value="medium">Medium Noise</option>
+                            <option value="high">High Noise (Weak Relationship)</option>
+                        </select>
+                    </div>
+                    <div class="control">
+                        <label for="sampleSize" class="control-label">Sample Size:</label>
+                        <select id="sampleSize" class="control-input" onchange="updateRegressionDisplay()">
+                            <option value="20">Small (n=20)</option>
+                            <option value="50">Medium (n=50)</option>
+                            <option value="100">Large (n=100)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="generateRegressionData()">Generate New Sample</button>
+                
+                <div class="results-area" id="regressionDisplay">
+                    <div class="chart-container">
+                        <canvas id="regressionChart" width="400" height="200"></canvas>
+                    </div>
+                    <div id="regressionResults" style="margin-top: 1rem; background: var(--gray-50); padding: 1rem; border-radius: 6px;">
+                        <h4 style="color: var(--primary-blue);">Regression Results</h4>
+                        <div id="coefficients"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Knowledge Check 2 -->
+        <section class="section">
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">🔍 Knowledge Check: OLS Estimation (3 Questions)</h3>
+                    <p class="widget-description">Test your understanding of OLS estimation using the interactive tool above ↑</p>
+                </div>
+                
+                <div class="quiz-question" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe);">
+                    <p><strong>Follow-Up Question A:</strong> Using the regression calculator above, when you increase the noise level from "Low" to "High", what happens to R-squared?</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('2-reg-a', 'A')">
+                            <input type="radio" name="q2-reg-a" value="A">
+                            A) R-squared increases because there's more variation to explain
+                        </label>
+                        <label onclick="selectAnswer('2-reg-a', 'B')">
+                            <input type="radio" name="q2-reg-a" value="B">
+                            B) R-squared decreases because the relationship becomes weaker
+                        </label>
+                        <label onclick="selectAnswer('2-reg-a', 'C')">
+                            <input type="radio" name="q2-reg-a" value="C">
+                            C) R-squared stays the same regardless of noise
+                        </label>
+                        <label onclick="selectAnswer('2-reg-a', 'D')">
+                            <input type="radio" name="q2-reg-a" value="D">
+                            D) The effect depends on the sample size
+                        </label>
+                    </div>
+                    <div id="feedback2-reg-a" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div class="quiz-question" style="margin-top: 1.5rem; background: linear-gradient(135deg, #f0f9ff, #e0f2fe);">
+                    <p><strong>Follow-Up Question B:</strong> In the regression calculator, the regression line always passes through which point?</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('2-reg-b', 'A')">
+                            <input type="radio" name="q2-reg-b" value="A">
+                            A) The origin (0,0)
+                        </label>
+                        <label onclick="selectAnswer('2-reg-b', 'B')">
+                            <input type="radio" name="q2-reg-b" value="B">
+                            B) The point with the highest y-value
+                        </label>
+                        <label onclick="selectAnswer('2-reg-b', 'C')">
+                            <input type="radio" name="q2-reg-b" value="C">
+                            C) The sample means (x̄, ȳ)
+                        </label>
+                        <label onclick="selectAnswer('2-reg-b', 'D')">
+                            <input type="radio" name="q2-reg-b" value="D">
+                            D) The point that minimizes the sum of residuals
+                        </label>
+                    </div>
+                    <div id="feedback2-reg-b" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div class="quiz-question" style="margin-top: 1.5rem; background: linear-gradient(135deg, #f0f9ff, #e0f2fe);">
+                    <p><strong>Follow-Up Question C:</strong> Generate several samples with the same settings. What do you notice about the estimated coefficients?</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('2-reg-c', 'A')">
+                            <input type="radio" name="q2-reg-c" value="A">
+                            A) They are exactly the same every time
+                        </label>
+                        <label onclick="selectAnswer('2-reg-c', 'B')">
+                            <input type="radio" name="q2-reg-c" value="B">
+                            B) They vary from sample to sample due to sampling variation
+                        </label>
+                        <label onclick="selectAnswer('2-reg-c', 'C')">
+                            <input type="radio" name="q2-reg-c" value="C">
+                            C) Only the intercept varies, the slope stays constant
+                        </label>
+                        <label onclick="selectAnswer('2-reg-c', 'D')">
+                            <input type="radio" name="q2-reg-c" value="D">
+                            D) The variation depends only on the scenario chosen
+                        </label>
+                    </div>
+                    <div id="feedback2-reg-c" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Generate More Questions for Quiz 2 -->
+                <div style="text-align: center; margin-top: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-radius: 8px; border: 1px dashed var(--accent-emerald);">
+                    <button class="btn" onclick="generateMoreQuestions('ols-estimation')" style="background: linear-gradient(135deg, var(--accent-emerald), #047857);">
+                        ➕ Generate 3 More OLS Estimation Questions
+                    </button>
+                    <p style="color: var(--gray-600); font-size: 0.8rem; margin-top: 0.5rem;">
+                        Additional practice on estimation concepts and interpretation
+                    </p>
+                </div>
+                <div id="generated-ols-estimation-questions"></div>
+
+                <div style="margin-top: 1.5rem; padding: 1rem; background: var(--gray-50); border-radius: 6px; text-align: center;">
+                    <p style="color: var(--primary-blue); font-weight: 600; margin: 0;">
+                        💡 Tip: Use the Regression Calculator above to test different scenarios as you answer!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2.3: Properties of OLS -->
+        <section class="section fade-in delay-1">
+            <h2 class="section-title">2.3 Algebraic Properties of OLS</h2>
+            
+            <div class="content-card">
+                <p>OLS estimates have several important algebraic properties that hold for any sample:</p>
+                
+                <div class="content-grid">
+                    <div class="definition-box">
+                        <div class="definition-title">Property 1: Sum of Residuals</div>
+                        <p>The sum (and therefore the sample average) of OLS residuals is always zero:</p>
+                        <div class="formula-box">
+                            $$\sum_{i=1}^{n} \hat{u}_i = 0$$
+                        </div>
+                    </div>
+                    
+                    <div class="definition-box">
+                        <div class="definition-title">Property 2: Orthogonality</div>
+                        <p>The sample covariance between the explanatory variable and OLS residuals is zero:</p>
+                        <div class="formula-box">
+                            $$\sum_{i=1}^{n} x_i \hat{u}_i = 0$$
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="subsection-title">Goodness of Fit: R-squared</h3>
+                
+                <p>R-squared measures how much of the variation in y is explained by x:</p>
+                
+                <div class="formula-box">
+                    $$R^2 = \frac{SSE}{SST} = \frac{\sum_{i=1}^{n}(\hat{y}_i - \bar{y})^2}{\sum_{i=1}^{n}(y_i - \bar{y})^2} = 1 - \frac{SSR}{SST}$$
+                </div>
+                
+                <p>Where:</p>
+                <ul style="margin: 1rem 0;">
+                    <li><strong>SST</strong> = Total Sum of Squares = Σ(yᵢ - ȳ)²</li>
+                    <li><strong>SSE</strong> = Explained Sum of Squares = Σ(ŷᵢ - ȳ)²</li>
+                    <li><strong>SSR</strong> = Residual Sum of Squares = Σûᵢ²</li>
+                </ul>
+                
+                <div class="key-insight">
+                    <div class="insight-title">Interpreting R-squared</div>
+                    <ul>
+                        <li><strong>R² = 0</strong>: x explains none of the variation in y</li>
+                        <li><strong>R² = 1</strong>: x explains all of the variation in y (perfect fit)</li>
+                        <li><strong>R² = 0.65</strong>: x explains 65% of the variation in y</li>
+                    </ul>
+                </div>
+                
+                <div class="example-box">
+                    <div class="example-title">Typical R-squared Values</div>
+                    <ul>
+                        <li><strong>Cross-sectional data</strong>: R² often between 0.1 and 0.3</li>
+                        <li><strong>Time series data</strong>: R² often higher, 0.5 to 0.9</li>
+                        <li><strong>Experimental data</strong>: Can vary widely depending on control</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2.4: Units of Measurement and Functional Forms -->
+        <section class="section fade-in delay-2">
+            <h2 class="section-title">2.4 Units of Measurement and Functional Form</h2>
+            
+            <div class="content-card">
+                <h3 class="subsection-title">Changing Units of Measurement</h3>
+                
+                <p>OLS coefficients change in predictable ways when we change the units of measurement:</p>
+                
+                <div class="content-grid">
+                    <div class="example-box">
+                        <div class="example-title">Example: Wage measured in dollars vs cents</div>
+                        <p><strong>Original:</strong> wage = 0.54 + 0.73 × educ</p>
+                        <p><strong>Cents:</strong> wage_cents = 54 + 73 × educ</p>
+                        <p>When y is multiplied by c, both β₀ and β₁ are multiplied by c.</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <div class="example-title">Example: Education measured in years vs months</div>
+                        <p><strong>Original:</strong> wage = 0.54 + 0.73 × educ_years</p>
+                        <p><strong>Months:</strong> wage = 0.54 + 0.061 × educ_months</p>
+                        <p>When x is multiplied by c, β₁ is divided by c (but β₀ unchanged).</p>
+                    </div>
+                </div>
+                
+                <h3 class="subsection-title">Logarithmic Functional Forms</h3>
+                
+                <p>Different functional forms allow for different interpretations:</p>
+                
+                <div class="content-grid">
+                    <div class="definition-box">
+                        <div class="definition-title">Level-Level Model</div>
+                        <p>y = β₀ + β₁x + u</p>
+                        <p><strong>Interpretation:</strong> A one-unit increase in x leads to a β₁ unit change in y</p>
+                    </div>
+                    
+                    <div class="definition-box">
+                        <div class="definition-title">Log-Level Model</div>
+                        <p>log(y) = β₀ + β₁x + u</p>
+                        <p><strong>Interpretation:</strong> A one-unit increase in x leads to a (100×β₁)% change in y</p>
+                    </div>
+                    
+                    <div class="definition-box">
+                        <div class="definition-title">Level-Log Model</div>
+                        <p>y = β₀ + β₁log(x) + u</p>
+                        <p><strong>Interpretation:</strong> A 1% increase in x leads to a (β₁/100) unit change in y</p>
+                    </div>
+                    
+                    <div class="definition-box">
+                        <div class="definition-title">Log-Log Model</div>
+                        <p>log(y) = β₀ + β₁log(x) + u</p>
+                        <p><strong>Interpretation:</strong> A 1% increase in x leads to a β₁% change in y (elasticity)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Knowledge Check 3 -->
+        <section class="section">
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">⚡ Knowledge Check: Properties and Interpretation (4 Questions)</h3>
+                    <p class="widget-description">Test your understanding of OLS properties and functional forms</p>
+                </div>
+                
+                <div class="quiz-question">
+                    <p><strong>Question 4:</strong> If R² = 0.45 in a regression of consumption on income, this means:</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('2-4', 'A')">
+                            <input type="radio" name="q2-4" value="A"> 
+                            A) Income causes 45% of consumption
+                        </label>
+                        <label onclick="selectAnswer('2-4', 'B')">
+                            <input type="radio" name="q2-4" value="B">
+                            B) Income explains 45% of the variation in consumption
+                        </label>
+                        <label onclick="selectAnswer('2-4', 'C')">
+                            <input type="radio" name="q2-4" value="C">
+                            C) The correlation between income and consumption is 0.45
+                        </label>
+                        <label onclick="selectAnswer('2-4', 'D')">
+                            <input type="radio" name="q2-4" value="D">
+                            D) 45% of the observations lie on the regression line
+                        </label>
+                    </div>
+                    <div id="feedback2-4" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div class="quiz-question" style="margin-top: 1.5rem;">
+                    <p><strong>Question 5:</strong> In the wage equation wage = 5 + 2×educ, if we measure wage in cents instead of dollars, what happens to the coefficients?</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('2-5', 'A')">
+                            <input type="radio" name="q2-5" value="A">
+                            A) They become: 5 + 0.02×educ
+                        </label>
+                        <label onclick="selectAnswer('2-5', 'B')">
+                            <input type="radio" name="q2-5" value="B">
+                            B) They become: 500 + 200×educ
+                        </label>
+                        <label onclick="selectAnswer('2-5', 'C')">
+                            <input type="radio" name="q2-5" value="C">
+                            C) Only the slope changes: 5 + 200×educ
+                        </label>
+                        <label onclick="selectAnswer('2-5', 'D')">
+                            <input type="radio" name="q2-5" value="D">
+                            D) The coefficients stay the same
+                        </label>
+                    </div>
+                    <div id="feedback2-5" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div class="quiz-question" style="margin-top: 1.5rem;">
+                    <p><strong>Question 6:</strong> In a log-level model log(wage) = 1.5 + 0.08×educ, the coefficient 0.08 means:</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('2-6', 'A')">
+                            <input type="radio" name="q2-6" value="A">
+                            A) One more year of education increases wage by $0.08
+                        </label>
+                        <label onclick="selectAnswer('2-6', 'B')">
+                            <input type="radio" name="q2-6" value="B">
+                            B) One more year of education increases wage by approximately 8%
+                        </label>
+                        <label onclick="selectAnswer('2-6', 'C')">
+                            <input type="radio" name="q2-6" value="C">
+                            C) One more year of education increases log(wage) by 8 units
+                        </label>
+                        <label onclick="selectAnswer('2-6', 'D')">
+                            <input type="radio" name="q2-6" value="D">
+                            D) Education has an 8% correlation with wages
+                        </label>
+                    </div>
+                    <div id="feedback2-6" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <div class="quiz-question" style="margin-top: 1.5rem; background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid var(--accent-orange);">
+                    <p><strong>🎯 Challenge Question 7:</strong> Which functional form would be most appropriate for studying the relationship between firm size and productivity, where you expect diminishing returns to scale?</p>
+                    <div class="quiz-options">
+                        <label onclick="selectAnswer('2-7', 'A')">
+                            <input type="radio" name="q2-7" value="A">
+                            A) Level-level: productivity = β₀ + β₁ × firm_size
+                        </label>
+                        <label onclick="selectAnswer('2-7', 'B')">
+                            <input type="radio" name="q2-7" value="B">
+                            B) Level-log: productivity = β₀ + β₁ × log(firm_size)
+                        </label>
+                        <label onclick="selectAnswer('2-7', 'C')">
+                            <input type="radio" name="q2-7" value="C">
+                            C) Log-level: log(productivity) = β₀ + β₁ × firm_size
+                        </label>
+                        <label onclick="selectAnswer('2-7', 'D')">
+                            <input type="radio" name="q2-7" value="D">
+                            D) Log-log: log(productivity) = β₀ + β₁ × log(firm_size)
+                        </label>
+                    </div>
+                    <div id="feedback2-7" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Generate More Questions for Quiz 3 -->
+                <div style="text-align: center; margin-top: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 8px; border: 1px dashed var(--accent-orange);">
+                    <button class="btn" onclick="generateMoreQuestions('interpretation')" style="background: linear-gradient(135deg, var(--accent-orange), #c2410c);">
+                        ➕ Generate 3 More Interpretation Questions
+                    </button>
+                    <p style="color: var(--gray-600); font-size: 0.8rem; margin-top: 0.5rem;">
+                        Additional practice with R-squared, units, and functional forms
+                    </p>
+                </div>
+                <div id="generated-interpretation-questions"></div>
+
+                <div style="text-align: center; margin-top: 1.5rem; padding: 1rem; background: var(--gray-50); border-radius: 6px;">
+                    <div id="quiz-summary-ch2">
+                        <p style="color: var(--gray-600); font-size: 0.9rem;">
+                            📊 <strong>15 Core Interactive Questions Total</strong><br>
+                            Quiz 1: Simple Regression (3) • Quiz 2: OLS Estimation (3) • Regression Follow-up (3) • Quiz 3: Properties (4) • Additional Generate Options (9)<br>
+                            💡 Complete all knowledge checks to reinforce your understanding before moving to practice exercises!
+                        </p>
+                    </div>
+                    
+                    <!-- Master Generate All Button -->
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--gray-300);">
+                        <button class="btn" onclick="generateAllAdditionalQuestions()" style="background: linear-gradient(135deg, #7c3aed, #5b21b6); font-size: 1.1rem; padding: 0.75rem 2rem;">
+                            🚀 Generate ALL Additional Questions (9 total)
+                        </button>
+                        <p style="color: var(--gray-600); font-size: 0.8rem; margin-top: 0.5rem;">
+                            Generate 3 additional questions for each topic • Total potential: 24 questions
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exercises -->
+        <section class="section">
+            <h2 class="section-title">Practice Exercises</h2>
+
+            <div class="exercise-section">
+                <div class="exercise-header">
+                    <div class="exercise-number">1</div>
+                    <div class="exercise-title">Interpreting Simple Regression Results</div>
+                </div>
+                <div class="exercise-content">
+                    <p>A researcher estimates the following regression using data on 120 college graduates:</p>
+                    <div style="background: white; padding: 1rem; margin: 1rem 0; border-radius: 6px; text-align: center; font-family: monospace;">
+                        salary = 35,000 + 2,800 × experience, R² = 0.34
+                    </div>
+                    <p>Where salary is annual salary in dollars and experience is years of work experience.</p>
+                    <ol style="margin: 1rem 0; padding-left: 2rem;">
+                        <li>Interpret the intercept coefficient.</li>
+                        <li>Interpret the slope coefficient.</li>
+                        <li>What does the R² value tell us?</li>
+                        <li>Predict the salary of someone with 5 years of experience.</li>
+                    </ol>
+                    <div class="solution-toggle">
+                        <button class="btn btn-secondary" onclick="toggleSolution('solution1')">Show Solution</button>
+                    </div>
+                    <div class="solution-content" id="solution1">
+                        <h4>Solution:</h4>
+                        <ol style="margin: 1rem 0; padding-left: 2rem;">
+                            <li><strong>Intercept:</strong> $35,000 is the predicted salary for someone with zero years of experience (entry-level salary).</li>
+                            <li><strong>Slope:</strong> Each additional year of experience is associated with a $2,800 increase in annual salary.</li>
+                            <li><strong>R²:</strong> Years of experience explains 34% of the variation in salaries among college graduates.</li>
+                            <li><strong>Prediction:</strong> salary = 35,000 + 2,800(5) = $49,000</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise-section">
+                <div class="exercise-header">
+                    <div class="exercise-number">2</div>
+                    <div class="exercise-title">Units of Measurement</div>
+                </div>
+                <div class="exercise-content">
+                    <p>Consider the consumption function: consumption = 500 + 0.8 × income</p>
+                    <p>Where consumption and income are measured in dollars.</p>
+                    <ol style="margin: 1rem 0; padding-left: 2rem;">
+                        <li>If we measure both variables in thousands of dollars, what would the regression equation become?</li>
+                        <li>If we measure consumption in dollars but income in thousands of dollars, what would happen?</li>
+                        <li>What happens to R² in each case?</li>
+                    </ol>
+                    <div class="solution-toggle">
+                        <button class="btn btn-secondary" onclick="toggleSolution('solution2')">Show Solution</button>
+                    </div>
+                    <div class="solution-content" id="solution2">
+                        <h4>Solution:</h4>
+                        <ol style="margin: 1rem 0; padding-left: 2rem;">
+                            <li><strong>Both in thousands:</strong> consumption = 0.5 + 0.8 × income (both coefficients divided by 1000)</li>
+                            <li><strong>Only income in thousands:</strong> consumption = 500 + 800 × income (slope multiplied by 1000, intercept unchanged)</li>
+                            <li><strong>R² unchanged:</strong> R² measures the proportion of variance explained, which doesn't change with units</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise-section">
+                <div class="exercise-header">
+                    <div class="exercise-number">3</div>
+                    <div class="exercise-title">Functional Form Selection</div>
+                </div>
+                <div class="exercise-content">
+                    <p>For each research question, recommend the most appropriate functional form and explain why:</p>
+                    <ol style="margin: 1rem 0; padding-left: 2rem;">
+                        <li>Effect of advertising spending on sales revenue</li>
+                        <li>Relationship between education and wages</li>
+                        <li>Impact of firm size on economies of scale</li>
+                        <li>Effect of price on quantity demanded</li>
+                    </ol>
+                    <div class="solution-toggle">
+                        <button class="btn btn-secondary" onclick="toggleSolution('solution3')">Show Solution</button>
+                    </div>
+                    <div class="solution-content" id="solution3">
+                        <h4>Solution:</h4>
+                        <ol style="margin: 1rem 0; padding-left: 2rem;">
+                            <li><strong>Advertising → Sales:</strong> Level-log (diminishing returns to advertising)</li>
+                            <li><strong>Education → Wages:</strong> Log-level (percentage returns to education)</li>
+                            <li><strong>Firm Size → Economies:</strong> Log-log (elasticity interpretation)</li>
+                            <li><strong>Price → Quantity:</strong> Log-log (price elasticity of demand)</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter Navigation -->
+        <div class="chapter-navigation">
+            <div class="nav-buttons">
+                <a href="chapter01.html" class="nav-button">
+                    <i class="fas fa-chevron-left"></i>
+                    Previous Chapter
+                </a>
+                
+                <div class="progress-indicator">
+                    Chapter 2 of 19 • <span style="color: var(--primary-blue);">Simple Regression Complete</span>
+                </div>
+                
+                <a href="#" class="nav-button primary" onclick="showChapter3ComingSoon(); return false;">
+                    Next Chapter
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MathJax Configuration -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+            }
+        };
+    </script>
+
+    <!-- JavaScript for Interactive Features -->
+    <script>
+        // ========================================
+        // GENERATED QUESTIONS SYSTEM
+        // ========================================
+        
+        // Generate additional practice questions
+        let generatedQuestionCount = 0;
+        let additionalQuestions = {};
+
+        const questionPools = {
+            'simple-regression': [
+                {
+                    question: "In the model y = β₀ + β₁x + u, which assumption is necessary for OLS to be unbiased?",
+                    options: [
+                        "A) The error term u is normally distributed",
+                        "B) E(u|x) = 0 (zero conditional mean)",
+                        "C) The sample size is large",
+                        "D) There is no measurement error in y"
+                    ],
+                    correct: "B",
+                    explanation: "The zero conditional mean assumption E(u|x) = 0 is crucial for unbiasedness. It means that on average, the unobserved factors don't depend on x."
+                },
+                {
+                    question: "Which of the following is NOT typically included in the error term u of a wage regression?",
+                    options: [
+                        "A) Unobserved ability",
+                        "B) Motivation and work ethic",
+                        "C) Years of education (if education is already included as x)",
+                        "D) Family background effects"
+                    ],
+                    correct: "C",
+                    explanation: "If education is already included as an explanatory variable x, it should not also be part of the error term. This would violate the assumption that u and x are uncorrelated."
+                },
+                {
+                    question: "The population regression function E(y|x) represents:",
+                    options: [
+                        "A) The exact value of y for each x",
+                        "B) The relationship we estimate from our sample",
+                        "C) The average value of y for each given value of x in the population",
+                        "D) The error term for each observation"
+                    ],
+                    correct: "C",
+                    explanation: "The PRF shows how the expected value (average) of y varies with x in the population. Individual observations will deviate from this line due to the error term."
+                },
+                {
+                    question: "In a simple regression model, the slope parameter β₁ measures:",
+                    options: [
+                        "A) The average value of y when x = 0",
+                        "B) The change in y for a one-unit change in x, holding all else constant",
+                        "C) The correlation between x and y",
+                        "D) The total effect of x on y including indirect effects"
+                    ],
+                    correct: "B",
+                    explanation: "The slope β₁ measures the ceteris paribus (all else equal) effect of a one-unit increase in x on y. This is the marginal effect of x."
+                }
+            ],
+            'ols-estimation': [
+                {
+                    question: "The OLS estimator minimizes which quantity?",
+                    options: [
+                        "A) The sum of absolute residuals Σ|ûᵢ|",
+                        "B) The sum of squared residuals Σûᵢ²",
+                        "C) The maximum absolute residual max|ûᵢ|",
+                        "D) The sum of squared errors in the population"
+                    ],
+                    correct: "B",
+                    explanation: "OLS (Ordinary Least Squares) minimizes the sum of squared residuals. This gives more weight to larger deviations and has nice mathematical properties."
+                },
+                {
+                    question: "Which statement about the OLS regression line is always true?",
+                    options: [
+                        "A) It passes through the origin (0,0)",
+                        "B) It has the highest possible R-squared",
+                        "C) It passes through the point (x̄, ȳ)",
+                        "D) It minimizes the sum of absolute deviations"
+                    ],
+                    correct: "C",
+                    explanation: "By construction, the OLS line always passes through the sample means (x̄, ȳ). This follows from the first-order condition for β₀."
+                },
+                {
+                    question: "The formula β̂₁ = Σ(xᵢ - x̄)(yᵢ - ȳ) / Σ(xᵢ - x̄)² can be rewritten as:",
+                    options: [
+                        "A) β̂₁ = Cov(x,y) / Var(x)",
+                        "B) β̂₁ = Corr(x,y) × SD(y)",
+                        "C) β̂₁ = Var(y) / Var(x)",
+                        "D) β̂₁ = x̄ȳ / x̄²"
+                    ],
+                    correct: "A",
+                    explanation: "The OLS slope estimator equals the sample covariance of x and y divided by the sample variance of x. This shows that β̂₁ measures how x and y move together relative to how much x varies."
+                },
+                {
+                    question: "If you add a constant to all y values, what happens to the OLS estimates?",
+                    options: [
+                        "A) Both β̂₀ and β̂₁ increase by that constant",
+                        "B) Only β̂₀ increases by that constant, β̂₁ stays the same",
+                        "C) Only β̂₁ increases by that constant, β̂₀ stays the same",
+                        "D) Neither coefficient changes"
+                    ],
+                    correct: "B",
+                    explanation: "Adding a constant c to all y values increases the intercept by c but doesn't change the slope. The relationship between changes in x and changes in y is unaffected."
+                }
+            ],
+            'interpretation': [
+                {
+                    question: "If R² = 0, which of the following must be true?",
+                    options: [
+                        "A) The estimated slope β̂₁ = 0",
+                        "B) There is no correlation between x and y",
+                        "C) All residuals equal zero",
+                        "D) Both A and B"
+                    ],
+                    correct: "D",
+                    explanation: "When R² = 0, the regression line is horizontal (β̂₁ = 0) and x has no linear relationship with y (correlation = 0). The explained sum of squares equals zero."
+                },
+                {
+                    question: "In the model log(wage) = 2.0 + 0.05×educ, if education increases from 12 to 16 years, wages increase by approximately:",
+                    options: [
+                        "A) 5%",
+                        "B) 20%",
+                        "C) 22.1%",
+                        "D) $0.20"
+                    ],
+                    correct: "C",
+                    explanation: "In a log-level model, Δlog(wage) = 0.05×4 = 0.20. The percentage change is approximately 100×0.20 = 20%, but more precisely it's (e^0.20 - 1)×100% = 22.1%."
+                },
+                {
+                    question: "Which functional form would you use to estimate a demand curve where a 1% increase in price leads to a 1.5% decrease in quantity?",
+                    options: [
+                        "A) quantity = β₀ + β₁×price",
+                        "B) log(quantity) = β₀ + β₁×price",
+                        "C) quantity = β₀ + β₁×log(price)",
+                        "D) log(quantity) = β₀ + β₁×log(price)"
+                    ],
+                    correct: "D",
+                    explanation: "A constant elasticity (1% change in price → 1.5% change in quantity) requires a log-log model. Here β₁ would equal -1.5 (negative due to law of demand)."
+                },
+                {
+                    question: "If you measure income in thousands instead of dollars, and originally β̂₁ = 0.8, the new slope coefficient will be:",
+                    options: [
+                        "A) 0.8",
+                        "B) 0.0008",
+                        "C) 800",
+                        "D) 8000"
+                    ],
+                    correct: "C",
+                    explanation: "When the independent variable x is divided by 1000 (dollars to thousands), the slope coefficient is multiplied by 1000. So 0.8 × 1000 = 800."
+                }
+            ]
+        };
+
+        function generateMoreQuestions(topic) {
+            const pool = questionPools[topic];
+            const container = document.getElementById(`generated-${topic}-questions`);
+            const button = event.target;
+            
+            if (!pool || pool.length === 0) {
+                container.innerHTML = '<p style="color: #dc2626; text-align: center; padding: 1rem;">No additional questions available for this topic.</p>';
+                return;
+            }
+
+            // Randomly select 3 questions from the pool
+            const shuffled = [...pool].sort(() => 0.5 - Math.random());
+            const selectedQuestions = shuffled.slice(0, 3);
+            
+            // Generate unique question IDs
+            const startId = generatedQuestionCount + 200; // Start at 200 to avoid conflicts
+            
+            let questionsHTML = '<div style="border-top: 2px dashed var(--gray-300); margin: 1rem 0; padding-top: 1rem;">';
+            questionsHTML += '<h4 style="text-align: center; color: var(--primary-blue); margin-bottom: 1rem;">✨ Additional Practice Questions</h4>';
+            
+            selectedQuestions.forEach((q, index) => {
+                const questionId = `gen${startId + index}`;
+                generatedQuestionCount++;
+                
+                // Store the answer for grading
+                additionalQuestions[questionId] = {
+                    correct: q.correct,
+                    explanation: q.explanation
+                };
+                
+                questionsHTML += `
+                    <div class="quiz-question" style="border-left: 4px solid var(--accent-emerald); background: #fafffe;">
+                        <p><strong>Practice Question ${index + 1}:</strong> ${q.question}</p>
+                        <div class="quiz-options">
+                            ${q.options.map(option => `
+                                <label onclick="selectGeneratedAnswer('${questionId}', '${option.charAt(0)}')">
+                                    <input type="radio" name="q${questionId}" value="${option.charAt(0)}">
+                                    ${option}
+                                </label>
+                            `).join('')}
+                        </div>
+                        <div id="feedback${questionId}" class="quiz-feedback" style="display: none;"></div>
+                    </div>
+                `;
+            });
+            
+            questionsHTML += '</div>';
+            
+            // Add the questions to the page
+            container.innerHTML = questionsHTML;
+            
+            // Update button to show it was used
+            button.style.background = 'linear-gradient(135deg, #10b981, #047857)';
+            button.innerHTML = '✅ 3 Additional Questions Generated';
+            button.disabled = true;
+            button.style.opacity = '0.7';
+            
+            // Scroll to the new questions
+            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Show success message
+            setTimeout(() => {
+                const successMsg = document.createElement('div');
+                successMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: var(--accent-emerald); color: white; padding: 1rem; border-radius: 8px; z-index: 1000; animation: slideIn 0.5s ease-out;';
+                successMsg.innerHTML = `🎉 3 new ${topic.replace('-', ' ')} questions added!`;
+                document.body.appendChild(successMsg);
+                
+                setTimeout(() => successMsg.remove(), 3000);
+            }, 500);
+        }
+
+        function selectGeneratedAnswer(questionId, selectedAnswer) {
+            const question = additionalQuestions[questionId];
+            const feedbackDiv = document.getElementById(`feedback${questionId}`);
+            const options = document.querySelectorAll(`input[name="q${questionId}"]`);
+            
+            // Remove previous selections
+            options.forEach(option => {
+                option.parentElement.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            // Mark selected option
+            const selectedOption = document.querySelector(`input[name="q${questionId}"][value="${selectedAnswer}"]`);
+            selectedOption.parentElement.classList.add('selected');
+            
+            // Show feedback
+            feedbackDiv.style.display = 'block';
+            
+            if (selectedAnswer === question.correct) {
+                selectedOption.parentElement.classList.add('correct');
+                feedbackDiv.className = 'quiz-feedback correct';
+                feedbackDiv.innerHTML = `✅ ${question.explanation}`;
+            } else {
+                selectedOption.parentElement.classList.add('incorrect');
+                feedbackDiv.className = 'quiz-feedback incorrect';
+                
+                // Also highlight correct answer
+                const correctOption = document.querySelector(`input[name="q${questionId}"][value="${question.correct}"]`);
+                correctOption.parentElement.classList.add('correct');
+                
+                feedbackDiv.innerHTML = `❌ Incorrect. ${question.explanation}`;
+            }
+            
+            updateQuizProgress();
+        }
+
+        function generateAllAdditionalQuestions() {
+            const topics = ['simple-regression', 'ols-estimation', 'interpretation'];
+            const button = event.target;
+            
+            // Disable the button to prevent multiple clicks
+            button.disabled = true;
+            button.innerHTML = '⏳ Generating Questions...';
+            
+            let delay = 0;
+            topics.forEach((topic, index) => {
+                setTimeout(() => {
+                    // Check if individual button is not already used
+                    const individualButton = document.querySelector(`button[onclick="generateMoreQuestions('${topic}')"]`);
+                    if (individualButton && !individualButton.disabled) {
+                        // Simulate clicking the individual button
+                        const mockEvent = { target: individualButton };
+                        window.event = mockEvent;
+                        generateMoreQuestions(topic);
+                    }
+                    
+                    // Update master button after all are complete
+                    if (index === topics.length - 1) {
+                        setTimeout(() => {
+                            button.style.background = 'linear-gradient(135deg, #10b981, #047857)';
+                            button.innerHTML = '✅ All Additional Questions Generated (9 total)';
+                            
+                            // Show comprehensive success message
+                            const successMsg = document.createElement('div');
+                            successMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white; padding: 1.5rem; border-radius: 12px; z-index: 1000; animation: slideIn 0.5s ease-out; box-shadow: 0 8px 32px rgba(124, 58, 237, 0.3);';
+                            successMsg.innerHTML = `
+                                <div style="text-align: center;">
+                                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🎉</div>
+                                    <div style="font-weight: 600; margin-bottom: 0.5rem;">Complete Success!</div>
+                                    <div style="font-size: 0.9rem;">9 additional practice questions generated</div>
+                                    <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.5rem;">Total: 24 interactive questions available</div>
+                                </div>
+                            `;
+                            document.body.appendChild(successMsg);
+                            
+                            setTimeout(() => successMsg.remove(), 5000);
+                        }, 500);
+                    }
+                }, delay);
+                delay += 800; // Stagger the generation for visual effect
+            });
+        }
+
+        // ========================================
+        // ORIGINAL QUIZ FUNCTIONS (Fixed Questions)
+        // ========================================
+        
+        const quizAnswers = {
+            '2-1': { correct: 'B', explanation: 'Correct! β₁ represents the marginal effect of education on wages - how much wages increase for each additional year of education.' },
+            '2-2': { correct: 'B', explanation: 'Correct! The error term captures all factors that affect the dependent variable y but are not included in the model, such as unobserved ability, motivation, or measurement errors.' },
+            '2-3': { correct: 'B', explanation: 'Correct! The PRF E(y|x) shows the average (expected) value of y for each given value of x in the population. Individual observations will scatter around this line.' },
+            '2-4': { correct: 'B', explanation: 'Correct! R² = 0.45 means that income explains 45% of the variation in consumption. It does not imply causation, just the proportion of variance explained.' },
+            '2-5': { correct: 'B', explanation: 'Correct! When y is multiplied by 100 (dollars to cents), both coefficients are multiplied by 100: intercept becomes 500, slope becomes 200.' },
+            '2-6': { correct: 'B', explanation: 'Correct! In a log-level model, the coefficient represents the percentage change in y for a one-unit change in x. Here, 0.08 means approximately 8% increase in wages.' },
+            '2-7': { correct: 'B', explanation: 'Excellent! Level-log captures diminishing returns - as firm size doubles, productivity increases by a constant amount (not percentage), with decreasing marginal returns.' },
+            // Regression calculator follow-up questions
+            '2-reg-a': { correct: 'B', explanation: 'Correct! Higher noise means more random variation that cannot be explained by x, so R-squared (proportion of variance explained) decreases.' },
+            '2-reg-b': { correct: 'C', explanation: 'Correct! By the algebraic properties of OLS, the regression line always passes through the sample means (x̄, ȳ). This is guaranteed by the first-order conditions.' },
+            '2-reg-c': { correct: 'B', explanation: 'Correct! Different samples from the same population will yield different coefficient estimates due to sampling variation. This is why we need statistical inference.' }
+        };
+
+        function selectAnswer(questionId, selectedAnswer) {
+            const question = quizAnswers[questionId];
+            const feedbackDiv = document.getElementById(`feedback${questionId}`);
+            const options = document.querySelectorAll(`input[name="q${questionId}"]`);
+            
+            // Remove previous selections
+            options.forEach(option => {
+                option.parentElement.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            // Mark selected option
+            const selectedOption = document.querySelector(`input[name="q${questionId}"][value="${selectedAnswer}"]`);
+            selectedOption.parentElement.classList.add('selected');
+            
+            // Show feedback
+            feedbackDiv.style.display = 'block';
+            
+            if (selectedAnswer === question.correct) {
+                selectedOption.parentElement.classList.add('correct');
+                feedbackDiv.className = 'quiz-feedback correct';
+                feedbackDiv.innerHTML = `✅ ${question.explanation}`;
+            } else {
+                selectedOption.parentElement.classList.add('incorrect');
+                feedbackDiv.className = 'quiz-feedback incorrect';
+                
+                // Also highlight correct answer
+                const correctOption = document.querySelector(`input[name="q${questionId}"][value="${question.correct}"]`);
+                correctOption.parentElement.classList.add('correct');
+                
+                feedbackDiv.innerHTML = `❌ Incorrect. ${question.explanation}`;
+            }
+            
+            // Track progress
+            updateQuizProgress();
+        }
+
+        function updateQuizProgress() {
+            const totalOriginalQuestions = Object.keys(quizAnswers).length; // 15 questions (10 core + 3 regression follow-ups)
+            const totalGeneratedQuestions = Object.keys(additionalQuestions).length;
+            const totalQuestions = totalOriginalQuestions + totalGeneratedQuestions;
+            
+            let answeredQuestions = 0;
+            let correctAnswers = 0;
+            
+            // Check original question IDs
+            const questionIds = Object.keys(quizAnswers);
+            
+            for (const questionId of questionIds) {
+                const answered = document.querySelector(`input[name="q${questionId}"]:checked`);
+                if (answered) {
+                    answeredQuestions++;
+                    if (answered.value === quizAnswers[questionId].correct) {
+                        correctAnswers++;
+                    }
+                }
+            }
+            
+            // Check generated questions
+            const generatedIds = Object.keys(additionalQuestions);
+            for (const questionId of generatedIds) {
+                const answered = document.querySelector(`input[name="q${questionId}"]:checked`);
+                if (answered) {
+                    answeredQuestions++;
+                    if (answered.value === additionalQuestions[questionId].correct) {
+                        correctAnswers++;
+                    }
+                }
+            }
+            
+            const summaryDiv = document.getElementById('quiz-summary-ch2');
+            const generatedCount = totalGeneratedQuestions;
+            
+            if (answeredQuestions === totalQuestions && totalQuestions > totalOriginalQuestions) {
+                // All questions including generated ones completed
+                const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+                summaryDiv.innerHTML = `
+                    <p style="color: var(--accent-emerald); font-weight: 600;">
+                        🏆 COMPLETE MASTERY! All ${totalQuestions} Questions Answered!
+                        Score: ${correctAnswers}/${totalQuestions} (${percentage}%)
+                    </p>
+                    <p style="color: var(--gray-600); font-size: 0.9rem; margin-top: 0.5rem;">
+                        Core Questions: ${totalOriginalQuestions} • Generated Questions: ${generatedCount}<br>
+                        ${percentage >= 95 ? 
+                            'Outstanding! You have mastered Chapter 2 concepts completely!' : 
+                            percentage >= 90 ?
+                            'Excellent mastery! You have outstanding understanding.' : 
+                            percentage >= 80 ?
+                            'Great work! Strong understanding of the material.' :
+                            'Good progress! Review any incorrect answers for better understanding.'}
+                    </p>
+                `;
+            } else if (answeredQuestions === totalOriginalQuestions) {
+                // Core questions completed
+                const percentage = Math.round((correctAnswers / totalOriginalQuestions) * 100);
+                summaryDiv.innerHTML = `
+                    <p style="color: var(--accent-emerald); font-weight: 600;">
+                        🎉 All Core Knowledge Checks Complete! 
+                        Score: ${correctAnswers}/${totalOriginalQuestions} (${percentage}%)
+                    </p>
+                    <p style="color: var(--gray-600); font-size: 0.9rem; margin-top: 0.5rem;">
+                        ${percentage >= 90 ? 
+                            'Outstanding mastery! You have excellent understanding of Chapter 2 concepts.' : 
+                            percentage >= 80 ?
+                            'Excellent understanding! Ready for practice exercises.' : 
+                            percentage >= 70 ?
+                            'Good work! Review any incorrect answers, then proceed to practice exercises.' :
+                            'Keep studying! Review the chapter content and retake the quizzes.'}
+                    </p>
+                    <p style="color: var(--primary-blue); font-size: 0.8rem; margin-top: 0.5rem;">
+                        📊 <strong>Breakdown:</strong> Simple Regression (3) • OLS Estimation (3) • Regression Follow-up (3) • Properties (4)
+                        ${generatedCount > 0 ? `<br>🎯 <strong>Bonus:</strong> ${generatedCount} additional practice questions completed!` : ''}
+                    </p>
+                `;
+            } else {
+                // In progress
+                summaryDiv.innerHTML = `
+                    <p style="color: var(--gray-600); font-size: 0.9rem;">
+                        📊 <strong>13 Core Interactive Questions Total</strong>${generatedCount > 0 ? ` + ${generatedCount} Generated Questions` : ''}<br>
+                        Quiz 1: Simple Regression (3) • Quiz 2: OLS Estimation (3) • Regression Follow-up (3) • Quiz 3: Properties (4) • Additional Generate Options (9)<br>
+                        💡 Progress: ${answeredQuestions}/${totalQuestions} knowledge checks completed
+                    </p>
+                `;
+            }
+            
+            // Update localStorage with progress
+            if (answeredQuestions === totalOriginalQuestions) {
+                localStorage.setItem('chapter2KnowledgeChecks', 'complete');
+                localStorage.setItem('chapter2QuizScore', `${correctAnswers}/${totalOriginalQuestions}`);
+                console.log(`Knowledge checks completed! Score: ${Math.round((correctAnswers/totalOriginalQuestions)*100)}%`);
+            }
+        }
+
+        // ========================================
+        // INTERACTIVE REGRESSION CALCULATOR
+        // ========================================
+        
+        let regressionChart = null;
+        
+        function updateRegressionDisplay() {
+            generateRegressionData();
+        }
+        
+        function generateRegressionData() {
+            const scenario = document.getElementById('scenario').value;
+            const noise = document.getElementById('noise').value;
+            const sampleSize = parseInt(document.getElementById('sampleSize').value);
+            
+            // Clear existing chart
+            if (regressionChart) {
+                regressionChart.destroy();
+            }
+            
+            // Generate data based on scenario
+            let data = [];
+            let xLabel = '';
+            let yLabel = '';
+            let trueIntercept = 0;
+            let trueSlope = 0;
+            
+            // Noise levels
+            const noiseLevels = {
+                'low': 0.1,
+                'medium': 0.3,
+                'high': 0.6
+            };
+            
+            const noiseLevel = noiseLevels[noise];
+            
+            // Scenario-specific parameters
+            if (scenario === 'wage-educ') {
+                xLabel = 'Education (years)';
+                yLabel = 'Wage ($1000s)';
+                trueIntercept = 15;
+                trueSlope = 3.2;
+                
+                for (let i = 0; i < sampleSize; i++) {
+                    const x = 12 + Math.random() * 8; // Education 12-20 years
+                    const error = (Math.random() - 0.5) * noiseLevel * 20;
+                    const y = trueIntercept + trueSlope * x + error;
+                    data.push({ x: x, y: y });
+                }
+            } else if (scenario === 'consumption-income') {
+                xLabel = 'Income ($1000s)';
+                yLabel = 'Consumption ($1000s)';
+                trueIntercept = 5;
+                trueSlope = 0.8;
+                
+                for (let i = 0; i < sampleSize; i++) {
+                    const x = 20 + Math.random() * 60; // Income 20-80k
+                    const error = (Math.random() - 0.5) * noiseLevel * 15;
+                    const y = trueIntercept + trueSlope * x + error;
+                    data.push({ x: x, y: y });
+                }
+            } else if (scenario === 'price-demand') {
+                xLabel = 'Price ($)';
+                yLabel = 'Quantity Demanded';
+                trueIntercept = 100;
+                trueSlope = -2;
+                
+                for (let i = 0; i < sampleSize; i++) {
+                    const x = 10 + Math.random() * 30; // Price 10-40
+                    const error = (Math.random() - 0.5) * noiseLevel * 20;
+                    const y = Math.max(0, trueIntercept + trueSlope * x + error);
+                    data.push({ x: x, y: y });
+                }
+            }
+            
+            // Calculate OLS estimates
+            const n = data.length;
+            const xMean = data.reduce((sum, point) => sum + point.x, 0) / n;
+            const yMean = data.reduce((sum, point) => sum + point.y, 0) / n;
+            
+            const numerator = data.reduce((sum, point) => sum + (point.x - xMean) * (point.y - yMean), 0);
+            const denominator = data.reduce((sum, point) => sum + Math.pow(point.x - xMean, 2), 0);
+            
+            const beta1Hat = numerator / denominator;
+            const beta0Hat = yMean - beta1Hat * xMean;
+            
+            // Calculate R-squared
+            const yHat = data.map(point => beta0Hat + beta1Hat * point.x);
+            const SSE = yHat.reduce((sum, pred, i) => sum + Math.pow(pred - yMean, 2), 0);
+            const SST = data.reduce((sum, point) => sum + Math.pow(point.y - yMean, 2), 0);
+            const rSquared = SSE / SST;
+            
+            // Create regression line data
+            const xMin = Math.min(...data.map(p => p.x));
+            const xMax = Math.max(...data.map(p => p.x));
+            const lineData = [
+                { x: xMin, y: beta0Hat + beta1Hat * xMin },
+                { x: xMax, y: beta0Hat + beta1Hat * xMax }
+            ];
+            
+            // Create chart
+            const ctx = document.getElementById('regressionChart').getContext('2d');
+            regressionChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Data Points',
+                        data: data,
+                        backgroundColor: 'rgba(30, 64, 175, 0.6)',
+                        borderColor: 'rgba(30, 64, 175, 1)',
+                        pointRadius: 4
+                    }, {
+                        label: 'Regression Line',
+                        data: lineData,
+                        type: 'line',
+                        borderColor: 'rgba(220, 38, 38, 1)',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0
+                    }, {
+                        label: 'Sample Mean',
+                        data: [{ x: xMean, y: yMean }],
+                        backgroundColor: 'rgba(5, 150, 105, 1)',
+                        borderColor: 'rgba(5, 150, 105, 1)',
+                        pointRadius: 8,
+                        pointStyle: 'cross'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: xLabel
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: yLabel
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `${scenario.replace('-', ' ')} Regression`
+                        }
+                    }
+                }
+            });
+            
+            // Display results
+            document.getElementById('coefficients').innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div>
+                        <strong>Intercept (β̂₀):</strong><br>
+                        ${beta0Hat.toFixed(2)}
+                    </div>
+                    <div>
+                        <strong>Slope (β̂₁):</strong><br>
+                        ${beta1Hat.toFixed(3)}
+                    </div>
+                    <div>
+                        <strong>R-squared:</strong><br>
+                        ${rSquared.toFixed(3)}
+                    </div>
+                    <div>
+                        <strong>Sample Size:</strong><br>
+                        n = ${n}
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 6px;">
+                    <strong>Interpretation:</strong> Each additional unit of ${xLabel.toLowerCase()} is associated with a ${Math.abs(beta1Hat).toFixed(3)} ${beta1Hat >= 0 ? 'increase' : 'decrease'} in ${yLabel.toLowerCase()}. The model explains ${(rSquared * 100).toFixed(1)}% of the variation in ${yLabel.toLowerCase()}.
+                </div>
+            `;
+        }
+        
+        // ========================================
+        // EXERCISE SOLUTIONS
+        // ========================================
+        
+        function toggleSolution(solutionId) {
+            const solution = document.getElementById(solutionId);
+            if (solution.style.display === 'none' || solution.style.display === '') {
+                solution.style.display = 'block';
+            } else {
+                solution.style.display = 'none';
+            }
+        }
+
+        // Handle Chapter 3 coming soon
+        function showChapter3ComingSoon() {
+            alert(`🚧 Chapter 3: Multiple Regression Analysis: Estimation - Coming Soon!
+
+📚 Chapter 3 Content Preview:
+• Motivation for Multiple Regression
+• Mechanics of OLS with Multiple Regressors
+• Interpretation of Multiple Regression
+• Expected Value and Variance of OLS Estimators
+• Efficiency of OLS: Gauss-Markov Theorem
+
+🔨 Features in Development:
+• Interactive multiple regression calculator
+• 3D regression plane visualization
+• Omitted variable bias demonstrations
+• Canadian economic data examples
+• Comprehensive practice problems with solutions
+
+✅ Currently Available:
+• Chapter 1: Complete with interactive tools
+• Chapter 2: Simple regression with 24 possible questions
+• Return to course homepage to explore
+
+📅 Development Status:
+Each chapter follows the same comprehensive format with theory, interactive examples, and extensive practice opportunities.
+
+🎯 Continue Learning:
+Review Chapters 1-2 or return to the course homepage!`);
+        }
+
+        // Mark chapter as complete when page is loaded and user scrolls to bottom
+        let hasScrolledToBottom = false;
+        window.addEventListener('scroll', function() {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100 && !hasScrolledToBottom) {
+                hasScrolledToBottom = true;
+                markChapterComplete();
+            }
+        });
+
+        function markChapterComplete() {
+            localStorage.setItem('chapter2Complete', 'true');
+            console.log('Chapter 2 marked as complete!');
+        }
+
+        // Initialize regression calculator on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add small delay to ensure elements are loaded
+            setTimeout(() => {
+                generateRegressionData();
+            }, 500);
+        });
+
+        // Fade-in animation observer
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all fade-in elements
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
