@@ -1,0 +1,3005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 6: Further Issues in Multiple Regression | Wooldridge Econometrics Tutorial</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========================================
+           CSS VARIABLES - APPLIED ANALYTICS THEME
+           ======================================== */
+        :root {
+            /* Core analytics colors */
+            --primary-analytics: #0f172a;
+            --secondary-data: #1e293b;
+            --accent-insight: #3b82f6;
+            --accent-model: #6366f1;
+            --success-validated: #10b981;
+            --warning-caution: #f59e0b;
+            --error-invalid: #ef4444;
+            --neutral-baseline: #64748b;
+            
+            /* Data visualization palette */
+            --viz-blue: #3b82f6;
+            --viz-emerald: #10b981;
+            --viz-amber: #f59e0b;
+            --viz-rose: #f43f5e;
+            --viz-violet: #8b5cf6;
+            --viz-cyan: #06b6d4;
+            
+            /* Professional grays */
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            
+            /* Analytical spacing */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+            --space-3xl: 4rem;
+            
+            /* Typography scale */
+            --text-xs: 0.75rem;
+            --text-sm: 0.875rem;
+            --text-base: 1rem;
+            --text-lg: 1.125rem;
+            --text-xl: 1.25rem;
+            --text-2xl: 1.5rem;
+            --text-3xl: 1.875rem;
+            --text-4xl: 2.25rem;
+            
+            /* Data-driven shadows */
+            --shadow-data: 0 1px 3px 0 rgba(15, 23, 42, 0.1), 0 1px 2px 0 rgba(15, 23, 42, 0.06);
+            --shadow-insight: 0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -1px rgba(15, 23, 42, 0.06);
+            --shadow-analytics: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -2px rgba(15, 23, 42, 0.05);
+            --shadow-model: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+        }
+
+        /* ========================================
+           RESET AND BASE TYPOGRAPHY
+           ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+            font-size: var(--text-base);
+        }
+
+        /* Analytics typography hierarchy */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: var(--space-md);
+            color: var(--primary-analytics);
+            letter-spacing: -0.025em;
+        }
+
+        h1 { font-size: var(--text-4xl); margin-bottom: var(--space-xl); }
+        h2 { font-size: var(--text-3xl); margin-bottom: var(--space-lg); }
+        h3 { font-size: var(--text-2xl); margin-bottom: var(--space-md); }
+        h4 { font-size: var(--text-xl); margin-bottom: var(--space-sm); }
+
+        p {
+            margin-bottom: var(--space-md);
+            color: var(--gray-700);
+        }
+
+        /* ========================================
+           CHAPTER NAVIGATION
+           ======================================== */
+        .chapter-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-xl) 0;
+            margin-bottom: var(--space-xl);
+            border-bottom: 1px solid var(--gray-200);
+            gap: var(--space-md);
+        }
+
+        .nav-button {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-md) var(--space-xl);
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            border: 2px solid var(--gray-200);
+            background: white;
+            color: var(--primary-analytics);
+            box-shadow: var(--shadow-data);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-insight);
+            border-color: var(--accent-insight);
+            color: var(--primary-analytics);
+        }
+
+        .nav-home {
+            background: linear-gradient(135deg, var(--success-validated), #059669);
+            color: white;
+            border-color: var(--success-validated);
+        }
+
+        .nav-home:hover {
+            color: white;
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .nav-previous {
+            flex: 1;
+            justify-content: flex-start;
+        }
+
+        .nav-next {
+            flex: 1;
+            justify-content: flex-end;
+        }
+
+        .nav-icon {
+            font-size: var(--text-lg);
+            font-weight: 700;
+        }
+
+        .nav-text {
+            font-size: var(--text-base);
+            white-space: nowrap;
+        }
+
+        /* ========================================
+           LAYOUT AND STRUCTURE
+           ======================================== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-xl);
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-analytics) 0%, var(--secondary-data) 50%, var(--accent-insight) 100%);
+            color: white;
+            padding: var(--space-3xl) 0;
+            margin-bottom: var(--space-2xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="analytics" width="25" height="25" patternUnits="userSpaceOnUse"><rect x="10" y="10" width="5" height="5" fill="rgba(255,255,255,0.08)"/><circle cx="5" cy="5" r="1" fill="rgba(255,255,255,0.06)"/><line x1="0" y1="20" x2="25" y2="5" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(%23analytics)"/></svg>') center/cover;
+            opacity: 0.3;
+        }
+
+        .page-header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .chapter-title {
+            font-size: var(--text-4xl);
+            font-weight: 800;
+            margin-bottom: var(--space-sm);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            color: white !important;
+            letter-spacing: -0.02em;
+        }
+
+        .chapter-subtitle {
+            font-size: var(--text-xl);
+            opacity: 0.9;
+            margin-bottom: var(--space-md);
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            color: white !important;
+        }
+
+        .chapter-description {
+            font-size: var(--text-lg);
+            opacity: 0.85;
+            max-width: 800px;
+            line-height: 1.6;
+            color: white !important;
+        }
+
+        /* ========================================
+           SECTION STYLING - APPLIED ANALYTICS
+           ======================================== */
+        .section {
+            margin-bottom: var(--space-3xl);
+            background: white;
+            border-radius: 16px;
+            padding: var(--space-2xl);
+            box-shadow: var(--shadow-insight);
+            border: 1px solid var(--gray-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--accent-insight), var(--accent-model));
+        }
+
+        .section-title {
+            color: var(--primary-analytics);
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-md);
+            border-bottom: 2px solid var(--gray-200);
+            position: relative;
+            font-weight: 700;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 80px;
+            height: 2px;
+            background: var(--accent-insight);
+        }
+
+        /* ========================================
+           ANALYTICAL INTERACTIVE WIDGETS
+           ======================================== */
+        .interactive-widget {
+            background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+            border: 2px solid var(--gray-200);
+            border-radius: 20px;
+            padding: var(--space-2xl);
+            margin: var(--space-xl) 0;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .interactive-widget::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.02) 0%, transparent 70%);
+            transform: rotate(45deg);
+            transition: all 0.4s ease;
+        }
+
+        .interactive-widget:hover {
+            border-color: var(--accent-insight);
+            box-shadow: var(--shadow-analytics);
+            transform: translateY(-2px);
+        }
+
+        .interactive-widget:hover::before {
+            opacity: 0.5;
+        }
+
+        .widget-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--gray-200);
+            position: relative;
+            z-index: 1;
+        }
+
+        .widget-icon {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, var(--accent-insight), var(--accent-model));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--text-2xl);
+            box-shadow: var(--shadow-data);
+            color: white;
+            font-weight: 600;
+        }
+
+        .widget-title {
+            font-size: var(--text-2xl);
+            color: var(--primary-analytics);
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+        }
+
+        .widget-description {
+            color: var(--gray-600);
+            margin: var(--space-xs) 0 0 0;
+            font-size: var(--text-sm);
+            font-style: italic;
+        }
+
+        /* ========================================
+           ANALYTICAL CALCULATOR CONTROLS
+           ======================================== */
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: var(--space-lg);
+            margin: var(--space-xl) 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .control-label {
+            font-weight: 600;
+            color: var(--primary-analytics);
+            font-size: var(--text-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--space-xs);
+        }
+
+        .control-select, .control-input {
+            padding: var(--space-md);
+            border: 2px solid var(--gray-300);
+            border-radius: 10px;
+            font-size: var(--text-base);
+            transition: all 0.3s ease;
+            background: white;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .control-select:focus, .control-input:focus {
+            outline: none;
+            border-color: var(--accent-insight);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--accent-insight), var(--secondary-data));
+            color: white;
+            padding: var(--space-lg) var(--space-xl);
+            border: none;
+            border-radius: 12px;
+            font-size: var(--text-base);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-data);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.6s;
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-analytics);
+            background: linear-gradient(135deg, var(--secondary-data), var(--primary-analytics));
+        }
+
+        .action-button:hover::before {
+            left: 100%;
+        }
+
+        .action-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* ========================================
+           DATA VISUALIZATION RESULTS
+           ======================================== */
+        .results-panel {
+            background: linear-gradient(135deg, var(--gray-50), white);
+            border: 1px solid var(--gray-200);
+            border-radius: 16px;
+            padding: var(--space-xl);
+            margin-top: var(--space-xl);
+            position: relative;
+            box-shadow: var(--shadow-data);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+            margin: var(--space-lg) 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: var(--space-lg);
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-insight), var(--accent-model));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-insight);
+            border-color: var(--accent-insight);
+        }
+
+        .stat-value {
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            color: var(--primary-analytics);
+            margin-bottom: var(--space-xs);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-label {
+            font-size: var(--text-sm);
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--space-xs);
+            font-weight: 500;
+        }
+
+        .stat-interpretation {
+            font-size: var(--text-xs);
+            color: var(--gray-500);
+            margin-top: var(--space-xs);
+            font-style: italic;
+        }
+
+        /* ========================================
+           DATA QUALITY INDICATORS
+           ======================================== */
+        .quality-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs) var(--space-md);
+            border-radius: 20px;
+            font-size: var(--text-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .quality-excellent {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-validated);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .quality-good {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-caution);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .quality-poor {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error-invalid);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* ========================================
+           MODEL VISUALIZATION CANVAS
+           ======================================== */
+        .model-visualization {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border: 2px solid var(--accent-insight);
+            border-radius: 12px;
+            padding: var(--space-lg);
+            margin: var(--space-lg) 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .model-visualization::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(59, 130, 246, 0.02) 10px,
+                rgba(59, 130, 246, 0.02) 20px
+            );
+        }
+
+        .visualization-header {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+            position: relative;
+            z-index: 1;
+        }
+
+        .visualization-title {
+            font-size: var(--text-lg);
+            font-weight: 600;
+            color: var(--primary-analytics);
+            margin-bottom: var(--space-sm);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .visualization-canvas {
+            height: 250px;
+            background: white;
+            border-radius: 8px;
+            position: relative;
+            margin: var(--space-md) 0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+            border: 1px solid var(--gray-200);
+        }
+
+        /* ========================================
+           ANALYTICAL CONCEPT BOXES
+           ======================================== */
+        .concept-box {
+            border-radius: 12px;
+            padding: var(--space-xl);
+            margin: var(--space-xl) 0;
+            border-left: 5px solid;
+            position: relative;
+            box-shadow: var(--shadow-data);
+        }
+
+        .concept-box.methodology {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-color: var(--accent-insight);
+            color: #1e3a8a;
+        }
+
+        .concept-box.application {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-color: var(--success-validated);
+            color: #14532d;
+        }
+
+        .concept-box.insight {
+            background: linear-gradient(135deg, #fefbeb, #fef3c7);
+            border-color: var(--warning-caution);
+            color: #92400e;
+        }
+
+        .concept-box.caution {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            border-color: var(--error-invalid);
+            color: #991b1b;
+        }
+
+        .concept-title {
+            font-weight: 700;
+            font-size: var(--text-lg);
+            margin-bottom: var(--space-sm);
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ========================================
+           CODE AND FORMULA STYLING
+           ======================================== */
+        .code-notation {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent-insight);
+            background: rgba(59, 130, 246, 0.1);
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+        }
+
+        .formula {
+            background: white;
+            padding: var(--space-lg);
+            border-radius: 8px;
+            border: 2px solid var(--accent-insight);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: var(--text-lg);
+            margin: var(--space-lg) 0;
+            text-align: center;
+            position: relative;
+            box-shadow: var(--shadow-data);
+            color: var(--primary-analytics);
+        }
+
+        .regression-equation {
+            font-size: 1.1em;
+            color: var(--primary-analytics);
+            font-weight: 500;
+        }
+
+        /* ========================================
+           QUIZ STYLING - APPLIED THEME
+           ======================================== */
+        .quiz-section {
+            background: linear-gradient(135deg, var(--gray-50), white);
+            border: 2px solid var(--gray-200);
+            border-radius: 20px;
+            padding: var(--space-2xl);
+            margin: var(--space-xl) 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.02) 0%, transparent 70%);
+        }
+
+        .quiz-question {
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-xl);
+            border-bottom: 1px solid var(--gray-200);
+            position: relative;
+            z-index: 1;
+        }
+
+        .quiz-question:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: var(--space-sm);
+            margin: var(--space-lg) 0;
+        }
+
+        .quiz-option {
+            padding: var(--space-lg);
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent-insight);
+            background: var(--gray-50);
+            transform: translateX(3px);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success-validated);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--error-invalid);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .quiz-feedback {
+            margin-top: var(--space-md);
+            padding: var(--space-md);
+            border-radius: 8px;
+            font-size: var(--text-sm);
+        }
+
+        .quiz-feedback.correct {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-validated);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .quiz-feedback.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error-invalid);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* ========================================
+           AI CHAT WIDGET INTEGRATION
+           ======================================== */
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .ai-chat-button {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-analytics), var(--secondary-data));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--text-xl);
+            box-shadow: var(--shadow-model);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-chat-button::before {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+        }
+
+        .ai-chat-button:hover {
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: var(--shadow-model);
+        }
+
+        .ai-chat-panel {
+            position: absolute;
+            bottom: 75px;
+            right: 0;
+            width: 320px;
+            height: 400px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-model);
+            border: 2px solid var(--gray-200);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ai-chat-panel.show {
+            display: flex;
+        }
+
+        .ai-chat-header {
+            background: linear-gradient(135deg, var(--primary-analytics), var(--secondary-data));
+            color: white;
+            padding: var(--space-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: var(--text-sm);
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-md);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+            background: var(--gray-50);
+            font-size: var(--text-sm);
+        }
+
+        .ai-message {
+            max-width: 85%;
+            padding: var(--space-md) var(--space-lg);
+            border-radius: 12px;
+            line-height: 1.4;
+        }
+
+        .ai-message.claude {
+            background: white;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-200);
+            align-self: flex-start;
+        }
+
+        .ai-message.user {
+            background: var(--primary-analytics);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .ai-input-area {
+            padding: var(--space-md);
+            border-top: 1px solid var(--gray-200);
+            background: white;
+        }
+
+        .ai-input-container {
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: var(--space-md);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: var(--text-sm);
+        }
+
+        .ai-send-btn {
+            background: var(--primary-analytics);
+            color: white;
+            border: none;
+            padding: var(--space-md) var(--space-lg);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: var(--text-sm);
+        }
+
+        /* ========================================
+           RESPONSIVE DESIGN
+           ======================================== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 var(--space-md);
+            }
+            
+            .chapter-navigation {
+                flex-direction: column;
+                gap: var(--space-md);
+            }
+            
+            .nav-button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .nav-previous, .nav-next {
+                flex: none;
+            }
+            
+            .calculator-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-md);
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .ai-chat-panel {
+                width: 280px;
+                height: 350px;
+                right: -10px;
+            }
+            
+            .chapter-title {
+                font-size: var(--text-3xl);
+            }
+            
+            .section {
+                padding: var(--space-lg);
+                border-radius: 12px;
+            }
+            
+            .interactive-widget {
+                padding: var(--space-lg);
+                border-radius: 16px;
+            }
+        }
+
+        /* ========================================
+           ANIMATIONS AND TRANSITIONS
+           ======================================== */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .slide-up {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUp 0.8s ease-out forwards;
+        }
+
+        .data-animation {
+            opacity: 0;
+            transform: scale(0.95);
+            animation: dataAnimate 1s ease-out forwards;
+        }
+
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+        .delay-4 { animation-delay: 0.8s; }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        @keyframes dataAnimate {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Data flow visualization */
+        .data-flow {
+            position: relative;
+            height: 80px;
+            background: linear-gradient(to right, var(--viz-blue), var(--viz-emerald), var(--viz-amber));
+            border-radius: 6px;
+            margin: var(--space-md) 0;
+            overflow: hidden;
+        }
+
+        .data-flow::after {
+            content: 'Raw Data → Analysis → Insights';
+            position: absolute;
+            right: var(--space-md);
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-weight: 600;
+            font-size: var(--text-sm);
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <h1 class="chapter-title">Chapter 6: Further Issues in Multiple Regression</h1>
+                <p class="chapter-subtitle">Applied Econometric Analysis & Model Refinement</p>
+                <p class="chapter-description">
+                    Master practical econometric techniques for real-world analysis. Explore data scaling effects, 
+                    functional form selection, model comparison methods, and prediction techniques. Learn to build 
+                    robust, interpretable models for professional economic research and policy analysis.
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- Navigation Buttons -->
+        <div class="chapter-navigation fade-in">
+            <a href="index.html" class="nav-button nav-home">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">Home</span>
+            </a>
+            <a href="chapter05.html" class="nav-button nav-previous">
+                <span class="nav-icon">←</span>
+                <span class="nav-text">Previous Chapter</span>
+            </a>
+            <div class="nav-button nav-next" style="opacity: 0.5; cursor: not-allowed;" onclick="showComingSoon()">
+                <span class="nav-icon">→</span>
+                <span class="nav-text">Next Chapter</span>
+            </div>
+        </div>
+        
+        <!-- Section 6.1: Effects of Data Scaling -->
+        <section class="section fade-in">
+            <h2 class="section-title">6.1 Effects of Data Scaling on OLS Statistics</h2>
+            
+            <p>Understanding how changing units of measurement affects regression results is crucial for interpreting coefficients across different studies and for making your results comparable to other research. Some statistics change with scaling, others don't.</p>
+            
+            <div class="concept-box methodology">
+                <div class="concept-title">📏 Data Scaling Rules</div>
+                <p>When changing units of variables, OLS statistics respond predictably:</p>
+                <div class="formula">
+                    <span class="regression-equation">y* = β₀* + β₁*x* + u*</span>
+                </div>
+                <p><strong>What changes:</strong> Coefficients, standard errors, fitted values, residuals<br>
+                <strong>What stays constant:</strong> t-statistics, R², F-statistics, p-values</p>
+            </div>
+
+            <div class="concept-box insight">
+                <div class="concept-title">💡 Why This Matters</div>
+                <p><strong>Economic interpretation depends on units:</strong> A coefficient of 0.08 could mean 8% wage increase per year of education (log wages) OR $80 income increase (wages in hundreds). The economic story is identical, but the numbers look very different. Always specify your units clearly!</p>
+            </div>
+
+            <!-- Interactive Data Scaling Calculator -->
+            <div class="interactive-widget data-animation delay-1">
+                <div class="widget-header">
+                    <div class="widget-icon">📏</div>
+                    <div>
+                        <h3 class="widget-title">Data Scaling Impact Calculator</h3>
+                        <p class="widget-description">Explore how changing units affects regression results</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="control-group">
+                        <label class="control-label">Economic Model</label>
+                        <select class="control-select" id="scalingModel">
+                            <option value="wages">Wage = f(Education, Experience)</option>
+                            <option value="housing">HousePrice = f(Size, Location)</option>
+                            <option value="consumption">Consumption = f(Income, Age)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Y-Variable Scaling</label>
+                        <select class="control-select" id="yScaling">
+                            <option value="1">Original Units</option>
+                            <option value="1000">Thousands</option>
+                            <option value="0.01">Cents/Percentage</option>
+                            <option value="log">Natural Log</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">X-Variable Scaling</label>
+                        <select class="control-select" id="xScaling">
+                            <option value="1">Original Units</option>
+                            <option value="100">Hundreds</option>
+                            <option value="0.1">Tenths</option>
+                            <option value="12">Convert Years to Months</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Sample Size</label>
+                        <select class="control-select" id="scalingSampleSize">
+                            <option value="500">n = 500</option>
+                            <option value="1000" selected>n = 1000</option>
+                            <option value="2000">n = 2000</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: var(--space-xl) 0;">
+                    <button class="action-button" onclick="calculateScalingEffects()">Analyze Scaling Effects</button>
+                </div>
+
+                <div class="results-panel" id="scalingResults" style="display: none;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg); margin-bottom: var(--space-lg);">
+                        <div style="background: white; padding: var(--space-lg); border-radius: 8px; border: 2px solid var(--viz-blue);">
+                            <h5 style="text-align: center; color: var(--primary-analytics); margin-bottom: var(--space-md);">Original Scale</h5>
+                            <div class="stat-card" style="margin: 0;">
+                                <div class="stat-value" id="originalCoeff">-</div>
+                                <div class="stat-label">Coefficient & SE</div>
+                            </div>
+                        </div>
+                        <div style="background: white; padding: var(--space-lg); border-radius: 8px; border: 2px solid var(--viz-emerald);">
+                            <h5 style="text-align: center; color: var(--primary-analytics); margin-bottom: var(--space-md);">Scaled Results</h5>
+                            <div class="stat-card" style="margin: 0;">
+                                <div class="stat-value" id="scaledCoeff">-</div>
+                                <div class="stat-label">Coefficient & SE</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="results-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="tStatisticScaling">-</div>
+                            <div class="stat-label">t-Statistic</div>
+                            <div class="stat-interpretation">Unchanged by scaling</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="rSquaredScaling">-</div>
+                            <div class="stat-label">R-Squared</div>
+                            <div class="stat-interpretation">Unchanged by scaling</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="scalingFactor">-</div>
+                            <div class="stat-label">Scaling Factor</div>
+                            <div class="stat-interpretation">Coefficient ratio</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="quality-indicator" id="scalingConsistency">
+                                <span>Interpretation</span>
+                            </div>
+                            <div class="stat-label">Economic Meaning</div>
+                            <div class="stat-interpretation" id="scalingMeaning">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-box application" style="margin-top: var(--space-lg);">
+                        <div class="concept-title">📊 Scaling Analysis</div>
+                        <p id="scalingInterpretation">Calculate to see analysis...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6.2: More on Functional Form -->
+        <section class="section fade-in delay-1">
+            <h2 class="section-title">6.2 Functional Form Specification</h2>
+            
+            <p>Choosing the right functional form is crucial for accurate economic interpretation and avoiding specification error. Log models, polynomials, and interaction terms each serve specific purposes in capturing economic relationships.</p>
+
+            <div class="concept-box methodology">
+                <div class="concept-title">🔄 Common Functional Forms</div>
+                <p><strong>Linear:</strong> y = β₀ + β₁x → ∂y/∂x = β₁ (constant marginal effect)<br>
+                <strong>Log-Linear:</strong> ln(y) = β₀ + β₁x → %Δy ≈ β₁Δx (constant percentage effect)<br>
+                <strong>Log-Log:</strong> ln(y) = β₀ + β₁ln(x) → elasticity = β₁ (constant elasticity)<br>
+                <strong>Quadratic:</strong> y = β₀ + β₁x + β₂x² → ∂y/∂x = β₁ + 2β₂x (varying marginal effect)</p>
+            </div>
+
+            <!-- Interactive Functional Form Explorer -->
+            <div class="interactive-widget data-animation delay-2">
+                <div class="widget-header">
+                    <div class="widget-icon">📈</div>
+                    <div>
+                        <h3 class="widget-title">Functional Form Comparison Tool</h3>
+                        <p class="widget-description">Compare different functional forms for your economic relationships</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="control-group">
+                        <label class="control-label">Economic Relationship</label>
+                        <select class="control-select" id="economicRelationship">
+                            <option value="wage_education">Wages vs Education</option>
+                            <option value="demand_price">Quantity Demanded vs Price</option>
+                            <option value="production_labor">Output vs Labor Input</option>
+                            <option value="income_age">Income vs Age</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Functional Forms to Compare</label>
+                        <select class="control-select" id="functionalForms">
+                            <option value="linear_log">Linear vs Log-Linear</option>
+                            <option value="linear_quadratic">Linear vs Quadratic</option>
+                            <option value="log_loglog">Log-Linear vs Log-Log</option>
+                            <option value="all_forms">All Major Forms</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Data Generation Process</label>
+                        <select class="control-select" id="trueRelationship">
+                            <option value="linear">Truly Linear</option>
+                            <option value="logarithmic">Truly Logarithmic</option>
+                            <option value="quadratic">Truly Quadratic</option>
+                            <option value="exponential">Truly Exponential</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Sample Size</label>
+                        <select class="control-select" id="formSampleSize">
+                            <option value="250">n = 250</option>
+                            <option value="500" selected>n = 500</option>
+                            <option value="1000">n = 1000</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: var(--space-xl) 0;">
+                    <button class="action-button" onclick="compareFunctionalForms()">Compare Functional Forms</button>
+                </div>
+
+                <div class="results-panel" id="functionalFormResults" style="display: none;">
+                    <div class="model-visualization">
+                        <div class="visualization-header">
+                            <div class="visualization-title">Model Fit Comparison</div>
+                            <p style="text-align: center; margin: 0; color: var(--gray-600); font-size: var(--text-sm);">
+                                Visual comparison of different functional forms
+                            </p>
+                        </div>
+                        <div class="visualization-canvas" id="functionalFormCanvas">
+                            <!-- Model comparison visualizations will be drawn here -->
+                        </div>
+                    </div>
+                    
+                    <div class="results-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="linearR2">-</div>
+                            <div class="stat-label">Linear R²</div>
+                            <div class="stat-interpretation">Goodness of fit</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="logR2">-</div>
+                            <div class="stat-label">Log Model R²</div>
+                            <div class="stat-interpretation">Goodness of fit</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="quadraticR2">-</div>
+                            <div class="stat-label">Quadratic R²</div>
+                            <div class="stat-interpretation">Goodness of fit</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="quality-indicator" id="bestModel">
+                                <span>Best Fit</span>
+                            </div>
+                            <div class="stat-label">Recommended</div>
+                            <div class="stat-interpretation" id="modelRecommendation">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-box application" style="margin-top: var(--space-lg);">
+                        <div class="concept-title">🎯 Functional Form Analysis</div>
+                        <p id="functionalFormAnalysis">Run comparison to see detailed analysis...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-box insight">
+                <div class="concept-title">⚡ Interaction Effects</div>
+                <p><strong>Basic interaction:</strong> y = β₀ + β₁x₁ + β₂x₂ + β₃(x₁×x₂)<br>
+                Effect of x₁ on y = β₁ + β₃x₂ (depends on level of x₂)<br>
+                <strong>Example:</strong> Returns to education may depend on experience level, or advertising effectiveness may depend on product quality.</p>
+            </div>
+        </section>
+
+        <!-- Section 6.3: Model Selection and Information Criteria -->
+        <section class="section fade-in delay-2">
+            <h2 class="section-title">6.3 Model Selection and Goodness-of-Fit</h2>
+            
+            <p>When comparing models with different numbers of variables, R² always increases with more variables (even irrelevant ones!). Better measures like adjusted R², AIC, and BIC penalize model complexity and help identify the best specification.</p>
+
+            <div class="concept-box methodology">
+                <div class="concept-title">🎯 Information Criteria</div>
+                <p><strong>Adjusted R²:</strong> R̄² = 1 - (1-R²)(n-1)/(n-k-1) → penalizes extra variables<br>
+                <strong>AIC:</strong> -2ln(L) + 2k → penalizes parameters, good for prediction<br>
+                <strong>BIC:</strong> -2ln(L) + k·ln(n) → stronger penalty, good for identification<br>
+                <strong>Rule:</strong> Lower values indicate better models</p>
+            </div>
+
+            <!-- Interactive Model Selection Tool -->
+            <div class="interactive-widget data-animation delay-3">
+                <div class="widget-header">
+                    <div class="widget-icon">🎯</div>
+                    <div>
+                        <h3 class="widget-title">Model Selection Workshop</h3>
+                        <p class="widget-description">Compare models using multiple selection criteria</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="control-group">
+                        <label class="control-label">Economic Context</label>
+                        <select class="control-select" id="selectionContext">
+                            <option value="wage_determinants">Wage Determinants</option>
+                            <option value="house_prices">House Price Factors</option>
+                            <option value="firm_performance">Firm Performance</option>
+                            <option value="trade_gravity">Trade Gravity Model</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Model Building Strategy</label>
+                        <select class="control-select" id="buildingStrategy">
+                            <option value="forward">Forward Selection</option>
+                            <option value="backward">Backward Elimination</option>
+                            <option value="stepwise">Stepwise Selection</option>
+                            <option value="all_subsets">All Possible Subsets</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Selection Criterion</label>
+                        <select class="control-select" id="selectionCriterion">
+                            <option value="adjusted_r2">Adjusted R²</option>
+                            <option value="aic">Akaike Information Criterion</option>
+                            <option value="bic" selected>Bayesian Information Criterion</option>
+                            <option value="cross_validation">Cross-Validation</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Sample Size</label>
+                        <select class="control-select" id="modelSampleSize">
+                            <option value="100">n = 100 (small)</option>
+                            <option value="500" selected>n = 500 (medium)</option>
+                            <option value="2000">n = 2000 (large)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: var(--space-xl) 0;">
+                    <button class="action-button" onclick="runModelSelection()">Run Model Selection</button>
+                </div>
+
+                <div class="results-panel" id="modelSelectionResults" style="display: none;">
+                    <div style="margin-bottom: var(--space-lg);">
+                        <h5 style="text-align: center; margin-bottom: var(--space-md); color: var(--primary-analytics);">Model Comparison</h5>
+                        <div class="data-flow">
+                            <div id="selectionProgress" style="width: 0%; height: 100%; background: rgba(255,255,255,0.3); transition: width 2s ease;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="results-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="finalModelSize">-</div>
+                            <div class="stat-label">Selected Variables</div>
+                            <div class="stat-interpretation">Final model size</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="finalCriterionValue">-</div>
+                            <div class="stat-label">Selection Criterion</div>
+                            <div class="stat-interpretation">Optimized value</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="finalModelR2">-</div>
+                            <div class="stat-label">Final R²</div>
+                            <div class="stat-interpretation">Explanatory power</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="quality-indicator" id="selectionQuality">
+                                <span>Model Quality</span>
+                            </div>
+                            <div class="stat-label">Assessment</div>
+                            <div class="stat-interpretation" id="qualityDescription">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-box application" style="margin-top: var(--space-lg);">
+                        <div class="concept-title">🔍 Model Selection Results</div>
+                        <p id="modelSelectionAnalysis">Run model selection to see detailed results...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6.4: Prediction and Residual Analysis -->
+        <section class="section fade-in delay-3">
+            <h2 class="section-title">6.4 Prediction and Residual Analysis</h2>
+            
+            <p>Regression models aren't just for understanding relationships - they're powerful prediction tools. Understanding prediction intervals, out-of-sample performance, and residual patterns helps assess model quality and identify potential problems.</p>
+
+            <div class="concept-box methodology">
+                <div class="concept-title">🔮 Prediction Theory</div>
+                <p><strong>Point prediction:</strong> ŷ₀ = x₀'β̂<br>
+                <strong>Prediction error:</strong> e₀ = y₀ - ŷ₀<br>
+                <strong>Prediction interval:</strong> ŷ₀ ± t·se(pred)<br>
+                <strong>Key insight:</strong> Prediction uncertainty includes both parameter uncertainty AND fundamental error</p>
+            </div>
+
+            <!-- Interactive Prediction Engine -->
+            <div class="interactive-widget data-animation delay-4">
+                <div class="widget-header">
+                    <div class="widget-icon">🔮</div>
+                    <div>
+                        <h3 class="widget-title">Econometric Prediction Engine</h3>
+                        <p class="widget-description">Generate predictions with uncertainty quantification</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="control-group">
+                        <label class="control-label">Prediction Application</label>
+                        <select class="control-select" id="predictionApplication">
+                            <option value="sales_forecasting">Sales Forecasting</option>
+                            <option value="wage_prediction">Wage Prediction</option>
+                            <option value="demand_forecasting">Demand Forecasting</option>
+                            <option value="policy_impact">Policy Impact Prediction</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Prediction Horizon</label>
+                        <select class="control-select" id="predictionHorizon">
+                            <option value="in_sample">In-Sample Fit</option>
+                            <option value="one_step">One-Step Ahead</option>
+                            <option value="multi_step">Multi-Step Ahead</option>
+                            <option value="out_of_sample" selected>Out-of-Sample</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Confidence Level</label>
+                        <select class="control-select" id="predictionConfidence">
+                            <option value="80">80% Confidence</option>
+                            <option value="90">90% Confidence</option>
+                            <option value="95" selected>95% Confidence</option>
+                            <option value="99">99% Confidence</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Model Complexity</label>
+                        <select class="control-select" id="predictionComplexity">
+                            <option value="simple">Simple (2-3 variables)</option>
+                            <option value="moderate" selected>Moderate (5-7 variables)</option>
+                            <option value="complex">Complex (10+ variables)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: var(--space-xl) 0;">
+                    <button class="action-button" onclick="generatePredictions()">Generate Predictions</button>
+                </div>
+
+                <div class="results-panel" id="predictionResults" style="display: none;">
+                    <div class="model-visualization">
+                        <div class="visualization-header">
+                            <div class="visualization-title">Prediction Performance</div>
+                            <p style="text-align: center; margin: 0; color: var(--gray-600); font-size: var(--text-sm);">
+                                Actual vs predicted values with confidence intervals
+                            </p>
+                        </div>
+                        <div class="visualization-canvas" id="predictionCanvas">
+                            <!-- Prediction visualizations will be drawn here -->
+                        </div>
+                    </div>
+                    
+                    <div class="results-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="predictionMSE">-</div>
+                            <div class="stat-label">Mean Squared Error</div>
+                            <div class="stat-interpretation">Prediction accuracy</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="predictionMAE">-</div>
+                            <div class="stat-label">Mean Absolute Error</div>
+                            <div class="stat-interpretation">Average error</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="coverageRate">-</div>
+                            <div class="stat-label">Coverage Rate</div>
+                            <div class="stat-interpretation">% within intervals</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="quality-indicator" id="predictionQuality">
+                                <span>Prediction Quality</span>
+                            </div>
+                            <div class="stat-label">Overall Assessment</div>
+                            <div class="stat-interpretation" id="predictionAssessment">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-box application" style="margin-top: var(--space-lg);">
+                        <div class="concept-title">🎯 Prediction Analysis</div>
+                        <p id="predictionAnalysis">Generate predictions to see analysis...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-box caution">
+                <div class="concept-title">⚠️ Prediction Pitfalls</div>
+                <p><strong>Extrapolation danger:</strong> Predictions far outside the sample range are unreliable. <strong>Structural breaks:</strong> Relationships may change over time. <strong>Overfitting:</strong> Complex models may fit the training data well but predict poorly out-of-sample. Always validate predictions on holdout data!</p>
+            </div>
+        </section>
+
+        <!-- Section 6.5: Residual Analysis and Model Diagnostics -->
+        <section class="section fade-in delay-4">
+            <h2 class="section-title">6.5 Residual Analysis and Model Diagnostics</h2>
+            
+            <p>Residuals are the window into your model's soul. They reveal violations of assumptions, suggest functional form improvements, and identify influential observations. Professional econometric analysis always includes careful residual examination.</p>
+
+            <div class="concept-box methodology">
+                <div class="concept-title">🔍 Diagnostic Arsenal</div>
+                <p><strong>Residual plots:</strong> û vs ŷ (heteroskedasticity), û vs x (linearity)<br>
+                <strong>Normal Q-Q plot:</strong> Check error normality assumption<br>
+                <strong>Leverage & influence:</strong> Identify observations affecting results<br>
+                <strong>Standardized residuals:</strong> |û/σ̂| > 2 suggests outliers</p>
+            </div>
+
+            <!-- Interactive Diagnostic Engine -->
+            <div class="interactive-widget data-animation delay-5">
+                <div class="widget-header">
+                    <div class="widget-icon">🔍</div>
+                    <div>
+                        <h3 class="widget-title">Regression Diagnostics Lab</h3>
+                        <p class="widget-description">Comprehensive residual analysis and model validation</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="control-group">
+                        <label class="control-label">Dataset Type</label>
+                        <select class="control-select" id="diagnosticDataset">
+                            <option value="well_behaved">Well-Behaved Data</option>
+                            <option value="heteroskedastic">Heteroskedastic Errors</option>
+                            <option value="nonlinear">Nonlinear Relationship</option>
+                            <option value="outliers" selected>Contains Outliers</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Diagnostic Focus</label>
+                        <select class="control-select" id="diagnosticFocus">
+                            <option value="linearity">Linearity Assessment</option>
+                            <option value="homoskedasticity">Homoskedasticity Check</option>
+                            <option value="normality">Normality Testing</option>
+                            <option value="outliers" selected>Outlier Detection</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Sample Composition</label>
+                        <select class="control-select" id="sampleComposition">
+                            <option value="uniform">Uniform Distribution</option>
+                            <option value="clustered">Clustered Data Points</option>
+                            <option value="mixed" selected>Mixed Sample</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Analysis Depth</label>
+                        <select class="control-select" id="analysisDepth">
+                            <option value="basic">Basic Diagnostics</option>
+                            <option value="standard" selected>Standard Analysis</option>
+                            <option value="comprehensive">Comprehensive Suite</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: var(--space-xl) 0;">
+                    <button class="action-button" onclick="runDiagnostics()">Run Diagnostic Analysis</button>
+                </div>
+
+                <div class="results-panel" id="diagnosticResults" style="display: none;">
+                    <div class="model-visualization">
+                        <div class="visualization-header">
+                            <div class="visualization-title">Residual Pattern Analysis</div>
+                            <p style="text-align: center; margin: 0; color: var(--gray-600); font-size: var(--text-sm);">
+                                Multiple diagnostic plots for assumption validation
+                            </p>
+                        </div>
+                        <div class="visualization-canvas" id="diagnosticCanvas">
+                            <!-- Diagnostic visualizations will be drawn here -->
+                        </div>
+                    </div>
+                    
+                    <div class="results-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="linearityTest">-</div>
+                            <div class="stat-label">Linearity Test</div>
+                            <div class="stat-interpretation">RESET p-value</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="heteroskedasticityTest">-</div>
+                            <div class="stat-label">Heteroskedasticity</div>
+                            <div class="stat-interpretation">BP test p-value</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="normalityTest">-</div>
+                            <div class="stat-label">Normality Test</div>
+                            <div class="stat-interpretation">JB test p-value</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="quality-indicator" id="overallDiagnostic">
+                                <span>Model Health</span>
+                            </div>
+                            <div class="stat-label">Overall Assessment</div>
+                            <div class="stat-interpretation" id="healthDescription">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-box application" style="margin-top: var(--space-lg);">
+                        <div class="concept-title">🏥 Diagnostic Results</div>
+                        <p id="diagnosticAnalysis">Run diagnostics to see comprehensive analysis...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Quiz Section -->
+        <section class="section fade-in delay-4">
+            <div class="quiz-section">
+                <h3 style="text-align: center; margin-bottom: var(--space-xl); color: var(--primary-analytics);">
+                    📊 Chapter 6 Knowledge Check: Applied Econometrics
+                </h3>
+                <p style="text-align: center; color: var(--gray-600); margin-bottom: var(--space-xl);">
+                    Test your understanding of scaling effects, functional forms, model selection, and prediction
+                </p>
+                
+                <!-- Question 1 -->
+                <div class="quiz-question">
+                    <p><strong>Question 1:</strong> When you change the dependent variable from dollars to thousands of dollars, what happens to the t-statistic?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option" onclick="selectQuizAnswer('6-1', 'A')">
+                            <input type="radio" name="q6-1" value="A"> 
+                            A) It increases by factor of 1000
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('6-1', 'B')">
+                            <input type="radio" name="q6-1" value="B">
+                            B) It decreases by factor of 1000
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('6-1', 'C')">
+                            <input type="radio" name="q6-1" value="C">
+                            C) It remains unchanged
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('6-1', 'D')">
+                            <input type="radio" name="q6-1" value="D">
+                            D) Cannot determine without more information
+                        </label>
+                    </div>
+                    <div id="feedback6-1" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="quiz-question">
+                    <p><strong>Question 2:</strong> In a log-log model ln(y) = β₀ + β₁ln(x), the coefficient β₁ represents:</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option" onclick="selectQuizAnswer('6-2', 'A')">
+                            <input type="radio" name="q6-2" value="A">
+                            A) The change in y for a unit change in x
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('6-2', 'B')">
+                            <input type="radio" name="q6-2" value="B">
+                            B) The elasticity of y with respect to x
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('6-2', 'C')">
+                            <input type="radio" name="q6-2" value="C">
+                            C) The percentage change in y for a unit change in x
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('6-2', 'D')">
+                            <input type="radio" name="q6-2" value="D">
+                            D) The semi-elasticity of y with respect to x
+                        </label>
+                    </div>
+                    <div id="feedback6-2" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="quiz-question">
+                    <p><strong>Question 3:</strong> Why might BIC select a smaller model than AIC?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option" onclick="selectQuizAnswer('6-3', 'A')">
+                            <input type="radio" name="q6-3" value="A">
+                            A) BIC has a stronger penalty for additional parameters
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('6-3', 'B')">
+                            <input type="radio" name="q6-3" value="B">
+                            C) BIC focuses on prediction accuracy
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('6-3', 'C')">
+                            <input type="radio" name="q6-3" value="C">
+                            C) AIC penalizes large samples more heavily
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('6-3', 'D')">
+                            <input type="radio" name="q6-3" value="D">
+                            D) BIC always prefers complex models
+                        </label>
+                    </div>
+                    <div id="feedback6-3" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Question Generation Section -->
+                <div style="text-align: center; margin: var(--space-2xl) 0; padding: var(--space-xl); background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-radius: 16px; border: 2px dashed var(--accent-insight);">
+                    <h4 style="color: var(--primary-analytics); margin-bottom: var(--space-md);">📊 Generate More Applied Questions</h4>
+                    <p style="color: var(--gray-600); margin-bottom: var(--space-lg);">
+                        Practice with randomly generated questions covering different applied econometric topics
+                    </p>
+                    
+                    <div style="display: flex; gap: var(--space-md); justify-content: center; flex-wrap: wrap; margin-bottom: var(--space-lg);">
+                        <button class="action-button" onclick="generateQuestions('scaling')" style="background: linear-gradient(135deg, var(--viz-blue), #2563eb);">
+                            📏 Data Scaling
+                        </button>
+                        <button class="action-button" onclick="generateQuestions('functional_form')" style="background: linear-gradient(135deg, var(--viz-emerald), #059669);">
+                            📈 Functional Forms
+                        </button>
+                        <button class="action-button" onclick="generateQuestions('model_selection')" style="background: linear-gradient(135deg, var(--viz-amber), #d97706);">
+                            🎯 Model Selection
+                        </button>
+                        <button class="action-button" onclick="generateQuestions('prediction')" style="background: linear-gradient(135deg, var(--viz-violet), #7c3aed);">
+                            🔮 Prediction
+                        </button>
+                    </div>
+                    
+                    <div id="generatedQuestions" style="display: none;">
+                        <div id="generatedQuestionsList"></div>
+                        <div style="margin-top: var(--space-lg);">
+                            <button class="action-button" onclick="clearGeneratedQuestions()" style="background: var(--gray-500);">
+                                🗑️ Clear Questions
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div class="ai-chat-widget" id="aiChatWidget">
+        <button class="ai-chat-button" onclick="toggleAIChat()" title="Ask Claude about Applied Econometrics">
+            <span id="aiChatIcon">📊</span>
+        </button>
+        
+        <div class="ai-chat-panel" id="aiChatPanel">
+            <div class="ai-chat-header">
+                <span>📊 Claude AI Tutor - Chapter 6</span>
+                <button onclick="toggleAIChat()" style="background: none; border: none; color: white; cursor: pointer;">×</button>
+            </div>
+            
+            <div class="ai-chat-messages" id="aiChatMessages">
+                <div class="ai-message claude">
+                    <strong>📊 Claude:</strong> Hi! I'm your applied econometrics tutor. I can help you understand data scaling, functional forms, model selection, prediction techniques, and diagnostic methods. What would you like to explore?
+                </div>
+            </div>
+            
+            <div class="ai-input-area">
+                <div class="ai-input-container">
+                    <input type="text" class="ai-input" id="aiInput" placeholder="Ask about applied econometrics..." 
+                           onkeydown="if(event.key==='Enter') sendAIMessage()">
+                    <button class="ai-send-btn" onclick="sendAIMessage()">→</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BULLETPROOF JavaScript - NO External Dependencies -->
+    <script>
+        // ========================================
+        // GLOBAL VARIABLES AND STATE
+        // ========================================
+        
+        let appliedData = [];
+        let isAIChatOpen = false;
+        let generatedQuestionCount = 0;
+        
+        // ========================================
+        // DATA SCALING EFFECTS CALCULATOR
+        // ========================================
+        
+        function calculateScalingEffects() {
+            const model = document.getElementById('scalingModel').value;
+            const yScale = document.getElementById('yScaling').value;
+            const xScale = document.getElementById('xScaling').value;
+            const n = parseInt(document.getElementById('scalingSampleSize').value);
+            
+            // Generate base coefficients and standard errors
+            const baseCoeff = getBaseCoefficient(model);
+            const baseSE = baseCoeff * 0.15; // Rough SE estimate
+            
+            // Apply scaling transformations
+            const scaledResults = applyScaling(baseCoeff, baseSE, yScale, xScale);
+            
+            // Display results
+            displayScalingResults(scaledResults, model, yScale, xScale, n);
+        }
+        
+        function getBaseCoefficient(model) {
+            switch(model) {
+                case 'wages': return 0.08; // 8% return to education
+                case 'housing': return 150; // $150 per sq ft
+                case 'consumption': return 0.75; // 75 cents per dollar
+                default: return 0.5;
+            }
+        }
+        
+        function applyScaling(baseCoeff, baseSE, yScale, xScale) {
+            let yScaleFactor = 1;
+            let xScaleFactor = 1;
+            
+            // Handle Y scaling
+            if (yScale === 'log') {
+                yScaleFactor = 'log';
+            } else {
+                yScaleFactor = parseFloat(yScale);
+            }
+            
+            // Handle X scaling
+            xScaleFactor = parseFloat(xScale);
+            
+            let scaledCoeff, scaledSE, scalingFactor;
+            
+            if (yScaleFactor === 'log') {
+                // Log transformation changes interpretation
+                scaledCoeff = baseCoeff / 100; // Approximate conversion to elasticity
+                scaledSE = baseSE / 100;
+                scalingFactor = 'Log transform';
+            } else {
+                // Linear scaling
+                scalingFactor = yScaleFactor / xScaleFactor;
+                scaledCoeff = baseCoeff * scalingFactor;
+                scaledSE = baseSE * scalingFactor;
+            }
+            
+            return {
+                originalCoeff: baseCoeff,
+                originalSE: baseSE,
+                scaledCoeff: scaledCoeff,
+                scaledSE: scaledSE,
+                scalingFactor: scalingFactor
+            };
+        }
+        
+        function displayScalingResults(results, model, yScale, xScale, n) {
+            document.getElementById('originalCoeff').textContent = 
+                `${results.originalCoeff.toFixed(4)} (${results.originalSE.toFixed(4)})`;
+            document.getElementById('scaledCoeff').textContent = 
+                `${results.scaledCoeff.toFixed(4)} (${results.scaledSE.toFixed(4)})`;
+            
+            // t-statistic and R² are unchanged
+            const tStat = results.originalCoeff / results.originalSE;
+            document.getElementById('tStatisticScaling').textContent = tStat.toFixed(3);
+            document.getElementById('rSquaredScaling').textContent = '0.456'; // Example
+            
+            if (typeof results.scalingFactor === 'number') {
+                document.getElementById('scalingFactor').textContent = results.scalingFactor.toFixed(2);
+            } else {
+                document.getElementById('scalingFactor').textContent = results.scalingFactor;
+            }
+            
+            // Economic interpretation
+            const meanings = {
+                wages: yScale === 'log' ? 'Percentage wage increase per year education' : 'Dollar wage increase per year education',
+                housing: 'House price increase per unit area',
+                consumption: 'Consumption increase per dollar income'
+            };
+            
+            const meaningElement = document.getElementById('scalingMeaning');
+            meaningElement.textContent = 'Economic Effect Size';
+            
+            const consistencyElement = document.getElementById('scalingConsistency');
+            if (Math.abs(tStat) > 1.96) {
+                consistencyElement.className = 'quality-indicator quality-excellent';
+                consistencyElement.innerHTML = '<span>Significant</span>';
+            } else {
+                consistencyElement.className = 'quality-indicator quality-poor';
+                consistencyElement.innerHTML = '<span>Not Significant</span>';
+            }
+            
+            // Interpretation
+            const interpretation = `
+                Scaling analysis for ${model}: The original coefficient of ${results.originalCoeff.toFixed(4)} becomes ${results.scaledCoeff.toFixed(4)} after scaling.
+                
+                Key insight: While the coefficient magnitude changes by factor ${typeof results.scalingFactor === 'number' ? results.scalingFactor.toFixed(2) : results.scalingFactor}, the t-statistic (${tStat.toFixed(3)}) and R² remain identical.
+                
+                Economic interpretation: ${meanings[model] || 'Effect varies with scaling'}. 
+                The economic relationship is unchanged - only the numerical representation differs.
+                
+                Professional practice: Always report units clearly and choose scales that make coefficients interpretable 
+                (typically between 0.01 and 100 for easy reading).
+            `;
+            
+            document.getElementById('scalingInterpretation').textContent = interpretation;
+            document.getElementById('scalingResults').style.display = 'block';
+        }
+        
+        // ========================================
+        // FUNCTIONAL FORM COMPARISON
+        // ========================================
+        
+        function compareFunctionalForms() {
+            const relationship = document.getElementById('economicRelationship').value;
+            const forms = document.getElementById('functionalForms').value;
+            const trueRelation = document.getElementById('trueRelationship').value;
+            const n = parseInt(document.getElementById('formSampleSize').value);
+            
+            // Simulate different functional forms
+            const results = simulateFunctionalForms(relationship, forms, trueRelation, n);
+            
+            // Display comparison
+            displayFunctionalFormResults(results, relationship, trueRelation);
+        }
+        
+        function simulateFunctionalForms(relationship, forms, trueRelation, n) {
+            // Generate data based on true relationship
+            const data = generateEconomicData(relationship, trueRelation, n);
+            
+            // Fit different functional forms
+            const linearR2 = calculateR2(data, 'linear');
+            const logR2 = calculateR2(data, 'log');
+            const quadraticR2 = calculateR2(data, 'quadratic');
+            
+            return {
+                linear: linearR2,
+                log: logR2,
+                quadratic: quadraticR2,
+                trueForm: trueRelation,
+                bestFit: getBestFit(linearR2, logR2, quadraticR2, trueRelation)
+            };
+        }
+        
+        function generateEconomicData(relationship, trueRelation, n) {
+            const data = { x: [], y: [], errors: [] };
+            
+            for (let i = 0; i < n; i++) {
+                const x = Math.random() * 10 + 1; // X between 1 and 11
+                const error = generateNormalRandom() * 0.5;
+                
+                let y;
+                switch(trueRelation) {
+                    case 'linear':
+                        y = 2 + 0.5 * x + error;
+                        break;
+                    case 'logarithmic':
+                        y = 2 + 1.5 * Math.log(x) + error;
+                        break;
+                    case 'quadratic':
+                        y = 1 + 0.2 * x + 0.05 * x * x + error;
+                        break;
+                    case 'exponential':
+                        y = Math.exp(1 + 0.1 * x) + error;
+                        break;
+                    default:
+                        y = 2 + 0.5 * x + error;
+                }
+                
+                data.x.push(x);
+                data.y.push(y);
+                data.errors.push(error);
+            }
+            
+            return data;
+        }
+        
+        function calculateR2(data, formType) {
+            // Simplified R² calculation for different functional forms
+            const n = data.x.length;
+            let yHat = [];
+            
+            // Calculate fitted values based on form type
+            for (let i = 0; i < n; i++) {
+                switch(formType) {
+                    case 'linear':
+                        yHat.push(2 + 0.5 * data.x[i]);
+                        break;
+                    case 'log':
+                        yHat.push(2 + 1.5 * Math.log(data.x[i]));
+                        break;
+                    case 'quadratic':
+                        yHat.push(1 + 0.2 * data.x[i] + 0.05 * data.x[i] * data.x[i]);
+                        break;
+                }
+            }
+            
+            // Calculate R²
+            const yMean = data.y.reduce((sum, y) => sum + y, 0) / n;
+            const tss = data.y.reduce((sum, y) => sum + Math.pow(y - yMean, 2), 0);
+            const rss = data.y.reduce((sum, y, i) => sum + Math.pow(y - yHat[i], 2), 0);
+            
+            return Math.max(0, 1 - rss / tss);
+        }
+        
+        function getBestFit(linearR2, logR2, quadraticR2, trueForm) {
+            const r2Values = { linear: linearR2, log: logR2, quadratic: quadraticR2 };
+            
+            let bestModel = 'linear';
+            let bestR2 = linearR2;
+            
+            if (logR2 > bestR2) {
+                bestModel = 'log';
+                bestR2 = logR2;
+            }
+            
+            if (quadraticR2 > bestR2) {
+                bestModel = 'quadratic';
+                bestR2 = quadraticR2;
+            }
+            
+            return { model: bestModel, r2: bestR2, correct: bestModel === trueForm };
+        }
+        
+        function displayFunctionalFormResults(results, relationship, trueForm) {
+            document.getElementById('linearR2').textContent = results.linear.toFixed(4);
+            document.getElementById('logR2').textContent = results.log.toFixed(4);
+            document.getElementById('quadraticR2').textContent = results.quadratic.toFixed(4);
+            
+            const bestElement = document.getElementById('bestModel');
+            const recommendationElement = document.getElementById('modelRecommendation');
+            
+            if (results.bestFit.correct) {
+                bestElement.className = 'quality-indicator quality-excellent';
+                bestElement.innerHTML = '<span>Correct Form</span>';
+                recommendationElement.textContent = 'Identified true model';
+            } else {
+                bestElement.className = 'quality-indicator quality-good';
+                bestElement.innerHTML = '<span>Best Fit</span>';
+                recommendationElement.textContent = results.bestFit.model;
+            }
+            
+            // Create simple visualization
+            const canvas = document.getElementById('functionalFormCanvas');
+            canvas.innerHTML = '';
+            
+            const formNames = ['Linear', 'Log', 'Quadratic'];
+            const r2Values = [results.linear, results.log, results.quadratic];
+            
+            formNames.forEach((name, i) => {
+                const bar = document.createElement('div');
+                bar.style.cssText = `
+                    position: absolute;
+                    left: ${i * 33.33}%;
+                    top: ${80 - r2Values[i] * 60}%;
+                    width: 30%;
+                    height: ${r2Values[i] * 60}%;
+                    background: linear-gradient(to top, var(--viz-blue), var(--viz-emerald));
+                    border-radius: 4px;
+                    opacity: ${name.toLowerCase() === results.bestFit.model ? 1 : 0.6};
+                `;
+                canvas.appendChild(bar);
+                
+                const label = document.createElement('div');
+                label.style.cssText = `
+                    position: absolute;
+                    left: ${i * 33.33 + 5}%;
+                    bottom: 5%;
+                    font-size: var(--text-xs);
+                    color: var(--gray-600);
+                `;
+                label.textContent = `${name}: ${r2Values[i].toFixed(3)}`;
+                canvas.appendChild(label);
+            });
+            
+            // Analysis
+            const relationshipNames = {
+                wage_education: 'wages and education',
+                demand_price: 'demand and price',
+                production_labor: 'production and labor',
+                income_age: 'income and age'
+            };
+            
+            const analysis = `
+                Functional form comparison for ${relationshipNames[relationship] || 'the economic relationship'}:
+                
+                True data generating process: ${trueForm}
+                Best fitting model: ${results.bestFit.model} (R² = ${results.bestFit.r2.toFixed(4)})
+                
+                ${results.bestFit.correct ? 
+                'Excellent! The model selection correctly identified the true functional form.' :
+                `Model selection chose ${results.bestFit.model} over ${trueForm}. This could indicate: (1) small sample effects, (2) similar fit quality, or (3) need for model validation.`}
+                
+                Key insight: Higher R² doesn't always mean better model. Consider economic theory, 
+                out-of-sample performance, and interpretability when choosing functional forms.
+                
+                Professional practice: Always test multiple forms and use economic reasoning to guide selection.
+            `;
+            
+            document.getElementById('functionalFormAnalysis').textContent = analysis;
+            document.getElementById('functionalFormResults').style.display = 'block';
+        }
+        
+        // ========================================
+        // MODEL SELECTION WORKSHOP
+        // ========================================
+        
+        function runModelSelection() {
+            const context = document.getElementById('selectionContext').value;
+            const strategy = document.getElementById('buildingStrategy').value;
+            const criterion = document.getElementById('selectionCriterion').value;
+            const n = parseInt(document.getElementById('modelSampleSize').value);
+            
+            // Simulate model selection process
+            const results = simulateModelSelection(context, strategy, criterion, n);
+            
+            // Display results
+            displayModelSelectionResults(results, strategy, criterion, n);
+        }
+        
+        function simulateModelSelection(context, strategy, criterion, n) {
+            // Simulate starting with pool of potential variables
+            const totalVars = getVariablePool(context);
+            
+            // Run selection algorithm
+            const selectionPath = runSelectionAlgorithm(strategy, criterion, totalVars, n);
+            
+            return {
+                totalVars: totalVars,
+                finalModel: selectionPath.finalModel,
+                selectionPath: selectionPath.path,
+                finalCriterion: selectionPath.finalCriterion,
+                finalR2: selectionPath.finalR2,
+                iterations: selectionPath.iterations
+            };
+        }
+        
+        function getVariablePool(context) {
+            switch(context) {
+                case 'wage_determinants': return 12; // Education, experience, gender, race, etc.
+                case 'house_prices': return 15; // Size, location, age, features, etc.
+                case 'firm_performance': return 18; // Size, industry, R&D, capital, etc.
+                case 'trade_gravity': return 10; // Distance, GDP, population, etc.
+                default: return 10;
+            }
+        }
+        
+        function runSelectionAlgorithm(strategy, criterion, totalVars, n) {
+            // Simplified simulation of model selection
+            let currentVars = 0;
+            let bestCriterion = Infinity;
+            let bestModel = 0;
+            let iterations = 0;
+            
+            // Simulate selection process
+            if (strategy === 'forward') {
+                for (let k = 1; k <= totalVars && k <= Math.floor(n/10); k++) {
+                    const criterionValue = calculateCriterion(criterion, k, n);
+                    iterations++;
+                    
+                    if (criterionValue < bestCriterion) {
+                        bestCriterion = criterionValue;
+                        bestModel = k;
+                    } else {
+                        break; // Stop when criterion stops improving
+                    }
+                }
+            } else if (strategy === 'backward') {
+                let startVars = Math.min(totalVars, Math.floor(n/5));
+                for (let k = startVars; k >= 1; k--) {
+                    const criterionValue = calculateCriterion(criterion, k, n);
+                    iterations++;
+                    
+                    if (k === startVars || criterionValue < bestCriterion) {
+                        bestCriterion = criterionValue;
+                        bestModel = k;
+                    }
+                }
+            } else {
+                // Stepwise or all subsets - find optimal
+                for (let k = 1; k <= Math.min(totalVars, Math.floor(n/5)); k++) {
+                    const criterionValue = calculateCriterion(criterion, k, n);
+                    iterations++;
+                    
+                    if (criterionValue < bestCriterion) {
+                        bestCriterion = criterionValue;
+                        bestModel = k;
+                    }
+                }
+            }
+            
+            return {
+                finalModel: bestModel,
+                finalCriterion: bestCriterion,
+                finalR2: 0.3 + bestModel * 0.05 + Math.random() * 0.2, // Simulated R²
+                iterations: iterations,
+                path: `Selected ${bestModel} variables in ${iterations} steps`
+            };
+        }
+        
+        function calculateCriterion(criterion, k, n) {
+            // Simulate criterion calculation
+            const baseR2 = Math.min(0.9, 0.2 + k * 0.08 - k * k * 0.002); // Diminishing returns
+            const adjR2 = 1 - (1 - baseR2) * (n - 1) / (n - k - 1);
+            
+            switch(criterion) {
+                case 'adjusted_r2':
+                    return -adjR2; // Negative because we minimize criterion
+                case 'aic':
+                    return -2 * n * Math.log(1 - baseR2) + 2 * k;
+                case 'bic':
+                    return -2 * n * Math.log(1 - baseR2) + k * Math.log(n);
+                case 'cross_validation':
+                    return (1 - baseR2) * (1 + 2 * k / n); // Simplified CV error
+                default:
+                    return -adjR2;
+            }
+        }
+        
+        function displayModelSelectionResults(results, strategy, criterion, n) {
+            document.getElementById('finalModelSize').textContent = results.finalModel;
+            document.getElementById('finalCriterionValue').textContent = Math.abs(results.finalCriterion).toFixed(3);
+            document.getElementById('finalModelR2').textContent = results.finalR2.toFixed(4);
+            
+            // Animate selection progress
+            const progressBar = document.getElementById('selectionProgress');
+            progressBar.style.width = '100%';
+            
+            // Quality assessment
+            const qualityElement = document.getElementById('selectionQuality');
+            const descriptionElement = document.getElementById('qualityDescription');
+            
+            const varsPerObs = results.finalModel / n;
+            if (varsPerObs < 0.05) {
+                qualityElement.className = 'quality-indicator quality-excellent';
+                qualityElement.innerHTML = '<span>Excellent</span>';
+                descriptionElement.textContent = 'Parsimonious model';
+            } else if (varsPerObs < 0.10) {
+                qualityElement.className = 'quality-indicator quality-good';
+                qualityElement.innerHTML = '<span>Good</span>';
+                descriptionElement.textContent = 'Reasonable complexity';
+            } else {
+                qualityElement.className = 'quality-indicator quality-poor';
+                qualityElement.innerHTML = '<span>Complex</span>';
+                descriptionElement.textContent = 'May be overfit';
+            }
+            
+            // Analysis
+            const criterionNames = {
+                adjusted_r2: 'Adjusted R²',
+                aic: 'AIC',
+                bic: 'BIC',
+                cross_validation: 'Cross-Validation'
+            };
+            
+            const analysis = `
+                Model selection using ${strategy} strategy with ${criterionNames[criterion]}:
+                
+                Final model: ${results.finalModel} variables selected from ${results.totalVars} candidates
+                Selection criterion: ${Math.abs(results.finalCriterion).toFixed(3)}
+                Final R²: ${results.finalR2.toFixed(4)}
+                
+                ${results.finalModel / n < 0.05 ? 
+                'Excellent parsimony! The model avoids overfitting with reasonable variable count.' :
+                'Consider model complexity. With ' + (varsPerObs * 100).toFixed(1) + '% variables-to-observations ratio, validation is crucial.'}
+                
+                Professional insight: ${criterion === 'bic' ? 'BIC tends to select smaller models, good for interpretation' :
+                criterion === 'aic' ? 'AIC optimizes predictive performance' :
+                criterion === 'cross_validation' ? 'Cross-validation provides robust out-of-sample assessment' :
+                'Adjusted R² balances fit and parsimony'}
+                
+                Next steps: Validate model on holdout data and check economic reasonableness of selected variables.
+            `;
+            
+            document.getElementById('modelSelectionAnalysis').textContent = analysis;
+            document.getElementById('modelSelectionResults').style.display = 'block';
+        }
+        
+        // ========================================
+        // PREDICTION ENGINE
+        // ========================================
+        
+        function generatePredictions() {
+            const application = document.getElementById('predictionApplication').value;
+            const horizon = document.getElementById('predictionHorizon').value;
+            const confidence = parseInt(document.getElementById('predictionConfidence').value);
+            const complexity = document.getElementById('predictionComplexity').value;
+            
+            // Simulate prediction analysis
+            const results = simulatePrediction(application, horizon, confidence, complexity);
+            
+            // Display results
+            displayPredictionResults(results, application, horizon, confidence);
+        }
+        
+        function simulatePrediction(application, horizon, confidence, complexity) {
+            // Simulate prediction performance based on parameters
+            const baseAccuracy = getBaseAccuracy(application);
+            const complexityAdjustment = getComplexityAdjustment(complexity);
+            const horizonAdjustment = getHorizonAdjustment(horizon);
+            
+            const mse = baseAccuracy * complexityAdjustment * horizonAdjustment;
+            const mae = Math.sqrt(mse) * 0.8;
+            const coverage = Math.min(0.99, confidence/100 + 0.02 - Math.random() * 0.04);
+            
+            return {
+                mse: mse,
+                mae: mae,
+                coverage: coverage,
+                quality: assessPredictionQuality(mse, coverage, confidence/100)
+            };
+        }
+        
+        function getBaseAccuracy(application) {
+            switch(application) {
+                case 'sales_forecasting': return 0.15; // 15% typical error
+                case 'wage_prediction': return 0.08; // 8% typical error
+                case 'demand_forecasting': return 0.20; // 20% typical error
+                case 'policy_impact': return 0.25; // 25% typical error
+                default: return 0.15;
+            }
+        }
+        
+        function getComplexityAdjustment(complexity) {
+            switch(complexity) {
+                case 'simple': return 1.2; // Simple models may underfit
+                case 'moderate': return 1.0; // Baseline
+                case 'complex': return 1.5; // Complex models may overfit
+                default: return 1.0;
+            }
+        }
+        
+        function getHorizonAdjustment(horizon) {
+            switch(horizon) {
+                case 'in_sample': return 0.6; // In-sample always looks better
+                case 'one_step': return 1.0; // Baseline
+                case 'multi_step': return 1.8; // Error accumulates
+                case 'out_of_sample': return 1.3; // Out-of-sample penalty
+                default: return 1.0;
+            }
+        }
+        
+        function assessPredictionQuality(mse, coverage, targetCoverage) {
+            const accuracyScore = Math.max(0, 1 - mse / 0.5); // Normalize to 0-1
+            const coverageScore = 1 - Math.abs(coverage - targetCoverage) / 0.1; // Penalize coverage deviations
+            
+            const overallScore = (accuracyScore + coverageScore) / 2;
+            
+            if (overallScore > 0.8) return 'excellent';
+            if (overallScore > 0.6) return 'good';
+            return 'needs_improvement';
+        }
+        
+        function displayPredictionResults(results, application, horizon, confidence) {
+            document.getElementById('predictionMSE').textContent = (results.mse * 100).toFixed(2) + '%';
+            document.getElementById('predictionMAE').textContent = (results.mae * 100).toFixed(2) + '%';
+            document.getElementById('coverageRate').textContent = (results.coverage * 100).toFixed(1) + '%';
+            
+            const qualityElement = document.getElementById('predictionQuality');
+            const assessmentElement = document.getElementById('predictionAssessment');
+            
+            switch(results.quality) {
+                case 'excellent':
+                    qualityElement.className = 'quality-indicator quality-excellent';
+                    qualityElement.innerHTML = '<span>Excellent</span>';
+                    assessmentElement.textContent = 'High accuracy';
+                    break;
+                case 'good':
+                    qualityElement.className = 'quality-indicator quality-good';
+                    qualityElement.innerHTML = '<span>Good</span>';
+                    assessmentElement.textContent = 'Reasonable performance';
+                    break;
+                default:
+                    qualityElement.className = 'quality-indicator quality-poor';
+                    qualityElement.innerHTML = '<span>Needs Work</span>';
+                    assessmentElement.textContent = 'Needs improvement';
+            }
+            
+            // Create simple prediction visualization
+            const canvas = document.getElementById('predictionCanvas');
+            canvas.innerHTML = '';
+            
+            // Draw actual vs predicted scatter
+            for (let i = 0; i < 20; i++) {
+                const actual = Math.random() * 80 + 10;
+                const predicted = actual + (Math.random() - 0.5) * results.mse * 200;
+                
+                const point = document.createElement('div');
+                point.style.cssText = `
+                    position: absolute;
+                    left: ${actual}%;
+                    top: ${100 - predicted}%;
+                    width: 4px;
+                    height: 4px;
+                    background: var(--viz-blue);
+                    border-radius: 50%;
+                    opacity: 0.7;
+                `;
+                canvas.appendChild(point);
+            }
+            
+            // Draw perfect prediction line
+            const line = document.createElement('div');
+            line.style.cssText = `
+                position: absolute;
+                top: 10%;
+                left: 10%;
+                width: 80%;
+                height: 1px;
+                background: var(--viz-emerald);
+                transform: rotate(45deg);
+                transform-origin: left;
+            `;
+            canvas.appendChild(line);
+            
+            // Analysis
+            const applicationNames = {
+                sales_forecasting: 'sales forecasting',
+                wage_prediction: 'wage prediction',
+                demand_forecasting: 'demand forecasting',
+                policy_impact: 'policy impact assessment'
+            };
+            
+            const analysis = `
+                Prediction analysis for ${applicationNames[application]}:
+                
+                Accuracy: MAE = ${(results.mae * 100).toFixed(2)}%, MSE = ${(results.mse * 100).toFixed(2)}%
+                Coverage: ${(results.coverage * 100).toFixed(1)}% of actuals within ${confidence}% intervals
+                
+                ${results.quality === 'excellent' ? 
+                'Outstanding prediction performance! The model achieves high accuracy with well-calibrated uncertainty.' :
+                results.quality === 'good' ?
+                'Good prediction performance. Consider model refinements for critical applications.' :
+                'Prediction performance needs improvement. Check model specification, data quality, and sample size.'}
+                
+                Professional insight: ${horizon === 'out_of_sample' ? 
+                'Out-of-sample validation provides realistic performance estimates' :
+                horizon === 'in_sample' ? 
+                'In-sample fit may be optimistic - validate out-of-sample' :
+                'Multi-step predictions accumulate uncertainty - use with caution'}
+                
+                Recommendation: ${results.coverage > 0.9 ? 
+                'Well-calibrated intervals - suitable for decision making' :
+                'Interval coverage issues - review uncertainty quantification'}
+            `;
+            
+            document.getElementById('predictionAnalysis').textContent = analysis;
+            document.getElementById('predictionResults').style.display = 'block';
+        }
+        
+        // ========================================
+        // DIAGNOSTIC ENGINE
+        // ========================================
+        
+        function runDiagnostics() {
+            const dataset = document.getElementById('diagnosticDataset').value;
+            const focus = document.getElementById('diagnosticFocus').value;
+            const composition = document.getElementById('sampleComposition').value;
+            const depth = document.getElementById('analysisDepth').value;
+            
+            // Simulate diagnostic analysis
+            const results = simulateDiagnostics(dataset, focus, composition, depth);
+            
+            // Display results
+            displayDiagnosticResults(results, dataset, focus);
+        }
+        
+        function simulateDiagnostics(dataset, focus, composition, depth) {
+            // Simulate test statistics based on dataset characteristics
+            const baselineP = 0.5; // Baseline p-value
+            
+            let linearityP = baselineP;
+            let heteroP = baselineP;
+            let normalityP = baselineP;
+            
+            // Adjust based on dataset type
+            switch(dataset) {
+                case 'well_behaved':
+                    linearityP = 0.8;
+                    heteroP = 0.7;
+                    normalityP = 0.6;
+                    break;
+                case 'heteroskedastic':
+                    linearityP = 0.6;
+                    heteroP = 0.02; // Reject homoskedasticity
+                    normalityP = 0.4;
+                    break;
+                case 'nonlinear':
+                    linearityP = 0.01; // Reject linearity
+                    heteroP = 0.3;
+                    normalityP = 0.5;
+                    break;
+                case 'outliers':
+                    linearityP = 0.3;
+                    heteroP = 0.4;
+                    normalityP = 0.05; // Reject normality
+                    break;
+            }
+            
+            const overallHealth = assessModelHealth(linearityP, heteroP, normalityP);
+            
+            return {
+                linearity: linearityP,
+                heteroskedasticity: heteroP,
+                normality: normalityP,
+                health: overallHealth
+            };
+        }
+        
+        function assessModelHealth(linearityP, heteroP, normalityP) {
+            const issues = [linearityP, heteroP, normalityP].filter(p => p < 0.05).length;
+            
+            if (issues === 0) return 'excellent';
+            if (issues === 1) return 'good';
+            return 'problematic';
+        }
+        
+        function displayDiagnosticResults(results, dataset, focus) {
+            document.getElementById('linearityTest').textContent = results.linearity.toFixed(3);
+            document.getElementById('heteroskedasticityTest').textContent = results.heteroskedasticity.toFixed(3);
+            document.getElementById('normalityTest').textContent = results.normality.toFixed(3);
+            
+            const healthElement = document.getElementById('overallDiagnostic');
+            const descriptionElement = document.getElementById('healthDescription');
+            
+            switch(results.health) {
+                case 'excellent':
+                    healthElement.className = 'quality-indicator quality-excellent';
+                    healthElement.innerHTML = '<span>Healthy</span>';
+                    descriptionElement.textContent = 'No major issues';
+                    break;
+                case 'good':
+                    healthElement.className = 'quality-indicator quality-good';
+                    healthElement.innerHTML = '<span>Minor Issues</span>';
+                    descriptionElement.textContent = 'Some concerns';
+                    break;
+                default:
+                    healthElement.className = 'quality-indicator quality-poor';
+                    healthElement.innerHTML = '<span>Problematic</span>';
+                    descriptionElement.textContent = 'Multiple violations';
+            }
+            
+            // Create simple diagnostic visualization
+            const canvas = document.getElementById('diagnosticCanvas');
+            canvas.innerHTML = '';
+            
+            // Draw residual pattern based on dataset type
+            const numPoints = 30;
+            for (let i = 0; i < numPoints; i++) {
+                let x = (i / numPoints) * 80 + 10;
+                let y = 50;
+                
+                switch(dataset) {
+                    case 'well_behaved':
+                        y += (Math.random() - 0.5) * 20;
+                        break;
+                    case 'heteroskedastic':
+                        y += (Math.random() - 0.5) * (x/2);
+                        break;
+                    case 'nonlinear':
+                        y += Math.sin(x/10) * 15 + (Math.random() - 0.5) * 10;
+                        break;
+                    case 'outliers':
+                        if (Math.random() < 0.1) {
+                            y += (Math.random() - 0.5) * 60; // Outliers
+                        } else {
+                            y += (Math.random() - 0.5) * 15;
+                        }
+                        break;
+                }
+                
+                const point = document.createElement('div');
+                point.style.cssText = `
+                    position: absolute;
+                    left: ${x}%;
+                    top: ${y}%;
+                    width: 3px;
+                    height: 3px;
+                    background: var(--viz-blue);
+                    border-radius: 50%;
+                `;
+                canvas.appendChild(point);
+            }
+            
+            // Analysis
+            const datasetNames = {
+                well_behaved: 'well-behaved data',
+                heteroskedastic: 'heteroskedastic data',
+                nonlinear: 'nonlinear relationship',
+                outliers: 'data with outliers'
+            };
+            
+            const analysis = `
+                Diagnostic analysis for ${datasetNames[dataset]}:
+                
+                Linearity test (RESET): p = ${results.linearity.toFixed(3)} ${results.linearity < 0.05 ? '(Reject - nonlinearity detected)' : '(Accept - linear relationship)'}
+                Heteroskedasticity (BP): p = ${results.heteroskedasticity.toFixed(3)} ${results.heteroskedasticity < 0.05 ? '(Reject - heteroskedasticity present)' : '(Accept - homoskedastic errors)'}
+                Normality (JB): p = ${results.normality.toFixed(3)} ${results.normality < 0.05 ? '(Reject - non-normal errors)' : '(Accept - normal errors)'}
+                
+                ${results.health === 'excellent' ? 
+                'Excellent model health! All diagnostic tests pass. The classical regression assumptions appear satisfied.' :
+                results.health === 'good' ? 
+                'Good model health with minor issues. Consider robust standard errors or minor specification adjustments.' :
+                'Significant diagnostic issues detected. Consider: (1) functional form changes, (2) robust methods, (3) data transformations.'}
+                
+                Professional recommendation: ${results.heteroskedasticity < 0.05 ? 
+                'Use robust (White) standard errors for inference.' :
+                results.linearity < 0.05 ? 
+                'Investigate nonlinear specifications or transformations.' :
+                results.normality < 0.05 ? 
+                'Large sample sizes make normality violations less concerning for inference.' :
+                'Standard OLS inference appears appropriate.'}
+            `;
+            
+            document.getElementById('diagnosticAnalysis').textContent = analysis;
+            document.getElementById('diagnosticResults').style.display = 'block';
+        }
+        
+        // ========================================
+        // UTILITY FUNCTIONS
+        // ========================================
+        
+        function generateNormalRandom() {
+            // Box-Muller transformation
+            let u1 = Math.random();
+            let u2 = Math.random();
+            return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+        }
+        
+        // ========================================
+        // QUIZ FUNCTIONS
+        // ========================================
+        
+        function selectQuizAnswer(questionId, answer) {
+            const correctAnswers = {
+                '6-1': 'C',
+                '6-2': 'B', 
+                '6-3': 'A'
+            };
+            
+            const explanations = {
+                '6-1': {
+                    correct: 'Correct! The t-statistic = coefficient/SE remains unchanged when both coefficient and SE scale by the same factor. This is why statistical significance is invariant to units of measurement.',
+                    incorrect: 'Incorrect. When you scale the dependent variable, both the coefficient and its standard error scale by the same factor, so their ratio (the t-statistic) remains unchanged.'
+                },
+                '6-2': {
+                    correct: 'Correct! In log-log models, β₁ represents the elasticity: a 1% increase in x leads to a β₁% increase in y. This makes log-log models ideal for demand analysis and production functions.',
+                    incorrect: 'Incorrect. In log-log models, β₁ is the elasticity of y with respect to x. It tells us the percentage change in y for a 1% change in x, not absolute changes.'
+                },
+                '6-3': {
+                    correct: 'Correct! BIC includes a ln(n) term that penalizes additional parameters more heavily than AIC (which uses 2k). As sample size grows, BIC becomes increasingly conservative.',
+                    incorrect: 'Incorrect. BIC has a stronger penalty term (k·ln(n) vs 2k in AIC), making it more likely to select smaller, more parsimonious models.'
+                }
+            };
+            
+            const isCorrect = answer === correctAnswers[questionId];
+            const feedbackElement = document.getElementById(`feedback${questionId}`);
+            
+            // Update option styling
+            const options = document.querySelectorAll(`input[name="q${questionId}"]`);
+            options.forEach(option => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (option.value === correctAnswers[questionId]) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            // Show feedback
+            feedbackElement.textContent = isCorrect ? 
+                explanations[questionId].correct : 
+                explanations[questionId].incorrect;
+            feedbackElement.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackElement.style.display = 'block';
+        }
+        
+        // ========================================
+        // QUESTION GENERATION
+        // ========================================
+        
+        function generateQuestions(type) {
+            const questionBank = {
+                scaling: [
+                    {
+                        question: "If you change income from dollars to thousands, how does the coefficient on education change?",
+                        options: ["A) Increases 1000×", "B) Decreases 1000×", "C) Unchanged", "D) Depends on other variables"],
+                        correct: "B",
+                        explanation: "The coefficient decreases by 1000× because the dependent variable units changed. The economic relationship is unchanged."
+                    },
+                    {
+                        question: "Which statistics remain unchanged when you scale the independent variable?",
+                        options: ["A) Coefficient only", "B) Standard error only", "C) t-statistic and R²", "D) All statistics"],
+                        correct: "C",
+                        explanation: "t-statistics and R² are invariant to scaling of independent variables. They measure relationships, not magnitudes."
+                    },
+                    {
+                        question: "Why do we prefer coefficients between 0.01 and 100?",
+                        options: ["A) Mathematical requirement", "B) Easier interpretation", "C) Better statistical properties", "D) Computer limitations"],
+                        correct: "B",
+                        explanation: "Coefficients in reasonable ranges are easier to interpret and communicate. Very small or large numbers are prone to misinterpretation."
+                    }
+                ],
+                functional_form: [
+                    {
+                        question: "In the model ln(wage) = β₀ + β₁education, what does β₁ = 0.08 mean?",
+                        options: ["A) $0.08 wage increase", "B) 8% wage increase", "C) 8 percentage point increase", "D) Need more info"],
+                        correct: "B",
+                        explanation: "In log-linear models, β₁ represents the percentage change in y for a one-unit change in x. So 0.08 = 8% wage increase per year of education."
+                    },
+                    {
+                        question: "When might you use a quadratic functional form?",
+                        options: ["A) Constant marginal effects", "B) Decreasing marginal effects", "C) Log relationships", "D) Linear relationships"],
+                        correct: "B",
+                        explanation: "Quadratic forms capture diminishing marginal effects, like experience-wage profiles where returns decrease at higher experience levels."
+                    },
+                    {
+                        question: "What does an interaction term β₃(x₁×x₂) capture?",
+                        options: ["A) Additive effects", "B) Effect of x₁ depends on x₂", "C) Correlation between x₁ and x₂", "D) Nonlinearity in x₁"],
+                        correct: "B",
+                        explanation: "Interaction terms show that the effect of one variable depends on the level of another variable. The marginal effect of x₁ is β₁ + β₃x₂."
+                    }
+                ],
+                model_selection: [
+                    {
+                        question: "Why might a model with higher R² be worse for prediction?",
+                        options: ["A) R² measures in-sample fit", "B) Overfitting to training data", "C) More complex models overfit", "D) All of the above"],
+                        correct: "D",
+                        explanation: "Higher R² can indicate overfitting. Complex models may fit training data well but predict poorly out-of-sample."
+                    },
+                    {
+                        question: "BIC typically selects smaller models than AIC because:",
+                        options: ["A) BIC has larger sample penalty", "B) AIC focuses on prediction", "C) BIC assumes true model exists", "D) All of the above"],
+                        correct: "D",
+                        explanation: "BIC's ln(n) penalty grows with sample size, making it more conservative than AIC's fixed penalty of 2k."
+                    },
+                    {
+                        question: "Cross-validation is useful for:",
+                        options: ["A) In-sample fit assessment", "B) Out-of-sample performance", "C) Parameter interpretation", "D) Assumption testing"],
+                        correct: "B",
+                        explanation: "Cross-validation estimates out-of-sample prediction performance by training on subsets and testing on holdout data."
+                    }
+                ],
+                prediction: [
+                    {
+                        question: "Prediction intervals are wider than confidence intervals because:",
+                        options: ["A) Different confidence levels", "B) Include fundamental uncertainty", "C) Prediction is harder", "D) Statistical error"],
+                        correct: "B",
+                        explanation: "Prediction intervals include both parameter uncertainty AND fundamental error (σ²), while confidence intervals only include parameter uncertainty."
+                    },
+                    {
+                        question: "Out-of-sample predictions are typically:",
+                        options: ["A) More accurate than in-sample", "B) Less accurate than in-sample", "C) Same accuracy as in-sample", "D) Depends on the model"],
+                        correct: "B",
+                        explanation: "Out-of-sample predictions are typically less accurate because the model hasn't seen the new data and may not capture all relevant patterns."
+                    },
+                    {
+                        question: "What's the main danger of extrapolation?",
+                        options: ["A) Computational errors", "B) Relationships may not hold", "C) Larger standard errors", "D) Multicollinearity"],
+                        correct: "B",
+                        explanation: "Extrapolation assumes relationships estimated within the sample range continue outside it, which may not be true."
+                    }
+                ]
+            };
+            
+            const questions = questionBank[type];
+            if (!questions) return;
+            
+            // Select 3 random questions
+            const selectedQuestions = [];
+            const usedIndices = new Set();
+            
+            while (selectedQuestions.length < 3 && selectedQuestions.length < questions.length) {
+                const randomIndex = Math.floor(Math.random() * questions.length);
+                if (!usedIndices.has(randomIndex)) {
+                    selectedQuestions.push(questions[randomIndex]);
+                    usedIndices.add(randomIndex);
+                }
+            }
+            
+            displayGeneratedQuestions(selectedQuestions, type);
+        }
+        
+        function displayGeneratedQuestions(questions, type) {
+            const container = document.getElementById('generatedQuestionsList');
+            const typeLabels = {
+                scaling: '📏 Data Scaling',
+                functional_form: '📈 Functional Forms',
+                model_selection: '🎯 Model Selection',
+                prediction: '🔮 Prediction'
+            };
+            
+            let html = `<h4 style="color: var(--primary-analytics); margin-bottom: var(--space-lg);">
+                ${typeLabels[type]} Practice Questions
+            </h4>`;
+            
+            questions.forEach((q, index) => {
+                generatedQuestionCount++;
+                const questionId = `gen-${generatedQuestionCount}`;
+                
+                html += `
+                    <div class="quiz-question" style="border: 2px solid var(--accent-insight); border-radius: 12px; padding: var(--space-lg);">
+                        <p><strong>Question ${index + 1}:</strong> ${q.question}</p>
+                        <div class="quiz-options">
+                            ${q.options.map((option, optIndex) => `
+                                <label class="quiz-option" onclick="selectGeneratedQuizAnswer('${questionId}', '${String.fromCharCode(65 + optIndex)}', '${q.correct}', '${q.explanation.replace(/'/g, "\\'")}')">
+                                    <input type="radio" name="q${questionId}" value="${String.fromCharCode(65 + optIndex)}">
+                                    ${option}
+                                </label>
+                            `).join('')}
+                        </div>
+                        <div id="feedback${questionId}" class="quiz-feedback" style="display: none;"></div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            document.getElementById('generatedQuestions').style.display = 'block';
+            
+            // Scroll to generated questions
+            document.getElementById('generatedQuestions').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+        
+        function selectGeneratedQuizAnswer(questionId, answer, correct, explanation) {
+            const isCorrect = answer === correct;
+            const feedbackElement = document.getElementById(`feedback${questionId}`);
+            
+            // Update option styling
+            const options = document.querySelectorAll(`input[name="q${questionId}"]`);
+            options.forEach(option => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (option.value === correct) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            // Show feedback
+            feedbackElement.textContent = explanation;
+            feedbackElement.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackElement.style.display = 'block';
+        }
+        
+        function clearGeneratedQuestions() {
+            document.getElementById('generatedQuestions').style.display = 'none';
+            document.getElementById('generatedQuestionsList').innerHTML = '';
+        }
+        
+        // ========================================
+        // AI CHAT FUNCTIONS (Chapter 6 Specific)
+        // ========================================
+        
+        function toggleAIChat() {
+            const panel = document.getElementById('aiChatPanel');
+            const icon = document.getElementById('aiChatIcon');
+            
+            if (isAIChatOpen) {
+                panel.classList.remove('show');
+                icon.textContent = '📊';
+                isAIChatOpen = false;
+            } else {
+                panel.classList.add('show');
+                icon.textContent = '✖️';
+                isAIChatOpen = true;
+                
+                // Focus input
+                setTimeout(() => {
+                    const input = document.getElementById('aiInput');
+                    if (input) input.focus();
+                }, 100);
+            }
+        }
+        
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            addAIMessage('user', message);
+            
+            // Clear input
+            input.value = '';
+            
+            // Generate AI response
+            setTimeout(() => {
+                const response = getChapter6AIResponse(message);
+                addAIMessage('claude', response);
+            }, 800);
+        }
+        
+        function addAIMessage(sender, message) {
+            const messagesContainer = document.getElementById('aiChatMessages');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender}`;
+            
+            if (sender === 'claude') {
+                messageDiv.innerHTML = `<strong>📊 Claude:</strong> ${message}`;
+            } else {
+                messageDiv.textContent = message;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function getChapter6AIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            if (message.includes('scaling') || message.includes('units') || message.includes('data scale')) {
+                return "Data scaling affects coefficient magnitudes but not statistical significance! When you change units (dollars to thousands), coefficients and standard errors scale proportionally, leaving t-statistics and R² unchanged. Always report units clearly and choose scales that make coefficients interpretable (typically 0.01 to 100).";
+            }
+            
+            if (message.includes('functional form') || message.includes('log') || message.includes('quadratic') || message.includes('interaction')) {
+                return "Functional form choice is crucial for accurate interpretation! Linear: constant marginal effects. Log-linear: percentage effects. Log-log: elasticities. Quadratic: diminishing returns. Interactions: conditional effects. Test different forms and let economic theory guide your choice.";
+            }
+            
+            if (message.includes('model selection') || message.includes('aic') || message.includes('bic') || message.includes('adjusted r')) {
+                return "Model selection balances fit and parsimony. Adjusted R² penalizes extra variables. AIC optimizes prediction (2k penalty). BIC finds true model (ln(n) penalty). Cross-validation gives realistic performance estimates. Rule: lower values = better models. Don't just chase high R²!";
+            }
+            
+            if (message.includes('prediction') || message.includes('forecast') || message.includes('out of sample') || message.includes('interval')) {
+                return "Prediction combines point estimates with uncertainty! Point prediction: ŷ₀ = x₀'β̂. Prediction intervals are wider than confidence intervals because they include fundamental error (σ²). Always validate out-of-sample. Beware extrapolation beyond your data range!";
+            }
+            
+            if (message.includes('residual') || message.includes('diagnostic') || message.includes('outlier') || message.includes('assumption')) {
+                return "Residual analysis reveals model problems! Check: linearity (residuals vs fitted), homoskedasticity (BP test), normality (QQ plots), outliers (standardized residuals > 2). Use robust standard errors for heteroskedasticity. Consider transformations for nonlinearity.";
+            }
+            
+            if (message.includes('heteroskedasticity') || message.includes('robust') || message.includes('white')) {
+                return "Heteroskedasticity means Var(u|x) is not constant. Detect with Breusch-Pagan test or residual plots. Solutions: robust (White) standard errors, weighted least squares, or log transformations. Robust SEs are easy to implement and widely used in practice.";
+            }
+            
+            if (message.includes('calculator') || message.includes('tool') || message.includes('simulation')) {
+                return "The Chapter 6 calculators demonstrate applied concepts! Try scaling effects to see invariant properties, functional form comparison to choose specifications, model selection to balance fit/parsimony, prediction engine for forecasting, and diagnostics for assumption checking.";
+            }
+            
+            if (message.includes('help') || message.includes('confused') || message.includes('overview')) {
+                return "I can help with applied econometric techniques! Topics include: data scaling effects, functional form selection, model comparison methods, prediction and forecasting, residual analysis, and diagnostic testing. What specific application interests you?";
+            }
+            
+            return "Chapter 6 covers practical econometric techniques for real-world analysis. I can explain data scaling, functional forms, model selection criteria, prediction methods, and diagnostic procedures. What applied technique would you like to explore?";
+        }
+        
+        // Close AI chat when clicking outside
+        document.addEventListener('click', function(event) {
+            const widget = document.getElementById('aiChatWidget');
+            if (isAIChatOpen && !widget.contains(event.target)) {
+                toggleAIChat();
+            }
+        });
+        
+        // ========================================
+        // INITIALIZATION AND UTILITY
+        // ========================================
+        
+        function showComingSoon() {
+            alert('Chapter 7 is coming soon! 🚀\n\nYou\'ve completed the foundational econometric sequence (Chapters 1-6). Future chapters will cover specialized topics like instrumental variables, panel data, limited dependent variables, and time series analysis.');
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Chapter 6 loaded successfully - Applied Econometrics ready!');
+            
+            // Set up fade-in animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0) scale(1)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe all animated elements
+            document.querySelectorAll('.fade-in, .slide-up, .data-animation').forEach(el => {
+                observer.observe(el);
+            });
+            
+            console.log('Chapter 6 Applied Econometrics - Ready for practical analysis!');
+        });
+        
+    </script>
+
+</body>
+</html>
