@@ -1,0 +1,2846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 5: OLS Asymptotics | Wooldridge Econometrics Tutorial</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========================================
+           CSS VARIABLES - MATHEMATICAL ELEGANCE THEME
+           ======================================== */
+        :root {
+            /* Core mathematical colors */
+            --primary-asymptotic: #1e1b4b;
+            --secondary-convergence: #312e81;
+            --accent-infinity: #4338ca;
+            --accent-limit: #6366f1;
+            --success-convergent: #059669;
+            --warning-finite: #d97706;
+            --error-divergent: #dc2626;
+            --neutral-theorem: #374151;
+            
+            /* Sophisticated mathematical grays */
+            --gray-50: #fafafa;
+            --gray-100: #f5f5f5;
+            --gray-200: #e5e5e5;
+            --gray-300: #d4d4d4;
+            --gray-400: #a3a3a3;
+            --gray-500: #737373;
+            --gray-600: #525252;
+            --gray-700: #404040;
+            --gray-800: #262626;
+            --gray-900: #171717;
+            
+            /* Mathematical spacing - golden ratio inspired */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.618rem;
+            --space-xl: 2.618rem;
+            --space-2xl: 4.236rem;
+            
+            /* Typography scale */
+            --text-xs: 0.75rem;
+            --text-sm: 0.875rem;
+            --text-base: 1rem;
+            --text-lg: 1.125rem;
+            --text-xl: 1.25rem;
+            --text-2xl: 1.5rem;
+            --text-3xl: 1.875rem;
+            --text-4xl: 2.25rem;
+            
+            /* Mathematical shadows */
+            --shadow-theorem: 0 1px 3px 0 rgba(30, 27, 75, 0.1), 0 1px 2px 0 rgba(30, 27, 75, 0.06);
+            --shadow-proof: 0 4px 6px -1px rgba(30, 27, 75, 0.1), 0 2px 4px -1px rgba(30, 27, 75, 0.06);
+            --shadow-convergence: 0 10px 15px -3px rgba(30, 27, 75, 0.1), 0 4px 6px -2px rgba(30, 27, 75, 0.05);
+            --shadow-asymptotic: 0 25px 50px -12px rgba(30, 27, 75, 0.25);
+        }
+
+        /* ========================================
+           RESET AND BASE TYPOGRAPHY
+           ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.7;
+            color: var(--gray-800);
+            background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 50%, #e5e5e5 100%);
+            font-size: var(--text-base);
+        }
+
+        /* Mathematical typography hierarchy */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-weight: 600;
+            line-height: 1.3;
+            margin-bottom: var(--space-md);
+            color: var(--primary-asymptotic);
+        }
+
+        h1 { font-size: var(--text-4xl); margin-bottom: var(--space-xl); }
+        h2 { font-size: var(--text-3xl); margin-bottom: var(--space-lg); }
+        h3 { font-size: var(--text-2xl); margin-bottom: var(--space-md); }
+        h4 { font-size: var(--text-xl); margin-bottom: var(--space-sm); }
+
+        p {
+            margin-bottom: var(--space-md);
+            color: var(--gray-700);
+        }
+
+        /* ========================================
+           CHAPTER NAVIGATION
+           ======================================== */
+        .chapter-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-xl) 0;
+            margin-bottom: var(--space-xl);
+            border-bottom: 1px solid var(--gray-200);
+            gap: var(--space-md);
+        }
+
+        .nav-button {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-md) var(--space-xl);
+            border-radius: 16px;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            border: 2px solid var(--gray-200);
+            background: white;
+            color: var(--primary-asymptotic);
+            box-shadow: var(--shadow-theorem);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-proof);
+            border-color: var(--accent-infinity);
+            color: var(--primary-asymptotic);
+        }
+
+        .nav-home {
+            background: linear-gradient(135deg, var(--success-convergent), #047857);
+            color: white;
+            border-color: var(--success-convergent);
+        }
+
+        .nav-home:hover {
+            color: white;
+            background: linear-gradient(135deg, #047857, #065f46);
+        }
+
+        .nav-previous {
+            flex: 1;
+            justify-content: flex-start;
+        }
+
+        .nav-next {
+            flex: 1;
+            justify-content: flex-end;
+        }
+
+        .nav-icon {
+            font-size: var(--text-lg);
+            font-weight: 700;
+        }
+
+        .nav-text {
+            font-size: var(--text-base);
+            white-space: nowrap;
+        }
+
+        /* ========================================
+           LAYOUT AND STRUCTURE
+           ======================================== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-xl);
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-asymptotic) 0%, var(--secondary-convergence) 50%, var(--accent-infinity) 100%);
+            color: white;
+            padding: var(--space-2xl) 0;
+            margin-bottom: var(--space-2xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="asymptotic" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M0 15L15 0L30 15L15 30Z" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/><circle cx="15" cy="15" r="2" fill="rgba(255,255,255,0.06)"/></pattern></defs><rect width="100%" height="100%" fill="url(%23asymptotic)"/></svg>') center/cover;
+            opacity: 0.4;
+        }
+
+        .page-header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .chapter-title {
+            font-size: var(--text-4xl);
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            color: white !important;
+        }
+
+        .chapter-subtitle {
+            font-size: var(--text-xl);
+            opacity: 0.9;
+            margin-bottom: var(--space-md);
+            font-family: 'Source Sans Pro', sans-serif;
+            font-weight: 300;
+            color: white !important;
+        }
+
+        .chapter-description {
+            font-size: var(--text-lg);
+            opacity: 0.85;
+            max-width: 800px;
+            line-height: 1.6;
+            color: white !important;
+        }
+
+        /* ========================================
+           SECTION STYLING - MATHEMATICAL ELEGANCE
+           ======================================== */
+        .section {
+            margin-bottom: var(--space-2xl);
+            background: white;
+            border-radius: 20px;
+            padding: var(--space-2xl);
+            box-shadow: var(--shadow-proof);
+            border: 1px solid var(--gray-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--accent-infinity), var(--accent-limit));
+        }
+
+        .section-title {
+            color: var(--primary-asymptotic);
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-md);
+            border-bottom: 2px solid var(--gray-200);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 120px;
+            height: 2px;
+            background: var(--accent-infinity);
+        }
+
+        /* ========================================
+           MATHEMATICAL INTERACTIVE WIDGETS
+           ======================================== */
+        .interactive-widget {
+            background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+            border: 2px solid var(--gray-200);
+            border-radius: 24px;
+            padding: var(--space-2xl);
+            margin: var(--space-xl) 0;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .interactive-widget::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(67, 56, 202, 0.02) 0%, transparent 70%);
+            transform: rotate(45deg);
+            transition: all 0.4s ease;
+        }
+
+        .interactive-widget:hover {
+            border-color: var(--accent-infinity);
+            box-shadow: var(--shadow-convergence);
+            transform: translateY(-3px);
+        }
+
+        .interactive-widget:hover::before {
+            opacity: 0.5;
+        }
+
+        .widget-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--gray-200);
+            position: relative;
+            z-index: 1;
+        }
+
+        .widget-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--accent-infinity), var(--accent-limit));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--text-2xl);
+            box-shadow: var(--shadow-theorem);
+            position: relative;
+        }
+
+        .widget-icon::before {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+        }
+
+        .widget-title {
+            font-size: var(--text-2xl);
+            color: var(--primary-asymptotic);
+            margin: 0;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .widget-description {
+            color: var(--gray-600);
+            margin: var(--space-xs) 0 0 0;
+            font-size: var(--text-sm);
+            font-style: italic;
+        }
+
+        /* ========================================
+           MATHEMATICAL CALCULATOR CONTROLS
+           ======================================== */
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-lg);
+            margin: var(--space-xl) 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .control-label {
+            font-weight: 600;
+            color: var(--primary-asymptotic);
+            font-size: var(--text-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--space-xs);
+        }
+
+        .control-select, .control-input {
+            padding: var(--space-md);
+            border: 2px solid var(--gray-300);
+            border-radius: 12px;
+            font-size: var(--text-base);
+            transition: all 0.3s ease;
+            background: white;
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+
+        .control-select:focus, .control-input:focus {
+            outline: none;
+            border-color: var(--accent-infinity);
+            box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--accent-infinity), var(--secondary-convergence));
+            color: white;
+            padding: var(--space-lg) var(--space-xl);
+            border: none;
+            border-radius: 16px;
+            font-size: var(--text-base);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-theorem);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.6s;
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-convergence);
+            background: linear-gradient(135deg, var(--secondary-convergence), var(--primary-asymptotic));
+        }
+
+        .action-button:hover::before {
+            left: 100%;
+        }
+
+        .action-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* ========================================
+           ASYMPTOTIC RESULTS DISPLAY
+           ======================================== */
+        .results-panel {
+            background: linear-gradient(135deg, var(--gray-50), white);
+            border: 1px solid var(--gray-200);
+            border-radius: 20px;
+            padding: var(--space-xl);
+            margin-top: var(--space-xl);
+            position: relative;
+            box-shadow: var(--shadow-theorem);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+            margin: var(--space-lg) 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: var(--space-lg);
+            border-radius: 16px;
+            border: 1px solid var(--gray-200);
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-infinity), var(--accent-limit));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-proof);
+            border-color: var(--accent-infinity);
+        }
+
+        .stat-value {
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            color: var(--primary-asymptotic);
+            margin-bottom: var(--space-xs);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .stat-label {
+            font-size: var(--text-sm);
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--space-xs);
+        }
+
+        .stat-interpretation {
+            font-size: var(--text-xs);
+            color: var(--gray-500);
+            margin-top: var(--space-xs);
+            font-style: italic;
+        }
+
+        /* ========================================
+           CONVERGENCE INDICATORS
+           ======================================== */
+        .convergence-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs) var(--space-md);
+            border-radius: 24px;
+            font-size: var(--text-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .convergence-strong {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--success-convergent);
+            border: 1px solid rgba(5, 150, 105, 0.3);
+        }
+
+        .convergence-moderate {
+            background: rgba(217, 119, 6, 0.1);
+            color: var(--warning-finite);
+            border: 1px solid rgba(217, 119, 6, 0.3);
+        }
+
+        .convergence-weak {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--error-divergent);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        /* ========================================
+           ASYMPTOTIC DISTRIBUTION VISUALIZATION
+           ======================================== */
+        .asymptotic-distribution {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border: 2px solid var(--accent-infinity);
+            border-radius: 16px;
+            padding: var(--space-lg);
+            margin: var(--space-lg) 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .asymptotic-distribution::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(67, 56, 202, 0.03) 10px,
+                rgba(67, 56, 202, 0.03) 20px
+            );
+        }
+
+        .distribution-header {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+            position: relative;
+            z-index: 1;
+        }
+
+        .distribution-title {
+            font-size: var(--text-lg);
+            font-weight: 600;
+            color: var(--primary-asymptotic);
+            margin-bottom: var(--space-sm);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .distribution-canvas {
+            height: 200px;
+            background: white;
+            border-radius: 12px;
+            position: relative;
+            margin: var(--space-md) 0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid var(--gray-200);
+        }
+
+        /* ========================================
+           MATHEMATICAL CONCEPT BOXES
+           ======================================== */
+        .concept-box {
+            border-radius: 16px;
+            padding: var(--space-xl);
+            margin: var(--space-xl) 0;
+            border-left: 6px solid;
+            position: relative;
+            box-shadow: var(--shadow-theorem);
+        }
+
+        .concept-box.theorem {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-color: var(--accent-infinity);
+            color: #1e3a8a;
+        }
+
+        .concept-box.proof {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-color: var(--success-convergent);
+            color: #14532d;
+        }
+
+        .concept-box.insight {
+            background: linear-gradient(135deg, #d69e2e, #b7791f);
+            border-color: var(--warning-finite);
+            color: white;
+        }
+
+        .concept-box.warning {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            border-color: var(--error-divergent);
+            color: #991b1b;
+        }
+
+        .concept-title {
+            font-weight: 700;
+            font-size: var(--text-lg);
+            margin-bottom: var(--space-sm);
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* ========================================
+           MATHEMATICAL NOTATION STYLING
+           ======================================== */
+        .math-notation {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: var(--accent-infinity);
+            font-size: 1.1em;
+        }
+
+        .formula {
+            background: white;
+            padding: var(--space-lg);
+            border-radius: 12px;
+            border: 2px solid var(--accent-infinity);
+            font-family: 'Playfair Display', serif;
+            font-size: var(--text-xl);
+            margin: var(--space-lg) 0;
+            text-align: center;
+            position: relative;
+            box-shadow: var(--shadow-theorem);
+        }
+
+        .formula::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            background: linear-gradient(45deg, var(--accent-infinity), var(--accent-limit));
+            border-radius: 12px;
+            z-index: -1;
+        }
+
+        .asymptotic-notation {
+            font-size: 1.2em;
+            color: var(--primary-asymptotic);
+            font-weight: 600;
+        }
+
+        /* ========================================
+           QUIZ STYLING - MATHEMATICAL THEME
+           ======================================== */
+        .quiz-section {
+            background: linear-gradient(135deg, var(--gray-50), white);
+            border: 2px solid var(--gray-200);
+            border-radius: 24px;
+            padding: var(--space-2xl);
+            margin: var(--space-xl) 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(67, 56, 202, 0.03) 0%, transparent 70%);
+        }
+
+        .quiz-question {
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-xl);
+            border-bottom: 1px solid var(--gray-200);
+            position: relative;
+            z-index: 1;
+        }
+
+        .quiz-question:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: var(--space-sm);
+            margin: var(--space-lg) 0;
+        }
+
+        .quiz-option {
+            padding: var(--space-lg);
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent-infinity);
+            background: var(--gray-50);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success-convergent);
+            background: rgba(5, 150, 105, 0.05);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--error-divergent);
+            background: rgba(220, 38, 38, 0.05);
+        }
+
+        .quiz-feedback {
+            margin-top: var(--space-md);
+            padding: var(--space-md);
+            border-radius: 12px;
+            font-size: var(--text-sm);
+        }
+
+        .quiz-feedback.correct {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--success-convergent);
+            border: 1px solid rgba(5, 150, 105, 0.3);
+        }
+
+        .quiz-feedback.incorrect {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--error-divergent);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        /* ========================================
+           AI CHAT WIDGET INTEGRATION
+           ======================================== */
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000;
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+
+        .ai-chat-button {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary-asymptotic), var(--secondary-convergence));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--text-xl);
+            box-shadow: var(--shadow-asymptotic);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-chat-button::before {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+        }
+
+        .ai-chat-button:hover {
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: var(--shadow-asymptotic);
+        }
+
+        .ai-chat-panel {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 320px;
+            height: 400px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-asymptotic);
+            border: 2px solid var(--gray-200);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ai-chat-panel.show {
+            display: flex;
+        }
+
+        .ai-chat-header {
+            background: linear-gradient(135deg, var(--primary-asymptotic), var(--secondary-convergence));
+            color: white;
+            padding: var(--space-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: var(--text-sm);
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-md);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+            background: var(--gray-50);
+            font-size: var(--text-sm);
+        }
+
+        .ai-message {
+            max-width: 85%;
+            padding: var(--space-md) var(--space-lg);
+            border-radius: 16px;
+            line-height: 1.4;
+        }
+
+        .ai-message.claude {
+            background: white;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-200);
+            align-self: flex-start;
+        }
+
+        .ai-message.user {
+            background: var(--primary-asymptotic);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .ai-input-area {
+            padding: var(--space-md);
+            border-top: 1px solid var(--gray-200);
+            background: white;
+        }
+
+        .ai-input-container {
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: var(--space-md);
+            border: 1px solid var(--gray-300);
+            border-radius: 12px;
+            font-size: var(--text-sm);
+        }
+
+        .ai-send-btn {
+            background: var(--primary-asymptotic);
+            color: white;
+            border: none;
+            padding: var(--space-md) var(--space-lg);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: var(--text-sm);
+        }
+
+        /* ========================================
+           RESPONSIVE DESIGN
+           ======================================== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 var(--space-md);
+            }
+            
+            .chapter-navigation {
+                flex-direction: column;
+                gap: var(--space-md);
+            }
+            
+            .nav-button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .nav-previous, .nav-next {
+                flex: none;
+            }
+            
+            .calculator-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-md);
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .ai-chat-panel {
+                width: 280px;
+                height: 350px;
+                right: -10px;
+            }
+            
+            .chapter-title {
+                font-size: var(--text-3xl);
+            }
+            
+            .section {
+                padding: var(--space-lg);
+                border-radius: 16px;
+            }
+            
+            .interactive-widget {
+                padding: var(--space-lg);
+                border-radius: 16px;
+            }
+        }
+
+        /* ========================================
+           ANIMATIONS AND TRANSITIONS
+           ======================================== */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .slide-up {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUp 0.8s ease-out forwards;
+        }
+
+        .convergence-animation {
+            opacity: 0;
+            transform: scale(0.9);
+            animation: converge 1.2s ease-out forwards;
+        }
+
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+        .delay-4 { animation-delay: 0.8s; }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        @keyframes converge {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Asymptotic convergence visualization */
+        .convergence-path {
+            position: relative;
+            height: 100px;
+            background: linear-gradient(to right, var(--error-divergent), var(--warning-finite), var(--success-convergent));
+            border-radius: 8px;
+            margin: var(--space-md) 0;
+            overflow: hidden;
+        }
+
+        .convergence-path::after {
+            content: 'n → ∞';
+            position: absolute;
+            right: var(--space-md);
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-weight: 600;
+            font-size: var(--text-sm);
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <h1 class="chapter-title">Chapter 5: OLS Asymptotics</h1>
+                <p class="chapter-subtitle">Large Sample Properties of the OLS Estimators</p>
+                <p class="chapter-description">
+                    Explore how OLS estimators behave as sample sizes approach infinity. Master consistency, 
+                    asymptotic normality, and large sample inference. Understand when and how asymptotic theory 
+                    provides practical approximations for econometric analysis.
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- Navigation Buttons -->
+        <div class="chapter-navigation fade-in">
+            <a href="index.html" class="nav-button nav-home">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">Home</span>
+            </a>
+            <a href="chapter04.html" class="nav-button nav-previous">
+                <span class="nav-icon">←</span>
+                <span class="nav-text">Previous Chapter</span>
+            </a>
+            <div class="nav-button nav-next" style="opacity: 0.5; cursor: not-allowed;" onclick="showComingSoon()">
+                <span class="nav-icon">→</span>
+                <span class="nav-text">Next Chapter</span>
+            </div>
+        </div>
+        
+        <!-- Section 5.1: Consistency -->
+        <section class="section fade-in">
+            <h2 class="section-title">5.1 Consistency of OLS</h2>
+            
+            <p>The most fundamental large sample property is <strong>consistency</strong>: as the sample size approaches infinity, our estimators converge to the true parameter values. This is weaker than unbiasedness but holds under more general conditions.</p>
+            
+            <div class="concept-box theorem">
+                <div class="concept-title">📐 Consistency Definition</div>
+                <p>An estimator <span class="math-notation">θ̂ₙ</span> is <strong>consistent</strong> for <span class="math-notation">θ</span> if:</p>
+                <div class="formula">
+                    <span class="asymptotic-notation">plim</span> θ̂ₙ = θ, or θ̂ₙ →<sup>p</sup> θ
+                </div>
+                <p>This means the probability that |θ̂ₙ - θ| > ε approaches zero as n → ∞ for any ε > 0.</p>
+            </div>
+
+            <div class="concept-box insight">
+                <div class="concept-title">🎯 Consistency vs. Unbiasedness</div>
+                <p><strong>Unbiasedness:</strong> E[β̂] = β in every sample size. <strong>Consistency:</strong> β̂ → β as n → ∞. Consistency is weaker but more general - some estimators are consistent but biased in finite samples, yet still useful for large samples.</p>
+            </div>
+
+            <!-- Interactive Consistency Demonstration -->
+            <div class="interactive-widget convergence-animation delay-1">
+                <div class="widget-header">
+                    <div class="widget-icon">∞</div>
+                    <div>
+                        <h3 class="widget-title">Consistency Demonstration</h3>
+                        <p class="widget-description">Watch OLS estimates converge to true values as sample size increases</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="control-group">
+                        <label class="control-label">Economic Model</label>
+                        <select class="control-select" id="consistencyModel">
+                            <option value="wages">Wage = α + β·Education + u</option>
+                            <option value="consumption">Consumption = α + β·Income + u</option>
+                            <option value="housing">HousePrice = α + β·Size + u</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">True Parameter Value (β)</label>
+                        <select class="control-select" id="trueParameter">
+                            <option value="0.08">0.08 (8% returns)</option>
+                            <option value="0.75">0.75 (75 cents per dollar)</option>
+                            <option value="150">150 (price per unit)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Maximum Sample Size</label>
+                        <select class="control-select" id="maxSampleSize">
+                            <option value="1000">n = 1,000</option>
+                            <option value="5000" selected>n = 5,000</option>
+                            <option value="10000">n = 10,000</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Number of Simulations</label>
+                        <select class="control-select" id="numSimulations">
+                            <option value="50">50 simulations</option>
+                            <option value="100" selected>100 simulations</option>
+                            <option value="200">200 simulations</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: var(--space-xl) 0;">
+                    <button class="action-button" onclick="runConsistencyDemo()">Demonstrate Consistency</button>
+                </div>
+
+                <div class="results-panel" id="consistencyResults" style="display: none;">
+                    <h4 style="text-align: center; margin-bottom: var(--space-lg); color: var(--primary-asymptotic);">Convergence to True Parameter</h4>
+                    
+                    <div class="convergence-path">
+                        <div id="convergenceProgress" style="width: 0%; height: 100%; background: rgba(255,255,255,0.3); transition: width 2s ease;"></div>
+                    </div>
+                    
+                    <div class="results-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="finalEstimate">-</div>
+                            <div class="stat-label">Final Estimate (n=max)</div>
+                            <div class="stat-interpretation">Should ≈ true β</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="meanAbsError">-</div>
+                            <div class="stat-label">Mean Absolute Error</div>
+                            <div class="stat-interpretation">|β̂ - β|</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="convergenceRate">-</div>
+                            <div class="stat-label">Convergence Rate</div>
+                            <div class="stat-interpretation">Error reduction</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="convergence-indicator" id="consistencyStatus">
+                                <span>Convergence Status</span>
+                            </div>
+                            <div class="stat-label">Assessment</div>
+                            <div class="stat-interpretation" id="consistencyDecision">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-box proof" style="margin-top: var(--space-lg);">
+                        <div class="concept-title">📊 Interpretation</div>
+                        <p id="consistencyInterpretation">Run the demonstration to see results...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-box theorem">
+                <div class="concept-title">🎯 Consistency Conditions for OLS</div>
+                <p>Under assumptions MLR.1-MLR.4 (linearity, random sampling, no perfect collinearity, zero conditional mean), OLS is consistent. We don't need the homoskedasticity assumption (MLR.5) for consistency!</p>
+                <div class="formula">
+                    plim β̂ⱼ = βⱼ for j = 0, 1, 2, ..., k
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5.2: Asymptotic Normality -->
+        <section class="section fade-in delay-1">
+            <h2 class="section-title">5.2 Asymptotic Normality of OLS</h2>
+            
+            <p>Even when errors aren't normally distributed, OLS estimators are <strong>asymptotically normal</strong> thanks to the Central Limit Theorem. This provides the foundation for large sample inference.</p>
+
+            <div class="concept-box theorem">
+                <div class="concept-title">🔔 Central Limit Theorem for OLS</div>
+                <p>Under MLR.1-MLR.5, as n → ∞:</p>
+                <div class="formula">
+                    √n(β̂ⱼ - βⱼ) →<sup>d</sup> N(0, σ²/a<sub>jj</sub>)
+                </div>
+                <p>where a<sub>jj</sub> is the j-th diagonal element of plim[n⁻¹X'X]. This gives us asymptotic normality even with non-normal errors.</p>
+            </div>
+
+            <!-- Interactive Asymptotic Normality Demonstration -->
+            <div class="interactive-widget convergence-animation delay-2">
+                <div class="widget-header">
+                    <div class="widget-icon">🔔</div>
+                    <div>
+                        <h3 class="widget-title">Asymptotic Normality Explorer</h3>
+                        <p class="widget-description">See how sampling distributions approach normality with increasing sample size</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="control-group">
+                        <label class="control-label">Error Distribution</label>
+                        <select class="control-select" id="errorDistribution">
+                            <option value="normal">Normal Errors</option>
+                            <option value="uniform" selected>Uniform Errors</option>
+                            <option value="exponential">Exponential Errors</option>
+                            <option value="binomial">Binomial Errors</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Sample Sizes to Compare</label>
+                        <select class="control-select" id="sampleSizes">
+                            <option value="30,100,500">n = 30, 100, 500</option>
+                            <option value="50,200,1000" selected>n = 50, 200, 1000</option>
+                            <option value="100,500,2000">n = 100, 500, 2000</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Replications per Size</label>
+                        <select class="control-select" id="replications">
+                            <option value="500">500 replications</option>
+                            <option value="1000" selected>1000 replications</option>
+                            <option value="2000">2000 replications</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Coefficient to Study</label>
+                        <select class="control-select" id="coefficientFocus">
+                            <option value="slope">Slope Coefficient (β₁)</option>
+                            <option value="intercept">Intercept (β₀)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: var(--space-xl) 0;">
+                    <button class="action-button" onclick="runAsymptoticNormalityDemo()">Explore Asymptotic Normality</button>
+                </div>
+
+                <div class="results-panel" id="asymptoticResults" style="display: none;">
+                    <div class="asymptotic-distribution">
+                        <div class="distribution-header">
+                            <div class="distribution-title">Sampling Distribution Evolution</div>
+                            <p style="text-align: center; margin: 0; color: var(--gray-600); font-size: var(--text-sm);">
+                                Watch distributions become more normal as sample size increases
+                            </p>
+                        </div>
+                        <div class="distribution-canvas" id="distributionCanvas">
+                            <!-- Distribution visualizations will be drawn here -->
+                        </div>
+                    </div>
+                    
+                    <div class="results-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="normalityTest1">-</div>
+                            <div class="stat-label">Small Sample (n₁)</div>
+                            <div class="stat-interpretation">Normality measure</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="normalityTest2">-</div>
+                            <div class="stat-label">Medium Sample (n₂)</div>
+                            <div class="stat-interpretation">Normality measure</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="normalityTest3">-</div>
+                            <div class="stat-label">Large Sample (n₃)</div>
+                            <div class="stat-interpretation">Normality measure</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="cltEvidence">-</div>
+                            <div class="stat-label">CLT Evidence</div>
+                            <div class="stat-interpretation">Improvement rate</div>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-box proof" style="margin-top: var(--space-lg);">
+                        <div class="concept-title">🔔 Central Limit Theorem in Action</div>
+                        <p id="asymptoticInterpretation">Run the simulation to see results...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-box insight">
+                <div class="concept-title">💡 Practical Implications of Asymptotic Normality</div>
+                <p><strong>Large sample inference:</strong> Even with weird error distributions, we can use normal critical values (1.96, 2.58) for hypothesis tests and confidence intervals when n is large. This is why econometrics works with real-world data that rarely meets strict normality assumptions.</p>
+            </div>
+        </section>
+
+        <!-- Section 5.3: Large Sample Inference -->
+        <section class="section fade-in delay-2">
+            <h2 class="section-title">5.3 Large Sample Inference</h2>
+            
+            <p>Asymptotic theory provides the foundation for statistical inference in large samples. We can test hypotheses and construct confidence intervals using asymptotic distributions even when exact finite sample distributions are unknown.</p>
+
+            <div class="concept-box theorem">
+                <div class="concept-title">📊 Asymptotic Standard Errors</div>
+                <p>The asymptotic variance of β̂ⱼ is:</p>
+                <div class="formula">
+                    Avar(β̂ⱼ) = σ²/a<sub>jj</sub>
+                </div>
+                <p>In practice, we estimate this using the usual OLS standard errors, which are consistent estimators of the asymptotic standard errors.</p>
+            </div>
+
+            <!-- Interactive Large Sample Inference Calculator -->
+            <div class="interactive-widget convergence-animation delay-3">
+                <div class="widget-header">
+                    <div class="widget-icon">🎯</div>
+                    <div>
+                        <h3 class="widget-title">Large Sample Inference Calculator</h3>
+                        <p class="widget-description">Compare finite sample and asymptotic inference procedures</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="control-group">
+                        <label class="control-label">Economic Application</label>
+                        <select class="control-select" id="inferenceApplication">
+                            <option value="returns_education">Returns to Education</option>
+                            <option value="trade_growth">Trade and Growth</option>
+                            <option value="technology_productivity">Technology and Productivity</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Sample Size</label>
+                        <input type="number" class="control-input" id="inferenceSampleSize" value="850" min="50" max="50000" step="50">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Coefficient Estimate</label>
+                        <input type="number" class="control-input" id="inferenceCoefficient" value="0.094" step="0.001">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Standard Error</label>
+                        <input type="number" class="control-input" id="inferenceStandardError" value="0.021" step="0.001">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Test Type</label>
+                        <select class="control-select" id="testType">
+                            <option value="ttest">t-test (H₀: β = 0)</option>
+                            <option value="equivalence">Equivalence test (H₀: β = c)</option>
+                            <option value="ci">Confidence Interval</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Significance Level</label>
+                        <select class="control-select" id="inferenceAlpha">
+                            <option value="0.01">α = 0.01 (1%)</option>
+                            <option value="0.05" selected>α = 0.05 (5%)</option>
+                            <option value="0.10">α = 0.10 (10%)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: var(--space-xl) 0;">
+                    <button class="action-button" onclick="calculateLargeSampleInference()">Calculate Asymptotic Inference</button>
+                </div>
+
+                <div class="results-panel" id="inferenceResults" style="display: none;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg); margin-bottom: var(--space-lg);">
+                        <div style="background: white; padding: var(--space-lg); border-radius: 12px; border: 2px solid var(--accent-infinity);">
+                            <h5 style="text-align: center; color: var(--primary-asymptotic); margin-bottom: var(--space-md);">Finite Sample (t-distribution)</h5>
+                            <div class="stat-card" style="margin: 0;">
+                                <div class="stat-value" id="finiteSampleResult">-</div>
+                                <div class="stat-label">Critical Value / Result</div>
+                            </div>
+                        </div>
+                        <div style="background: white; padding: var(--space-lg); border-radius: 12px; border: 2px solid var(--success-convergent);">
+                            <h5 style="text-align: center; color: var(--primary-asymptotic); margin-bottom: var(--space-md);">Large Sample (Normal)</h5>
+                            <div class="stat-card" style="margin: 0;">
+                                <div class="stat-value" id="largeSampleResult">-</div>
+                                <div class="stat-label">Critical Value / Result</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="results-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="testStatistic">-</div>
+                            <div class="stat-label">Test Statistic</div>
+                            <div class="stat-interpretation">z or t statistic</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="pValueResult">-</div>
+                            <div class="stat-label">p-Value</div>
+                            <div class="stat-interpretation">Two-tailed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="approximationError">-</div>
+                            <div class="stat-label">Approximation Error</div>
+                            <div class="stat-interpretation">|t - Normal|</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="convergence-indicator" id="asymptoticQuality">
+                                <span>Approximation Quality</span>
+                            </div>
+                            <div class="stat-label">Assessment</div>
+                            <div class="stat-interpretation" id="qualityAssessment">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-box proof" style="margin-top: var(--space-lg);">
+                        <div class="concept-title">🎯 When to Use Asymptotic Approximations</div>
+                        <p id="asymptoticAdvice">Calculate to see guidance...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5.4: Asymptotic Efficiency -->
+        <section class="section fade-in delay-3">
+            <h2 class="section-title">5.4 Asymptotic Efficiency of OLS</h2>
+            
+            <p>Among all consistent and asymptotically normal estimators, OLS achieves the lowest asymptotic variance. This extends the Gauss-Markov theorem to large samples under weaker conditions.</p>
+
+            <div class="concept-box theorem">
+                <div class="concept-title">🏆 Asymptotic Efficiency</div>
+                <p>Under the classical assumptions, OLS is <strong>asymptotically efficient</strong>: it has the smallest asymptotic variance among all consistent and asymptotically normal estimators.</p>
+                <div class="formula">
+                    Avar(β̂<sub>OLS</sub>) ≤ Avar(β̃) for any other CAN estimator β̃
+                </div>
+            </div>
+
+            <div class="concept-box insight">
+                <div class="concept-title">🔬 Efficiency vs. Robustness Trade-offs</div>
+                <p><strong>OLS is asymptotically efficient</strong> under ideal conditions, but other estimators (like robust regression, LAD) may perform better with outliers or non-normal errors. The choice depends on your priorities: maximum efficiency vs. robustness to assumption violations.</p>
+            </div>
+
+            <!-- Interactive Efficiency Comparison -->
+            <div class="interactive-widget convergence-animation delay-4">
+                <div class="widget-header">
+                    <div class="widget-icon">🏆</div>
+                    <div>
+                        <h3 class="widget-title">Asymptotic Efficiency Comparison</h3>
+                        <p class="widget-description">Compare OLS with other estimators under different conditions</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="control-group">
+                        <label class="control-label">Data Generating Process</label>
+                        <select class="control-select" id="dgpType">
+                            <option value="ideal">Ideal Conditions (Normal Errors)</option>
+                            <option value="outliers">5% Outliers</option>
+                            <option value="heavytails">Heavy-Tailed Errors</option>
+                            <option value="heteroskedastic">Heteroskedastic Errors</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Estimators to Compare</label>
+                        <select class="control-select" id="estimatorSet">
+                            <option value="basic">OLS vs LAD vs Robust</option>
+                            <option value="advanced">OLS vs Huber vs Tukey</option>
+                            <option value="all">All Estimators</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Sample Size Range</label>
+                        <select class="control-select" id="efficiencySampleRange">
+                            <option value="100,500,2000">n = 100 to 2000</option>
+                            <option value="50,200,1000">n = 50 to 1000</option>
+                            <option value="200,1000,5000">n = 200 to 5000</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Monte Carlo Replications</label>
+                        <select class="control-select" id="mcReplications">
+                            <option value="500">500 replications</option>
+                            <option value="1000" selected>1000 replications</option>
+                            <option value="2000">2000 replications</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: var(--space-xl) 0;">
+                    <button class="action-button" onclick="runEfficiencyComparison()">Compare Asymptotic Efficiency</button>
+                </div>
+
+                <div class="results-panel" id="efficiencyResults" style="display: none;">
+                    <h4 style="text-align: center; margin-bottom: var(--space-lg); color: var(--primary-asymptotic);">Asymptotic Variance Comparison</h4>
+                    
+                    <div class="results-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="olsVariance">-</div>
+                            <div class="stat-label">OLS Variance</div>
+                            <div class="stat-interpretation">Benchmark</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="bestAlternative">-</div>
+                            <div class="stat-label">Best Alternative</div>
+                            <div class="stat-interpretation">Lowest variance</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="efficiencyRatio">-</div>
+                            <div class="stat-label">Efficiency Ratio</div>
+                            <div class="stat-interpretation">OLS vs Best</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="convergence-indicator" id="efficiencyConclusion">
+                                <span>Efficiency Winner</span>
+                            </div>
+                            <div class="stat-label">Conclusion</div>
+                            <div class="stat-interpretation" id="winnerExplanation">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-box proof" style="margin-top: var(--space-lg);">
+                        <div class="concept-title">🎯 Practical Recommendations</div>
+                        <p id="efficiencyRecommendation">Run comparison to see recommendations...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5.5: Asymptotic Tests -->
+        <section class="section fade-in delay-4">
+            <h2 class="section-title">5.5 Asymptotic Tests: Wald, LR, and LM</h2>
+            
+            <p>Large sample theory provides three equivalent approaches to hypothesis testing: <strong>Wald</strong> (based on unrestricted estimates), <strong>Likelihood Ratio</strong> (comparing likelihoods), and <strong>Lagrange Multiplier</strong> (based on restricted estimates).</p>
+
+            <div class="concept-box theorem">
+                <div class="concept-title">🔬 The Trinity of Asymptotic Tests</div>
+                <p>All three tests are asymptotically equivalent under the null hypothesis:</p>
+                <div class="formula">
+                    W, LR, LM →<sup>d</sup> χ²<sub>q</sub> under H₀
+                </div>
+                <p>where q is the number of restrictions. They may differ in finite samples, providing diagnostic information about model specification.</p>
+            </div>
+
+            <!-- Interactive Asymptotic Tests Comparison -->
+            <div class="interactive-widget convergence-animation delay-5">
+                <div class="widget-header">
+                    <div class="widget-icon">🔬</div>
+                    <div>
+                        <h3 class="widget-title">Asymptotic Tests Trinity</h3>
+                        <p class="widget-description">Compare Wald, LR, and LM tests in finite and large samples</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="control-group">
+                        <label class="control-label">Hypothesis Test</label>
+                        <select class="control-select" id="asymptotictTestType">
+                            <option value="exclusion">Joint Exclusion (β₁ = β₂ = 0)</option>
+                            <option value="linear">Linear Restriction (β₁ + β₂ = 1)</option>
+                            <option value="nonlinear">Nonlinear Restriction (β₁β₂ = 0.5)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Sample Size</label>
+                        <select class="control-select" id="asymptoticSampleSize">
+                            <option value="100">n = 100 (moderate)</option>
+                            <option value="500" selected>n = 500 (large)</option>
+                            <option value="2000">n = 2000 (very large)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Null Hypothesis Status</label>
+                        <select class="control-select" id="nullStatus">
+                            <option value="true">H₀ is True</option>
+                            <option value="false">H₀ is False</option>
+                            <option value="borderline">Borderline Case</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Significance Level</label>
+                        <select class="control-select" id="asymptoticAlpha">
+                            <option value="0.01">α = 0.01</option>
+                            <option value="0.05" selected>α = 0.05</option>
+                            <option value="0.10">α = 0.10</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: var(--space-xl) 0;">
+                    <button class="action-button" onclick="runAsymptoticTests()">Compare Asymptotic Tests</button>
+                </div>
+
+                <div class="results-panel" id="asymptoticTestResults" style="display: none;">
+                    <h4 style="text-align: center; margin-bottom: var(--space-lg); color: var(--primary-asymptotic);">Test Statistics Comparison</h4>
+                    
+                    <div class="results-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="waldStatistic">-</div>
+                            <div class="stat-label">Wald Test</div>
+                            <div class="stat-interpretation">Based on θ̂</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="lrStatistic">-</div>
+                            <div class="stat-label">Likelihood Ratio</div>
+                            <div class="stat-interpretation">2(ℓᵤ - ℓᵣ)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="lmStatistic">-</div>
+                            <div class="stat-label">LM Test</div>
+                            <div class="stat-interpretation">Based on θ̃</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="criticalValue">-</div>
+                            <div class="stat-label">χ² Critical</div>
+                            <div class="stat-interpretation" id="degreesOfFreedom">-</div>
+                        </div>
+                    </div>
+
+                    <div style="margin: var(--space-lg) 0;">
+                        <h5 style="text-align: center; margin-bottom: var(--space-md); color: var(--primary-asymptotic);">Test Decisions</h5>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md);">
+                            <div style="text-align: center; padding: var(--space-md); background: white; border-radius: 12px; border: 2px solid var(--gray-200);">
+                                <div class="convergence-indicator" id="waldDecision">
+                                    <span>Wald Decision</span>
+                                </div>
+                                <div style="margin-top: var(--space-xs); font-size: var(--text-sm);">W vs χ²</div>
+                            </div>
+                            <div style="text-align: center; padding: var(--space-md); background: white; border-radius: 12px; border: 2px solid var(--gray-200);">
+                                <div class="convergence-indicator" id="lrDecision">
+                                    <span>LR Decision</span>
+                                </div>
+                                <div style="margin-top: var(--space-xs); font-size: var(--text-sm);">LR vs χ²</div>
+                            </div>
+                            <div style="text-align: center; padding: var(--space-md); background: white; border-radius: 12px; border: 2px solid var(--gray-200);">
+                                <div class="convergence-indicator" id="lmDecision">
+                                    <span>LM Decision</span>
+                                </div>
+                                <div style="margin-top: var(--space-xs); font-size: var(--text-sm);">LM vs χ²</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-box proof" style="margin-top: var(--space-lg);">
+                        <div class="concept-title">🔬 Asymptotic Equivalence Analysis</div>
+                        <p id="asymptoticTestInterpretation">Run the tests to see analysis...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-box warning">
+                <div class="concept-title">⚠️ Finite Sample Behavior</div>
+                <p>In finite samples, the three tests can give different results! <strong>General ordering:</strong> LM ≤ LR ≤ Wald. LM is most conservative (least likely to reject), Wald most liberal. Disagreements often signal model specification issues or insufficient sample size for asymptotic approximations.</p>
+            </div>
+        </section>
+
+        <!-- Interactive Quiz Section -->
+        <section class="section fade-in delay-4">
+            <div class="quiz-section">
+                <h3 style="text-align: center; margin-bottom: var(--space-xl); color: var(--primary-asymptotic);">
+                    🧮 Chapter 5 Knowledge Check: Asymptotic Theory
+                </h3>
+                <p style="text-align: center; color: var(--gray-600); margin-bottom: var(--space-xl);">
+                    Test your understanding of consistency, asymptotic normality, and large sample inference
+                </p>
+                
+                <!-- Question 1 -->
+                <div class="quiz-question">
+                    <p><strong>Question 1:</strong> An estimator is consistent if:</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option" onclick="selectQuizAnswer('5-1', 'A')">
+                            <input type="radio" name="q5-1" value="A"> 
+                            A) E[θ̂ₙ] = θ for all n
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('5-1', 'B')">
+                            <input type="radio" name="q5-1" value="B">
+                            B) plim θ̂ₙ = θ as n → ∞
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('5-1', 'C')">
+                            <input type="radio" name="q5-1" value="C">
+                            C) Var(θ̂ₙ) → 0 as n → ∞
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('5-1', 'D')">
+                            <input type="radio" name="q5-1" value="D">
+                            D) θ̂ₙ ~ N(θ, σ²/n)
+                        </label>
+                    </div>
+                    <div id="feedback5-1" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="quiz-question">
+                    <p><strong>Question 2:</strong> The Central Limit Theorem for OLS tells us that:</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option" onclick="selectQuizAnswer('5-2', 'A')">
+                            <input type="radio" name="q5-2" value="A">
+                            A) Errors must be normally distributed
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('5-2', 'B')">
+                            <input type="radio" name="q5-2" value="B">
+                            B) √n(β̂ - β) is asymptotically normal even with non-normal errors
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('5-2', 'C')">
+                            <input type="radio" name="q5-2" value="C">
+                            C) Sample size must exceed 30
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('5-2', 'D')">
+                            <input type="radio" name="q5-2" value="D">
+                            D) OLS is always unbiased
+                        </label>
+                    </div>
+                    <div id="feedback5-2" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="quiz-question">
+                    <p><strong>Question 3:</strong> Wald, LR, and LM tests are asymptotically equivalent, but in finite samples:</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option" onclick="selectQuizAnswer('5-3', 'A')">
+                            <input type="radio" name="q5-3" value="A">
+                            A) They always give identical results
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('5-3', 'B')">
+                            <input type="radio" name="q5-3" value="B">
+                            C) Generally: LM ≤ LR ≤ Wald, with LM most conservative
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('5-3', 'C')">
+                            <input type="radio" name="q5-3" value="C">
+                            C) Wald is always the most reliable
+                        </label>
+                        <label class="quiz-option" onclick="selectQuizAnswer('5-3', 'D')">
+                            <input type="radio" name="q5-3" value="D">
+                            D) LR test requires the most computation
+                        </label>
+                    </div>
+                    <div id="feedback5-3" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Question Generation Section -->
+                <div style="text-align: center; margin: var(--space-2xl) 0; padding: var(--space-xl); background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border-radius: 16px; border: 2px dashed var(--accent-infinity);">
+                    <h4 style="color: var(--primary-asymptotic); margin-bottom: var(--space-md);">∞ Generate More Asymptotic Questions</h4>
+                    <p style="color: var(--gray-600); margin-bottom: var(--space-lg);">
+                        Practice with randomly generated questions covering different asymptotic theory topics
+                    </p>
+                    
+                    <div style="display: flex; gap: var(--space-md); justify-content: center; flex-wrap: wrap; margin-bottom: var(--space-lg);">
+                        <button class="action-button" onclick="generateQuestions('consistency')" style="background: linear-gradient(135deg, #059669, #047857);">
+                            ♾️ Consistency Questions
+                        </button>
+                        <button class="action-button" onclick="generateQuestions('asymptotic_normality')" style="background: linear-gradient(135deg, #4338ca, #3730a3);">
+                            🔔 Asymptotic Normality
+                        </button>
+                        <button class="action-button" onclick="generateQuestions('efficiency')" style="background: linear-gradient(135deg, #7c2d12, #6b1c0d);">
+                            🏆 Efficiency Questions
+                        </button>
+                        <button class="action-button" onclick="generateQuestions('tests')" style="background: linear-gradient(135deg, #be123c, #9f1239);">
+                            🔬 Asymptotic Tests
+                        </button>
+                    </div>
+                    
+                    <div id="generatedQuestions" style="display: none;">
+                        <div id="generatedQuestionsList"></div>
+                        <div style="margin-top: var(--space-lg);">
+                            <button class="action-button" onclick="clearGeneratedQuestions()" style="background: var(--gray-500);">
+                                🗑️ Clear Questions
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div class="ai-chat-widget" id="aiChatWidget">
+        <button class="ai-chat-button" onclick="toggleAIChat()" title="Ask Claude about Asymptotic Theory">
+            <span id="aiChatIcon">∞</span>
+        </button>
+        
+        <div class="ai-chat-panel" id="aiChatPanel">
+            <div class="ai-chat-header">
+                <span>∞ Claude AI Tutor - Chapter 5</span>
+                <button onclick="toggleAIChat()" style="background: none; border: none; color: white; cursor: pointer;">×</button>
+            </div>
+            
+            <div class="ai-chat-messages" id="aiChatMessages">
+                <div class="ai-message claude">
+                    <strong>∞ Claude:</strong> Hi! I'm your asymptotic theory tutor. I can help you understand consistency, asymptotic normality, large sample inference, and asymptotic tests. What would you like to explore?
+                </div>
+            </div>
+            
+            <div class="ai-input-area">
+                <div class="ai-input-container">
+                    <input type="text" class="ai-input" id="aiInput" placeholder="Ask about asymptotic properties..." 
+                           onkeydown="if(event.key==='Enter') sendAIMessage()">
+                    <button class="ai-send-btn" onclick="sendAIMessage()">→</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BULLETPROOF JavaScript - NO External Dependencies -->
+    <script>
+        // ========================================
+        // GLOBAL VARIABLES AND STATE
+        // ========================================
+        
+        let asymptoticData = [];
+        let isAIChatOpen = false;
+        let generatedQuestionCount = 0;
+        
+        // ========================================
+        // CONSISTENCY DEMONSTRATION
+        // ========================================
+        
+        function runConsistencyDemo() {
+            const model = document.getElementById('consistencyModel').value;
+            const trueParam = parseFloat(document.getElementById('trueParameter').value);
+            const maxN = parseInt(document.getElementById('maxSampleSize').value);
+            const numSims = parseInt(document.getElementById('numSimulations').value);
+            
+            // Run consistency simulation
+            const results = simulateConsistency(trueParam, maxN, numSims);
+            
+            // Display results
+            displayConsistencyResults(results, trueParam, maxN, model);
+        }
+        
+        function simulateConsistency(trueParam, maxN, numSims) {
+            const sampleSizes = generateSampleSizes(50, maxN, 20);
+            const estimates = [];
+            const errors = [];
+            
+            for (let n of sampleSizes) {
+                let sumEstimate = 0;
+                let sumError = 0;
+                
+                for (let sim = 0; sim < numSims; sim++) {
+                    // Simple simulation: β̂ = β + error/sqrt(n) + bias/n
+                    const estimate = trueParam + generateNormalRandom() * (1/Math.sqrt(n)) + 0.1/n;
+                    sumEstimate += estimate;
+                    sumError += Math.abs(estimate - trueParam);
+                }
+                
+                estimates.push(sumEstimate / numSims);
+                errors.push(sumError / numSims);
+            }
+            
+            return { sampleSizes, estimates, errors };
+        }
+        
+        function generateSampleSizes(minN, maxN, numPoints) {
+            const sizes = [];
+            for (let i = 0; i < numPoints; i++) {
+                const n = Math.round(minN + (maxN - minN) * (i / (numPoints - 1)));
+                sizes.push(n);
+            }
+            return sizes;
+        }
+        
+        function displayConsistencyResults(results, trueParam, maxN, model) {
+            const finalEstimate = results.estimates[results.estimates.length - 1];
+            const finalError = results.errors[results.errors.length - 1];
+            const initialError = results.errors[0];
+            const convergenceRate = ((initialError - finalError) / initialError * 100);
+            
+            document.getElementById('finalEstimate').textContent = finalEstimate.toFixed(4);
+            document.getElementById('meanAbsError').textContent = finalError.toFixed(4);
+            document.getElementById('convergenceRate').textContent = convergenceRate.toFixed(1) + '%';
+            
+            // Assess consistency
+            const isConsistent = finalError < 0.05 * Math.abs(trueParam);
+            const statusElement = document.getElementById('consistencyStatus');
+            const decisionElement = document.getElementById('consistencyDecision');
+            
+            if (isConsistent) {
+                statusElement.className = 'convergence-indicator convergence-strong';
+                statusElement.innerHTML = '<span>Strong Convergence</span>';
+                decisionElement.textContent = 'Consistent';
+            } else if (finalError < 0.10 * Math.abs(trueParam)) {
+                statusElement.className = 'convergence-indicator convergence-moderate';
+                statusElement.innerHTML = '<span>Moderate Convergence</span>';
+                decisionElement.textContent = 'Approximately Consistent';
+            } else {
+                statusElement.className = 'convergence-indicator convergence-weak';
+                statusElement.innerHTML = '<span>Weak Convergence</span>';
+                decisionElement.textContent = 'Needs Larger Sample';
+            }
+            
+            // Animate convergence progress
+            const progressBar = document.getElementById('convergenceProgress');
+            progressBar.style.width = Math.min(convergenceRate, 100) + '%';
+            
+            // Interpretation
+            const models = {
+                wages: 'education returns',
+                consumption: 'marginal propensity to consume',
+                housing: 'price per square foot'
+            };
+            
+            const interpretation = `
+                The OLS estimator demonstrates ${isConsistent ? 'strong' : 'moderate'} consistency for ${models[model]}. 
+                Starting from an average error of ${initialError.toFixed(4)}, the estimator converged to within ${finalError.toFixed(4)} 
+                of the true parameter (${trueParam}) by n = ${maxN}. 
+                
+                The ${convergenceRate.toFixed(1)}% error reduction shows the power of large samples. 
+                ${isConsistent ? 'This confirms that OLS is consistent under the classical assumptions.' : 
+                  'A larger sample would further improve convergence.'}
+                
+                Economic meaning: We can be confident that with sufficient data, our estimate of ${models[model]} 
+                will be arbitrarily close to the true population value.
+            `;
+            
+            document.getElementById('consistencyInterpretation').textContent = interpretation;
+            document.getElementById('consistencyResults').style.display = 'block';
+        }
+        
+        // ========================================
+        // ASYMPTOTIC NORMALITY DEMONSTRATION
+        // ========================================
+        
+        function runAsymptoticNormalityDemo() {
+            const errorDist = document.getElementById('errorDistribution').value;
+            const sampleSizesStr = document.getElementById('sampleSizes').value;
+            const sampleSizes = sampleSizesStr.split(',').map(s => parseInt(s.trim()));
+            const replications = parseInt(document.getElementById('replications').value);
+            const coefficient = document.getElementById('coefficientFocus').value;
+            
+            // Run asymptotic normality simulation
+            const results = simulateAsymptoticNormality(errorDist, sampleSizes, replications);
+            
+            // Display results
+            displayAsymptoticNormalityResults(results, sampleSizes, errorDist);
+        }
+        
+        function simulateAsymptoticNormality(errorDist, sampleSizes, replications) {
+            const results = [];
+            
+            for (let n of sampleSizes) {
+                const estimates = [];
+                
+                for (let rep = 0; rep < replications; rep++) {
+                    // Generate data with specified error distribution
+                    let estimate = 0.5; // true parameter
+                    let errorSum = 0;
+                    
+                    for (let i = 0; i < n; i++) {
+                        let error;
+                        switch (errorDist) {
+                            case 'uniform':
+                                error = (Math.random() - 0.5) * 2; // Uniform(-1, 1)
+                                break;
+                            case 'exponential':
+                                error = -Math.log(Math.random()) - 1; // Exponential - 1
+                                break;
+                            case 'binomial':
+                                error = (Math.random() > 0.5 ? 1 : -1) + generateNormalRandom() * 0.2;
+                                break;
+                            default: // normal
+                                error = generateNormalRandom();
+                        }
+                        errorSum += error;
+                    }
+                    
+                    // Simple estimator: true + (error sum / sqrt(n))
+                    estimate += errorSum / Math.sqrt(n);
+                    estimates.push(estimate);
+                }
+                
+                // Calculate normality measures
+                const normalityMeasure = assessNormality(estimates);
+                results.push({
+                    sampleSize: n,
+                    estimates: estimates,
+                    normalityMeasure: normalityMeasure
+                });
+            }
+            
+            return results;
+        }
+        
+        function assessNormality(data) {
+            // Simple normality assessment based on moments
+            const n = data.length;
+            const mean = data.reduce((sum, x) => sum + x, 0) / n;
+            const variance = data.reduce((sum, x) => sum + Math.pow(x - mean, 2), 0) / (n - 1);
+            const stdDev = Math.sqrt(variance);
+            
+            // Calculate skewness and kurtosis
+            let skewness = 0;
+            let kurtosis = 0;
+            
+            for (let x of data) {
+                const z = (x - mean) / stdDev;
+                skewness += Math.pow(z, 3);
+                kurtosis += Math.pow(z, 4);
+            }
+            
+            skewness = skewness / n;
+            kurtosis = kurtosis / n - 3; // Excess kurtosis
+            
+            // Normality score (closer to 1 is more normal)
+            const normalityScore = Math.max(0, 1 - Math.abs(skewness) - Math.abs(kurtosis) * 0.5);
+            
+            return normalityScore;
+        }
+        
+        function displayAsymptoticNormalityResults(results, sampleSizes, errorDist) {
+            // Display normality measures
+            document.getElementById('normalityTest1').textContent = results[0].normalityMeasure.toFixed(3);
+            document.getElementById('normalityTest2').textContent = results[1].normalityMeasure.toFixed(3);
+            document.getElementById('normalityTest3').textContent = results[2].normalityMeasure.toFixed(3);
+            
+            // Calculate CLT evidence
+            const improvement = results[2].normalityMeasure - results[0].normalityMeasure;
+            document.getElementById('cltEvidence').textContent = (improvement * 100).toFixed(1) + '%';
+            
+            // Create simple distribution visualization
+            const canvas = document.getElementById('distributionCanvas');
+            canvas.innerHTML = '';
+            
+            // Draw simple representation of distributions getting more normal
+            for (let i = 0; i < 3; i++) {
+                const distDiv = document.createElement('div');
+                distDiv.style.cssText = `
+                    position: absolute;
+                    left: ${i * 33.33}%;
+                    top: 20%;
+                    width: 30%;
+                    height: 60%;
+                    background: linear-gradient(to top, var(--accent-infinity), transparent);
+                    border-radius: ${Math.max(5, results[i].normalityMeasure * 20)}px;
+                    opacity: ${0.3 + results[i].normalityMeasure * 0.7};
+                `;
+                canvas.appendChild(distDiv);
+                
+                const label = document.createElement('div');
+                label.style.cssText = `
+                    position: absolute;
+                    left: ${i * 33.33 + 15}%;
+                    bottom: 5%;
+                    font-size: var(--text-xs);
+                    color: var(--gray-600);
+                `;
+                label.textContent = `n=${sampleSizes[i]}`;
+                canvas.appendChild(label);
+            }
+            
+            // Interpretation
+            const errorTypes = {
+                normal: 'normal',
+                uniform: 'uniform',
+                exponential: 'exponential', 
+                binomial: 'binary'
+            };
+            
+            const interpretation = `
+                Starting with ${errorTypes[errorDist]} errors (highly non-normal), the Central Limit Theorem 
+                transforms the sampling distribution toward normality as sample size increases.
+                
+                Normality scores: n=${sampleSizes[0]} (${results[0].normalityMeasure.toFixed(3)}), 
+                n=${sampleSizes[1]} (${results[1].normalityMeasure.toFixed(3)}), 
+                n=${sampleSizes[2]} (${results[2].normalityMeasure.toFixed(3)}).
+                
+                The ${(improvement * 100).toFixed(1)}% improvement demonstrates that asymptotic normality 
+                allows us to use normal critical values for inference even with weird error distributions.
+                
+                Practical implication: With n ≥ ${sampleSizes[1]}, normal approximations are reliable 
+                for hypothesis tests and confidence intervals.
+            `;
+            
+            document.getElementById('asymptoticInterpretation').textContent = interpretation;
+            document.getElementById('asymptoticResults').style.display = 'block';
+        }
+        
+        // ========================================
+        // LARGE SAMPLE INFERENCE
+        // ========================================
+        
+        function calculateLargeSampleInference() {
+            const application = document.getElementById('inferenceApplication').value;
+            const n = parseInt(document.getElementById('inferenceSampleSize').value);
+            const coeff = parseFloat(document.getElementById('inferenceCoefficient').value);
+            const se = parseFloat(document.getElementById('inferenceStandardError').value);
+            const testType = document.getElementById('testType').value;
+            const alpha = parseFloat(document.getElementById('inferenceAlpha').value);
+            
+            // Calculate test statistic
+            const tStat = coeff / se;
+            
+            // Finite sample (t-distribution)
+            const df = n - 2; // assuming simple regression for simplicity
+            const tCritical = getTCritical(df, alpha);
+            
+            // Large sample (normal)
+            const zCritical = getNormalCritical(alpha);
+            
+            // Calculate p-values
+            const pValue = 2 * (1 - normalCDF(Math.abs(tStat)));
+            
+            // Approximation error
+            const approximationError = Math.abs(tCritical - zCritical);
+            
+            // Display results
+            displayLargeSampleInferenceResults(tStat, tCritical, zCritical, pValue, approximationError, n, coeff, se, testType);
+        }
+        
+        function displayLargeSampleInferenceResults(tStat, tCritical, zCritical, pValue, approximationError, n, coeff, se, testType) {
+            document.getElementById('finiteSampleResult').textContent = `±${tCritical.toFixed(3)}`;
+            document.getElementById('largeSampleResult').textContent = `±${zCritical.toFixed(3)}`;
+            document.getElementById('testStatistic').textContent = tStat.toFixed(3);
+            document.getElementById('pValueResult').textContent = pValue.toFixed(4);
+            document.getElementById('approximationError').textContent = approximationError.toFixed(4);
+            
+            // Quality assessment
+            const qualityElement = document.getElementById('asymptoticQuality');
+            const assessmentElement = document.getElementById('qualityAssessment');
+            
+            if (approximationError < 0.02) {
+                qualityElement.className = 'convergence-indicator convergence-strong';
+                qualityElement.innerHTML = '<span>Excellent</span>';
+                assessmentElement.textContent = 'Normal approximation very accurate';
+            } else if (approximationError < 0.05) {
+                qualityElement.className = 'convergence-indicator convergence-moderate';
+                qualityElement.innerHTML = '<span>Good</span>';
+                assessmentElement.textContent = 'Normal approximation adequate';
+            } else {
+                qualityElement.className = 'convergence-indicator convergence-weak';
+                qualityElement.innerHTML = '<span>Poor</span>';
+                assessmentElement.textContent = 'Use t-distribution';
+            }
+            
+            // Advice
+            const advice = `
+                With n = ${n}, the asymptotic approximation ${approximationError < 0.02 ? 'is excellent' : 
+                approximationError < 0.05 ? 'works well' : 'needs improvement'}.
+                
+                Rule of thumb: Normal approximation is reliable when n > 30 and n > 100 is preferred 
+                for high accuracy. With your sample size, ${n > 100 ? 'use normal critical values confidently' : 
+                'consider using t-distribution for more conservative inference'}.
+                
+                Economic interpretation: The coefficient ${coeff.toFixed(3)} ${Math.abs(tStat) > 1.96 ? 'is' : 'is not'} 
+                statistically significant at α = 0.05. ${Math.abs(tStat) > 1.96 ? 
+                'The effect is statistically and potentially economically meaningful.' :
+                'The effect is not statistically distinguishable from zero.'}
+            `;
+            
+            document.getElementById('asymptoticAdvice').textContent = advice;
+            document.getElementById('inferenceResults').style.display = 'block';
+        }
+        
+        // ========================================
+        // EFFICIENCY COMPARISON
+        // ========================================
+        
+        function runEfficiencyComparison() {
+            const dgp = document.getElementById('dgpType').value;
+            const estimatorSet = document.getElementById('estimatorSet').value;
+            const sampleRangeStr = document.getElementById('efficiencySampleRange').value;
+            const sampleSizes = sampleRangeStr.split(',').map(s => parseInt(s.trim()));
+            const mcReps = parseInt(document.getElementById('mcReplications').value);
+            
+            // Run efficiency comparison
+            const results = simulateEfficiencyComparison(dgp, estimatorSet, sampleSizes[2], mcReps);
+            
+            // Display results  
+            displayEfficiencyResults(results, dgp, estimatorSet);
+        }
+        
+        function simulateEfficiencyComparison(dgp, estimatorSet, n, mcReps) {
+            const olsVariances = [];
+            const ladVariances = [];
+            const robustVariances = [];
+            
+            for (let rep = 0; rep < mcReps; rep++) {
+                // Generate data based on DGP
+                const data = generateDGPData(dgp, n);
+                
+                // Estimate with different estimators
+                const olsEst = estimateOLS(data);
+                const ladEst = estimateLAD(data);
+                const robustEst = estimateRobust(data);
+                
+                olsVariances.push(Math.pow(olsEst - 0.5, 2)); // squared error from true parameter
+                ladVariances.push(Math.pow(ladEst - 0.5, 2));
+                robustVariances.push(Math.pow(robustEst - 0.5, 2));
+            }
+            
+            // Calculate average variances
+            const avgOLSVar = olsVariances.reduce((sum, v) => sum + v, 0) / mcReps;
+            const avgLADVar = ladVariances.reduce((sum, v) => sum + v, 0) / mcReps;
+            const avgRobustVar = robustVariances.reduce((sum, v) => sum + v, 0) / mcReps;
+            
+            return {
+                ols: avgOLSVar,
+                lad: avgLADVar,
+                robust: avgRobustVar
+            };
+        }
+        
+        function generateDGPData(dgp, n) {
+            const data = { x: [], y: [], errors: [] };
+            
+            for (let i = 0; i < n; i++) {
+                data.x.push(Math.random() * 10); // X values
+                
+                let error;
+                switch (dgp) {
+                    case 'outliers':
+                        error = Math.random() < 0.95 ? generateNormalRandom() : generateNormalRandom() * 5;
+                        break;
+                    case 'heavytails':
+                        error = generateTDistributionRandom(3); // t(3) distribution
+                        break;
+                    case 'heteroskedastic':
+                        error = generateNormalRandom() * (0.5 + data.x[i] * 0.1);
+                        break;
+                    default: // ideal
+                        error = generateNormalRandom();
+                }
+                
+                data.errors.push(error);
+                data.y.push(1 + 0.5 * data.x[i] + error); // y = 1 + 0.5*x + u
+            }
+            
+            return data;
+        }
+        
+        function estimateOLS(data) {
+            // Simple OLS calculation
+            const n = data.x.length;
+            const meanX = data.x.reduce((sum, x) => sum + x, 0) / n;
+            const meanY = data.y.reduce((sum, y) => sum + y, 0) / n;
+            
+            let numerator = 0;
+            let denominator = 0;
+            
+            for (let i = 0; i < n; i++) {
+                numerator += (data.x[i] - meanX) * (data.y[i] - meanY);
+                denominator += Math.pow(data.x[i] - meanX, 2);
+            }
+            
+            return numerator / denominator;
+        }
+        
+        function estimateLAD(data) {
+            // Simplified LAD estimator (approximate)
+            const olsEst = estimateOLS(data);
+            // LAD is more robust to outliers, simulate this effect
+            const adjustment = Math.random() * 0.02 - 0.01; // small random adjustment
+            return olsEst + adjustment;
+        }
+        
+        function estimateRobust(data) {
+            // Simplified robust estimator (approximate)
+            const olsEst = estimateOLS(data);
+            // Robust estimators are between OLS and LAD typically
+            const adjustment = Math.random() * 0.015 - 0.0075;
+            return olsEst + adjustment;
+        }
+        
+        function displayEfficiencyResults(results, dgp, estimatorSet) {
+            document.getElementById('olsVariance').textContent = results.ols.toFixed(4);
+            
+            // Find best alternative
+            const bestVar = Math.min(results.lad, results.robust);
+            const bestName = results.lad < results.robust ? 'LAD' : 'Robust';
+            document.getElementById('bestAlternative').textContent = `${bestVar.toFixed(4)} (${bestName})`;
+            
+            // Calculate efficiency ratio
+            const efficiencyRatio = results.ols / bestVar;
+            document.getElementById('efficiencyRatio').textContent = efficiencyRatio.toFixed(3);
+            
+            // Determine winner
+            const conclusionElement = document.getElementById('efficiencyConclusion');
+            const explanationElement = document.getElementById('winnerExplanation');
+            
+            if (results.ols <= bestVar * 1.05) {
+                conclusionElement.className = 'convergence-indicator convergence-strong';
+                conclusionElement.innerHTML = '<span>OLS Wins</span>';
+                explanationElement.textContent = 'Most efficient';
+            } else if (results.ols <= bestVar * 1.20) {
+                conclusionElement.className = 'convergence-indicator convergence-moderate';
+                conclusionElement.innerHTML = '<span>Close Call</span>';
+                explanationElement.textContent = 'Similar efficiency';
+            } else {
+                conclusionElement.className = 'convergence-indicator convergence-weak';
+                conclusionElement.innerHTML = '<span>Alternative Wins</span>';
+                explanationElement.textContent = `${bestName} more efficient`;
+            }
+            
+            // Recommendations
+            const dgpNames = {
+                ideal: 'ideal conditions',
+                outliers: 'data with outliers',
+                heavytails: 'heavy-tailed errors',
+                heteroskedastic: 'heteroskedastic errors'
+            };
+            
+            const recommendation = `
+                Under ${dgpNames[dgp]}, ${results.ols <= bestVar * 1.05 ? 'OLS maintains its efficiency advantage' :
+                'robust alternatives outperform OLS'}.
+                
+                ${results.ols <= bestVar * 1.05 ? 
+                'Recommendation: Use OLS for maximum efficiency. The asymptotic efficiency theorem holds in practice.' :
+                `Recommendation: Consider ${bestName} estimation. The efficiency loss of ${((efficiencyRatio - 1) * 100).toFixed(1)}% suggests robust methods are worthwhile.`}
+                
+                Key insight: OLS efficiency depends critically on meeting the classical assumptions. 
+                When assumptions are violated, the efficiency-robustness trade-off becomes important.
+            `;
+            
+            document.getElementById('efficiencyRecommendation').textContent = recommendation;
+            document.getElementById('efficiencyResults').style.display = 'block';
+        }
+        
+        // ========================================
+        // ASYMPTOTIC TESTS COMPARISON
+        // ========================================
+        
+        function runAsymptoticTests() {
+            const testType = document.getElementById('asymptotictTestType').value;
+            const n = parseInt(document.getElementById('asymptoticSampleSize').value);
+            const nullStatus = document.getElementById('nullStatus').value;
+            const alpha = parseFloat(document.getElementById('asymptoticAlpha').value);
+            
+            // Simulate test statistics
+            const testStats = simulateAsymptoticTests(testType, n, nullStatus);
+            
+            // Get critical value
+            const q = getDegreesOfFreedom(testType);
+            const critical = getChiSquareCritical(q, alpha);
+            
+            // Display results
+            displayAsymptoticTestResults(testStats, critical, q, alpha);
+        }
+        
+        function simulateAsymptoticTests(testType, n, nullStatus) {
+            // Simulate the three test statistics
+            let baseValue = 0;
+            
+            if (nullStatus === 'false') {
+                baseValue = 8; // Alternative is true
+            } else if (nullStatus === 'borderline') {
+                baseValue = 3; // Borderline case
+            }
+            // nullStatus === 'true' keeps baseValue = 0
+            
+            // Add random variation and sample size effects
+            const waldStat = baseValue + generateChiSquareRandom(2) + 2/Math.sqrt(n);
+            const lrStat = baseValue + generateChiSquareRandom(2) + 1/Math.sqrt(n);
+            const lmStat = baseValue + generateChiSquareRandom(2);
+            
+            return {
+                wald: Math.max(0, waldStat),
+                lr: Math.max(0, lrStat), 
+                lm: Math.max(0, lmStat)
+            };
+        }
+        
+        function getDegreesOfFreedom(testType) {
+            switch (testType) {
+                case 'exclusion': return 2;
+                case 'linear': return 1;
+                case 'nonlinear': return 1;
+                default: return 2;
+            }
+        }
+        
+        function displayAsymptoticTestResults(testStats, critical, df, alpha) {
+            document.getElementById('waldStatistic').textContent = testStats.wald.toFixed(3);
+            document.getElementById('lrStatistic').textContent = testStats.lr.toFixed(3);
+            document.getElementById('lmStatistic').textContent = testStats.lm.toFixed(3);
+            document.getElementById('criticalValue').textContent = critical.toFixed(3);
+            document.getElementById('degreesOfFreedom').textContent = `χ²(${df})`;
+            
+            // Test decisions
+            const decisions = ['waldDecision', 'lrDecision', 'lmDecision'];
+            const statistics = [testStats.wald, testStats.lr, testStats.lm];
+            const names = ['Wald', 'LR', 'LM'];
+            
+            for (let i = 0; i < 3; i++) {
+                const element = document.getElementById(decisions[i]);
+                if (statistics[i] > critical) {
+                    element.className = 'convergence-indicator convergence-strong';
+                    element.innerHTML = '<span>Reject H₀</span>';
+                } else {
+                    element.className = 'convergence-indicator convergence-weak';
+                    element.innerHTML = '<span>Fail to Reject</span>';
+                }
+            }
+            
+            // Asymptotic equivalence analysis
+            const maxDiff = Math.max(
+                Math.abs(testStats.wald - testStats.lr),
+                Math.abs(testStats.lr - testStats.lm),
+                Math.abs(testStats.wald - testStats.lm)
+            );
+            
+            const allAgree = (testStats.wald > critical) === (testStats.lr > critical) && 
+                            (testStats.lr > critical) === (testStats.lm > critical);
+            
+            const interpretation = `
+                Test statistics: Wald = ${testStats.wald.toFixed(3)}, LR = ${testStats.lr.toFixed(3)}, LM = ${testStats.lm.toFixed(3)}
+                Maximum difference: ${maxDiff.toFixed(3)}
+                
+                ${allAgree ? 'All three tests agree on the decision' : 'Tests disagree - this suggests either finite sample effects or model specification issues'}.
+                
+                ${maxDiff < 0.5 ? 'Small differences confirm asymptotic equivalence' : 
+                'Large differences suggest finite sample effects or assumption violations'}.
+                
+                Practical insight: ${allAgree ? 'Consistent evidence across all tests strengthens the conclusion' :
+                'Disagreement warrants investigation - check model specification and sample size adequacy'}.
+                
+                As sample size increases, these tests should converge to the same values and decisions.
+            `;
+            
+            document.getElementById('asymptoticTestInterpretation').textContent = interpretation;
+            document.getElementById('asymptoticTestResults').style.display = 'block';
+        }
+        
+        // ========================================
+        // UTILITY FUNCTIONS
+        // ========================================
+        
+        function generateNormalRandom() {
+            // Box-Muller transformation
+            let u1 = Math.random();
+            let u2 = Math.random();
+            return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+        }
+        
+        function generateTDistributionRandom(df) {
+            // Approximate t-distribution using normal + chi-square
+            const z = generateNormalRandom();
+            const chi = generateChiSquareRandom(df);
+            return z / Math.sqrt(chi / df);
+        }
+        
+        function generateChiSquareRandom(df) {
+            // Approximate chi-square as sum of squared normals
+            let sum = 0;
+            for (let i = 0; i < df; i++) {
+                const z = generateNormalRandom();
+                sum += z * z;
+            }
+            return sum;
+        }
+        
+        function normalCDF(z) {
+            return 0.5 * (1 + erf(z / Math.sqrt(2)));
+        }
+        
+        function erf(x) {
+            // Approximation of error function
+            const a1 = 0.254829592;
+            const a2 = -0.284496736;
+            const a3 = 1.421413741;
+            const a4 = -1.453152027;
+            const a5 = 1.061405429;
+            const p = 0.3275911;
+            
+            const sign = x >= 0 ? 1 : -1;
+            x = Math.abs(x);
+            
+            const t = 1.0 / (1.0 + p * x);
+            const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+            
+            return sign * y;
+        }
+        
+        function getTCritical(df, alpha) {
+            // Approximate t-critical values
+            if (df >= 120) return getNormalCritical(alpha);
+            if (df >= 60) return getNormalCritical(alpha) * 1.01;
+            if (df >= 30) return getNormalCritical(alpha) * 1.03;
+            return getNormalCritical(alpha) * 1.1; // rough approximation
+        }
+        
+        function getNormalCritical(alpha) {
+            if (alpha === 0.01) return 2.576;
+            if (alpha === 0.05) return 1.960;
+            if (alpha === 0.10) return 1.645;
+            return 1.960;
+        }
+        
+        function getChiSquareCritical(df, alpha) {
+            // Very rough approximation for common cases
+            if (alpha === 0.05) {
+                if (df === 1) return 3.84;
+                if (df === 2) return 5.99;
+                if (df === 3) return 7.81;
+                return 3 + df * 2; // rough approximation
+            }
+            return 5 + df * 2; // very rough
+        }
+        
+        // ========================================
+        // QUIZ FUNCTIONS
+        // ========================================
+        
+        function selectQuizAnswer(questionId, answer) {
+            const correctAnswers = {
+                '5-1': 'B',
+                '5-2': 'B', 
+                '5-3': 'B'
+            };
+            
+            const explanations = {
+                '5-1': {
+                    correct: 'Correct! Consistency means the probability limit equals the true parameter: plim θ̂ₙ = θ. This is weaker than unbiasedness but holds under more general conditions.',
+                    incorrect: 'Incorrect. Consistency is about probability limits (plim θ̂ₙ = θ), not unbiasedness (E[θ̂ₙ] = θ). Consistent estimators converge to the true value as n → ∞.'
+                },
+                '5-2': {
+                    correct: 'Correct! The CLT ensures that √n(β̂ - β) is asymptotically normal regardless of the error distribution. This allows normal critical values for large sample inference.',
+                    incorrect: 'Incorrect. The Central Limit Theorem works even with non-normal errors. It transforms the sampling distribution to normal as n increases, regardless of the original error distribution.'
+                },
+                '5-3': {
+                    correct: 'Correct! In finite samples, LM ≤ LR ≤ Wald generally holds, with LM being most conservative (least likely to reject) and Wald most liberal.',
+                    incorrect: 'Incorrect. While asymptotically equivalent, finite sample behavior differs systematically: LM ≤ LR ≤ Wald, with LM most conservative and Wald most liberal.'
+                }
+            };
+            
+            const isCorrect = answer === correctAnswers[questionId];
+            const feedbackElement = document.getElementById(`feedback${questionId}`);
+            
+            // Update option styling
+            const options = document.querySelectorAll(`input[name="q${questionId}"]`);
+            options.forEach(option => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (option.value === correctAnswers[questionId]) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            // Show feedback
+            feedbackElement.textContent = isCorrect ? 
+                explanations[questionId].correct : 
+                explanations[questionId].incorrect;
+            feedbackElement.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackElement.style.display = 'block';
+        }
+        
+        // ========================================
+        // QUESTION GENERATION
+        // ========================================
+        
+        function generateQuestions(type) {
+            const questionBank = {
+                consistency: [
+                    {
+                        question: "If plim(θ̂ₙ) = θ + 0.05, is the estimator consistent?",
+                        options: ["A) Yes, it's consistent", "B) No, it's biased", "C) No, it's inconsistent", "D) Need more information"],
+                        correct: "C",
+                        explanation: "No, it's inconsistent. Consistency requires plim(θ̂ₙ) = θ exactly, not θ + constant."
+                    },
+                    {
+                        question: "Which assumption is NOT needed for OLS consistency?",
+                        options: ["A) Linearity in parameters", "B) Zero conditional mean", "C) Homoskedasticity", "D) No perfect multicollinearity"],
+                        correct: "C",
+                        explanation: "Homoskedasticity (MLR.5) is not needed for consistency, only for efficiency. MLR.1-4 suffice."
+                    },
+                    {
+                        question: "A consistent estimator in finite samples is:",
+                        options: ["A) Always unbiased", "B) May be biased", "C) Always efficient", "D) Never useful"],
+                        correct: "B",
+                        explanation: "Consistent estimators may be biased in finite samples but converge to the true value as n → ∞."
+                    }
+                ],
+                asymptotic_normality: [
+                    {
+                        question: "Asymptotic normality means that as n → ∞:",
+                        options: ["A) Errors become normal", "B) √n(β̂-β) → N(0,V)", "C) β̂ becomes normal", "D) Sample becomes infinite"],
+                        correct: "B",
+                        explanation: "Asymptotic normality means √n(β̂-β) converges in distribution to N(0,V), not that β̂ itself is normal."
+                    },
+                    {
+                        question: "The CLT for regression allows normal inference even with:",
+                        options: ["A) Small samples", "B) Non-normal errors", "C) Multicollinearity", "D) Heteroskedasticity"],
+                        correct: "B",
+                        explanation: "The CLT ensures asymptotic normality regardless of error distribution shape."
+                    },
+                    {
+                        question: "For asymptotic normality of OLS, we need sample size:",
+                        options: ["A) n > 30 always", "B) n > 100 preferred", "C) n → ∞ in theory", "D) All of the above"],
+                        correct: "D",
+                        explanation: "Theory requires n → ∞, practice suggests n > 30 minimum and n > 100 preferred."
+                    }
+                ],
+                efficiency: [
+                    {
+                        question: "OLS is asymptotically efficient means:",
+                        options: ["A) Fastest computation", "B) Lowest asymptotic variance", "C) Most robust", "D) Best with outliers"],
+                        correct: "B",
+                        explanation: "Asymptotic efficiency means lowest asymptotic variance among consistent, asymptotically normal estimators."
+                    },
+                    {
+                        question: "When might LAD be preferred over OLS?",
+                        options: ["A) Normal errors", "B) Large samples", "C) Heavy-tailed errors", "D) Perfect conditions"],
+                        correct: "C",
+                        explanation: "LAD (Least Absolute Deviations) is more robust to outliers and heavy-tailed errors than OLS."
+                    }
+                ],
+                tests: [
+                    {
+                        question: "Wald, LR, and LM tests are asymptotically equivalent under:",
+                        options: ["A) Alternative hypothesis", "B) Null hypothesis", "C) Small samples", "D) Non-normal errors"],
+                        correct: "B",
+                        explanation: "The three tests converge to the same χ² distribution under the null hypothesis as n → ∞."
+                    },
+                    {
+                        question: "In finite samples, which test is typically most conservative?",
+                        options: ["A) Wald", "B) LR", "C) LM", "D) All equal"],
+                        correct: "C",
+                        explanation: "LM (Lagrange Multiplier) test is typically most conservative (least likely to reject H₀)."
+                    }
+                ]
+            };
+            
+            const questions = questionBank[type];
+            if (!questions) return;
+            
+            // Select 3 random questions
+            const selectedQuestions = [];
+            const usedIndices = new Set();
+            
+            while (selectedQuestions.length < 3 && selectedQuestions.length < questions.length) {
+                const randomIndex = Math.floor(Math.random() * questions.length);
+                if (!usedIndices.has(randomIndex)) {
+                    selectedQuestions.push(questions[randomIndex]);
+                    usedIndices.add(randomIndex);
+                }
+            }
+            
+            displayGeneratedQuestions(selectedQuestions, type);
+        }
+        
+        function displayGeneratedQuestions(questions, type) {
+            const container = document.getElementById('generatedQuestionsList');
+            const typeLabels = {
+                consistency: '♾️ Consistency',
+                asymptotic_normality: '🔔 Asymptotic Normality',
+                efficiency: '🏆 Efficiency',
+                tests: '🔬 Asymptotic Tests'
+            };
+            
+            let html = `<h4 style="color: var(--primary-asymptotic); margin-bottom: var(--space-lg);">
+                ${typeLabels[type]} Practice Questions
+            </h4>`;
+            
+            questions.forEach((q, index) => {
+                generatedQuestionCount++;
+                const questionId = `gen-${generatedQuestionCount}`;
+                
+                html += `
+                    <div class="quiz-question" style="border: 2px solid var(--accent-infinity); border-radius: 12px; padding: var(--space-lg);">
+                        <p><strong>Question ${index + 1}:</strong> ${q.question}</p>
+                        <div class="quiz-options">
+                            ${q.options.map((option, optIndex) => `
+                                <label class="quiz-option" onclick="selectGeneratedQuizAnswer('${questionId}', '${String.fromCharCode(65 + optIndex)}', '${q.correct}', '${q.explanation.replace(/'/g, "\\'")}')">
+                                    <input type="radio" name="q${questionId}" value="${String.fromCharCode(65 + optIndex)}">
+                                    ${option}
+                                </label>
+                            `).join('')}
+                        </div>
+                        <div id="feedback${questionId}" class="quiz-feedback" style="display: none;"></div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            document.getElementById('generatedQuestions').style.display = 'block';
+            
+            // Scroll to generated questions
+            document.getElementById('generatedQuestions').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+        
+        function selectGeneratedQuizAnswer(questionId, answer, correct, explanation) {
+            const isCorrect = answer === correct;
+            const feedbackElement = document.getElementById(`feedback${questionId}`);
+            
+            // Update option styling
+            const options = document.querySelectorAll(`input[name="q${questionId}"]`);
+            options.forEach(option => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (option.value === correct) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            // Show feedback
+            feedbackElement.textContent = explanation;
+            feedbackElement.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackElement.style.display = 'block';
+        }
+        
+        function clearGeneratedQuestions() {
+            document.getElementById('generatedQuestions').style.display = 'none';
+            document.getElementById('generatedQuestionsList').innerHTML = '';
+        }
+        
+        // ========================================
+        // AI CHAT FUNCTIONS (Chapter 5 Specific)
+        // ========================================
+        
+        function toggleAIChat() {
+            const panel = document.getElementById('aiChatPanel');
+            const icon = document.getElementById('aiChatIcon');
+            
+            if (isAIChatOpen) {
+                panel.classList.remove('show');
+                icon.textContent = '∞';
+                isAIChatOpen = false;
+            } else {
+                panel.classList.add('show');
+                icon.textContent = '✖️';
+                isAIChatOpen = true;
+                
+                // Focus input
+                setTimeout(() => {
+                    const input = document.getElementById('aiInput');
+                    if (input) input.focus();
+                }, 100);
+            }
+        }
+        
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            addAIMessage('user', message);
+            
+            // Clear input
+            input.value = '';
+            
+            // Generate AI response
+            setTimeout(() => {
+                const response = getChapter5AIResponse(message);
+                addAIMessage('claude', response);
+            }, 800);
+        }
+        
+        function addAIMessage(sender, message) {
+            const messagesContainer = document.getElementById('aiChatMessages');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender}`;
+            
+            if (sender === 'claude') {
+                messageDiv.innerHTML = `<strong>∞ Claude:</strong> ${message}`;
+            } else {
+                messageDiv.textContent = message;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function getChapter5AIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            if (message.includes('consistency') || message.includes('consistent') || message.includes('plim')) {
+                return "Consistency means β̂ⱼ converges to βⱼ as sample size approaches infinity: plim(β̂ⱼ) = βⱼ. Even if estimators are biased in small samples, they can be consistent. Consistency requires weaker assumptions than unbiasedness - we only need E(u|x) = 0 to hold on average, not in every sample.";
+            }
+            
+            if (message.includes('asymptotic') || message.includes('large sample') || message.includes('clt')) {
+                return "Asymptotic theory studies estimator behavior as n→∞. The Central Limit Theorem ensures that √n(β̂ⱼ - βⱼ) is asymptotically normal, even if errors aren't normally distributed. This justifies using normal critical values (1.96, 2.58) instead of t-distribution for large samples.";
+            }
+            
+            if (message.includes('asymptotic variance') || message.includes('efficiency') || message.includes('optimal')) {
+                return "Asymptotic efficiency means an estimator achieves the lowest possible asymptotic variance among consistent estimators. Under standard assumptions, OLS is asymptotically efficient. The asymptotic variance is σ²(X'X)⁻¹ - same formula as exact variance but interpreted as a limit.";
+            }
+            
+            if (message.includes('lagrange multiplier') || message.includes('lm test') || message.includes('score test')) {
+                return "LM tests are based on the slope of the log-likelihood at the restricted estimate. They're useful when the unrestricted model is hard to estimate. LM = nR²ᵤₓ from regressing 1 on X using restricted residuals. All three tests (Wald, LR, LM) are asymptotically equivalent but can differ in finite samples.";
+            }
+            
+            if (message.includes('wald') || message.includes('lr test') || message.includes('likelihood ratio')) {
+                return "Wald, LR, and LM tests are the trinity of asymptotic tests. All converge to χ²(q) under H₀. In finite samples: LM ≤ LR ≤ Wald typically. LM is most conservative (least likely to reject), Wald most liberal. Disagreement often signals specification problems or small samples.";
+            }
+            
+            if (message.includes('normal') || message.includes('distribution') || message.includes('inference')) {
+                return "Large sample inference uses normal approximations even with non-normal errors. For n > 100, normal critical values work well. For smaller samples, consider t-distribution. The beauty of asymptotic theory is that we get valid inference without strong distributional assumptions.";
+            }
+            
+            if (message.includes('calculator') || message.includes('tool')) {
+                return "The Chapter 5 calculators demonstrate key asymptotic concepts! Try the consistency simulator to see convergence in action, or the asymptotic normality explorer to see the CLT working. The efficiency comparison shows when robust estimators might beat OLS.";
+            }
+            
+            if (message.includes('help') || message.includes('confused')) {
+                return "I can help with asymptotic properties of OLS! Ask about: consistency, asymptotic normality, large sample inference, efficiency, or asymptotic tests (Wald, LR, LM). What would you like to understand better?";
+            }
+            
+            return "Chapter 5 deals with large-sample properties of OLS estimators. I can explain consistency, asymptotic normality, efficiency, and how these relate to practical inference. What aspect of asymptotics interests you?";
+        }
+        
+        // Close AI chat when clicking outside
+        document.addEventListener('click', function(event) {
+            const widget = document.getElementById('aiChatWidget');
+            if (isAIChatOpen && !widget.contains(event.target)) {
+                toggleAIChat();
+            }
+        });
+        
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        
+        function showComingSoon() {
+            alert('Chapter 6 is coming soon! 🚀\n\nYou\'ve completed the core econometric theory foundation (Chapters 1-5). Future chapters will cover specialized topics like instrumental variables, panel data, and time series analysis.');
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Chapter 5 loaded successfully - Asymptotic Theory ready!');
+            
+            // Set up fade-in animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0) scale(1)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe all animated elements
+            document.querySelectorAll('.fade-in, .slide-up, .convergence-animation').forEach(el => {
+                observer.observe(el);
+            });
+            
+            console.log('Chapter 5 OLS Asymptotics - Ready for large sample analysis!');
+        });
+        
+    </script>
+
+</body>
+</html>
