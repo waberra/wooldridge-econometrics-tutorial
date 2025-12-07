@@ -1,0 +1,3006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 10: Basic Regression Analysis with Time Series Data | Wooldridge Econometrics Tutorial</title>
+    
+    <style>
+        /* Temporal Analytics Theme for Time Series Analysis */
+        :root {
+            --primary-temporal: #0891b2;
+            --secondary-trend: #0e7490;
+            --accent-cycle: #06b6d4;
+            --accent-seasonal: #22d3ee;
+            --status-stationary: #059669;
+            --status-trending: #dc2626;
+            --status-seasonal: #d97706;
+            --warning-spurious: #f59e0b;
+            --tech-50: #f0fdff;
+            --tech-100: #e6fffa;
+            --tech-200: #b2f5ea;
+            --tech-300: #81e6d9;
+            --tech-600: #319795;
+            --tech-700: #2c7a7b;
+            --tech-800: #234e52;
+            --tech-900: #1a202c;
+            
+            /* Time series specific colors */
+            --trend-linear: #0891b2;
+            --trend-quadratic: #7c3aed;
+            --cycle-short: #22d3ee;
+            --cycle-long: #0e7490;
+            --seasonal-pattern: #f59e0b;
+            --noise-component: #6b7280;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--tech-800);
+            background: linear-gradient(135deg, #f0fdff 0%, #e6fffa 50%, #b2f5ea 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-temporal), var(--secondary-trend));
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 100"><path d="M0,50 Q50,20 100,50 T200,50" stroke="rgba(255,255,255,0.1)" stroke-width="2" fill="none"/><path d="M0,60 Q50,30 100,60 T200,60" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" fill="none"/><path d="M0,40 Q50,10 100,40 T200,40" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/></svg>');
+            opacity: 0.4;
+        }
+
+        .page-header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .chapter-title {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .chapter-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .chapter-description {
+            font-size: 1.1rem;
+            opacity: 0.85;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Navigation */
+        .chapter-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--tech-200);
+        }
+
+        .nav-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            border: 2px solid var(--tech-200);
+            background: white;
+            color: var(--primary-temporal);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-cycle);
+            box-shadow: 0 4px 12px rgba(8, 145, 178, 0.2);
+        }
+
+        .nav-home {
+            background: var(--status-stationary);
+            color: white;
+            border-color: var(--status-stationary);
+        }
+
+        .nav-home:hover {
+            color: white;
+            background: #047857;
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 3rem;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--accent-cycle);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(8, 145, 178, 0.03) 0%, transparent 70%);
+        }
+
+        .section-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-title {
+            color: var(--primary-temporal);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--tech-200);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: var(--accent-cycle);
+        }
+
+        /* Concept Boxes */
+        .concept-box {
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .concept-box.temporal {
+            background: linear-gradient(135deg, rgba(8, 145, 178, 0.05), rgba(8, 145, 178, 0.02));
+            border-color: var(--primary-temporal);
+        }
+
+        .concept-box.trend {
+            background: linear-gradient(135deg, rgba(14, 116, 144, 0.05), rgba(14, 116, 144, 0.02));
+            border-color: var(--secondary-trend);
+        }
+
+        .concept-box.seasonal {
+            background: linear-gradient(135deg, rgba(217, 119, 6, 0.05), rgba(217, 119, 6, 0.02));
+            border-color: var(--seasonal-pattern);
+        }
+
+        .concept-box.warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(245, 158, 11, 0.02));
+            border-color: var(--warning-spurious);
+        }
+
+        .concept-box.stationary {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.05), rgba(5, 150, 105, 0.02));
+            border-color: var(--status-stationary);
+        }
+
+        .concept-title {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--tech-800);
+            font-size: 1.1rem;
+        }
+
+        .formula {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 2px solid var(--accent-cycle);
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            margin: 1rem 0;
+            font-weight: 500;
+            color: var(--tech-800);
+        }
+
+        /* Ensure formula text is always dark and readable */
+        .concept-box .formula {
+            color: var(--tech-800) !important;
+            font-weight: 600;
+        }
+
+        /* Interactive Widgets */
+        .interactive-widget {
+            background: linear-gradient(135deg, var(--tech-50), white);
+            border: 2px solid var(--tech-200);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .interactive-widget:hover {
+            border-color: var(--accent-cycle);
+            box-shadow: 0 8px 25px rgba(8, 145, 178, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .widget-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--tech-200);
+        }
+
+        .widget-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-cycle), var(--primary-temporal));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 4px 8px rgba(8, 145, 178, 0.3);
+        }
+
+        .widget-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-temporal);
+        }
+
+        .widget-description {
+            color: var(--tech-600);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Calculator Controls */
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-weight: 500;
+            color: var(--primary-temporal);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .control-select, .control-input {
+            padding: 0.75rem;
+            border: 2px solid var(--tech-200);
+            border-radius: 6px;
+            background: white;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .control-select:focus, .control-input:focus {
+            outline: none;
+            border-color: var(--accent-cycle);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--accent-cycle), var(--primary-temporal));
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 1.5rem auto;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.6s;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4);
+        }
+
+        .action-button:hover::before {
+            left: 100%;
+        }
+
+        /* Results */
+        .results-panel {
+            background: linear-gradient(135deg, var(--tech-50), white);
+            border: 1px solid var(--tech-200);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            display: none;
+            position: relative;
+        }
+
+        .results-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-cycle), var(--primary-temporal));
+            border-radius: 8px 8px 0 0;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+            border-top: 3px solid var(--accent-cycle);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-temporal);
+            margin-bottom: 0.25rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--tech-600);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-interpretation {
+            font-size: 0.75rem;
+            color: var(--tech-500);
+            margin-top: 0.25rem;
+            font-style: italic;
+        }
+
+        /* Temporal Indicators */
+        .temporal-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-stationary {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--status-stationary);
+            border: 1px solid rgba(5, 150, 105, 0.3);
+        }
+
+        .status-trending {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--status-trending);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .status-seasonal {
+            background: rgba(217, 119, 6, 0.1);
+            color: var(--status-seasonal);
+            border: 1px solid rgba(217, 119, 6, 0.3);
+        }
+
+        /* Time Series Visualization */
+        .time-series-viz {
+            background: linear-gradient(135deg, #f0fdff, #e6fffa);
+            border: 2px solid var(--accent-cycle);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            position: relative;
+            overflow: hidden;
+            min-height: 250px;
+        }
+
+        .time-series-viz::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 8px,
+                rgba(8, 145, 178, 0.02) 8px,
+                rgba(8, 145, 178, 0.02) 16px
+            );
+        }
+
+        .viz-header {
+            text-align: center;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .viz-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-temporal);
+            margin-bottom: 0.5rem;
+        }
+
+        .viz-canvas {
+            background: white;
+            border-radius: 6px;
+            position: relative;
+            margin: 0.5rem 0;
+            min-height: 160px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+            border: 1px solid var(--tech-200);
+            z-index: 1;
+        }
+
+        /* Time axis */
+        .time-axis {
+            position: absolute;
+            bottom: 10%;
+            left: 10%;
+            right: 10%;
+            height: 1px;
+            background: var(--tech-300);
+        }
+
+        .time-label {
+            position: absolute;
+            bottom: 2%;
+            font-size: 0.7rem;
+            color: var(--tech-600);
+            transform: translateX(-50%);
+        }
+
+        /* Quiz Styling */
+        .quiz-section {
+            background: linear-gradient(135deg, var(--tech-50), white);
+            border: 2px solid var(--tech-200);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(8, 145, 178, 0.02) 0%, transparent 70%);
+        }
+
+        .quiz-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .quiz-question {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--tech-200);
+        }
+
+        .quiz-question:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .quiz-option {
+            padding: 1rem;
+            border: 2px solid var(--tech-200);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-option::before {
+            content: '';
+            position: absolute;
+            left: -100%;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(8, 145, 178, 0.05), transparent);
+            transition: all 0.4s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent-cycle);
+            background: var(--tech-50);
+            transform: translateX(3px);
+        }
+
+        .quiz-option:hover::before {
+            left: 100%;
+        }
+
+        .quiz-option.correct {
+            border-color: var(--status-stationary);
+            background: rgba(5, 150, 105, 0.05);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--status-trending);
+            background: rgba(220, 38, 38, 0.05);
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .quiz-feedback.correct {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--status-stationary);
+            border: 1px solid rgba(5, 150, 105, 0.3);
+        }
+
+        .quiz-feedback.incorrect {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--status-trending);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        /* AI Chat Widget */
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .ai-chat-button {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary-temporal), var(--secondary-trend));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 12px rgba(8, 145, 178, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-chat-button::before {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+        }
+
+        .ai-chat-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(8, 145, 178, 0.4);
+        }
+
+        .ai-chat-panel {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 300px;
+            height: 400px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--tech-200);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ai-chat-panel.show {
+            display: flex;
+        }
+
+        .ai-chat-header {
+            background: linear-gradient(135deg, var(--primary-temporal), var(--secondary-trend));
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            background: var(--tech-50);
+        }
+
+        .ai-message {
+            max-width: 85%;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            line-height: 1.4;
+            font-size: 0.9rem;
+        }
+
+        .ai-message.claude {
+            background: white;
+            color: var(--tech-700);
+            align-self: flex-start;
+            border: 1px solid var(--tech-200);
+        }
+
+        .ai-message.user {
+            background: var(--primary-temporal);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .ai-input-area {
+            padding: 1rem;
+            border-top: 1px solid var(--tech-200);
+            display: flex;
+            gap: 0.5rem;
+            background: white;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--tech-200);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .ai-input:focus {
+            outline: none;
+            border-color: var(--accent-cycle);
+        }
+
+        .ai-send-btn {
+            background: var(--primary-temporal);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .ai-send-btn:hover {
+            background: var(--accent-cycle);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .chapter-navigation {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chapter-title {
+                font-size: 2rem;
+            }
+            
+            .ai-chat-panel {
+                width: 280px;
+                height: 350px;
+                right: -10px;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .slide-up {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUp 0.8s ease-out forwards;
+        }
+
+        .temporal-animation {
+            opacity: 0;
+            transform: scale(0.95);
+            animation: temporalAnimate 1s ease-out forwards;
+        }
+
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+        .delay-4 { animation-delay: 0.8s; }
+        .delay-5 { animation-delay: 1.0s; }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        @keyframes temporalAnimate {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Time series wave animation */
+        .wave-progress {
+            position: relative;
+            height: 50px;
+            background: linear-gradient(to right, var(--accent-cycle), var(--primary-temporal), var(--secondary-trend));
+            border-radius: 6px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .wave-progress::after {
+            content: 'Time Series Components: Trend → Cycle → Seasonal → Random';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* Component breakdown visualization */
+        .component-breakdown {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: var(--tech-50);
+            border-radius: 8px;
+        }
+
+        .component-item {
+            text-align: center;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .component-item.trend {
+            background: linear-gradient(135deg, rgba(8, 145, 178, 0.1), rgba(8, 145, 178, 0.05));
+            border-color: var(--trend-linear);
+        }
+
+        .component-item.cycle {
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(34, 211, 238, 0.05));
+            border-color: var(--cycle-short);
+        }
+
+        .component-item.seasonal {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+            border-color: var(--seasonal-pattern);
+        }
+
+        .component-item.random {
+            background: linear-gradient(135deg, rgba(107, 114, 128, 0.1), rgba(107, 114, 128, 0.05));
+            border-color: var(--noise-component);
+        }
+
+        .component-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <h1 class="chapter-title">Chapter 10: Basic Regression Analysis with Time Series Data 📈</h1>
+                <p class="chapter-subtitle">Temporal Analytics & Dynamic Econometric Modeling</p>
+                <p class="chapter-description">
+                    Master time series regression analysis, temporal dependencies, stationarity concepts, 
+                    trend and seasonal decomposition, and the unique challenges of modeling data ordered in time.
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- Navigation -->
+        <div class="chapter-navigation fade-in">
+            <a href="index.html" class="nav-button nav-home">
+                <span>🏠</span>
+                <span>Home</span>
+            </a>
+            <a href="chapter09.html" class="nav-button">
+                <span>←</span>
+                <span>Chapter 9</span>
+            </a>
+            <div class="nav-button" style="opacity: 0.5; cursor: not-allowed;" onclick="alert('Chapter 11 coming soon!')">
+                <span>→</span>
+                <span>Chapter 11</span>
+            </div>
+        </div>
+        
+        <!-- Section 10.1: Nature of Time Series Data -->
+        <section class="section fade-in">
+            <div class="section-content">
+                <h2 class="section-title">10.1 📈 The Nature of Time Series Data</h2>
+                
+                <p>Time series data consists of observations on variables over time. Unlike cross-sectional data, observations are ordered temporally and often exhibit dependencies across time periods, requiring special econometric considerations.</p>
+                
+                <div class="concept-box temporal">
+                    <div class="concept-title">📈 Time Series Characteristics</div>
+                    <p><strong>Temporal ordering:</strong> Observations {y₁, y₂, ..., yₜ} indexed by time<br>
+                    <strong>Temporal dependence:</strong> E[yₜ|yₜ₋₁, yₜ₋₂, ...] ≠ E[yₜ]<br>
+                    <strong>Common patterns:</strong> Trends, cycles, seasonality, structural breaks</p>
+                    <div class="formula">
+                        yₜ = Trendₜ + Cyclₜ + Seasonₜ + Randomₜ (additive decomposition)
+                    </div>
+                    <p><strong>Key challenge:</strong> Serial correlation violates OLS assumption of independent errors</p>
+                </div>
+
+                <div class="component-breakdown">
+                    <div class="component-item trend">
+                        <div style="font-weight: 600; color: var(--trend-linear); margin-bottom: 0.25rem;">Trend</div>
+                        <div style="font-size: 0.8rem; color: var(--tech-600);">Long-term movement</div>
+                    </div>
+                    <div class="component-item cycle">
+                        <div style="font-weight: 600; color: var(--cycle-short); margin-bottom: 0.25rem;">Cycle</div>
+                        <div style="font-size: 0.8rem; color: var(--tech-600);">Business cycle fluctuations</div>
+                    </div>
+                    <div class="component-item seasonal">
+                        <div style="font-weight: 600; color: var(--seasonal-pattern); margin-bottom: 0.25rem;">Seasonal</div>
+                        <div style="font-size: 0.8rem; color: var(--tech-600);">Regular periodic patterns</div>
+                    </div>
+                    <div class="component-item random">
+                        <div style="font-weight: 600; color: var(--noise-component); margin-bottom: 0.25rem;">Random</div>
+                        <div style="font-size: 0.8rem; color: var(--tech-600);">Irregular fluctuations</div>
+                    </div>
+                </div>
+
+                <!-- Time Series Pattern Explorer -->
+                <div class="interactive-widget temporal-animation delay-1">
+                    <div class="widget-header">
+                        <div class="widget-icon">📈</div>
+                        <div>
+                            <h3 class="widget-title">Time Series Pattern Explorer</h3>
+                            <p class="widget-description">Generate and analyze different temporal patterns and their econometric implications</p>
+                        </div>
+                    </div>
+
+                    <div class="calculator-grid">
+                        <div class="control-group">
+                            <label class="control-label">Series Type</label>
+                            <select class="control-select" id="seriesType">
+                                <option value="gdp_growth">GDP Growth Rate</option>
+                                <option value="unemployment" selected>Unemployment Rate</option>
+                                <option value="inflation">Inflation Rate</option>
+                                <option value="stock_returns">Stock Returns</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Trend Component</label>
+                            <select class="control-select" id="trendComponent">
+                                <option value="none">No Trend</option>
+                                <option value="linear" selected>Linear Trend</option>
+                                <option value="quadratic">Quadratic Trend</option>
+                                <option value="broken_trend">Structural Break</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Seasonal Pattern</label>
+                            <select class="control-select" id="seasonalPattern">
+                                <option value="none">No Seasonality</option>
+                                <option value="quarterly" selected>Quarterly Seasonality</option>
+                                <option value="monthly">Monthly Seasonality</option>
+                                <option value="irregular">Irregular Seasonal</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Serial Correlation</label>
+                            <select class="control-select" id="serialCorrelation">
+                                <option value="none">No Correlation</option>
+                                <option value="ar1" selected>AR(1) Process</option>
+                                <option value="ar2">AR(2) Process</option>
+                                <option value="ma1">MA(1) Process</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="action-button" onclick="exploreTimeSeriesPattern()">Generate Time Series</button>
+
+                    <div class="results-panel" id="timeSeriesResults">
+                        <div class="time-series-viz">
+                            <div class="viz-header">
+                                <div class="viz-title">Simulated Time Series</div>
+                                <p style="text-align: center; margin: 0; color: var(--tech-600); font-size: 0.8rem;">
+                                    Temporal patterns and component decomposition
+                                </p>
+                            </div>
+                            <div class="viz-canvas" id="timeSeriesCanvas">
+                                <!-- Time series visualization will be drawn here -->
+                            </div>
+                            <div class="time-axis">
+                                <div class="time-label" style="left: 0%;">t=1</div>
+                                <div class="time-label" style="left: 25%;">t=25</div>
+                                <div class="time-label" style="left: 50%;">t=50</div>
+                                <div class="time-label" style="left: 75%;">t=75</div>
+                                <div class="time-label" style="left: 100%;">t=100</div>
+                            </div>
+                        </div>
+                        
+                        <div class="results-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="trendStrength">-</div>
+                                <div class="stat-label">Trend Strength</div>
+                                <div class="stat-interpretation">Long-term component</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="seasonalStrength">-</div>
+                                <div class="stat-label">Seasonal Strength</div>
+                                <div class="stat-interpretation">Periodic component</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="autocorrelation">-</div>
+                                <div class="stat-label">1st Autocorrelation</div>
+                                <div class="stat-interpretation">Serial dependence</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="temporal-indicator" id="stationarityStatus">
+                                    <span>Assessment</span>
+                                </div>
+                                <div class="stat-label">Stationarity</div>
+                                <div class="stat-interpretation" id="stationarityDesc">-</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <p id="timeSeriesAnalysis" style="color: var(--tech-600); line-height: 1.6;"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-box warning">
+                    <div class="concept-title">⚠️ Time Series vs. Cross-Sectional Data</div>
+                    <p><strong>Ordering matters:</strong> Time series observations have natural temporal ordering that affects analysis.<br>
+                    <strong>Dependencies:</strong> Current values often depend on past values (serial correlation).<br>
+                    <strong>Stationarity:</strong> Statistical properties may change over time.<br>
+                    <strong>Causality:</strong> Temporal precedence helps establish causal relationships.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 10.2: Examples and Static Models -->
+        <section class="section fade-in delay-1">
+            <div class="section-content">
+                <h2 class="section-title">10.2 📊 Examples of Time Series Regression Models</h2>
+                
+                <p>Time series regression models capture relationships between variables over time. Static models assume contemporaneous effects only, while dynamic models include lags and lead-lag relationships.</p>
+
+                <div class="concept-box temporal">
+                    <div class="concept-title">📊 Static Time Series Models</div>
+                    <p><strong>Phillips Curve:</strong> inf₍ = β₀ + β₁unem₍ + u₍<br>
+                    <strong>Okun's Law:</strong> Δunem₍ = β₀ + β₁gdpgr₍ + u₍<br>
+                    <strong>Consumption function:</strong> cons₍ = β₀ + β₁income₍ + u₍</p>
+                    <div class="formula">
+                        General form: yₜ = β₀ + β₁x₁ₜ + β₂x₂ₜ + ... + βₖxₖₜ + uₜ
+                    </div>
+                    <p><strong>Key assumption:</strong> Contemporaneous relationships only (no lags)</p>
+                </div>
+
+                <!-- Static Model Analyzer -->
+                <div class="interactive-widget temporal-animation delay-2">
+                    <div class="widget-header">
+                        <div class="widget-icon">📊</div>
+                        <div>
+                            <h3 class="widget-title">Static Model Analyzer</h3>
+                            <p class="widget-description">Explore static time series relationships and temporal dependencies</p>
+                        </div>
+                    </div>
+
+                    <div class="calculator-grid">
+                        <div class="control-group">
+                            <label class="control-label">Economic Model</label>
+                            <select class="control-select" id="staticModel">
+                                <option value="phillips_curve">Phillips Curve</option>
+                                <option value="okun_law" selected>Okun's Law</option>
+                                <option value="consumption">Consumption Function</option>
+                                <option value="money_demand">Money Demand</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Time Period</label>
+                            <select class="control-select" id="timePeriod">
+                                <option value="quarterly">Quarterly Data</option>
+                                <option value="annual" selected>Annual Data</option>
+                                <option value="monthly">Monthly Data</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Sample Size</label>
+                            <select class="control-select" id="staticSampleSize">
+                                <option value="small">Small (20 years)</option>
+                                <option value="medium" selected>Medium (40 years)</option>
+                                <option value="large">Large (60 years)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Error Structure</label>
+                            <select class="control-select" id="errorStructure">
+                                <option value="iid">White Noise</option>
+                                <option value="ar1" selected>AR(1) Errors</option>
+                                <option value="ma1">MA(1) Errors</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="action-button" onclick="analyzeStaticModel()">Analyze Static Model</button>
+
+                    <div class="results-panel" id="staticResults">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <div style="text-align: center; padding: 1rem; background: white; border-radius: 8px;">
+                                <h5 style="color: var(--primary-temporal); margin-bottom: 0.5rem;">Model Specification</h5>
+                                <div class="stat-value" id="modelEquation" style="font-size: 1rem; color: var(--tech-700);">-</div>
+                                <p style="font-size: 0.8rem; color: var(--tech-600);">Static relationship</p>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: white; border-radius: 8px;">
+                                <h5 style="color: var(--secondary-trend); margin-bottom: 0.5rem;">Temporal Properties</h5>
+                                <div class="stat-value" id="temporalProperties" style="font-size: 1rem; color: var(--tech-700);">-</div>
+                                <p style="font-size: 0.8rem; color: var(--tech-600);">Error correlation</p>
+                            </div>
+                        </div>
+                        
+                        <div class="results-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="staticCoefficient">-</div>
+                                <div class="stat-label">Key Coefficient</div>
+                                <div class="stat-interpretation">Economic parameter</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="staticTStat">-</div>
+                                <div class="stat-label">t-Statistic</div>
+                                <div class="stat-interpretation">Statistical significance</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="staticR2">-</div>
+                                <div class="stat-label">R²</div>
+                                <div class="stat-interpretation">Model fit</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="temporal-indicator" id="modelValidation">
+                                    <span>Validity</span>
+                                </div>
+                                <div class="stat-label">Model Assessment</div>
+                                <div class="stat-interpretation" id="validationDesc">-</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <p id="staticAnalysis" style="color: var(--tech-600); line-height: 1.6;"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 10.3: Finite Sample Properties and Assumptions -->
+        <section class="section fade-in delay-2">
+            <div class="section-content">
+                <h2 class="section-title">10.3 ⚖️ Finite Sample Properties of OLS</h2>
+                
+                <p>OLS properties in time series depend on stronger assumptions than cross-sectional data. The temporal ordering requires careful consideration of serial correlation and contemporary exogeneity.</p>
+
+                <div class="concept-box stationary">
+                    <div class="concept-title">⚖️ Time Series OLS Assumptions</div>
+                    <p><strong>TS.1 Linear in parameters:</strong> yₜ = β₀ + β₁x₁ₜ + ... + βₖxₖₜ + uₜ<br>
+                    <strong>TS.2 No perfect collinearity:</strong> No exact linear relationships among regressors<br>
+                    <strong>TS.3 Zero conditional mean:</strong> E[uₜ|X] = 0 (contemporary exogeneity)</p>
+                    <div class="formula">
+                        Contemporary exogeneity: E[uₜ|x₁ₜ, x₂ₜ, ..., xₖₜ] = 0
+                    </div>
+                    <p><strong>TS.4 Homoskedasticity:</strong> Var(uₜ|X) = σ² for all t<br>
+                    <strong>TS.5 No serial correlation:</strong> Cov(uₜ, uₛ|X) = 0 for t ≠ s</p>
+                </div>
+
+                <!-- Assumption Testing Widget -->
+                <div class="interactive-widget temporal-animation delay-3">
+                    <div class="widget-header">
+                        <div class="widget-icon">⚖️</div>
+                        <div>
+                            <h3 class="widget-title">Time Series Assumption Tester</h3>
+                            <p class="widget-description">Test key assumptions for valid OLS inference in time series data</p>
+                        </div>
+                    </div>
+
+                    <div class="calculator-grid">
+                        <div class="control-group">
+                            <label class="control-label">Test Focus</label>
+                            <select class="control-select" id="testFocus">
+                                <option value="serial_correlation">Serial Correlation</option>
+                                <option value="contemporary_exogeneity" selected>Contemporary Exogeneity</option>
+                                <option value="homoskedasticity">Homoskedasticity</option>
+                                <option value="structural_stability">Structural Stability</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Data Frequency</label>
+                            <select class="control-select" id="dataFrequency">
+                                <option value="annual">Annual</option>
+                                <option value="quarterly" selected>Quarterly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Violation Severity</label>
+                            <select class="control-select" id="violationSeverity">
+                                <option value="none">No Violations</option>
+                                <option value="mild" selected>Mild Violations</option>
+                                <option value="moderate">Moderate Violations</option>
+                                <option value="severe">Severe Violations</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Test Power</label>
+                            <select class="control-select" id="testPowerTS">
+                                <option value="low">Low Power</option>
+                                <option value="standard" selected>Standard Power</option>
+                                <option value="high">High Power</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="action-button" onclick="testTimeSeriesAssumptions()">Run Diagnostic Tests</button>
+
+                    <div class="results-panel" id="assumptionResults">
+                        <div class="wave-progress">
+                            <div id="testProgress" style="width: 0%; height: 100%; background: rgba(255,255,255,0.3); transition: width 2s ease;"></div>
+                        </div>
+                        
+                        <div class="results-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="primaryTestStat">-</div>
+                                <div class="stat-label">Test Statistic</div>
+                                <div class="stat-interpretation">Diagnostic value</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="testPValue">-</div>
+                                <div class="stat-label">p-Value</div>
+                                <div class="stat-interpretation">Significance level</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="effectSize">-</div>
+                                <div class="stat-label">Effect Size</div>
+                                <div class="stat-interpretation">Violation magnitude</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="temporal-indicator" id="assumptionStatus">
+                                    <span>Assessment</span>
+                                </div>
+                                <div class="stat-label">Assumption Status</div>
+                                <div class="stat-interpretation" id="assumptionDesc">-</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <p id="assumptionAnalysis" style="color: var(--tech-600); line-height: 1.6;"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-box trend">
+                    <div class="concept-title">📈 Key Differences from Cross-Sectional OLS</div>
+                    <p><strong>Contemporary vs. strict exogeneity:</strong> Only need E[uₜ|xₜ] = 0, not E[uₜ|X].<br>
+                    <strong>Serial correlation:</strong> Major concern in time series - test with Durbin-Watson or LM tests.<br>
+                    <strong>Trending variables:</strong> Can lead to spurious regression if both y and x are trending.<br>
+                    <strong>Structural breaks:</strong> Relationships may change over time periods.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 10.4: Functional Form and Trending Variables -->
+        <section class="section fade-in delay-3">
+            <div class="section-content">
+                <h2 class="section-title">10.4 📈 Functional Form, Trends, and Seasonality</h2>
+                
+                <p>Time series data often contain trends and seasonal patterns that must be properly modeled. Index numbers, logarithmic transformations, and dummy variables help capture these temporal patterns.</p>
+
+                <div class="concept-box seasonal">
+                    <div class="concept-title">📈 Trends and Seasonality</div>
+                    <p><strong>Linear time trend:</strong> yₜ = β₀ + β₁t + β₂xₜ + uₜ<br>
+                    <strong>Seasonal dummies:</strong> yₜ = β₀ + Σβⱼdⱼₜ + β₂xₜ + uₜ<br>
+                    <strong>Log transformations:</strong> Often stabilize variance and linearize relationships</p>
+                    <div class="formula">
+                        Detrended model: (yₜ - trend) = β(xₜ - x_trend) + uₜ
+                    </div>
+                    <p><strong>Index numbers:</strong> Base year = 100, growth rates = Δlog(yₜ)</p>
+                </div>
+
+                <!-- Trend and Seasonality Analyzer -->
+                <div class="interactive-widget temporal-animation delay-4">
+                    <div class="widget-header">
+                        <div class="widget-icon">📈</div>
+                        <div>
+                            <h3 class="widget-title">Trend and Seasonality Analyzer</h3>
+                            <p class="widget-description">Decompose time series into trend, seasonal, and irregular components</p>
+                        </div>
+                    </div>
+
+                    <div class="calculator-grid">
+                        <div class="control-group">
+                            <label class="control-label">Economic Variable</label>
+                            <select class="control-select" id="economicVariable">
+                                <option value="retail_sales">Retail Sales</option>
+                                <option value="unemployment" selected>Unemployment Rate</option>
+                                <option value="housing_starts">Housing Starts</option>
+                                <option value="industrial_production">Industrial Production</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Trend Type</label>
+                            <select class="control-select" id="trendType">
+                                <option value="none">No Trend</option>
+                                <option value="linear" selected>Linear Trend</option>
+                                <option value="quadratic">Quadratic Trend</option>
+                                <option value="exponential">Exponential Trend</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Seasonal Component</label>
+                            <select class="control-select" id="seasonalComponent">
+                                <option value="none">No Seasonality</option>
+                                <option value="additive" selected>Additive Seasonality</option>
+                                <option value="multiplicative">Multiplicative Seasonality</option>
+                                <option value="evolving">Evolving Seasonality</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Decomposition Method</label>
+                            <select class="control-select" id="decompositionMethod">
+                                <option value="additive">Additive Decomposition</option>
+                                <option value="multiplicative" selected>Multiplicative Decomposition</option>
+                                <option value="stl">STL Decomposition</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="action-button" onclick="analyzeTrendSeasonality()">Decompose Series</button>
+
+                    <div class="results-panel" id="trendResults">
+                        <div class="time-series-viz">
+                            <div class="viz-header">
+                                <div class="viz-title">Time Series Decomposition</div>
+                                <p style="text-align: center; margin: 0; color: var(--tech-600); font-size: 0.8rem;">
+                                    Original series and extracted components
+                                </p>
+                            </div>
+                            <div class="viz-canvas" id="decompositionCanvas">
+                                <!-- Decomposition visualization will be drawn here -->
+                            </div>
+                        </div>
+                        
+                        <div class="results-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="trendCoefficient">-</div>
+                                <div class="stat-label">Trend Coefficient</div>
+                                <div class="stat-interpretation">Units per period</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="seasonalAmplitude">-</div>
+                                <div class="stat-label">Seasonal Amplitude</div>
+                                <div class="stat-interpretation">Peak-to-trough variation</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="irregularVariance">-</div>
+                                <div class="stat-label">Irregular Variance</div>
+                                <div class="stat-interpretation">Random component</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="temporal-indicator" id="decompositionQuality">
+                                    <span>Quality</span>
+                                </div>
+                                <div class="stat-label">Decomposition Fit</div>
+                                <div class="stat-interpretation" id="decompositionDesc">-</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <p id="trendAnalysis" style="color: var(--tech-600); line-height: 1.6;"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-box warning">
+                    <div class="concept-title">⚠️ Spurious Regression Problem</div>
+                    <p><strong>Definition:</strong> Regression of one trending variable on another can show significant relationships even when none exists.<br>
+                    <strong>Detection:</strong> High R² but low Durbin-Watson statistic (DW ≈ 0).<br>
+                    <strong>Solutions:</strong> Use first differences, include time trends, test for cointegration.<br>
+                    <strong>Rule of thumb:</strong> If R² > DW, suspect spurious regression.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section class="section fade-in delay-4">
+            <div class="quiz-section">
+                <div class="quiz-content">
+                    <h3 style="text-align: center; margin-bottom: 1rem; color: var(--primary-temporal);">
+                        📈 Chapter 10 Knowledge Check: Time Series Regression
+                    </h3>
+                    <p style="text-align: center; color: var(--tech-600); margin-bottom: 1rem;">
+                        Test your understanding of time series data, temporal dependencies, and static models
+                    </p>
+                    
+                    <!-- Regenerate Button -->
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <button onclick="regenerateQuiz()" class="action-button" style="margin: 0; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                            🔄 Generate New Questions
+                        </button>
+                        <p style="font-size: 0.8rem; color: var(--tech-600); margin-top: 0.5rem;">
+                            Click to get a fresh set of randomly generated questions
+                        </p>
+                    </div>
+                    
+                    <div id="quizContainer">
+                        <!-- Questions will be dynamically generated here -->
+                    </div>
+                    
+                    <!-- Quiz Results Summary -->
+                    <div id="quizSummary" style="display: none; margin-top: 2rem; padding: 1.5rem; background: var(--tech-50); border-radius: 8px; border-left: 4px solid var(--primary-temporal);">
+                        <h4 style="color: var(--primary-temporal); margin-bottom: 1rem;">Quiz Results</h4>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                            <div style="text-align: center; padding: 1rem; background: white; border-radius: 6px;">
+                                <div id="correctCount" style="font-size: 1.5rem; font-weight: bold; color: var(--status-stationary);">-</div>
+                                <div style="font-size: 0.8rem; color: var(--tech-600);">Correct</div>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: white; border-radius: 6px;">
+                                <div id="totalQuestions" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-temporal);">-</div>
+                                <div style="font-size: 0.8rem; color: var(--tech-600);">Total</div>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: white; border-radius: 6px;">
+                                <div id="quizScore" style="font-size: 1.5rem; font-weight: bold; color: var(--accent-cycle);">-</div>
+                                <div style="font-size: 0.8rem; color: var(--tech-600);">Score</div>
+                            </div>
+                        </div>
+                        <div id="quizFeedback" style="color: var(--tech-700); line-height: 1.6;"></div>
+                        <button onclick="regenerateQuiz()" class="action-button" style="margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                            Try Again with New Questions
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div class="ai-chat-widget">
+        <button class="ai-chat-button" onclick="toggleAIChat()" title="Ask Claude about Time Series Regression">
+            <span id="aiChatIcon">📈</span>
+        </button>
+        
+        <div class="ai-chat-panel" id="aiChatPanel">
+            <div class="ai-chat-header">
+                <span>📈 Time Series Analytics Tutor</span>
+                <button onclick="toggleAIChat()" style="background: none; border: none; color: white; cursor: pointer;">×</button>
+            </div>
+            
+            <div class="ai-chat-messages" id="aiChatMessages">
+                <div class="ai-message claude">
+                    <strong>📈 Claude:</strong> Hi! I can help you understand time series data properties, temporal dependencies, static models, trends, seasonality, and the unique challenges of econometric modeling with time-ordered data. What would you like to explore?
+                </div>
+            </div>
+            
+            <div class="ai-input-area">
+                <input type="text" class="ai-input" id="aiInput" placeholder="Ask about time series..." 
+                       onkeydown="if(event.key==='Enter') sendAIMessage()">
+                <button class="ai-send-btn" onclick="sendAIMessage()">→</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // GLOBAL VARIABLES
+        // ========================================
+        
+        let isAIChatOpen = false;
+        let timeSeriesData = [];
+        
+        // ========================================
+        // TIME SERIES PATTERN EXPLORER
+        // ========================================
+        
+        function exploreTimeSeriesPattern() {
+            const seriesType = document.getElementById('seriesType').value;
+            const trendComponent = document.getElementById('trendComponent').value;
+            const seasonalPattern = document.getElementById('seasonalPattern').value;
+            const serialCorrelation = document.getElementById('serialCorrelation').value;
+            
+            // Generate time series with specified characteristics
+            const results = generateTimeSeries(seriesType, trendComponent, seasonalPattern, serialCorrelation);
+            
+            // Display results
+            displayTimeSeriesResults(results, seriesType);
+        }
+        
+        function generateTimeSeries(seriesType, trend, seasonal, serial) {
+            const T = 100; // Time periods
+            const series = [];
+            
+            // Base level for different series types
+            const baseLevels = {
+                'gdp_growth': 2.5,
+                'unemployment': 6.0,
+                'inflation': 2.0,
+                'stock_returns': 0.08
+            };
+            
+            const baseLevel = baseLevels[seriesType] || 2.0;
+            let previous = baseLevel;
+            
+            // Generate time series data
+            for (let t = 1; t <= T; t++) {
+                let value = baseLevel;
+                
+                // Add trend component
+                value += getTrendComponent(t, trend, T);
+                
+                // Add seasonal component
+                value += getSeasonalComponent(t, seasonal);
+                
+                // Add serial correlation
+                const innovation = generateNormalRandom() * 0.5;
+                if (serial === 'ar1') {
+                    value += 0.6 * (previous - baseLevel) + innovation;
+                } else if (serial === 'ar2') {
+                    const prevPrev = series[t-3] ? series[t-3].value : baseLevel;
+                    value += 0.5 * (previous - baseLevel) + 0.2 * (prevPrev - baseLevel) + innovation;
+                } else if (serial === 'ma1') {
+                    value += innovation + 0.4 * (series[t-2] ? series[t-2].innovation : 0);
+                } else {
+                    value += innovation;
+                }
+                
+                series.push({
+                    time: t,
+                    value: value,
+                    innovation: innovation
+                });
+                previous = value;
+            }
+            
+            // Calculate statistics
+            const values = series.map(s => s.value);
+            const trendStrength = calculateTrendStrength(values, trend);
+            const seasonalStrength = calculateSeasonalStrength(values, seasonal);
+            const autocorr = calculateAutocorrelation(values, 1);
+            const isStationary = assessStationarity(values, trend);
+            
+            return {
+                series: series,
+                trendStrength: trendStrength,
+                seasonalStrength: seasonalStrength,
+                autocorrelation: autocorr,
+                isStationary: isStationary,
+                seriesType: seriesType
+            };
+        }
+        
+        function getTrendComponent(t, trend, T) {
+            switch(trend) {
+                case 'none': return 0;
+                case 'linear': return (t / T) * 2;
+                case 'quadratic': return Math.pow(t / T, 2) * 3;
+                case 'broken_trend': return t < T/2 ? (t / T) * 1 : ((t - T/2) / T) * 3;
+                default: return 0;
+            }
+        }
+        
+        function getSeasonalComponent(t, seasonal) {
+            switch(seasonal) {
+                case 'none': return 0;
+                case 'quarterly': return Math.sin(2 * Math.PI * t / 4) * 0.8;
+                case 'monthly': return Math.sin(2 * Math.PI * t / 12) * 0.6;
+                case 'irregular': return Math.sin(2 * Math.PI * t / (4 + Math.random() * 2)) * 0.5;
+                default: return 0;
+            }
+        }
+        
+        function calculateTrendStrength(values, trendType) {
+            if (trendType === 'none') return 0;
+            
+            const n = values.length;
+            const x = Array.from({length: n}, (_, i) => i + 1);
+            const { slope } = linearRegression(x, values);
+            
+            return Math.abs(slope) * 10; // Scale for display
+        }
+        
+        function calculateSeasonalStrength(values, seasonalType) {
+            if (seasonalType === 'none') return 0;
+            
+            const period = seasonalType === 'quarterly' ? 4 : seasonalType === 'monthly' ? 12 : 6;
+            let seasonalSum = 0;
+            const periods = Math.floor(values.length / period);
+            
+            for (let p = 0; p < period; p++) {
+                const seasonalValues = [];
+                for (let i = 0; i < periods; i++) {
+                    if (p + i * period < values.length) {
+                        seasonalValues.push(values[p + i * period]);
+                    }
+                }
+                const seasonalMean = seasonalValues.reduce((a, b) => a + b, 0) / seasonalValues.length;
+                const overallMean = values.reduce((a, b) => a + b, 0) / values.length;
+                seasonalSum += Math.abs(seasonalMean - overallMean);
+            }
+            
+            return seasonalSum / period;
+        }
+        
+        function calculateAutocorrelation(values, lag) {
+            const n = values.length;
+            const mean = values.reduce((a, b) => a + b, 0) / n;
+            
+            let numerator = 0;
+            let denominator = 0;
+            
+            for (let i = lag; i < n; i++) {
+                numerator += (values[i] - mean) * (values[i - lag] - mean);
+            }
+            
+            for (let i = 0; i < n; i++) {
+                denominator += Math.pow(values[i] - mean, 2);
+            }
+            
+            return numerator / denominator;
+        }
+        
+        function assessStationarity(values, trendType) {
+            // Simple stationarity assessment
+            const hasUnitRoot = Math.abs(calculateAutocorrelation(values, 1)) > 0.9;
+            const hasTrend = trendType !== 'none';
+            
+            return !hasUnitRoot && !hasTrend;
+        }
+        
+        function displayTimeSeriesResults(results, seriesType) {
+            // Store data for visualization
+            timeSeriesData = results.series;
+            
+            // Display statistics
+            document.getElementById('trendStrength').textContent = results.trendStrength.toFixed(3);
+            document.getElementById('seasonalStrength').textContent = results.seasonalStrength.toFixed(3);
+            document.getElementById('autocorrelation').textContent = results.autocorrelation.toFixed(3);
+            
+            // Stationarity assessment
+            const statusEl = document.getElementById('stationarityStatus');
+            const descEl = document.getElementById('stationarityDesc');
+            
+            if (results.isStationary) {
+                statusEl.className = 'temporal-indicator status-stationary';
+                statusEl.innerHTML = '<span>Stationary</span>';
+                descEl.textContent = 'Stable statistical properties';
+            } else {
+                statusEl.className = 'temporal-indicator status-trending';
+                statusEl.innerHTML = '<span>Non-stationary</span>';
+                descEl.textContent = 'Changing statistical properties';
+            }
+            
+            // Create time series visualization
+            createTimeSeriesVisualization(results.series);
+            
+            // Analysis
+            const seriesNames = {
+                'gdp_growth': 'GDP growth rate',
+                'unemployment': 'unemployment rate',
+                'inflation': 'inflation rate',
+                'stock_returns': 'stock returns'
+            };
+            
+            const analysis = `
+                Time series analysis for ${seriesNames[seriesType]}:
+                
+                Trend strength: ${results.trendStrength.toFixed(3)} (linear trend component)
+                Seasonal strength: ${results.seasonalStrength.toFixed(3)} (periodic fluctuations)
+                First-order autocorrelation: ${results.autocorrelation.toFixed(3)}
+                
+                Stationarity assessment: ${results.isStationary ? 'Series appears stationary' : 'Series appears non-stationary'}
+                
+                ${getTimeSeriesInsights(results)}
+                
+                Econometric implications: ${getEconometricImplications(results)}
+                
+                Professional recommendation: ${getTimeSeriesRecommendation(results)}
+            `;
+            
+            document.getElementById('timeSeriesAnalysis').textContent = analysis;
+            document.getElementById('timeSeriesResults').style.display = 'block';
+        }
+        
+        function createTimeSeriesVisualization(series) {
+            const canvas = document.getElementById('timeSeriesCanvas');
+            canvas.innerHTML = '';
+            
+            // Sample points for visualization (every 2nd point for performance)
+            const samplePoints = series.filter((point, index) => index % 2 === 0);
+            const maxValue = Math.max(...series.map(s => s.value));
+            const minValue = Math.min(...series.map(s => s.value));
+            const range = maxValue - minValue;
+            
+            // Draw time series line
+            for (let i = 0; i < samplePoints.length - 1; i++) {
+                const currentPoint = samplePoints[i];
+                const nextPoint = samplePoints[i + 1];
+                
+                const x1 = (currentPoint.time / 100) * 85 + 5;
+                const y1 = 85 - ((currentPoint.value - minValue) / range) * 70;
+                const x2 = (nextPoint.time / 100) * 85 + 5;
+                const y2 = 85 - ((nextPoint.value - minValue) / range) * 70;
+                
+                const line = document.createElement('div');
+                const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+                
+                line.style.cssText = `
+                    position: absolute;
+                    left: ${x1}%;
+                    top: ${y1}%;
+                    width: ${length * 1.2}px;
+                    height: 2px;
+                    background: var(--primary-temporal);
+                    transform-origin: 0 50%;
+                    transform: rotate(${angle}deg);
+                    opacity: 0.8;
+                `;
+                canvas.appendChild(line);
+            }
+            
+            // Add data points
+            samplePoints.forEach(point => {
+                const dot = document.createElement('div');
+                const x = (point.time / 100) * 85 + 5;
+                const y = 85 - ((point.value - minValue) / range) * 70;
+                
+                dot.style.cssText = `
+                    position: absolute;
+                    left: ${x}%;
+                    top: ${y}%;
+                    width: 4px;
+                    height: 4px;
+                    background: var(--accent-cycle);
+                    border-radius: 50%;
+                    border: 1px solid white;
+                    transform: translate(-50%, -50%);
+                `;
+                canvas.appendChild(dot);
+            });
+        }
+        
+        function getTimeSeriesInsights(results) {
+            let insights = "";
+            
+            if (results.trendStrength > 1.5) {
+                insights += "Strong trend component detected - consider detrending for stationarity. ";
+            }
+            
+            if (results.seasonalStrength > 0.5) {
+                insights += "Significant seasonal patterns present - include seasonal dummies in regression. ";
+            }
+            
+            if (Math.abs(results.autocorrelation) > 0.5) {
+                insights += "High serial correlation indicates temporal dependencies. ";
+            }
+            
+            if (!results.isStationary) {
+                insights += "Non-stationary series may lead to spurious regression problems. ";
+            }
+            
+            return insights;
+        }
+        
+        function getEconometricImplications(results) {
+            if (!results.isStationary && results.trendStrength > 1) {
+                return "Use first differences or cointegration analysis. Test for unit roots before regression.";
+            } else if (Math.abs(results.autocorrelation) > 0.4) {
+                return "Address serial correlation with robust standard errors or dynamic specifications.";
+            } else {
+                return "Standard OLS methods appropriate with proper controls for temporal patterns.";
+            }
+        }
+        
+        function getTimeSeriesRecommendation(results) {
+            if (results.isStationary && Math.abs(results.autocorrelation) < 0.3) {
+                return "Well-behaved time series suitable for standard regression analysis.";
+            } else if (!results.isStationary) {
+                return "Consider differencing or cointegration methods before proceeding with regression.";
+            } else {
+                return "Address temporal dependencies with appropriate model specification and robust inference.";
+            }
+        }
+        
+        // ========================================
+        // STATIC MODEL ANALYZER
+        // ========================================
+        
+        function analyzeStaticModel() {
+            const model = document.getElementById('staticModel').value;
+            const period = document.getElementById('timePeriod').value;
+            const sampleSize = document.getElementById('staticSampleSize').value;
+            const errorStructure = document.getElementById('errorStructure').value;
+            
+            // Simulate static model analysis
+            const results = simulateStaticModel(model, period, sampleSize, errorStructure);
+            
+            // Display results
+            displayStaticModelResults(results, model, period);
+        }
+        
+        function simulateStaticModel(model, period, sampleSize, errorStructure) {
+            // Model specifications
+            const modelSpecs = {
+                'phillips_curve': {
+                    equation: 'inf_t = β₀ + β₁unem_t + u_t',
+                    coefficient: -0.5,
+                    baseR2: 0.35
+                },
+                'okun_law': {
+                    equation: 'Δunem_t = β₀ + β₁gdpgr_t + u_t',
+                    coefficient: -0.4,
+                    baseR2: 0.42
+                },
+                'consumption': {
+                    equation: 'cons_t = β₀ + β₁income_t + u_t',
+                    coefficient: 0.85,
+                    baseR2: 0.78
+                },
+                'money_demand': {
+                    equation: 'log(M_t) = β₀ + β₁log(Y_t) + β₂r_t + u_t',
+                    coefficient: 1.2,
+                    baseR2: 0.65
+                }
+            };
+            
+            const spec = modelSpecs[model];
+            const T = sampleSize === 'small' ? 20 : sampleSize === 'medium' ? 40 : 60;
+            
+            // Error structure effects
+            const serialCorr = errorStructure === 'ar1' ? 0.6 : errorStructure === 'ma1' ? 0.4 : 0;
+            const effectiveR2 = spec.baseR2 * (errorStructure === 'iid' ? 1 : 0.9);
+            
+            // Generate results
+            const coefficient = spec.coefficient + (Math.random() - 0.5) * 0.1;
+            const standardError = Math.abs(coefficient) * (errorStructure === 'iid' ? 0.15 : 0.25);
+            const tStat = coefficient / standardError;
+            
+            return {
+                model: model,
+                equation: spec.equation,
+                coefficient: coefficient,
+                tStat: tStat,
+                r2: effectiveR2,
+                serialCorr: serialCorr,
+                T: T,
+                errorStructure: errorStructure
+            };
+        }
+        
+        function displayStaticModelResults(results, model, period) {
+            document.getElementById('modelEquation').textContent = results.equation;
+            document.getElementById('temporalProperties').textContent = `ρ = ${results.serialCorr.toFixed(2)}`;
+            document.getElementById('staticCoefficient').textContent = results.coefficient.toFixed(4);
+            document.getElementById('staticTStat').textContent = results.tStat.toFixed(3);
+            document.getElementById('staticR2').textContent = results.r2.toFixed(4);
+            
+            // Model validation
+            const validationEl = document.getElementById('modelValidation');
+            const descEl = document.getElementById('validationDesc');
+            
+            if (Math.abs(results.tStat) > 2 && results.r2 > 0.3) {
+                validationEl.className = 'temporal-indicator status-stationary';
+                validationEl.innerHTML = '<span>Valid</span>';
+                descEl.textContent = 'Statistically significant';
+            } else if (Math.abs(results.tStat) > 1.5) {
+                validationEl.className = 'temporal-indicator status-seasonal';
+                validationEl.innerHTML = '<span>Marginal</span>';
+                descEl.textContent = 'Weak statistical evidence';
+            } else {
+                validationEl.className = 'temporal-indicator status-trending';
+                validationEl.innerHTML = '<span>Invalid</span>';
+                descEl.textContent = 'Not statistically significant';
+            }
+            
+            // Analysis
+            const modelNames = {
+                'phillips_curve': 'Phillips Curve relationship between inflation and unemployment',
+                'okun_law': "Okun's Law relationship between unemployment changes and GDP growth",
+                'consumption': 'consumption function relating spending to income',
+                'money_demand': 'money demand function with income and interest rate effects'
+            };
+            
+            const analysis = `
+                Static model analysis for ${modelNames[model]}:
+                
+                Model specification: ${results.equation}
+                Key coefficient: ${results.coefficient.toFixed(4)}
+                Standard error: ${(Math.abs(results.coefficient) / Math.abs(results.tStat)).toFixed(4)}
+                t-statistic: ${results.tStat.toFixed(3)} (${Math.abs(results.tStat) > 2 ? 'significant' : 'not significant'} at 5%)
+                
+                Model fit: R² = ${results.r2.toFixed(4)}
+                Error structure: ${getErrorStructureDescription(results.errorStructure)}
+                Sample size: T = ${results.T} ${period} observations
+                
+                ${getStaticModelInsights(results)}
+                
+                Econometric assessment: ${getStaticModelAssessment(results)}
+            `;
+            
+            document.getElementById('staticAnalysis').textContent = analysis;
+            document.getElementById('staticResults').style.display = 'block';
+        }
+        
+        function getErrorStructureDescription(errorStructure) {
+            switch(errorStructure) {
+                case 'iid': return 'White noise errors (ideal)';
+                case 'ar1': return 'AR(1) serial correlation present';
+                case 'ma1': return 'MA(1) serial correlation present';
+                default: return 'Unknown error structure';
+            }
+        }
+        
+        function getStaticModelInsights(results) {
+            let insights = "";
+            
+            if (Math.abs(results.tStat) < 1.5) {
+                insights += "Weak statistical relationship - consider additional explanatory variables. ";
+            }
+            
+            if (results.serialCorr > 0.4) {
+                insights += "Significant serial correlation detected - OLS standard errors are biased. ";
+            }
+            
+            if (results.r2 < 0.3) {
+                insights += "Low explanatory power - model may be missing important variables. ";
+            }
+            
+            return insights;
+        }
+        
+        function getStaticModelAssessment(results) {
+            if (Math.abs(results.tStat) > 2 && results.serialCorr < 0.3) {
+                return "Well-specified static model with reliable inference.";
+            } else if (results.serialCorr > 0.4) {
+                return "Serial correlation present - use robust standard errors or add dynamics.";
+            } else {
+                return "Weak empirical relationship - reconsider model specification.";
+            }
+        }
+        
+        // ========================================
+        // TIME SERIES ASSUMPTION TESTER
+        // ========================================
+        
+        function testTimeSeriesAssumptions() {
+            const testFocus = document.getElementById('testFocus').value;
+            const frequency = document.getElementById('dataFrequency').value;
+            const severity = document.getElementById('violationSeverity').value;
+            const power = document.getElementById('testPowerTS').value;
+            
+            // Animate progress bar
+            const progressBar = document.getElementById('testProgress');
+            progressBar.style.width = '100%';
+            
+            // Simulate assumption testing
+            const results = simulateAssumptionTest(testFocus, severity, power);
+            
+            // Display results
+            displayAssumptionResults(results, testFocus, frequency);
+        }
+        
+        function simulateAssumptionTest(testFocus, severity, power) {
+            const alpha = power === 'low' ? 0.10 : power === 'standard' ? 0.05 : 0.01;
+            const severityMap = {
+                'none': 0,
+                'mild': 1,
+                'moderate': 2,
+                'severe': 3
+            };
+            
+            const violationLevel = severityMap[severity];
+            let testStat, pValue, effectSize;
+            
+            // Generate test-specific results
+            switch(testFocus) {
+                case 'serial_correlation':
+                    testStat = violationLevel > 0 ? 5 + violationLevel * 8 + Math.random() * 4 : Math.random() * 3;
+                    pValue = violationLevel > 0 ? Math.max(0.001, 0.15 - violationLevel * 0.04) : 0.3 + Math.random() * 0.4;
+                    effectSize = violationLevel * 0.25;
+                    break;
+                case 'contemporary_exogeneity':
+                    testStat = violationLevel > 0 ? 3 + violationLevel * 5 + Math.random() * 3 : Math.random() * 2;
+                    pValue = violationLevel > 0 ? Math.max(0.005, 0.2 - violationLevel * 0.05) : 0.4 + Math.random() * 0.3;
+                    effectSize = violationLevel * 0.2;
+                    break;
+                case 'homoskedasticity':
+                    testStat = violationLevel > 0 ? 4 + violationLevel * 6 + Math.random() * 3 : Math.random() * 2.5;
+                    pValue = violationLevel > 0 ? Math.max(0.003, 0.18 - violationLevel * 0.045) : 0.35 + Math.random() * 0.4;
+                    effectSize = violationLevel * 0.3;
+                    break;
+                case 'structural_stability':
+                    testStat = violationLevel > 0 ? 6 + violationLevel * 7 + Math.random() * 4 : Math.random() * 3;
+                    pValue = violationLevel > 0 ? Math.max(0.002, 0.12 - violationLevel * 0.03) : 0.25 + Math.random() * 0.5;
+                    effectSize = violationLevel * 0.35;
+                    break;
+                default:
+                    testStat = 2 + Math.random() * 3;
+                    pValue = 0.1 + Math.random() * 0.3;
+                    effectSize = 0.1;
+            }
+            
+            const reject = pValue < alpha;
+            
+            return {
+                testFocus: testFocus,
+                testStat: testStat,
+                pValue: pValue,
+                effectSize: effectSize,
+                reject: reject,
+                alpha: alpha,
+                severity: severity
+            };
+        }
+        
+        function displayAssumptionResults(results, testFocus, frequency) {
+            document.getElementById('primaryTestStat').textContent = results.testStat.toFixed(3);
+            document.getElementById('testPValue').textContent = results.pValue.toFixed(4);
+            document.getElementById('effectSize').textContent = results.effectSize.toFixed(3);
+            
+            // Assumption status
+            const statusEl = document.getElementById('assumptionStatus');
+            const descEl = document.getElementById('assumptionDesc');
+            
+            if (results.reject) {
+                statusEl.className = 'temporal-indicator status-trending';
+                statusEl.innerHTML = '<span>Violated</span>';
+                descEl.textContent = 'Assumption not satisfied';
+            } else {
+                statusEl.className = 'temporal-indicator status-stationary';
+                statusEl.innerHTML = '<span>Satisfied</span>';
+                descEl.textContent = 'Assumption appears valid';
+            }
+            
+            // Analysis
+            const testNames = {
+                'serial_correlation': 'serial correlation in residuals',
+                'contemporary_exogeneity': 'contemporary exogeneity of regressors',
+                'homoskedasticity': 'homoskedasticity (constant variance)',
+                'structural_stability': 'structural stability over time'
+            };
+            
+            const analysis = `
+                Time series assumption testing for ${testNames[testFocus]}:
+                
+                Test statistic: ${results.testStat.toFixed(3)}
+                p-value: ${results.pValue.toFixed(4)}
+                Effect size: ${results.effectSize.toFixed(3)}
+                Significance level: α = ${results.alpha}
+                
+                Test conclusion: ${results.reject ? 'Reject' : 'Fail to reject'} null hypothesis
+                Assumption status: ${results.reject ? 'Violated' : 'Satisfied'}
+                
+                ${getAssumptionInsights(results)}
+                
+                Recommended actions: ${getAssumptionRecommendations(results)}
+            `;
+            
+            document.getElementById('assumptionAnalysis').textContent = analysis;
+            document.getElementById('assumptionResults').style.display = 'block';
+        }
+        
+        function getAssumptionInsights(results) {
+            let insights = "";
+            
+            if (results.reject) {
+                switch(results.testFocus) {
+                    case 'serial_correlation':
+                        insights += "Serial correlation detected - OLS standard errors are biased. Consider robust SEs or dynamic specification. ";
+                        break;
+                    case 'contemporary_exogeneity':
+                        insights += "Regressor endogeneity detected - consider instrumental variables or lagged variables. ";
+                        break;
+                    case 'homoskedasticity':
+                        insights += "Heteroskedasticity detected - use robust standard errors for valid inference. ";
+                        break;
+                    case 'structural_stability':
+                        insights += "Structural break detected - consider sample splitting or break-point regression. ";
+                        break;
+                }
+            } else {
+                insights += "Assumption satisfied - standard OLS inference procedures are valid. ";
+            }
+            
+            return insights;
+        }
+        
+        function getAssumptionRecommendations(results) {
+            if (results.reject) {
+                return "Address assumption violation before proceeding with standard inference. Use appropriate robust methods.";
+            } else {
+                return "Standard OLS procedures appropriate. Continue with confidence intervals and hypothesis tests.";
+            }
+        }
+        
+        // ========================================
+        // TREND AND SEASONALITY ANALYZER
+        // ========================================
+        
+        function analyzeTrendSeasonality() {
+            const variable = document.getElementById('economicVariable').value;
+            const trendType = document.getElementById('trendType').value;
+            const seasonalComponent = document.getElementById('seasonalComponent').value;
+            const decompositionMethod = document.getElementById('decompositionMethod').value;
+            
+            // Simulate decomposition analysis
+            const results = simulateDecomposition(variable, trendType, seasonalComponent, decompositionMethod);
+            
+            // Display results
+            displayDecompositionResults(results, variable, decompositionMethod);
+        }
+        
+        function simulateDecomposition(variable, trendType, seasonalComponent, method) {
+            // Variable characteristics
+            const variableSpecs = {
+                'retail_sales': { baseLevel: 400, trendRate: 2.5, seasonalAmp: 15 },
+                'unemployment': { baseLevel: 6.0, trendRate: -0.1, seasonalAmp: 0.8 },
+                'housing_starts': { baseLevel: 1200, trendRate: 1.8, seasonalAmp: 200 },
+                'industrial_production': { baseLevel: 105, trendRate: 2.2, seasonalAmp: 3 }
+            };
+            
+            const spec = variableSpecs[variable];
+            
+            // Calculate trend coefficient
+            const trendCoeff = trendType === 'none' ? 0 :
+                              trendType === 'linear' ? spec.trendRate :
+                              trendType === 'quadratic' ? spec.trendRate * 1.5 :
+                              spec.trendRate * 2;
+            
+            // Calculate seasonal amplitude
+            const seasonalAmp = seasonalComponent === 'none' ? 0 :
+                               seasonalComponent === 'additive' ? spec.seasonalAmp :
+                               seasonalComponent === 'multiplicative' ? spec.seasonalAmp * 0.8 :
+                               spec.seasonalAmp * 1.2;
+            
+            // Irregular component variance
+            const irregularVar = spec.baseLevel * 0.02;
+            
+            // Decomposition quality
+            const qualityScore = method === 'stl' ? 0.85 :
+                                method === 'multiplicative' ? 0.75 :
+                                0.70;
+            
+            return {
+                variable: variable,
+                trendCoeff: trendCoeff,
+                seasonalAmp: seasonalAmp,
+                irregularVar: irregularVar,
+                quality: qualityScore,
+                method: method
+            };
+        }
+        
+        function displayDecompositionResults(results, variable, method) {
+            document.getElementById('trendCoefficient').textContent = results.trendCoeff.toFixed(3);
+            document.getElementById('seasonalAmplitude').textContent = results.seasonalAmp.toFixed(2);
+            document.getElementById('irregularVariance').textContent = results.irregularVar.toFixed(3);
+            
+            // Quality assessment
+            const qualityEl = document.getElementById('decompositionQuality');
+            const descEl = document.getElementById('decompositionDesc');
+            
+            if (results.quality > 0.8) {
+                qualityEl.className = 'temporal-indicator status-stationary';
+                qualityEl.innerHTML = '<span>Excellent</span>';
+                descEl.textContent = 'High-quality decomposition';
+            } else if (results.quality > 0.7) {
+                qualityEl.className = 'temporal-indicator status-seasonal';
+                qualityEl.innerHTML = '<span>Good</span>';
+                descEl.textContent = 'Adequate decomposition';
+            } else {
+                qualityEl.className = 'temporal-indicator status-trending';
+                qualityEl.innerHTML = '<span>Poor</span>';
+                descEl.textContent = 'Limited decomposition quality';
+            }
+            
+            // Create decomposition visualization
+            createDecompositionVisualization(results);
+            
+            // Analysis
+            const variableNames = {
+                'retail_sales': 'retail sales data',
+                'unemployment': 'unemployment rate series',
+                'housing_starts': 'housing starts time series',
+                'industrial_production': 'industrial production index'
+            };
+            
+            const methodNames = {
+                'additive': 'additive decomposition model',
+                'multiplicative': 'multiplicative decomposition model',
+                'stl': 'STL (Seasonal and Trend decomposition using Loess)'
+            };
+            
+            const analysis = `
+                Time series decomposition analysis for ${variableNames[variable]}:
+                
+                Decomposition method: ${methodNames[method]}
+                Trend coefficient: ${results.trendCoeff.toFixed(3)} units per period
+                Seasonal amplitude: ${results.seasonalAmp.toFixed(2)} (peak-to-trough variation)
+                Irregular component variance: ${results.irregularVar.toFixed(3)}
+                
+                Decomposition quality: ${(results.quality * 100).toFixed(0)}% of variance explained
+                
+                ${getDecompositionInsights(results)}
+                
+                Modeling recommendations: ${getDecompositionRecommendations(results)}
+            `;
+            
+            document.getElementById('trendAnalysis').textContent = analysis;
+            document.getElementById('trendResults').style.display = 'block';
+        }
+        
+        function createDecompositionVisualization(results) {
+            const canvas = document.getElementById('decompositionCanvas');
+            canvas.innerHTML = '';
+            
+            // Create component visualization
+            const T = 48; // 4 years of quarterly data
+            
+            for (let t = 1; t <= T; t++) {
+                // Calculate components
+                const trend = results.trendCoeff * t;
+                const seasonal = results.seasonalAmp * Math.sin(2 * Math.PI * t / 4);
+                const irregular = (Math.random() - 0.5) * results.irregularVar;
+                const observed = trend + seasonal + irregular;
+                
+                // Normalize for visualization
+                const maxVal = results.trendCoeff * T + results.seasonalAmp + results.irregularVar;
+                const minVal = -results.seasonalAmp - results.irregularVar;
+                const range = maxVal - minVal;
+                
+                // Plot original series
+                const originalY = 80 - ((observed - minVal) / range) * 60;
+                const originalDot = document.createElement('div');
+                originalDot.style.cssText = `
+                    position: absolute;
+                    left: ${(t / T) * 85 + 5}%;
+                    top: ${originalY}%;
+                    width: 3px;
+                    height: 3px;
+                    background: var(--primary-temporal);
+                    border-radius: 50%;
+                `;
+                canvas.appendChild(originalDot);
+                
+                // Plot trend component
+                const trendY = 80 - ((trend - minVal) / range) * 60;
+                const trendDot = document.createElement('div');
+                trendDot.style.cssText = `
+                    position: absolute;
+                    left: ${(t / T) * 85 + 5}%;
+                    top: ${trendY}%;
+                    width: 2px;
+                    height: 2px;
+                    background: var(--trend-linear);
+                    border-radius: 50%;
+                    opacity: 0.7;
+                `;
+                canvas.appendChild(trendDot);
+                
+                // Plot seasonal component (shifted down for visibility)
+                const seasonalY = 85 - ((seasonal) / (2 * results.seasonalAmp)) * 15;
+                const seasonalDot = document.createElement('div');
+                seasonalDot.style.cssText = `
+                    position: absolute;
+                    left: ${(t / T) * 85 + 5}%;
+                    top: ${seasonalY}%;
+                    width: 2px;
+                    height: 2px;
+                    background: var(--seasonal-pattern);
+                    border-radius: 50%;
+                    opacity: 0.6;
+                `;
+                canvas.appendChild(seasonalDot);
+            }
+            
+            // Add legend
+            const legend = document.createElement('div');
+            legend.style.cssText = `
+                position: absolute;
+                top: 2%;
+                right: 2%;
+                font-size: 0.7rem;
+                color: var(--tech-600);
+            `;
+            legend.innerHTML = `
+                <span style="color: var(--primary-temporal);">●</span> Original 
+                <span style="color: var(--trend-linear);">●</span> Trend 
+                <span style="color: var(--seasonal-pattern);">●</span> Seasonal
+            `;
+            canvas.appendChild(legend);
+        }
+        
+        function getDecompositionInsights(results) {
+            let insights = "";
+            
+            if (Math.abs(results.trendCoeff) > 1) {
+                insights += "Strong trend component detected - consider detrending for stationarity. ";
+            }
+            
+            if (results.seasonalAmp > results.irregularVar * 5) {
+                insights += "Dominant seasonal patterns - seasonal adjustment strongly recommended. ";
+            }
+            
+            if (results.quality < 0.7) {
+                insights += "Low decomposition quality - consider alternative models or transformations. ";
+            }
+            
+            return insights;
+        }
+        
+        function getDecompositionRecommendations(results) {
+            if (Math.abs(results.trendCoeff) > 1 && results.seasonalAmp > 1) {
+                return "Include both time trends and seasonal dummies in regression models.";
+            } else if (Math.abs(results.trendCoeff) > 1) {
+                return "Include linear time trend in regression specifications.";
+            } else if (results.seasonalAmp > 1) {
+                return "Include seasonal dummy variables to control for periodic fluctuations.";
+            } else {
+                return "Standard regression methods appropriate - minimal temporal patterns detected.";
+            }
+        }
+        
+        // ========================================
+        // UTILITY FUNCTIONS
+        // ========================================
+        
+        function linearRegression(x, y) {
+            const n = x.length;
+            const sumX = x.reduce((a, b) => a + b, 0);
+            const sumY = y.reduce((a, b) => a + b, 0);
+            const sumXY = x.reduce((total, xi, i) => total + xi * y[i], 0);
+            const sumXX = x.reduce((total, xi) => total + xi * xi, 0);
+            
+            const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+            
+            return { slope, intercept };
+        }
+        
+        function generateNormalRandom() {
+            // Box-Muller transformation
+            let u = 0, v = 0;
+            while(u === 0) u = Math.random();
+            while(v === 0) v = Math.random();
+            
+            return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+        }
+        
+        // ========================================
+        // DYNAMIC QUIZ SYSTEM
+        // ========================================
+        
+        let currentQuestions = [];
+        let answeredQuestions = {};
+        
+        const questionBank = {
+            time_series_basics: [
+                {
+                    question: "The key difference between time series and cross-sectional data is:",
+                    options: [
+                        "Sample size is typically larger",
+                        "Observations are ordered in time and may be correlated",
+                        "Variables are measured more accurately", 
+                        "Relationships are always causal"
+                    ],
+                    correct: 1,
+                    explanation: "Time series data has natural temporal ordering, and observations are often correlated across time periods, creating unique econometric challenges."
+                },
+                {
+                    question: "Which assumption is unique to time series analysis?",
+                    options: [
+                        "Linear in parameters",
+                        "No perfect collinearity",
+                        "Contemporary exogeneity rather than strict exogeneity",
+                        "Homoskedasticity"
+                    ],
+                    correct: 2,
+                    explanation: "Time series only requires contemporary exogeneity E[uₜ|xₜ] = 0, which is weaker than the strict exogeneity E[uₜ|X] = 0 needed for cross-sectional data."
+                },
+                {
+                    question: "Time series data is characterized by:",
+                    options: [
+                        "Random sampling from a population",
+                        "Independent observations across time",
+                        "Temporal ordering and potential serial dependence",
+                        "Constant relationships over time"
+                    ],
+                    correct: 2,
+                    explanation: "Time series data has temporal ordering where observations may depend on previous observations, unlike cross-sectional data."
+                },
+                {
+                    question: "The decomposition yₜ = Trendₜ + Cyclₜ + Seasonₜ + Randomₜ represents:",
+                    options: [
+                        "OLS regression components",
+                        "Additive time series decomposition",
+                        "Multiplicative decomposition",
+                        "Error term breakdown"
+                    ],
+                    correct: 1,
+                    explanation: "This shows additive decomposition where each component contributes additively to the observed time series value."
+                }
+            ],
+            assumptions_and_exogeneity: [
+                {
+                    question: "Contemporary exogeneity in time series requires:",
+                    options: [
+                        "E[uₜ|X] = 0 (strict exogeneity)",
+                        "E[uₜ|xₜ] = 0 (contemporary exogeneity)",
+                        "E[uₜ] = 0 (zero mean)",
+                        "Cov(uₜ, uₛ) = 0 for t ≠ s"
+                    ],
+                    correct: 1,
+                    explanation: "Contemporary exogeneity only requires that the error term be uncorrelated with current period regressors, not past or future ones."
+                },
+                {
+                    question: "The assumption E[uₜ|xₛ] = 0 for all t and s is called:",
+                    options: [
+                        "Contemporary exogeneity",
+                        "Strict exogeneity",
+                        "Sequential exogeneity",
+                        "Zero conditional mean"
+                    ],
+                    correct: 1,
+                    explanation: "Strict exogeneity requires the error term to be uncorrelated with regressors in all time periods, which is very restrictive for time series."
+                },
+                {
+                    question: "Which violation is most problematic in time series?",
+                    options: [
+                        "Heteroskedasticity",
+                        "Serial correlation",
+                        "Non-normality",
+                        "Measurement error"
+                    ],
+                    correct: 1,
+                    explanation: "Serial correlation violates the independence assumption and is very common in time series due to temporal persistence."
+                },
+                {
+                    question: "If E[uₜ|xₜ₋₁, xₜ₋₂, ...] ≠ 0, we have:",
+                    options: [
+                        "Contemporary exogeneity violation",
+                        "Strict exogeneity violation but contemporary exogeneity holds",
+                        "Heteroskedasticity",
+                        "Perfect multicollinearity"
+                    ],
+                    correct: 1,
+                    explanation: "This violates strict exogeneity but contemporary exogeneity E[uₜ|xₜ] = 0 could still hold, which is sufficient for consistency."
+                }
+            ],
+            trends_and_spurious: [
+                {
+                    question: "Spurious regression typically occurs when:",
+                    options: [
+                        "Variables have different units of measurement",
+                        "Both dependent and independent variables are trending",
+                        "Sample size is too small",
+                        "There is measurement error in variables"
+                    ],
+                    correct: 1,
+                    explanation: "When both y and x are trending, regression can show spurious relationships even when no true relationship exists."
+                },
+                {
+                    question: "A sign of spurious regression is:",
+                    options: [
+                        "High t-statistics",
+                        "Low standard errors",
+                        "High R² but low Durbin-Watson statistic",
+                        "Significant F-statistic"
+                    ],
+                    correct: 2,
+                    explanation: "High R² with low Durbin-Watson (close to 0) suggests spurious correlation between trending variables."
+                },
+                {
+                    question: "To avoid spurious regression with trending variables:",
+                    options: [
+                        "Use larger sample sizes",
+                        "Include time trends or use first differences",
+                        "Apply log transformations",
+                        "Use robust standard errors"
+                    ],
+                    correct: 1,
+                    explanation: "Including time trends or differencing removes trends that could cause spurious relationships."
+                },
+                {
+                    question: "The rule 'if R² > DW, suspect spurious regression' works because:",
+                    options: [
+                        "High R² always indicates good fit",
+                        "DW measures goodness of fit",
+                        "Trending series have high R² but serial correlation (low DW)",
+                        "This rule applies to all regression models"
+                    ],
+                    correct: 2,
+                    explanation: "Spurious regression between trending variables shows high R² due to common trends but low DW due to serial correlation."
+                }
+            ],
+            seasonality_and_cycles: [
+                {
+                    question: "Seasonal dummy variables are included to:",
+                    options: [
+                        "Control for regular periodic fluctuations",
+                        "Remove all serial correlation",
+                        "Eliminate heteroskedasticity",
+                        "Increase sample size artificially"
+                    ],
+                    correct: 0,
+                    explanation: "Seasonal dummies capture regular periodic patterns like quarterly or monthly fluctuations in economic data."
+                },
+                {
+                    question: "In quarterly data, how many seasonal dummies should be included?",
+                    options: [
+                        "4 dummies for all quarters",
+                        "3 dummies (omitting one as reference)",
+                        "2 dummies for peak seasons",
+                        "1 dummy for the dominant season"
+                    ],
+                    correct: 1,
+                    explanation: "Use n-1 seasonal dummies to avoid perfect collinearity, so 3 dummies for quarterly data."
+                },
+                {
+                    question: "Multiplicative seasonality means:",
+                    options: [
+                        "Seasonal effects are constant across all levels",
+                        "Seasonal effects change proportionally with the series level",
+                        "Seasonal effects only occur in some periods",
+                        "Seasonal effects are measured in percentages"
+                    ],
+                    correct: 1,
+                    explanation: "Multiplicative seasonality means seasonal fluctuations are proportional to the level of the series."
+                },
+                {
+                    question: "The log transformation is often used because:",
+                    options: [
+                        "It eliminates all seasonality",
+                        "It removes trends automatically",
+                        "It converts multiplicative effects to additive effects",
+                        "It always makes series stationary"
+                    ],
+                    correct: 2,
+                    explanation: "Logarithms convert multiplicative relationships (like multiplicative seasonality) into additive ones."
+                }
+            ],
+            static_models: [
+                {
+                    question: "A static time series model assumes:",
+                    options: [
+                        "No relationships change over time",
+                        "Only contemporaneous effects of regressors",
+                        "Perfect correlation between periods",
+                        "No error terms"
+                    ],
+                    correct: 1,
+                    explanation: "Static models include only current-period values of explanatory variables, no lags or leads."
+                },
+                {
+                    question: "The Phillips Curve yₜ = β₀ + β₁xₜ + uₜ suggests:",
+                    options: [
+                        "Unemployment affects next period's inflation",
+                        "Inflation and unemployment move together",
+                        "Current unemployment affects current inflation",
+                        "Past inflation determines current unemployment"
+                    ],
+                    correct: 2,
+                    explanation: "This static model relates current inflation to current unemployment without lags."
+                },
+                {
+                    question: "In Okun's Law Δunemₜ = β₀ + β₁gdpgrₜ + uₜ, what does β₁ measure?",
+                    options: [
+                        "The level relationship between unemployment and GDP",
+                        "How current GDP growth affects unemployment changes",
+                        "The long-run unemployment rate",
+                        "The correlation between unemployment and GDP"
+                    ],
+                    correct: 1,
+                    explanation: "β₁ measures how a one-unit change in current GDP growth affects the change in unemployment."
+                }
+            ],
+            testing_and_diagnostics: [
+                {
+                    question: "The Durbin-Watson statistic tests for:",
+                    options: [
+                        "Heteroskedasticity",
+                        "First-order serial correlation",
+                        "Normality of errors",
+                        "Structural breaks"
+                    ],
+                    correct: 1,
+                    explanation: "DW specifically tests for AR(1) serial correlation in regression residuals."
+                },
+                {
+                    question: "A Durbin-Watson statistic near 0 suggests:",
+                    options: [
+                        "No serial correlation",
+                        "Strong positive serial correlation",
+                        "Strong negative serial correlation",
+                        "Heteroskedasticity"
+                    ],
+                    correct: 1,
+                    explanation: "DW near 0 indicates strong positive serial correlation; DW = 2 indicates no correlation."
+                },
+                {
+                    question: "To test for serial correlation beyond first-order:",
+                    options: [
+                        "Use only Durbin-Watson",
+                        "Use Breusch-Godfrey LM test",
+                        "Use White test",
+                        "Use RESET test"
+                    ],
+                    correct: 1,
+                    explanation: "The LM test can detect higher-order serial correlation, while DW only tests first-order."
+                }
+            ]
+        };
+        
+        function regenerateQuiz() {
+            // Clear previous state
+            answeredQuestions = {};
+            currentQuestions = [];
+            
+            // Randomly select questions from different categories
+            const categories = Object.keys(questionBank);
+            const questionsPerCategory = Math.max(1, Math.floor(5 / categories.length));
+            
+            categories.forEach(category => {
+                const categoryQuestions = questionBank[category];
+                const selectedQuestions = [];
+                const used = new Set();
+                
+                while (selectedQuestions.length < questionsPerCategory && selectedQuestions.length < categoryQuestions.length) {
+                    const randomIndex = Math.floor(Math.random() * categoryQuestions.length);
+                    if (!used.has(randomIndex)) {
+                        selectedQuestions.push({
+                            ...categoryQuestions[randomIndex],
+                            category: category,
+                            id: `q${currentQuestions.length + selectedQuestions.length + 1}`
+                        });
+                        used.add(randomIndex);
+                    }
+                }
+                
+                currentQuestions.push(...selectedQuestions);
+            });
+            
+            // Shuffle the selected questions
+            currentQuestions = shuffleArray(currentQuestions);
+            
+            // Limit to 5 questions
+            currentQuestions = currentQuestions.slice(0, 5);
+            
+            // Render the quiz
+            renderQuiz();
+            
+            // Hide summary
+            document.getElementById('quizSummary').style.display = 'none';
+        }
+        
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+        
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+            
+            let html = '';
+            currentQuestions.forEach((question, index) => {
+                html += `
+                    <div class="quiz-question">
+                        <p><strong>Question ${index + 1}:</strong> ${question.question}</p>
+                        <div class="quiz-options">
+                `;
+                
+                question.options.forEach((option, optIndex) => {
+                    html += `
+                        <label class="quiz-option" onclick="selectDynamicAnswer('${question.id}', ${optIndex})">
+                            <input type="radio" name="${question.id}" value="${optIndex}">
+                            ${String.fromCharCode(65 + optIndex)}) ${option}
+                        </label>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                        <div id="feedback${question.id}" class="quiz-feedback"></div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function selectDynamicAnswer(questionId, selectedAnswer) {
+            const question = currentQuestions.find(q => q.id === questionId);
+            if (!question) return;
+            
+            const isCorrect = selectedAnswer === question.correct;
+            answeredQuestions[questionId] = {
+                selected: selectedAnswer,
+                correct: isCorrect,
+                question: question
+            };
+            
+            // Update option styling
+            const options = document.querySelectorAll(`input[name="${questionId}"]`);
+            options.forEach((option, index) => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (index === question.correct) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            // Show feedback
+            const feedbackEl = document.getElementById(`feedback${questionId}`);
+            feedbackEl.textContent = question.explanation;
+            feedbackEl.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackEl.style.display = 'block';
+            
+            // Check if all questions are answered
+            if (Object.keys(answeredQuestions).length === currentQuestions.length) {
+                setTimeout(() => showQuizSummary(), 1000);
+            }
+        }
+        
+        function showQuizSummary() {
+            const totalQuestions = currentQuestions.length;
+            const correctAnswers = Object.values(answeredQuestions).filter(a => a.correct).length;
+            const score = Math.round((correctAnswers / totalQuestions) * 100);
+            
+            // Update summary display
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            document.getElementById('quizScore').textContent = score + '%';
+            
+            // Generate feedback
+            let feedback = '';
+            if (score >= 90) {
+                feedback = '🌟 Excellent! You have a strong understanding of time series econometrics. You\'re ready for advanced topics like dynamic models and cointegration.';
+            } else if (score >= 80) {
+                feedback = '👍 Great job! You understand the key concepts well. Review spurious regression and assumption testing for even stronger mastery.';
+            } else if (score >= 70) {
+                feedback = '✨ Good work! You grasp the basics. Focus on understanding the differences between time series and cross-sectional assumptions.';
+            } else if (score >= 60) {
+                feedback = '📚 You\'re on the right track! Review the material on temporal dependencies, trends, and static models to strengthen your foundation.';
+            } else {
+                feedback = '🔄 This is challenging material! Review the chapter sections on time series characteristics, contemporary exogeneity, and spurious regression. Practice with the interactive tools.';
+            }
+            
+            // Add category-specific advice
+            const categories = [...new Set(Object.values(answeredQuestions).map(a => a.question.category))];
+            const categoryPerformance = {};
+            
+            categories.forEach(cat => {
+                const catQuestions = Object.values(answeredQuestions).filter(a => a.question.category === cat);
+                const catCorrect = catQuestions.filter(a => a.correct).length;
+                categoryPerformance[cat] = catCorrect / catQuestions.length;
+            });
+            
+            const weakestCategory = Object.entries(categoryPerformance).sort((a, b) => a[1] - b[1])[0];
+            if (weakestCategory && weakestCategory[1] < 0.7) {
+                const categoryAdvice = {
+                    'time_series_basics': 'Review Section 10.1 on time series characteristics and decomposition.',
+                    'assumptions_and_exogeneity': 'Study Section 10.3 on OLS assumptions and contemporary exogeneity.',
+                    'trends_and_spurious': 'Focus on Section 10.4 on spurious regression and trending variables.',
+                    'seasonality_and_cycles': 'Practice with Section 10.4 on seasonal patterns and dummy variables.',
+                    'static_models': 'Review Section 10.2 on static model examples and applications.',
+                    'testing_and_diagnostics': 'Study diagnostic testing procedures and interpretation.'
+                };
+                
+                feedback += `\n\nSpecific advice: ${categoryAdvice[weakestCategory[0]] || 'Review the relevant chapter sections.'}`;
+            }
+            
+            document.getElementById('quizFeedback').textContent = feedback;
+            document.getElementById('quizSummary').style.display = 'block';
+            
+            // Smooth scroll to summary
+            document.getElementById('quizSummary').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+        }
+        
+        // Initialize quiz on page load - handled in main DOMContentLoaded event
+        
+        // ========================================
+        // AI CHAT FUNCTIONS
+        // ========================================
+        
+        function toggleAIChat() {
+            const panel = document.getElementById('aiChatPanel');
+            const icon = document.getElementById('aiChatIcon');
+            
+            if (isAIChatOpen) {
+                panel.classList.remove('show');
+                icon.textContent = '📈';
+                isAIChatOpen = false;
+            } else {
+                panel.classList.add('show');
+                icon.textContent = '✖️';
+                isAIChatOpen = true;
+                document.getElementById('aiInput').focus();
+            }
+        }
+        
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addAIMessage('user', message);
+            input.value = '';
+            
+            setTimeout(() => {
+                const response = getAIResponse(message);
+                addAIMessage('claude', response);
+            }, 500);
+        }
+        
+        function addAIMessage(sender, message) {
+            const container = document.getElementById('aiChatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender}`;
+            
+            if (sender === 'claude') {
+                messageDiv.innerHTML = `<strong>📈 Claude:</strong> ${message}`;
+            } else {
+                messageDiv.textContent = message;
+            }
+            
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function getAIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            if (message.includes('time series') || message.includes('temporal')) {
+                return "Time series data is ordered by time, creating potential serial correlation. Key challenges: temporal dependencies, trends, seasonality, and structural breaks. Unlike cross-sectional data, observations aren't independent!";
+            }
+            
+            if (message.includes('static model') || message.includes('contemporaneous')) {
+                return "Static time series models assume contemporaneous effects only: yₜ = β₀ + β₁x₁ₜ + ... + uₜ. Examples: Phillips Curve, Okun's Law. Key assumption: E[uₜ|xₜ] = 0 (contemporary exogeneity).";
+            }
+            
+            if (message.includes('trend') || message.includes('trending')) {
+                return "Trending variables can cause spurious regression - apparent relationships when none exist! Solutions: include time trends, use first differences, test for cointegration. Rule: if R² > Durbin-Watson, suspect spurious regression.";
+            }
+            
+            if (message.includes('seasonal') || message.includes('seasonality')) {
+                return "Seasonal patterns are regular periodic fluctuations (quarterly, monthly). Handle with seasonal dummy variables: yₜ = β₀ + Σβⱼdⱼₜ + βxₜ + uₜ. Decomposition helps identify trend, seasonal, and irregular components.";
+            }
+            
+            if (message.includes('serial correlation') || message.includes('autocorrelation')) {
+                return "Serial correlation violates OLS assumption Cov(uₜ,uₛ) = 0. Detection: Durbin-Watson test, LM test. Solutions: robust standard errors, dynamic specification, or address the source directly.";
+            }
+            
+            if (message.includes('stationarity') || message.includes('stationary')) {
+                return "Stationarity means constant mean, variance, and covariances over time. Non-stationary series can lead to spurious regression. Test with unit root tests (ADF, PP). Transform with differencing if needed.";
+            }
+            
+            if (message.includes('spurious') || message.includes('spurious regression')) {
+                return "Spurious regression shows significant relationships between unrelated trending variables. Signs: high R² but low DW statistic. Prevention: detrend variables, use cointegration analysis, or first differences.";
+            }
+            
+            return "I can help with time series data properties, static models, trends and seasonality, serial correlation, spurious regression, and stationarity concepts. What specific aspect of time series econometrics interests you?";
+        }
+        
+        // Close AI chat when clicking outside
+        document.addEventListener('click', function(event) {
+            const widget = document.querySelector('.ai-chat-widget');
+            if (isAIChatOpen && !widget.contains(event.target)) {
+                toggleAIChat();
+            }
+        });
+        
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Chapter 10: Basic Regression Analysis with Time Series Data loaded successfully!');
+            
+            // Set up fade-in animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0) scale(1)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe all animated elements
+            document.querySelectorAll('.fade-in, .slide-up, .temporal-animation').forEach(el => {
+                observer.observe(el);
+            });
+            
+            // Initialize dynamic quiz system
+            setTimeout(() => {
+                regenerateQuiz();
+            }, 1000);
+        });
+        
+    </script>
+
+</body>
+</html>
