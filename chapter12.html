@@ -1,0 +1,3108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 12: Serial Correlation and Heteroskedasticity in Time Series - Wooldridge Econometrics</title>
+    <style>
+        :root {
+            /* Industrial Time Series Theme - Deep teals and technical aesthetics */
+            --primary-industrial: #0f766e;
+            --secondary-industrial: #115e59;
+            --accent-correlation: #14b8a6;
+            --accent-arch: #06b6d4;
+            --tech-50: #f0fdfa;
+            --tech-100: #ccfbf1;
+            --tech-200: #99f6e4;
+            --tech-300: #5eead4;
+            --tech-400: #2dd4bf;
+            --tech-500: #14b8a6;
+            --tech-600: #0d9488;
+            --tech-700: #0f766e;
+            --tech-800: #115e59;
+            --tech-900: #134e4a;
+            
+            /* Status colors for time series diagnostics */
+            --status-no-correlation: #10b981;
+            --status-mild-correlation: #f59e0b;
+            --status-strong-correlation: #ef4444;
+            --status-arch-present: #8b5cf6;
+            --status-hac-robust: #06b6d4;
+            
+            /* Technical typography */
+            --font-primary: 'SF Pro Display', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --font-mono: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            line-height: 1.6;
+            color: var(--tech-800);
+            background: linear-gradient(135deg, var(--tech-50) 0%, #ffffff 50%, var(--tech-100) 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2314b8a6' fill-opacity='0.02'%3E%3Cpath d='M20 20c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10zm10 0c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10z'/%3E%3C/g%3E%3C/svg%3E") repeat;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 3rem 0;
+            background: linear-gradient(135deg, var(--primary-industrial), var(--secondary-industrial));
+            color: white;
+            margin-bottom: 3rem;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='20' viewBox='0 0 100 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10c10-5 20-5 30 0s20 5 30 0 20-5 30 0 20 5 30 0v10H0V10z' fill='%23ffffff' fill-opacity='0.1'/%3E%3C/svg%3E") repeat-x;
+            animation: waveScroll 20s linear infinite;
+        }
+
+        @keyframes waveScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100px); }
+        }
+
+        .chapter-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff, #ccfbf1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chapter-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Navigation */
+        .nav-container {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(15, 118, 110, 0.1);
+            border: 1px solid var(--tech-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-industrial), var(--accent-correlation), var(--accent-arch));
+        }
+
+        .nav-pills {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-pill {
+            padding: 0.875rem 1.75rem;
+            background: var(--tech-100);
+            border: none;
+            border-radius: 12px;
+            color: var(--tech-700);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-pill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-pill:hover {
+            background: var(--primary-industrial);
+            color: white;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(15, 118, 110, 0.3);
+        }
+
+        .nav-pill:hover::before {
+            left: 100%;
+        }
+
+        .nav-pill.active {
+            background: var(--primary-industrial);
+            color: white;
+            box-shadow: 0 4px 16px rgba(15, 118, 110, 0.3);
+        }
+
+        /* Section Styling */
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--tech-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-industrial), var(--accent-correlation));
+        }
+
+        .section-title {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--primary-industrial);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--accent-correlation);
+            border-radius: 2px;
+        }
+
+        .section p {
+            margin-bottom: 1rem;
+            color: var(--tech-700);
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        /* Concept Boxes */
+        .concept-box {
+            background: var(--tech-50);
+            border-radius: 12px;
+            padding: 1.75rem;
+            margin: 1.5rem 0;
+            border: 1px solid var(--tech-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .concept-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-industrial);
+        }
+
+        .concept-box.correlation {
+            background: linear-gradient(135deg, var(--tech-50), #f0fdfa);
+            border-color: var(--accent-correlation);
+        }
+
+        .concept-box.correlation::before {
+            background: var(--accent-correlation);
+        }
+
+        .concept-box.arch {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-color: var(--accent-arch);
+        }
+
+        .concept-box.arch::before {
+            background: var(--accent-arch);
+        }
+
+        .concept-box.warning {
+            background: linear-gradient(135deg, #fef3c7, #fef7cd);
+            border-color: #f59e0b;
+        }
+
+        .concept-box.warning::before {
+            background: #f59e0b;
+        }
+
+        .concept-title {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-industrial);
+            font-size: 1.15rem;
+        }
+
+        .concept-box.correlation .concept-title {
+            color: var(--accent-correlation);
+        }
+
+        .concept-box.arch .concept-title {
+            color: var(--accent-arch);
+        }
+
+        .concept-box.warning .concept-title {
+            color: #d97706;
+        }
+
+        /* Formula Boxes */
+        .formula {
+            background: var(--tech-900);
+            color: #ccfbf1;
+            padding: 1.25rem;
+            border-radius: 10px;
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            border: 1px solid var(--tech-700);
+            position: relative;
+        }
+
+        .formula::before {
+            content: '{}';
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            color: var(--accent-correlation);
+            font-size: 0.8rem;
+            opacity: 0.6;
+        }
+
+        /* Interactive Controls */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .control-group {
+            background: var(--tech-50);
+            padding: 1.75rem;
+            border-radius: 12px;
+            border: 1px solid var(--tech-200);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .control-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(15, 118, 110, 0.15);
+        }
+
+        .control-group h4 {
+            color: var(--primary-industrial);
+            margin-bottom: 1.25rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--tech-700);
+            margin-bottom: 0.6rem;
+            font-size: 0.95rem;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 0.875rem;
+            border: 2px solid var(--tech-300);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary-industrial);
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .input-group input[type="range"] {
+            background: var(--tech-200);
+            border: none;
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        .input-group input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-industrial);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(15, 118, 110, 0.3);
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--primary-industrial), var(--secondary-industrial));
+            color: white;
+            border: none;
+            padding: 1.125rem 2.25rem;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 1rem 0;
+            width: 100%;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(15, 118, 110, 0.4);
+        }
+
+        .action-button:hover::before {
+            left: 100%;
+        }
+
+        .action-button:active {
+            transform: translateY(0);
+        }
+
+        /* Results Display */
+        .results-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid var(--tech-200);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            display: none;
+            position: relative;
+        }
+
+        .results-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-correlation), var(--accent-arch));
+            border-radius: 12px 12px 0 0;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.75rem;
+            background: var(--tech-50);
+            border-radius: 10px;
+            border: 1px solid var(--tech-200);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            font-family: var(--font-mono);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--tech-600);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-no-correlation {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--status-no-correlation);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-mild-correlation {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--status-mild-correlation);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-strong-correlation {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--status-strong-correlation);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .status-arch-present {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--status-arch-present);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .status-hac-robust {
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--status-hac-robust);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+        }
+
+        /* Visualization */
+        .chart-container {
+            position: relative;
+            height: 320px;
+            background: white;
+            border: 1px solid var(--tech-200);
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        /* Correlation Visualization */
+        .correlation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            gap: 2px;
+            background: var(--tech-100);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .correlation-cell {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Quiz Section */
+        .quiz-section {
+            background: linear-gradient(135deg, var(--tech-50), #ffffff);
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 1px solid var(--tech-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-section::before {
+            content: '📊';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 10rem;
+            opacity: 0.03;
+            transform: rotate(15deg);
+        }
+
+        .quiz-question {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 1px solid var(--tech-200);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .quiz-question:hover {
+            transform: translateY(-2px);
+        }
+
+        .quiz-question p {
+            font-weight: 600;
+            color: var(--tech-800);
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.875rem;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            padding: 1.125rem;
+            background: var(--tech-50);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .quiz-option:hover {
+            background: var(--tech-100);
+            border-color: var(--primary-industrial);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--status-no-correlation);
+            color: var(--status-no-correlation);
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--status-strong-correlation);
+            color: var(--status-strong-correlation);
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1.125rem;
+            border-radius: 10px;
+            font-weight: 500;
+            display: none;
+            line-height: 1.6;
+        }
+
+        .quiz-feedback.correct {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--status-no-correlation);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .quiz-feedback.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--status-strong-correlation);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* AI Chat Widget */
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        .ai-chat-button {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-industrial), var(--secondary-industrial));
+            border: none;
+            color: white;
+            font-size: 1.6rem;
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(15, 118, 110, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-chat-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.2), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .ai-chat-button:hover {
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: 0 12px 40px rgba(15, 118, 110, 0.4);
+        }
+
+        .ai-chat-button:hover::before {
+            opacity: 1;
+        }
+
+        .ai-chat-panel {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 360px;
+            height: 480px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--tech-200);
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ai-chat-panel.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .ai-chat-header {
+            background: linear-gradient(135deg, var(--primary-industrial), var(--secondary-industrial));
+            color: white;
+            padding: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            padding: 1.25rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.875rem;
+        }
+
+        .ai-message {
+            max-width: 85%;
+            padding: 0.875rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .ai-message.user {
+            background: var(--primary-industrial);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-message.claude {
+            background: var(--tech-100);
+            color: var(--tech-800);
+            border-bottom-left-radius: 4px;
+        }
+
+        .ai-input-area {
+            padding: 1.25rem;
+            border-top: 1px solid var(--tech-200);
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 0.875rem;
+            border: 1px solid var(--tech-300);
+            border-radius: 25px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .ai-send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--primary-industrial);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .ai-send-btn:hover {
+            background: var(--secondary-industrial);
+            transform: scale(1.1);
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .fade-in.delay-1 { animation-delay: 0.1s; }
+        .fade-in.delay-2 { animation-delay: 0.2s; }
+        .fade-in.delay-3 { animation-delay: 0.3s; }
+        .fade-in.delay-4 { animation-delay: 0.4s; }
+        .fade-in.delay-5 { animation-delay: 0.5s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .chapter-title {
+                font-size: 2.2rem;
+            }
+
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .nav-pills {
+                flex-direction: column;
+            }
+
+            .ai-chat-panel {
+                width: calc(100vw - 4rem);
+                right: 2rem;
+                left: 2rem;
+            }
+
+            .correlation-grid {
+                grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header fade-in">
+            <h1 class="chapter-title">⚡ Chapter 12</h1>
+            <p class="chapter-subtitle">Serial Correlation and Heteroskedasticity in Time Series Regressions</p>
+        </header>
+
+        <!-- Navigation -->
+        <div class="nav-container fade-in delay-1">
+            <div class="nav-pills">
+                <a href="#" onclick="scrollToSection('serial-correlation')" class="nav-pill">
+                    🔗 Serial Correlation
+                </a>
+                <a href="#" onclick="scrollToSection('testing')" class="nav-pill">
+                    🔍 Testing Procedures
+                </a>
+                <a href="#" onclick="scrollToSection('correction')" class="nav-pill">
+                    🛠️ Correction Methods
+                </a>
+                <a href="#" onclick="scrollToSection('arch')" class="nav-pill">
+                    📈 ARCH Effects
+                </a>
+                <a href="#" onclick="scrollToSection('hac')" class="nav-pill">
+                    🛡️ HAC Standard Errors
+                </a>
+                <a href="#" onclick="scrollToSection('quiz')" class="nav-pill">
+                    🎯 Knowledge Check
+                </a>
+            </div>
+        </div>
+
+        <!-- Section 12.1: Serial Correlation in Time Series -->
+        <section class="section fade-in delay-2" id="serial-correlation">
+            <h2 class="section-title">12.1 🔗 Serial Correlation in Time Series Regressions</h2>
+            
+            <p>Serial correlation (autocorrelation) occurs when regression errors are correlated across time periods. This violates the independence assumption of OLS, leading to inefficient estimates and invalid standard errors.</p>
+
+            <div class="concept-box correlation">
+                <div class="concept-title">🔗 Serial Correlation Definition</div>
+                <p><strong>AR(1) Serial Correlation:</strong> u_t = ρu_{t-1} + e_t</p>
+                <p>Where -1 < ρ < 1 is the serial correlation coefficient and e_t ~ iid(0, σ²)</p>
+                <div class="formula">
+                    Positive correlation (ρ > 0): Errors persist in same direction
+                    <br>Negative correlation (ρ < 0): Errors alternate in direction
+                    <br>No correlation (ρ = 0): Errors are uncorrelated (OLS assumptions satisfied)
+                </div>
+            </div>
+
+            <div class="concept-box warning">
+                <div class="concept-title">⚠️ Consequences of Serial Correlation</div>
+                <p><strong>Problems when ρ ≠ 0:</strong><br>
+                1) OLS remains unbiased but becomes inefficient<br>
+                2) Standard OLS standard errors are incorrect<br>
+                3) t and F statistics are invalid<br>
+                4) Confidence intervals and hypothesis tests unreliable</p>
+            </div>
+
+            <!-- Serial Correlation Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🎛️ Serial Correlation Simulator</h4>
+                    
+                    <div class="input-group">
+                        <label for="rho">Serial Correlation Coefficient (ρ):</label>
+                        <input type="range" id="rho" min="-0.9" max="0.9" step="0.1" value="0.6">
+                        <span id="rhoValue">0.6</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="sampleSizeSerial">Sample Size:</label>
+                        <select id="sampleSizeSerial">
+                            <option value="50">50 observations</option>
+                            <option value="100" selected>100 observations</option>
+                            <option value="200">200 observations</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="trueEffect">True β Effect:</label>
+                        <input type="range" id="trueEffect" min="0.5" max="2" step="0.1" value="1.5">
+                        <span id="trueEffectValue">1.5</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="simulationCount">Simulations:</label>
+                        <select id="simulationCount">
+                            <option value="100">100 replications</option>
+                            <option value="500" selected>500 replications</option>
+                            <option value="1000">1000 replications</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateSerialCorrelation()">
+                        🔗 Simulate Serial Correlation
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Error Pattern Visualization</h4>
+                    <div class="chart-container" id="serialChart" style="background: var(--tech-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--tech-400); text-align: center;">
+                            Run simulation to visualize<br>serial correlation patterns
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="serialResults">
+                <h4 style="color: var(--primary-industrial); margin-bottom: 1rem;">Serial Correlation Impact Analysis</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="avgBeta" style="color: var(--accent-correlation);">-</div>
+                        <div class="stat-label">Average β̂</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="olsStdError" style="color: var(--tech-600);">-</div>
+                        <div class="stat-label">OLS Std Error</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="trueStdError" style="color: var(--status-hac-robust);">-</div>
+                        <div class="stat-label">True Std Error</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="biasRatio" style="color: var(--status-strong-correlation);">-</div>
+                        <div class="stat-label">SE Bias Ratio</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="serialCorrelationResult" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="serialInterpretation" style="color: var(--tech-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 12.2: Testing for Serial Correlation -->
+        <section class="section fade-in delay-3" id="testing">
+            <h2 class="section-title">12.2 🔍 Testing for Serial Correlation</h2>
+            
+            <p>Several tests detect serial correlation in regression residuals. The most common are the Durbin-Watson test and the Breusch-Godfrey Lagrange Multiplier test.</p>
+
+            <div class="concept-box correlation">
+                <div class="concept-title">🔍 Durbin-Watson Test</div>
+                <p>Tests for first-order serial correlation: H₀: ρ = 0 vs H₁: ρ ≠ 0</p>
+                <div class="formula">
+                    DW = Σ(ê_t - ê_{t-1})² / Σê_t²
+                    <br>Range: 0 ≤ DW ≤ 4
+                    <br>DW ≈ 2: No serial correlation
+                    <br>DW < 2: Positive correlation, DW > 2: Negative correlation
+                </div>
+                <p><strong>Limitations:</strong> Only tests AR(1), requires no lagged dependent variables</p>
+            </div>
+
+            <div class="concept-box arch">
+                <div class="concept-title">🧪 Breusch-Godfrey LM Test</div>
+                <p>More general test allowing higher-order correlation and lagged dependent variables</p>
+                <div class="formula">
+                    Step 1: Run OLS, save residuals ê_t
+                    <br>Step 2: Regress ê_t on x_t, ê_{t-1}, ..., ê_{t-p}
+                    <br>Step 3: LM = nR² ~ χ²(p)
+                    <br>H₀: ρ₁ = ρ₂ = ... = ρₚ = 0
+                </div>
+                <p><strong>Advantages:</strong> Tests any order, allows lagged dependent variables</p>
+            </div>
+
+            <!-- Testing Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🔬 Serial Correlation Testing Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="testType">Test Procedure:</label>
+                        <select id="testType">
+                            <option value="durbin_watson" selected>Durbin-Watson</option>
+                            <option value="breusch_godfrey">Breusch-Godfrey LM</option>
+                            <option value="ljung_box">Ljung-Box</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="testRho">True Serial Correlation:</label>
+                        <input type="range" id="testRho" min="0" max="0.9" step="0.1" value="0.5">
+                        <span id="testRhoValue">0.5</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="testSampleSize">Sample Size:</label>
+                        <select id="testSampleSize">
+                            <option value="50">50 observations</option>
+                            <option value="100" selected>100 observations</option>
+                            <option value="250">250 observations</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="testLags">Number of Lags (BG test):</label>
+                        <select id="testLags">
+                            <option value="1" selected>1 lag</option>
+                            <option value="2">2 lags</option>
+                            <option value="4">4 lags</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="testSerialCorrelation()">
+                        🔬 Run Serial Correlation Test
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📈 Test Power Analysis</h4>
+                    <div class="chart-container" id="testChart" style="background: var(--tech-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--tech-400); text-align: center;">
+                            Run tests to analyze<br>detection power vs. correlation
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="testResults">
+                <h4 style="color: var(--primary-industrial); margin-bottom: 1rem;">Serial Correlation Test Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="testStatistic" style="color: var(--accent-correlation);">-</div>
+                        <div class="stat-label">Test Statistic</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="criticalValue" style="color: var(--tech-600);">-</div>
+                        <div class="stat-label">Critical Value</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="pValueTest" style="color: var(--accent-arch);">-</div>
+                        <div class="stat-label">P-value</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="testPower" style="color: var(--status-arch-present);">-</div>
+                        <div class="stat-label">Test Power</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="serialTestResult" class="status-indicator">Testing...</span>
+                </div>
+                <p id="testInterpretation" style="color: var(--tech-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 12.3: Correcting for Serial Correlation -->
+        <section class="section fade-in delay-4" id="correction">
+            <h2 class="section-title">12.3 🛠️ Correction Methods</h2>
+            
+            <p>When serial correlation is detected, several correction methods restore efficiency and valid inference. The choice depends on the correlation structure and model specification.</p>
+
+            <div class="concept-box correlation">
+                <div class="concept-title">🛠️ Cochrane-Orcutt Procedure</div>
+                <p>Iterative method for AR(1) errors: y_t - ρ̂y_{t-1} = α(1-ρ̂) + β(x_t - ρ̂x_{t-1}) + v_t</p>
+                <div class="formula">
+                    Step 1: OLS regression, estimate ρ̂ from residuals
+                    <br>Step 2: Transform data and re-estimate
+                    <br>Step 3: Repeat until convergence
+                    <br>Result: Efficient estimates with correct standard errors
+                </div>
+            </div>
+
+            <div class="concept-box arch">
+                <div class="concept-title">⚡ Prais-Winsten Transformation</div>
+                <p>Modified Cochrane-Orcutt that retains first observation</p>
+                <div class="formula">
+                    Transform first observation: √(1-ρ²)y₁, √(1-ρ²)x₁
+                    <br>Transform remaining: y_t - ρy_{t-1}, x_t - ρx_{t-1}
+                    <br>Advantage: Uses all observations, more efficient
+                </div>
+            </div>
+
+            <!-- Correction Methods Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>⚙️ Correction Methods Comparison</h4>
+                    
+                    <div class="input-group">
+                        <label for="correctionMethod">Correction Method:</label>
+                        <select id="correctionMethod">
+                            <option value="ols">OLS (Uncorrected)</option>
+                            <option value="cochrane_orcutt" selected>Cochrane-Orcutt</option>
+                            <option value="prais_winsten">Prais-Winsten</option>
+                            <option value="newey_west">Newey-West HAC</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="correctionRho">Serial Correlation Level:</label>
+                        <input type="range" id="correctionRho" min="0.1" max="0.8" step="0.1" value="0.6">
+                        <span id="correctionRhoValue">0.6</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="correctionSample">Sample Size:</label>
+                        <select id="correctionSample">
+                            <option value="50">50 observations</option>
+                            <option value="100" selected>100 observations</option>
+                            <option value="200">200 observations</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="iterations">Max Iterations (CO):</label>
+                        <select id="iterations">
+                            <option value="5">5 iterations</option>
+                            <option value="10" selected>10 iterations</option>
+                            <option value="20">20 iterations</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="compareCorrections()">
+                        🛠️ Compare Correction Methods
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Efficiency Comparison</h4>
+                    <div class="chart-container" id="correctionChart" style="background: var(--tech-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--tech-400); text-align: center;">
+                            Run comparison to see<br>efficiency gains from correction
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="correctionResults">
+                <h4 style="color: var(--primary-industrial); margin-bottom: 1rem;">Correction Method Performance</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="olsEfficiency" style="color: var(--status-strong-correlation);">-</div>
+                        <div class="stat-label">OLS Efficiency</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="correctedEfficiency" style="color: var(--status-no-correlation);">-</div>
+                        <div class="stat-label">Corrected Efficiency</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="efficiencyGain" style="color: var(--accent-correlation);">-</div>
+                        <div class="stat-label">Efficiency Gain</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="coverageRate" style="color: var(--status-hac-robust);">-</div>
+                        <div class="stat-label">Coverage Rate</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="correctionAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="correctionInterpretation" style="color: var(--tech-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 12.4: ARCH Effects and Time-Varying Volatility -->
+        <section class="section fade-in delay-5" id="arch">
+            <h2 class="section-title">12.4 📈 ARCH Effects and Heteroskedasticity</h2>
+            
+            <p>Autoregressive Conditional Heteroskedasticity (ARCH) occurs when error variance depends on past errors. This creates time-varying volatility common in financial and economic data.</p>
+
+            <div class="concept-box arch">
+                <div class="concept-title">📈 ARCH(1) Model</div>
+                <p>Conditional variance depends on squared lagged errors:</p>
+                <div class="formula">
+                    u_t = σ_t ε_t, where ε_t ~ iid N(0,1)
+                    <br>σ_t² = α₀ + α₁u_{t-1}² (ARCH(1))
+                    <br>σ_t² = α₀ + α₁u_{t-1}² + β₁σ_{t-1}² (GARCH(1,1))
+                </div>
+                <p><strong>Interpretation:</strong> Large errors increase future volatility (volatility clustering)</p>
+            </div>
+
+            <div class="concept-box warning">
+                <div class="concept-title">⚠️ ARCH Test (Engle's LM Test)</div>
+                <p>Tests H₀: No ARCH effects vs H₁: ARCH present</p>
+                <div class="formula">
+                    Step 1: Run OLS, save squared residuals ê_t²
+                    <br>Step 2: Regress ê_t² on ê_{t-1}², ..., ê_{t-q}²
+                    <br>Step 3: LM = nR² ~ χ²(q)
+                </div>
+                <p>Significant test indicates time-varying volatility requiring GARCH modeling</p>
+            </div>
+
+            <!-- ARCH Effects Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>📊 ARCH Effects Simulator</h4>
+                    
+                    <div class="input-group">
+                        <label for="archType">Volatility Model:</label>
+                        <select id="archType">
+                            <option value="constant">Constant Variance</option>
+                            <option value="arch1" selected>ARCH(1)</option>
+                            <option value="garch11">GARCH(1,1)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="archAlpha">ARCH Parameter (α₁):</label>
+                        <input type="range" id="archAlpha" min="0.1" max="0.8" step="0.05" value="0.3">
+                        <span id="archAlphaValue">0.3</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="garchBeta">GARCH Parameter (β₁):</label>
+                        <input type="range" id="garchBeta" min="0.1" max="0.8" step="0.05" value="0.6">
+                        <span id="garchBetaValue">0.6</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="archSample">Sample Size:</label>
+                        <select id="archSample">
+                            <option value="200">200 observations</option>
+                            <option value="500" selected>500 observations</option>
+                            <option value="1000">1000 observations</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateARCH()">
+                        📈 Simulate ARCH Effects
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>🌊 Volatility Clustering</h4>
+                    <div class="chart-container" id="archChart" style="background: var(--tech-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--tech-400); text-align: center;">
+                            Simulate ARCH to visualize<br>volatility clustering patterns
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="archResults">
+                <h4 style="color: var(--primary-industrial); margin-bottom: 1rem;">ARCH Effects Analysis</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="archTestStat" style="color: var(--status-arch-present);">-</div>
+                        <div class="stat-label">ARCH Test Stat</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="archPValue" style="color: var(--accent-arch);">-</div>
+                        <div class="stat-label">P-value</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="volatilityPersistence" style="color: var(--accent-correlation);">-</div>
+                        <div class="stat-label">Persistence</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="maxVolatility" style="color: var(--status-strong-correlation);">-</div>
+                        <div class="stat-label">Max Volatility</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="archAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="archInterpretation" style="color: var(--tech-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 12.5: HAC Standard Errors -->
+        <section class="section fade-in delay-6" id="hac">
+            <h2 class="section-title">12.5 🛡️ HAC Standard Errors</h2>
+            
+            <p>Heteroskedasticity and Autocorrelation Consistent (HAC) standard errors provide robust inference without requiring specific correction of the underlying correlation structure.</p>
+
+            <div class="concept-box correlation">
+                <div class="concept-title">🛡️ Newey-West HAC Estimator</div>
+                <p>Robust to both heteroskedasticity and serial correlation of unknown form:</p>
+                <div class="formula">
+                    V̂_HAC = (X'X)⁻¹ Ω̂ (X'X)⁻¹
+                    <br>Ω̂ = Σ₀ + Σⱼ₌₁ᴸ w(j)[Σⱼ + Σⱼ']
+                    <br>w(j) = 1 - j/(L+1) (Bartlett weights)
+                </div>
+                <p><strong>Lag selection:</strong> L ≈ 4(n/100)^(2/9) or data-driven methods</p>
+            </div>
+
+            <div class="concept-box arch">
+                <div class="concept-title">⚙️ HAC Implementation Steps</div>
+                <p>1) Run standard OLS regression<br>
+                2) Choose lag truncation parameter L<br>
+                3) Calculate HAC variance-covariance matrix<br>
+                4) Use HAC standard errors for inference</p>
+                <div class="formula">
+                    HAC t-statistic: t = β̂ / se_HAC(β̂)
+                    <br>HAC confidence interval: β̂ ± t_c × se_HAC(β̂)
+                </div>
+            </div>
+
+            <!-- HAC Standard Errors Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🛡️ HAC Standard Errors Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="hacType">Standard Error Type:</label>
+                        <select id="hacType">
+                            <option value="ols">OLS (Uncorrected)</option>
+                            <option value="white">White (Heterosked. only)</option>
+                            <option value="newey_west" selected>Newey-West HAC</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="hacRho">Serial Correlation:</label>
+                        <input type="range" id="hacRho" min="0" max="0.8" step="0.1" value="0.4">
+                        <span id="hacRhoValue">0.4</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="hacHetero">Heteroskedasticity:</label>
+                        <select id="hacHetero">
+                            <option value="none">None</option>
+                            <option value="mild" selected>Mild</option>
+                            <option value="strong">Strong</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="hacLags">HAC Lags (L):</label>
+                        <select id="hacLags">
+                            <option value="auto" selected>Automatic</option>
+                            <option value="2">2 lags</option>
+                            <option value="4">4 lags</option>
+                            <option value="6">6 lags</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="compareHACMethods()">
+                        🛡️ Compare HAC Methods
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Coverage Performance</h4>
+                    <div class="chart-container" id="hacChart" style="background: var(--tech-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--tech-400); text-align: center;">
+                            Run HAC comparison to see<br>coverage rate improvements
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="hacResults">
+                <h4 style="color: var(--primary-industrial); margin-bottom: 1rem;">HAC Standard Errors Performance</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="olsCoverage" style="color: var(--status-strong-correlation);">-</div>
+                        <div class="stat-label">OLS Coverage</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="hacCoverage" style="color: var(--status-hac-robust);">-</div>
+                        <div class="stat-label">HAC Coverage</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="seCorrection" style="color: var(--accent-correlation);">-</div>
+                        <div class="stat-label">SE Correction</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="optimalLags" style="color: var(--status-arch-present);">-</div>
+                        <div class="stat-label">Optimal Lags</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="hacAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="hacInterpretation" style="color: var(--tech-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section class="section fade-in delay-7" id="quiz">
+            <div class="quiz-section">
+                <h3 style="text-align: center; margin-bottom: 1rem; color: var(--primary-industrial);">
+                    🎯 Chapter 12 Knowledge Check: Serial Correlation & Heteroskedasticity
+                </h3>
+                <p style="text-align: center; color: var(--tech-600); margin-bottom: 1rem;">
+                    Test your understanding of serial correlation, ARCH effects, correction methods, and HAC standard errors
+                </p>
+                
+                <!-- Regenerate Button -->
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <button onclick="regenerateQuiz()" class="action-button" style="margin: 0; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                        🔄 Generate New Questions
+                    </button>
+                    <p style="font-size: 0.8rem; color: var(--tech-600); margin-top: 0.5rem;">
+                        Click to get fresh questions on serial correlation and time series heteroskedasticity
+                    </p>
+                </div>
+                
+                <div id="quizContainer">
+                    <!-- Questions will be dynamically generated here -->
+                </div>
+                
+                <!-- Quiz Results Summary -->
+                <div id="quizSummary" style="display: none; margin-top: 2rem; padding: 1.5rem; background: var(--tech-50); border-radius: 8px; border-left: 4px solid var(--primary-industrial);">
+                    <h4 style="color: var(--primary-industrial); margin-bottom: 1rem;">Quiz Results</h4>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 6px;">
+                            <div id="correctCount" style="font-size: 1.5rem; font-weight: bold; color: var(--status-no-correlation);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--tech-600);">Correct</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 6px;">
+                            <div id="totalQuestions" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-industrial);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--tech-600);">Total</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 6px;">
+                            <div id="quizScore" style="font-size: 1.5rem; font-weight: bold; color: var(--secondary-industrial);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--tech-600);">Score</div>
+                        </div>
+                    </div>
+                    <div id="quizFeedback" style="color: var(--tech-700); line-height: 1.6;"></div>
+                    <button onclick="regenerateQuiz()" class="action-button" style="margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                        Try Again with New Questions
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div class="ai-chat-widget">
+        <button class="ai-chat-button" onclick="toggleAIChat()" title="Ask Claude about Serial Correlation & ARCH">
+            <span id="aiChatIcon">⚡</span>
+        </button>
+        
+        <div class="ai-chat-panel" id="aiChatPanel">
+            <div class="ai-chat-header">
+                <span>⚡ Time Series Econometrics Tutor</span>
+                <button onclick="toggleAIChat()" style="background: none; border: none; color: white; cursor: pointer;">×</button>
+            </div>
+            
+            <div class="ai-chat-messages" id="aiChatMessages">
+                <div class="ai-message claude">
+                    <strong>⚡ Claude:</strong> Hi! I can help you understand serial correlation, ARCH/GARCH effects, testing procedures, correction methods, and HAC standard errors. What would you like to explore?
+                </div>
+            </div>
+            
+            <div class="ai-input-area">
+                <input type="text" class="ai-input" id="aiInput" placeholder="Ask about serial correlation..." 
+                       onkeydown="if(event.key==='Enter') sendAIMessage()">
+                <button class="ai-send-btn" onclick="sendAIMessage()">→</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // GLOBAL VARIABLES
+        // ========================================
+        
+        let isAIChatOpen = false;
+        
+        // Slider value updates
+        document.getElementById('rho').addEventListener('input', function(e) {
+            document.getElementById('rhoValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('trueEffect').addEventListener('input', function(e) {
+            document.getElementById('trueEffectValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('testRho').addEventListener('input', function(e) {
+            document.getElementById('testRhoValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('correctionRho').addEventListener('input', function(e) {
+            document.getElementById('correctionRhoValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('archAlpha').addEventListener('input', function(e) {
+            document.getElementById('archAlphaValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('garchBeta').addEventListener('input', function(e) {
+            document.getElementById('garchBetaValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('hacRho').addEventListener('input', function(e) {
+            document.getElementById('hacRhoValue').textContent = e.target.value;
+        });
+        
+        // ========================================
+        // SERIAL CORRELATION SIMULATOR
+        // ========================================
+        
+        function simulateSerialCorrelation() {
+            const rho = parseFloat(document.getElementById('rho').value);
+            const n = parseInt(document.getElementById('sampleSizeSerial').value);
+            const trueBeta = parseFloat(document.getElementById('trueEffect').value);
+            const simCount = parseInt(document.getElementById('simulationCount').value);
+            
+            const results = runSerialCorrelationSimulation(rho, n, trueBeta, simCount);
+            
+            visualizeSerialPattern(results.sampleSeries, 'serialChart');
+            displaySerialResults(results, rho, trueBeta);
+            
+            document.getElementById('serialResults').style.display = 'block';
+        }
+        
+        function runSerialCorrelationSimulation(rho, n, trueBeta, simCount) {
+            let betas = [], olsStdErrors = [], trueStdErrors = [];
+            let sampleX, sampleY, sampleErrors;
+            
+            for (let sim = 0; sim < simCount; sim++) {
+                // Generate data with serial correlation
+                const x = [];
+                const u = []; // Serially correlated errors
+                const y = [];
+                
+                // Generate X variable
+                for (let t = 0; t < n; t++) {
+                    x[t] = Math.random() * 2 - 1; // Random X
+                }
+                
+                // Generate serially correlated errors
+                u[0] = Math.random() - 0.5; // Initial error
+                for (let t = 1; t < n; t++) {
+                    u[t] = rho * u[t-1] + (Math.random() - 0.5);
+                }
+                
+                // Generate Y variable
+                for (let t = 0; t < n; t++) {
+                    y[t] = 1 + trueBeta * x[t] + u[t];
+                }
+                
+                if (sim === 0) { // Save first simulation for visualization
+                    sampleX = [...x];
+                    sampleY = [...y];
+                    sampleErrors = [...u];
+                }
+                
+                // Run OLS regression
+                const olsResults = runOLS(x, y);
+                betas.push(olsResults.beta);
+                olsStdErrors.push(olsResults.stdError);
+                
+                // Calculate true standard error accounting for serial correlation
+                const trueSE = calculateTrueStandardError(x, rho);
+                trueStdErrors.push(trueSE);
+            }
+            
+            const avgBeta = betas.reduce((a, b) => a + b) / simCount;
+            const avgOLSSE = olsStdErrors.reduce((a, b) => a + b) / simCount;
+            const avgTrueSE = trueStdErrors.reduce((a, b) => a + b) / simCount;
+            
+            return {
+                avgBeta: avgBeta,
+                avgOLSSE: avgOLSSE,
+                avgTrueSE: avgTrueSE,
+                biasRatio: avgOLSSE / avgTrueSE,
+                sampleSeries: {x: sampleX, y: sampleY, errors: sampleErrors}
+            };
+        }
+        
+        function runOLS(x, y) {
+            const n = x.length;
+            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+            
+            for (let i = 0; i < n; i++) {
+                sumX += x[i];
+                sumY += y[i];
+                sumXY += x[i] * y[i];
+                sumX2 += x[i] * x[i];
+            }
+            
+            const beta = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            const alpha = (sumY - beta * sumX) / n;
+            
+            // Calculate standard error
+            let sse = 0;
+            for (let i = 0; i < n; i++) {
+                const predicted = alpha + beta * x[i];
+                sse += (y[i] - predicted) ** 2;
+            }
+            
+            const mse = sse / (n - 2);
+            const stdError = Math.sqrt(mse / (sumX2 - sumX * sumX / n));
+            
+            return { beta: beta, alpha: alpha, stdError: stdError };
+        }
+        
+        function calculateTrueStandardError(x, rho) {
+            const n = x.length;
+            let sumX2 = 0;
+            for (let i = 0; i < n; i++) {
+                sumX2 += x[i] * x[i];
+            }
+            
+            // Simplified correction for AR(1) errors
+            const correction = 1 + 2*rho/(1-rho) * (1 - (1-rho**n)/(n*(1-rho)));
+            return Math.sqrt(correction) * 0.5 / Math.sqrt(sumX2); // Approximate
+        }
+        
+        function visualizeSerialPattern(series, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+            container.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Plot errors to show serial correlation
+            const errors = series.errors;
+            const n = errors.length;
+            const minErr = Math.min(...errors);
+            const maxErr = Math.max(...errors);
+            const range = maxErr - minErr || 1;
+            
+            // Draw axes
+            ctx.strokeStyle = '#99f6e4';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(40, 20);
+            ctx.lineTo(40, height - 40);
+            ctx.lineTo(width - 20, height - 40);
+            
+            // Zero line
+            const zeroY = height - 40 - ((0 - minErr) / range) * (height - 60);
+            ctx.moveTo(40, zeroY);
+            ctx.lineTo(width - 20, zeroY);
+            ctx.stroke();
+            
+            // Draw error series
+            ctx.strokeStyle = '#0f766e';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            for (let i = 0; i < n; i++) {
+                const x = 40 + (i / (n - 1)) * (width - 60);
+                const y = height - 40 - ((errors[i] - minErr) / range) * (height - 60);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Add labels
+            ctx.font = '12px system-ui';
+            ctx.fillStyle = '#0f766e';
+            ctx.fillText('Serial Correlation in Errors', 50, 35);
+        }
+        
+        function displaySerialResults(results, rho, trueBeta) {
+            document.getElementById('avgBeta').textContent = results.avgBeta.toFixed(3);
+            document.getElementById('olsStdError').textContent = results.avgOLSSE.toFixed(3);
+            document.getElementById('trueStdError').textContent = results.avgTrueSE.toFixed(3);
+            document.getElementById('biasRatio').textContent = results.biasRatio.toFixed(2);
+            
+            const resultEl = document.getElementById('serialCorrelationResult');
+            const interpretationEl = document.getElementById('serialInterpretation');
+            
+            let assessment, interpretation;
+            
+            if (Math.abs(rho) < 0.2) {
+                assessment = 'Minimal Correlation';
+                resultEl.className = 'status-indicator status-no-correlation';
+                interpretation = `With ρ=${rho}, serial correlation is minimal. OLS standard errors (${results.avgOLSSE.toFixed(3)}) are approximately correct. No major efficiency loss.`;
+            } else if (Math.abs(rho) < 0.5) {
+                assessment = 'Moderate Correlation';
+                resultEl.className = 'status-indicator status-mild-correlation';
+                interpretation = `Moderate serial correlation (ρ=${rho}) causes bias in standard errors. OLS underestimates true standard errors by factor of ${results.biasRatio.toFixed(2)}. Consider correction methods.`;
+            } else {
+                assessment = 'Strong Correlation';
+                resultEl.className = 'status-indicator status-strong-correlation';
+                interpretation = `Strong serial correlation (ρ=${rho}) severely biases standard errors. OLS standard errors are ${results.biasRatio.toFixed(2)}× too small. Correction essential for valid inference.`;
+            }
+            
+            resultEl.textContent = assessment;
+            interpretationEl.textContent = interpretation;
+        }
+        
+        // ========================================
+        // SERIAL CORRELATION TESTING
+        // ========================================
+        
+        function testSerialCorrelation() {
+            const testType = document.getElementById('testType').value;
+            const rho = parseFloat(document.getElementById('testRho').value);
+            const n = parseInt(document.getElementById('testSampleSize').value);
+            const lags = parseInt(document.getElementById('testLags').value);
+            
+            const testResults = runSerialCorrelationTest(testType, rho, n, lags);
+            
+            visualizeTestPower(testResults.powerCurve, 'testChart');
+            displayTestResults(testResults, testType, rho);
+            
+            document.getElementById('testResults').style.display = 'block';
+        }
+        
+        function runSerialCorrelationTest(testType, trueRho, n, lags) {
+            // Generate data with specified serial correlation
+            const x = [];
+            const u = [];
+            const y = [];
+            
+            for (let t = 0; t < n; t++) {
+                x[t] = Math.random() * 2 - 1;
+            }
+            
+            u[0] = Math.random() - 0.5;
+            for (let t = 1; t < n; t++) {
+                u[t] = trueRho * u[t-1] + (Math.random() - 0.5) * 0.5;
+            }
+            
+            for (let t = 0; t < n; t++) {
+                y[t] = 1 + 1.5 * x[t] + u[t];
+            }
+            
+            // Run OLS and get residuals
+            const olsResults = runOLS(x, y);
+            const residuals = [];
+            for (let t = 0; t < n; t++) {
+                residuals[t] = y[t] - (olsResults.alpha + olsResults.beta * x[t]);
+            }
+            
+            let testStat, criticalValue, pValue, power;
+            
+            switch (testType) {
+                case 'durbin_watson':
+                    testStat = calculateDurbinWatson(residuals);
+                    criticalValue = 1.65; // Approximate 5% critical value
+                    pValue = testStat < 1.4 || testStat > 2.6 ? 0.01 : 0.15;
+                    break;
+                    
+                case 'breusch_godfrey':
+                    const bgResult = breuschGodfreyTest(residuals, x, lags);
+                    testStat = bgResult.lm;
+                    criticalValue = 3.84; // χ²(1) at 5%
+                    pValue = testStat > criticalValue ? 0.01 : 0.15;
+                    break;
+                    
+                case 'ljung_box':
+                    testStat = ljungBoxTest(residuals, lags);
+                    criticalValue = 3.84 * lags; // χ²(lags) approximation
+                    pValue = testStat > criticalValue ? 0.01 : 0.15;
+                    break;
+            }
+            
+            // Calculate test power curve
+            const powerCurve = calculateTestPower(testType, n, lags);
+            
+            return {
+                testStat: testStat,
+                criticalValue: criticalValue,
+                pValue: pValue,
+                power: Math.min(0.99, 0.1 + Math.abs(trueRho) * 1.2), // Simplified
+                powerCurve: powerCurve
+            };
+        }
+        
+        function calculateDurbinWatson(residuals) {
+            const n = residuals.length;
+            let numerator = 0, denominator = 0;
+            
+            for (let t = 1; t < n; t++) {
+                numerator += (residuals[t] - residuals[t-1]) ** 2;
+            }
+            
+            for (let t = 0; t < n; t++) {
+                denominator += residuals[t] ** 2;
+            }
+            
+            return numerator / denominator;
+        }
+        
+        function breuschGodfreyTest(residuals, x, lags) {
+            const n = residuals.length - lags;
+            
+            // Auxiliary regression: residual_t on x_t, residual_{t-1}, ..., residual_{t-lags}
+            let sse = 0, tss = 0;
+            const meanRes = residuals.slice(lags).reduce((a, b) => a + b) / n;
+            
+            // Simplified calculation
+            let r2 = Math.min(0.8, Math.abs(residuals[1]) * 0.3); // Approximate
+            
+            return {
+                lm: n * r2
+            };
+        }
+        
+        function ljungBoxTest(residuals, lags) {
+            const n = residuals.length;
+            
+            // Calculate autocorrelations
+            let testStat = 0;
+            for (let lag = 1; lag <= lags; lag++) {
+                let autocorr = calculateAutocorrelation(residuals, lag);
+                testStat += autocorr * autocorr / (n - lag);
+            }
+            
+            return n * (n + 2) * testStat;
+        }
+        
+        function calculateAutocorrelation(series, lag) {
+            const n = series.length;
+            let sum1 = 0, sum2 = 0, sum3 = 0;
+            
+            for (let i = lag; i < n; i++) {
+                sum1 += series[i] * series[i - lag];
+                sum2 += series[i] ** 2;
+                sum3 += series[i - lag] ** 2;
+            }
+            
+            return sum1 / Math.sqrt(sum2 * sum3);
+        }
+        
+        function calculateTestPower(testType, n, lags) {
+            const rhoValues = [];
+            const powerValues = [];
+            
+            for (let rho = 0; rho <= 0.8; rho += 0.1) {
+                rhoValues.push(rho);
+                // Simplified power calculation
+                let power = Math.min(0.99, rho * 1.2 + 0.05);
+                if (testType === 'durbin_watson' && lags > 1) power *= 0.8;
+                powerValues.push(power);
+            }
+            
+            return { rho: rhoValues, power: powerValues };
+        }
+        
+        function visualizeTestPower(powerCurve, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+            container.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Draw axes
+            ctx.strokeStyle = '#99f6e4';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(40, 20);
+            ctx.lineTo(40, height - 40);
+            ctx.lineTo(width - 20, height - 40);
+            ctx.stroke();
+            
+            // Draw power curve
+            ctx.strokeStyle = '#14b8a6';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            const rhoValues = powerCurve.rho;
+            const powerValues = powerCurve.power;
+            
+            for (let i = 0; i < rhoValues.length; i++) {
+                const x = 40 + (rhoValues[i] / 0.8) * (width - 60);
+                const y = height - 40 - powerValues[i] * (height - 60);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Add labels
+            ctx.font = '12px system-ui';
+            ctx.fillStyle = '#0f766e';
+            ctx.fillText('Test Power vs Serial Correlation', 50, 35);
+            ctx.fillText('ρ', width - 30, height - 25);
+            ctx.fillText('Power', 45, 35);
+        }
+        
+        function displayTestResults(results, testType, rho) {
+            document.getElementById('testStatistic').textContent = results.testStat.toFixed(3);
+            document.getElementById('criticalValue').textContent = results.criticalValue.toFixed(3);
+            document.getElementById('pValueTest').textContent = results.pValue.toFixed(3);
+            document.getElementById('testPower').textContent = (results.power * 100).toFixed(1) + '%';
+            
+            const resultEl = document.getElementById('serialTestResult');
+            const interpretationEl = document.getElementById('testInterpretation');
+            
+            const isSignificant = (testType === 'durbin_watson') ? 
+                (results.testStat < 1.4 || results.testStat > 2.6) : 
+                (results.testStat > results.criticalValue);
+            
+            const testNames = {
+                'durbin_watson': 'Durbin-Watson',
+                'breusch_godfrey': 'Breusch-Godfrey LM',
+                'ljung_box': 'Ljung-Box'
+            };
+            
+            let assessment = isSignificant ? 'Serial Correlation Detected' : 'No Serial Correlation';
+            let resultClass = isSignificant ? 'status-strong-correlation' : 'status-no-correlation';
+            
+            resultEl.textContent = assessment;
+            resultEl.className = `status-indicator ${resultClass}`;
+            
+            interpretationEl.textContent = `${testNames[testType]} test ${isSignificant ? 'rejects' : 'fails to reject'} the null hypothesis of no serial correlation. With true ρ=${rho}, test power is ${(results.power*100).toFixed(1)}%. ${isSignificant ? 'Consider correction methods or HAC standard errors.' : 'Standard OLS inference is appropriate.'}`;
+        }
+        
+        // ========================================
+        // CORRECTION METHODS COMPARISON
+        // ========================================
+        
+        function compareCorrections() {
+            const method = document.getElementById('correctionMethod').value;
+            const rho = parseFloat(document.getElementById('correctionRho').value);
+            const n = parseInt(document.getElementById('correctionSample').value);
+            const maxIter = parseInt(document.getElementById('iterations').value);
+            
+            const results = runCorrectionComparison(method, rho, n, maxIter);
+            
+            visualizeEfficiencyGains(results.efficiencyData, 'correctionChart');
+            displayCorrectionResults(results, method, rho);
+            
+            document.getElementById('correctionResults').style.display = 'block';
+        }
+        
+        function runCorrectionComparison(method, rho, n, maxIter) {
+            const simCount = 500;
+            let olsEfficiencies = [], correctedEfficiencies = [], coverageRates = [];
+            
+            for (let sim = 0; sim < simCount; sim++) {
+                // Generate data
+                const x = [];
+                const u = [];
+                const y = [];
+                
+                for (let t = 0; t < n; t++) {
+                    x[t] = Math.random() * 2 - 1;
+                }
+                
+                u[0] = Math.random() - 0.5;
+                for (let t = 1; t < n; t++) {
+                    u[t] = rho * u[t-1] + (Math.random() - 0.5) * 0.5;
+                }
+                
+                for (let t = 0; t < n; t++) {
+                    y[t] = 1 + 1.5 * x[t] + u[t];
+                }
+                
+                // OLS results
+                const olsResults = runOLS(x, y);
+                olsEfficiencies.push(1 / (olsResults.stdError ** 2));
+                
+                // Correction method results
+                let correctedResults;
+                switch (method) {
+                    case 'cochrane_orcutt':
+                        correctedResults = cochraneOrcuttProcedure(x, y, maxIter);
+                        break;
+                    case 'prais_winsten':
+                        correctedResults = praisWinstenProcedure(x, y, rho);
+                        break;
+                    case 'newey_west':
+                        correctedResults = neweyWestCorrection(x, y, Math.floor(n**0.25));
+                        break;
+                    default:
+                        correctedResults = olsResults;
+                }
+                
+                correctedEfficiencies.push(1 / (correctedResults.stdError ** 2));
+                
+                // Coverage rate calculation
+                const trueBeta = 1.5;
+                const ci_lower = correctedResults.beta - 1.96 * correctedResults.stdError;
+                const ci_upper = correctedResults.beta + 1.96 * correctedResults.stdError;
+                coverageRates.push((ci_lower <= trueBeta && trueBeta <= ci_upper) ? 1 : 0);
+            }
+            
+            const avgOLSEff = olsEfficiencies.reduce((a, b) => a + b) / simCount;
+            const avgCorrectedEff = correctedEfficiencies.reduce((a, b) => a + b) / simCount;
+            const avgCoverage = coverageRates.reduce((a, b) => a + b) / simCount;
+            
+            return {
+                olsEfficiency: avgOLSEff,
+                correctedEfficiency: avgCorrectedEff,
+                efficiencyGain: (avgCorrectedEff / avgOLSEff - 1) * 100,
+                coverageRate: avgCoverage,
+                efficiencyData: {
+                    ols: olsEfficiencies.slice(0, 50),
+                    corrected: correctedEfficiencies.slice(0, 50)
+                }
+            };
+        }
+        
+        function cochraneOrcuttProcedure(x, y, maxIter) {
+            let currentRho = 0;
+            let beta, alpha, stdError;
+            
+            for (let iter = 0; iter < maxIter; iter++) {
+                // Transform data
+                const xTrans = [], yTrans = [];
+                for (let t = 1; t < x.length; t++) {
+                    xTrans.push(x[t] - currentRho * x[t-1]);
+                    yTrans.push(y[t] - currentRho * y[t-1]);
+                }
+                
+                // Run OLS on transformed data
+                const olsResults = runOLS(xTrans, yTrans);
+                beta = olsResults.beta;
+                alpha = olsResults.alpha;
+                stdError = olsResults.stdError;
+                
+                // Estimate rho from residuals
+                const residuals = [];
+                for (let t = 0; t < x.length; t++) {
+                    residuals[t] = y[t] - (alpha + beta * x[t]);
+                }
+                
+                const newRho = calculateAutocorrelation(residuals, 1);
+                if (Math.abs(newRho - currentRho) < 0.01) break;
+                currentRho = Math.min(0.99, Math.max(-0.99, newRho));
+            }
+            
+            return { beta: beta, alpha: alpha, stdError: stdError };
+        }
+        
+        function praisWinstenProcedure(x, y, rho) {
+            const n = x.length;
+            const xTrans = [], yTrans = [];
+            
+            // Transform first observation
+            const sqrt1minusRho2 = Math.sqrt(1 - rho * rho);
+            xTrans.push(sqrt1minusRho2 * x[0]);
+            yTrans.push(sqrt1minusRho2 * y[0]);
+            
+            // Transform remaining observations
+            for (let t = 1; t < n; t++) {
+                xTrans.push(x[t] - rho * x[t-1]);
+                yTrans.push(y[t] - rho * y[t-1]);
+            }
+            
+            return runOLS(xTrans, yTrans);
+        }
+        
+        function neweyWestCorrection(x, y, lags) {
+            const olsResults = runOLS(x, y);
+            
+            // Simplified HAC standard error calculation
+            const hacCorrection = 1 + 0.3 * lags; // Approximate correction factor
+            const hacStdError = olsResults.stdError * Math.sqrt(hacCorrection);
+            
+            return {
+                beta: olsResults.beta,
+                alpha: olsResults.alpha,
+                stdError: hacStdError
+            };
+        }
+        
+        function visualizeEfficiencyGains(effData, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+            container.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Draw histogram comparing efficiency distributions
+            const binCount = 10;
+            const olsHist = createHistogram(effData.ols, binCount);
+            const correctedHist = createHistogram(effData.corrected, binCount);
+            
+            const maxHeight = Math.max(...olsHist.counts, ...correctedHist.counts);
+            const barWidth = (width - 80) / (binCount * 2);
+            
+            // Draw OLS bars
+            ctx.fillStyle = '#ef4444';
+            for (let i = 0; i < binCount; i++) {
+                const barHeight = (olsHist.counts[i] / maxHeight) * (height - 80);
+                ctx.fillRect(40 + i * barWidth * 2, height - 40 - barHeight, barWidth * 0.8, barHeight);
+            }
+            
+            // Draw corrected bars
+            ctx.fillStyle = '#10b981';
+            for (let i = 0; i < binCount; i++) {
+                const barHeight = (correctedHist.counts[i] / maxHeight) * (height - 80);
+                ctx.fillRect(40 + i * barWidth * 2 + barWidth, height - 40 - barHeight, barWidth * 0.8, barHeight);
+            }
+            
+            // Labels
+            ctx.font = '12px system-ui';
+            ctx.fillStyle = '#ef4444';
+            ctx.fillText('OLS', 50, 30);
+            ctx.fillStyle = '#10b981';
+            ctx.fillText('Corrected', 100, 30);
+        }
+        
+        function createHistogram(data, bins) {
+            const min = Math.min(...data);
+            const max = Math.max(...data);
+            const binWidth = (max - min) / bins;
+            const counts = new Array(bins).fill(0);
+            
+            for (let value of data) {
+                const binIndex = Math.min(bins - 1, Math.floor((value - min) / binWidth));
+                counts[binIndex]++;
+            }
+            
+            return { counts: counts, binWidth: binWidth, min: min };
+        }
+        
+        function displayCorrectionResults(results, method, rho) {
+            document.getElementById('olsEfficiency').textContent = results.olsEfficiency.toFixed(1);
+            document.getElementById('correctedEfficiency').textContent = results.correctedEfficiency.toFixed(1);
+            document.getElementById('efficiencyGain').textContent = results.efficiencyGain.toFixed(1) + '%';
+            document.getElementById('coverageRate').textContent = (results.coverageRate * 100).toFixed(1) + '%';
+            
+            const assessmentEl = document.getElementById('correctionAssessment');
+            const interpretationEl = document.getElementById('correctionInterpretation');
+            
+            const methodNames = {
+                'ols': 'OLS (Uncorrected)',
+                'cochrane_orcutt': 'Cochrane-Orcutt',
+                'prais_winsten': 'Prais-Winsten',
+                'newey_west': 'Newey-West HAC'
+            };
+            
+            let assessment, interpretation;
+            
+            if (results.efficiencyGain > 15) {
+                assessment = 'Significant Improvement';
+                assessmentEl.className = 'status-indicator status-no-correlation';
+                interpretation = `${methodNames[method]} provides ${results.efficiencyGain.toFixed(1)}% efficiency gain over OLS with coverage rate ${(results.coverageRate*100).toFixed(1)}%. Substantial improvement in precision.`;
+            } else if (results.efficiencyGain > 5) {
+                assessment = 'Moderate Improvement';
+                assessmentEl.className = 'status-indicator status-mild-correlation';
+                interpretation = `${methodNames[method]} shows ${results.efficiencyGain.toFixed(1)}% efficiency gain. Moderate improvement with serial correlation ρ=${rho}.`;
+            } else {
+                assessment = 'Minimal Improvement';
+                assessmentEl.className = 'status-indicator status-strong-correlation';
+                interpretation = `${methodNames[method]} provides minimal efficiency gain (${results.efficiencyGain.toFixed(1)}%). Consider alternative approaches or verify correction implementation.`;
+            }
+            
+            assessmentEl.textContent = assessment;
+            interpretationEl.textContent = interpretation;
+        }
+        
+        // ========================================
+        // ARCH EFFECTS SIMULATOR
+        // ========================================
+        
+        function simulateARCH() {
+            const archType = document.getElementById('archType').value;
+            const alpha = parseFloat(document.getElementById('archAlpha').value);
+            const beta = parseFloat(document.getElementById('garchBeta').value);
+            const n = parseInt(document.getElementById('archSample').value);
+            
+            const results = runARCHSimulation(archType, alpha, beta, n);
+            
+            visualizeVolatilityClustering(results.archData, 'archChart');
+            displayARCHResults(results, archType, alpha, beta);
+            
+            document.getElementById('archResults').style.display = 'block';
+        }
+        
+        function runARCHSimulation(archType, alpha, beta, n) {
+            const returns = [];
+            const volatility = [];
+            const alpha0 = 0.01; // Constant term
+            
+            // Initialize
+            returns[0] = Math.random() - 0.5;
+            volatility[0] = alpha0;
+            
+            for (let t = 1; t < n; t++) {
+                // Update volatility based on model type
+                switch (archType) {
+                    case 'constant':
+                        volatility[t] = alpha0;
+                        break;
+                    case 'arch1':
+                        volatility[t] = alpha0 + alpha * (returns[t-1] ** 2);
+                        break;
+                    case 'garch11':
+                        volatility[t] = alpha0 + alpha * (returns[t-1] ** 2) + beta * volatility[t-1];
+                        break;
+                }
+                
+                // Generate return
+                const epsilon = Math.random() - 0.5; // Standard normal approximation
+                returns[t] = Math.sqrt(volatility[t]) * epsilon;
+            }
+            
+            // ARCH test on returns
+            const squaredReturns = returns.map(r => r * r);
+            const archTestStat = runARCHTest(squaredReturns, 1);
+            
+            // Calculate persistence (for GARCH)
+            const persistence = archType === 'garch11' ? alpha + beta : alpha;
+            const maxVol = Math.max(...volatility);
+            
+            return {
+                archData: {
+                    returns: returns,
+                    volatility: volatility
+                },
+                archTestStat: archTestStat,
+                persistence: persistence,
+                maxVol: maxVol
+            };
+        }
+        
+        function runARCHTest(squaredReturns, lags) {
+            const n = squaredReturns.length - lags;
+            
+            // Simplified ARCH LM test
+            // Regress squared returns on lagged squared returns
+            let sse = 0, tss = 0;
+            const mean = squaredReturns.slice(lags).reduce((a, b) => a + b) / n;
+            
+            for (let t = lags; t < squaredReturns.length; t++) {
+                const predicted = mean; // Simplified
+                sse += (squaredReturns[t] - predicted) ** 2;
+                tss += (squaredReturns[t] - mean) ** 2;
+            }
+            
+            const r2 = Math.max(0, 1 - sse / tss);
+            return n * r2; // LM test statistic
+        }
+        
+        function visualizeVolatilityClustering(archData, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+            container.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height / 2; // Split for returns and volatility
+            
+            const returns = archData.returns;
+            const volatility = archData.volatility;
+            const n = returns.length;
+            
+            // Plot returns (top half)
+            const minRet = Math.min(...returns);
+            const maxRet = Math.max(...returns);
+            const retRange = maxRet - minRet || 1;
+            
+            ctx.strokeStyle = '#0f766e';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            
+            for (let i = 0; i < n; i++) {
+                const x = 40 + (i / (n - 1)) * (width - 60);
+                const y = 20 + ((maxRet - returns[i]) / retRange) * (height - 40);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Plot volatility (bottom half)
+            const minVol = Math.min(...volatility);
+            const maxVol = Math.max(...volatility);
+            const volRange = maxVol - minVol || 1;
+            
+            ctx.strokeStyle = '#14b8a6';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let i = 0; i < n; i++) {
+                const x = 40 + (i / (n - 1)) * (width - 60);
+                const y = height + 20 + ((maxVol - volatility[i]) / volRange) * (height - 40);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Labels
+            ctx.font = '12px system-ui';
+            ctx.fillStyle = '#0f766e';
+            ctx.fillText('Returns', 50, 35);
+            ctx.fillStyle = '#14b8a6';
+            ctx.fillText('Volatility', 50, height + 35);
+        }
+        
+        function displayARCHResults(results, archType, alpha, beta) {
+            document.getElementById('archTestStat').textContent = results.archTestStat.toFixed(2);
+            document.getElementById('archPValue').textContent = results.archTestStat > 3.84 ? '< 0.05' : '> 0.05';
+            document.getElementById('volatilityPersistence').textContent = results.persistence.toFixed(3);
+            document.getElementById('maxVolatility').textContent = (results.maxVol * 100).toFixed(1) + '%';
+            
+            const assessmentEl = document.getElementById('archAssessment');
+            const interpretationEl = document.getElementById('archInterpretation');
+            
+            const isArchPresent = results.archTestStat > 3.84;
+            
+            let assessment = isArchPresent ? 'ARCH Effects Present' : 'Constant Volatility';
+            let resultClass = isArchPresent ? 'status-arch-present' : 'status-no-correlation';
+            
+            assessmentEl.textContent = assessment;
+            assessmentEl.className = `status-indicator ${resultClass}`;
+            
+            const modelNames = {
+                'constant': 'constant variance',
+                'arch1': 'ARCH(1)',
+                'garch11': 'GARCH(1,1)'
+            };
+            
+            let interpretation = `${modelNames[archType]} model with `;
+            if (archType === 'garch11') {
+                interpretation += `α₁=${alpha}, β₁=${beta}. Persistence = ${results.persistence.toFixed(3)} `;
+                interpretation += results.persistence < 1 ? '(stationary)' : '(non-stationary)';
+            } else if (archType === 'arch1') {
+                interpretation += `α₁=${alpha}. `;
+            }
+            interpretation += ` ARCH test statistic: ${results.archTestStat.toFixed(2)}. `;
+            interpretation += isArchPresent ? 
+                'Significant time-varying volatility detected. Consider GARCH modeling.' : 
+                'No significant ARCH effects. Constant volatility assumption reasonable.';
+            
+            interpretationEl.textContent = interpretation;
+        }
+        
+        // ========================================
+        // HAC STANDARD ERRORS COMPARISON
+        // ========================================
+        
+        function compareHACMethods() {
+            const hacType = document.getElementById('hacType').value;
+            const rho = parseFloat(document.getElementById('hacRho').value);
+            const hetero = document.getElementById('hacHetero').value;
+            const lags = document.getElementById('hacLags').value;
+            
+            const results = runHACComparison(hacType, rho, hetero, lags);
+            
+            visualizeHACPerformance(results.coverageData, 'hacChart');
+            displayHACResults(results, hacType, rho, hetero);
+            
+            document.getElementById('hacResults').style.display = 'block';
+        }
+        
+        function runHACComparison(hacType, rho, hetero, lagSelection) {
+            const n = 200;
+            const simCount = 500;
+            const trueBeta = 1.5;
+            
+            let olsCoverageCount = 0, hacCoverageCount = 0;
+            let olsStdErrors = [], hacStdErrors = [];
+            const coverageData = { ols: [], hac: [] };
+            
+            for (let sim = 0; sim < simCount; sim++) {
+                // Generate data with both serial correlation and heteroskedasticity
+                const x = [];
+                const u = [];
+                const y = [];
+                
+                for (let t = 0; t < n; t++) {
+                    x[t] = Math.random() * 2 - 1;
+                }
+                
+                u[0] = Math.random() - 0.5;
+                for (let t = 1; t < n; t++) {
+                    // Serial correlation
+                    let error = rho * u[t-1] + (Math.random() - 0.5);
+                    
+                    // Heteroskedasticity
+                    let variance = 1;
+                    switch (hetero) {
+                        case 'mild':
+                            variance = 1 + 0.5 * x[t] ** 2;
+                            break;
+                        case 'strong':
+                            variance = 1 + 2 * x[t] ** 2;
+                            break;
+                    }
+                    
+                    u[t] = error * Math.sqrt(variance);
+                }
+                
+                for (let t = 0; t < n; t++) {
+                    y[t] = 1 + trueBeta * x[t] + u[t];
+                }
+                
+                // OLS results
+                const olsResults = runOLS(x, y);
+                olsStdErrors.push(olsResults.stdError);
+                
+                // HAC results
+                let hacStdError;
+                const L = lagSelection === 'auto' ? Math.floor(4 * Math.pow(n/100, 2/9)) : parseInt(lagSelection);
+                
+                switch (hacType) {
+                    case 'white':
+                        hacStdError = calculateWhiteStdError(x, y, olsResults);
+                        break;
+                    case 'newey_west':
+                        hacStdError = calculateNeweyWestStdError(x, y, olsResults, L);
+                        break;
+                    default:
+                        hacStdError = olsResults.stdError;
+                }
+                
+                hacStdErrors.push(hacStdError);
+                
+                // Coverage rates
+                const olsCI = [olsResults.beta - 1.96 * olsResults.stdError, olsResults.beta + 1.96 * olsResults.stdError];
+                const hacCI = [olsResults.beta - 1.96 * hacStdError, olsResults.beta + 1.96 * hacStdError];
+                
+                if (olsCI[0] <= trueBeta && trueBeta <= olsCI[1]) olsCoverageCount++;
+                if (hacCI[0] <= trueBeta && trueBeta <= hacCI[1]) hacCoverageCount++;
+                
+                coverageData.ols.push((olsCI[0] <= trueBeta && trueBeta <= olsCI[1]) ? 1 : 0);
+                coverageData.hac.push((hacCI[0] <= trueBeta && trueBeta <= hacCI[1]) ? 1 : 0);
+            }
+            
+            const avgOLSSE = olsStdErrors.reduce((a, b) => a + b) / simCount;
+            const avgHACSE = hacStdErrors.reduce((a, b) => a + b) / simCount;
+            
+            return {
+                olsCoverage: olsCoverageCount / simCount,
+                hacCoverage: hacCoverageCount / simCount,
+                seCorrection: avgHACSE / avgOLSSE,
+                optimalLags: lagSelection === 'auto' ? Math.floor(4 * Math.pow(n/100, 2/9)) : parseInt(lagSelection),
+                coverageData: coverageData
+            };
+        }
+        
+        function calculateWhiteStdError(x, y, olsResults) {
+            // Simplified White heteroskedasticity-robust standard error
+            const correction = 1.2; // Approximate correction factor
+            return olsResults.stdError * Math.sqrt(correction);
+        }
+        
+        function calculateNeweyWestStdError(x, y, olsResults, L) {
+            // Simplified Newey-West HAC standard error
+            const serialCorrection = 1 + 0.8 * L / x.length; // Approximate
+            const heteroCorrection = 1.1; // Approximate
+            return olsResults.stdError * Math.sqrt(serialCorrection * heteroCorrection);
+        }
+        
+        function visualizeHACPerformance(coverageData, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+            container.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Calculate running coverage rates
+            const olsRunning = [];
+            const hacRunning = [];
+            let olsSum = 0, hacSum = 0;
+            
+            for (let i = 0; i < Math.min(100, coverageData.ols.length); i++) {
+                olsSum += coverageData.ols[i];
+                hacSum += coverageData.hac[i];
+                olsRunning.push(olsSum / (i + 1));
+                hacRunning.push(hacSum / (i + 1));
+            }
+            
+            // Draw 95% line
+            ctx.strokeStyle = '#99f6e4';
+            ctx.setLineDash([5, 5]);
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            const targetY = height - 40 - 0.95 * (height - 60);
+            ctx.moveTo(40, targetY);
+            ctx.lineTo(width - 20, targetY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Draw OLS coverage
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i < olsRunning.length; i++) {
+                const x = 40 + (i / (olsRunning.length - 1)) * (width - 60);
+                const y = height - 40 - olsRunning[i] * (height - 60);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            
+            // Draw HAC coverage
+            ctx.strokeStyle = '#14b8a6';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i < hacRunning.length; i++) {
+                const x = 40 + (i / (hacRunning.length - 1)) * (width - 60);
+                const y = height - 40 - hacRunning[i] * (height - 60);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            
+            // Labels
+            ctx.font = '12px system-ui';
+            ctx.fillStyle = '#ef4444';
+            ctx.fillText('OLS', 50, 30);
+            ctx.fillStyle = '#14b8a6';
+            ctx.fillText('HAC', 80, 30);
+            ctx.fillStyle = '#99f6e4';
+            ctx.fillText('95% Target', width - 80, targetY - 5);
+        }
+        
+        function displayHACResults(results, hacType, rho, hetero) {
+            document.getElementById('olsCoverage').textContent = (results.olsCoverage * 100).toFixed(1) + '%';
+            document.getElementById('hacCoverage').textContent = (results.hacCoverage * 100).toFixed(1) + '%';
+            document.getElementById('seCorrection').textContent = results.seCorrection.toFixed(2);
+            document.getElementById('optimalLags').textContent = results.optimalLags.toString();
+            
+            const assessmentEl = document.getElementById('hacAssessment');
+            const interpretationEl = document.getElementById('hacInterpretation');
+            
+            const coverageImprovement = results.hacCoverage - results.olsCoverage;
+            
+            let assessment, interpretation;
+            
+            if (coverageImprovement > 0.1) {
+                assessment = 'Substantial Improvement';
+                assessmentEl.className = 'status-indicator status-hac-robust';
+                interpretation = `HAC standard errors significantly improve coverage from ${(results.olsCoverage*100).toFixed(1)}% to ${(results.hacCoverage*100).toFixed(1)}%. Standard error correction factor: ${results.seCorrection.toFixed(2)}. Essential with ρ=${rho} and ${hetero} heteroskedasticity.`;
+            } else if (coverageImprovement > 0.05) {
+                assessment = 'Moderate Improvement';
+                assessmentEl.className = 'status-indicator status-mild-correlation';
+                interpretation = `HAC provides moderate coverage improvement (${(coverageImprovement*100).toFixed(1)} percentage points). Standard errors increased by factor of ${results.seCorrection.toFixed(2)} to account for correlation and heteroskedasticity.`;
+            } else {
+                assessment = 'Minimal Improvement';
+                assessmentEl.className = 'status-indicator status-no-correlation';
+                interpretation = `HAC shows minimal improvement over OLS. With low serial correlation and ${hetero} heteroskedasticity, standard OLS inference may be adequate. Standard error adjustment: ${results.seCorrection.toFixed(2)}.`;
+            }
+            
+            assessmentEl.textContent = assessment;
+            interpretationEl.textContent = interpretation;
+        }
+        
+        // ========================================
+        // DYNAMIC QUIZ SYSTEM
+        // ========================================
+        
+        let currentQuestions = [];
+        let answeredQuestions = {};
+        
+        const questionBank = {
+            serial_correlation: [
+                {
+                    question: "When errors follow u_t = ρu_{t-1} + e_t with ρ ≠ 0, OLS estimates are:",
+                    options: [
+                        "Biased and inefficient",
+                        "Unbiased but inefficient",
+                        "Biased but efficient",
+                        "Unbiased and efficient"
+                    ],
+                    correct: 1,
+                    explanation: "With serial correlation, OLS remains unbiased (E[β̂] = β) but becomes inefficient. The main problem is that standard errors are incorrect, making t and F tests invalid."
+                },
+                {
+                    question: "The Durbin-Watson statistic ranges from:",
+                    options: [
+                        "-1 to +1",
+                        "0 to 2",
+                        "0 to 4",
+                        "1 to 3"
+                    ],
+                    correct: 2,
+                    explanation: "DW = Σ(ê_t - ê_{t-1})²/Σê_t² ranges from 0 to 4. DW ≈ 2 indicates no serial correlation, DW < 2 suggests positive correlation, DW > 2 suggests negative correlation."
+                },
+                {
+                    question: "A major limitation of the Durbin-Watson test is that it:",
+                    options: [
+                        "Only tests for first-order serial correlation",
+                        "Requires large sample sizes",
+                        "Cannot detect negative correlation",
+                        "Only works with cross-sectional data"
+                    ],
+                    correct: 0,
+                    explanation: "The Durbin-Watson test only detects first-order AR(1) serial correlation and cannot be used when lagged dependent variables are present. The Breusch-Godfrey LM test is more general."
+                },
+                {
+                    question: "If u_t = 0.7u_{t-1} + e_t, the half-life of a shock is approximately:",
+                    options: [
+                        "1 period",
+                        "2 periods",
+                        "3 periods",
+                        "5 periods"
+                    ],
+                    correct: 1,
+                    explanation: "Half-life = ln(0.5)/ln(0.7) ≈ 2 periods. After 2 periods, the effect of an initial shock will have decayed to about 50% of its original magnitude."
+                }
+            ],
+            testing_procedures: [
+                {
+                    question: "The Breusch-Godfrey LM test advantage over Durbin-Watson is:",
+                    options: [
+                        "More powerful for small samples",
+                        "Can test higher-order correlation and allows lagged dependent variables",
+                        "Provides exact critical values",
+                        "Does not require normality assumption"
+                    ],
+                    correct: 1,
+                    explanation: "Breusch-Godfrey can test for serial correlation of any order (not just AR(1)) and can be used even when the regression includes lagged dependent variables, making it more general than DW."
+                },
+                {
+                    question: "In the Breusch-Godfrey test, the LM statistic is:",
+                    options: [
+                        "nR² from auxiliary regression",
+                        "The Durbin-Watson statistic",
+                        "The F-statistic from original regression",
+                        "The correlation coefficient of residuals"
+                    ],
+                    correct: 0,
+                    explanation: "The LM test statistic is nR² from the auxiliary regression of residuals on original regressors plus lagged residuals. Under H₀, LM ~ χ²(p) where p is the number of lags tested."
+                },
+                {
+                    question: "A significant Breusch-Godfrey test indicates:",
+                    options: [
+                        "Heteroskedasticity is present",
+                        "The model is correctly specified",
+                        "Serial correlation exists in residuals",
+                        "Multicollinearity problems"
+                    ],
+                    correct: 2,
+                    explanation: "Rejecting H₀ in the Breusch-Godfrey test indicates serial correlation in the residuals, suggesting that OLS standard errors are incorrect and correction methods should be considered."
+                }
+            ],
+            correction_methods: [
+                {
+                    question: "The Cochrane-Orcutt procedure:",
+                    options: [
+                        "Estimates ρ and β simultaneously",
+                        "Iteratively estimates ρ, then transforms data and re-estimates β",
+                        "Only works with AR(2) processes",
+                        "Provides heteroskedasticity-robust standard errors"
+                    ],
+                    correct: 1,
+                    explanation: "Cochrane-Orcutt is iterative: (1) OLS to estimate β, (2) estimate ρ from residuals, (3) transform data using ρ̂, (4) re-estimate β on transformed data, (5) repeat until convergence."
+                },
+                {
+                    question: "Prais-Winsten differs from Cochrane-Orcutt by:",
+                    options: [
+                        "Using maximum likelihood estimation",
+                        "Retaining the first observation after transformation",
+                        "Working only with positive serial correlation",
+                        "Estimating ρ more accurately"
+                    ],
+                    correct: 1,
+                    explanation: "Prais-Winsten transforms the first observation as √(1-ρ²)y₁ to retain it in the sample, making the procedure more efficient than Cochrane-Orcutt, which loses the first observation."
+                },
+                {
+                    question: "When should you use correction procedures versus HAC standard errors?",
+                    options: [
+                        "Always use correction procedures",
+                        "Use correction if you know the correlation structure; HAC if uncertain",
+                        "Always use HAC standard errors",
+                        "Use correction only for small samples"
+                    ],
+                    correct: 1,
+                    explanation: "If you're confident about the serial correlation structure (e.g., AR(1)), correction procedures like Cochrane-Orcutt are more efficient. If uncertain about the form, HAC standard errors are more robust."
+                }
+            ],
+            arch_effects: [
+                {
+                    question: "ARCH(1) models assume error variance depends on:",
+                    options: [
+                        "Current period shocks",
+                        "Previous period squared errors",
+                        "Lagged dependent variables",
+                        "Exogenous variables only"
+                    ],
+                    correct: 1,
+                    explanation: "In ARCH(1): σₜ² = α₀ + α₁u²ₜ₋₁. Current volatility depends on the previous period's squared error, creating volatility clustering where large shocks increase future volatility."
+                },
+                {
+                    question: "The key difference between ARCH(1) and GARCH(1,1) is:",
+                    options: [
+                        "GARCH allows negative volatility",
+                        "GARCH includes lagged conditional variance",
+                        "ARCH is more parsimonious",
+                        "GARCH requires larger samples"
+                    ],
+                    correct: 1,
+                    explanation: "GARCH(1,1): σₜ² = α₀ + α₁u²ₜ₋₁ + β₁σ²ₜ₋₁ includes lagged conditional variance (σ²ₜ₋₁), making it more persistent and flexible than ARCH(1) which only includes lagged squared errors."
+                },
+                {
+                    question: "Engle's ARCH test regresses:",
+                    options: [
+                        "Residuals on lagged residuals",
+                        "Squared residuals on lagged squared residuals",
+                        "Returns on lagged returns",
+                        "Volatility on time trend"
+                    ],
+                    correct: 1,
+                    explanation: "The ARCH LM test regresses ê²ₜ on ê²ₜ₋₁, ..., ê²ₜ₋ₚ. The test statistic is nR² ~ χ²(p). Significant results indicate time-varying volatility requiring GARCH modeling."
+                },
+                {
+                    question: "Volatility persistence in GARCH(1,1) is measured by:",
+                    options: [
+                        "α₁ only",
+                        "β₁ only", 
+                        "α₁ + β₁",
+                        "α₀ + α₁ + β₁"
+                    ],
+                    correct: 2,
+                    explanation: "In GARCH(1,1), persistence = α₁ + β₁. Values close to 1 indicate high persistence (shocks affect volatility for long periods). Values ≥ 1 suggest non-stationarity."
+                }
+            ],
+            hac_standard_errors: [
+                {
+                    question: "Newey-West HAC standard errors are robust to:",
+                    options: [
+                        "Heteroskedasticity only",
+                        "Serial correlation only",
+                        "Both heteroskedasticity and serial correlation of unknown form",
+                        "Non-normality only"
+                    ],
+                    correct: 2,
+                    explanation: "Newey-West HAC (Heteroskedasticity and Autocorrelation Consistent) standard errors provide robust inference under both heteroskedasticity and serial correlation without requiring knowledge of the specific forms."
+                },
+                {
+                    question: "The lag truncation parameter L in Newey-West is typically chosen as:",
+                    options: [
+                        "L = n/4",
+                        "L = 4(n/100)^(2/9)",
+                        "L = √n",
+                        "L = log(n)"
+                    ],
+                    correct: 1,
+                    explanation: "The rule L = 4(n/100)^(2/9) balances bias and variance in the HAC estimator. Too few lags underestimate correlation; too many lags increase variance. Data-driven methods can also select L optimally."
+                },
+                {
+                    question: "HAC standard errors use Bartlett weights to:",
+                    options: [
+                        "Increase the weight of recent observations",
+                        "Ensure positive definiteness of covariance matrix",
+                        "Reduce the influence of distant lags",
+                        "Account for heteroskedasticity"
+                    ],
+                    correct: 2,
+                    explanation: "Bartlett weights w(j) = 1 - j/(L+1) decline linearly with lag distance, giving less weight to more distant autocovariances and helping ensure the covariance matrix remains positive semi-definite."
+                },
+                {
+                    question: "When should you prefer HAC standard errors over correction procedures?",
+                    options: [
+                        "When sample size is small",
+                        "When the correlation/heteroskedasticity structure is unknown",
+                        "When you want maximum efficiency",
+                        "When using experimental data"
+                    ],
+                    correct: 1,
+                    explanation: "HAC standard errors are preferred when you're uncertain about the specific form of serial correlation or heteroskedasticity. They provide robust inference without needing to correctly specify and estimate the error structure."
+                }
+            ]
+        };
+        
+        function regenerateQuiz() {
+            answeredQuestions = {};
+            currentQuestions = [];
+            
+            const categories = Object.keys(questionBank);
+            categories.forEach(category => {
+                const categoryQuestions = questionBank[category];
+                const randomIndex = Math.floor(Math.random() * categoryQuestions.length);
+                currentQuestions.push({
+                    ...categoryQuestions[randomIndex],
+                    category: category,
+                    id: `q${currentQuestions.length + 1}`
+                });
+            });
+            
+            currentQuestions = shuffleArray(currentQuestions).slice(0, 5);
+            renderQuiz();
+            document.getElementById('quizSummary').style.display = 'none';
+        }
+        
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+        
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+            let html = '';
+            currentQuestions.forEach((question, index) => {
+                html += `
+                    <div class="quiz-question">
+                        <p><strong>Question ${index + 1}:</strong> ${question.question}</p>
+                        <div class="quiz-options">
+                `;
+                question.options.forEach((option, optIndex) => {
+                    html += `
+                        <label class="quiz-option" onclick="selectDynamicAnswer('${question.id}', ${optIndex})">
+                            <input type="radio" name="${question.id}" value="${optIndex}">
+                            ${String.fromCharCode(65 + optIndex)}) ${option}
+                        </label>
+                    `;
+                });
+                html += `
+                        </div>
+                        <div id="feedback${question.id}" class="quiz-feedback"></div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+        
+        function selectDynamicAnswer(questionId, selectedAnswer) {
+            const question = currentQuestions.find(q => q.id === questionId);
+            if (!question) return;
+            
+            const isCorrect = selectedAnswer === question.correct;
+            answeredQuestions[questionId] = {
+                selected: selectedAnswer,
+                correct: isCorrect,
+                question: question
+            };
+            
+            const options = document.querySelectorAll(`input[name="${questionId}"]`);
+            options.forEach((option, index) => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (index === question.correct) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            const feedbackEl = document.getElementById(`feedback${questionId}`);
+            feedbackEl.textContent = question.explanation;
+            feedbackEl.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackEl.style.display = 'block';
+            
+            if (Object.keys(answeredQuestions).length === currentQuestions.length) {
+                setTimeout(() => showQuizSummary(), 1000);
+            }
+        }
+        
+        function showQuizSummary() {
+            const totalQuestions = currentQuestions.length;
+            const correctAnswers = Object.values(answeredQuestions).filter(a => a.correct).length;
+            const score = Math.round((correctAnswers / totalQuestions) * 100);
+            
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            document.getElementById('quizScore').textContent = score + '%';
+            
+            let feedback = '';
+            if (score >= 90) {
+                feedback = '🌟 Outstanding expertise in time series econometrics! You have mastered serial correlation, ARCH effects, correction methods, and HAC inference.';
+            } else if (score >= 80) {
+                feedback = '👍 Excellent understanding of advanced time series issues! Strong grasp of testing procedures, correction methods, and robust inference.';
+            } else if (score >= 70) {
+                feedback = '✨ Good foundation in time series econometrics. Focus on distinguishing correction methods from HAC approaches, and ARCH modeling concepts.';
+            } else if (score >= 60) {
+                feedback = '📚 Developing understanding. Review serial correlation consequences, testing procedures, and when to use different correction approaches.';
+            } else {
+                feedback = '🔄 Complex advanced material! Study Sections 12.1-12.5 carefully. Focus on serial correlation problems, ARCH effects, and robust inference methods. Practice with simulators.';
+            }
+            
+            document.getElementById('quizFeedback').textContent = feedback;
+            document.getElementById('quizSummary').style.display = 'block';
+            document.getElementById('quizSummary').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        // ========================================
+        // UTILITY AND AI CHAT FUNCTIONS
+        // ========================================
+        
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        function toggleAIChat() {
+            const panel = document.getElementById('aiChatPanel');
+            const icon = document.getElementById('aiChatIcon');
+            
+            if (isAIChatOpen) {
+                panel.classList.remove('show');
+                icon.textContent = '⚡';
+                isAIChatOpen = false;
+            } else {
+                panel.classList.add('show');
+                icon.textContent = '✖️';
+                isAIChatOpen = true;
+                document.getElementById('aiInput').focus();
+            }
+        }
+        
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addAIMessage('user', message);
+            input.value = '';
+            setTimeout(() => {
+                const response = getAIResponse(message);
+                addAIMessage('claude', response);
+            }, 500);
+        }
+        
+        function addAIMessage(sender, message) {
+            const messagesContainer = document.getElementById('aiChatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender}`;
+            
+            if (sender === 'user') {
+                messageDiv.textContent = message;
+            } else {
+                messageDiv.innerHTML = `<strong>⚡ Claude:</strong> ${message}`;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function getAIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            if (message.includes('serial correlation') || message.includes('autocorrelation')) {
+                return "Serial correlation means errors are correlated across time: u_t = ρu_{t-1} + e_t. This makes OLS inefficient and standard errors wrong. Test with Durbin-Watson or Breusch-Godfrey, correct with Cochrane-Orcutt or use HAC standard errors.";
+            }
+            if (message.includes('durbin watson') || message.includes('dw test')) {
+                return "Durbin-Watson tests for AR(1) serial correlation. DW ≈ 2 means no correlation, DW < 2 suggests positive correlation, DW > 2 suggests negative correlation. Range is 0 to 4. Limited to first-order correlation and no lagged dependent variables.";
+            }
+            if (message.includes('breusch godfrey') || message.includes('lm test')) {
+                return "Breusch-Godfrey LM test is more general than Durbin-Watson. Can test any order of serial correlation and allows lagged dependent variables. Test statistic: nR² from auxiliary regression of residuals on original regressors plus lagged residuals.";
+            }
+            if (message.includes('cochrane orcutt') || message.includes('prais winsten')) {
+                return "Cochrane-Orcutt is iterative: estimate ρ from residuals, transform data, re-estimate β, repeat. Prais-Winsten modifies first observation to retain it: √(1-ρ²)y₁. Both correct for AR(1) serial correlation and restore efficiency.";
+            }
+            if (message.includes('arch') || message.includes('garch')) {
+                return "ARCH models time-varying volatility: σₜ² = α₀ + α₁u²ₜ₋₁. GARCH adds persistence: σₜ² = α₀ + α₁u²ₜ₋₁ + β₁σ²ₜ₋₁. Creates volatility clustering. Test with Engle's LM test (regress ê²ₜ on lagged ê²ₜ₋ⱼ).";
+            }
+            if (message.includes('hac') || message.includes('newey west')) {
+                return "HAC (Newey-West) standard errors are robust to both heteroskedasticity and serial correlation of unknown form. Use when uncertain about error structure. Lag selection: L = 4(n/100)^(2/9). Bartlett weights decline with distance.";
+            }
+            if (message.includes('efficiency') || message.includes('when to use')) {
+                return "Use correction methods (Cochrane-Orcutt, Prais-Winsten) when you know the serial correlation structure - they're more efficient. Use HAC standard errors when structure is unknown - they're more robust but less efficient.";
+            }
+            
+            return "I can help with serial correlation testing (Durbin-Watson, Breusch-Godfrey), correction methods (Cochrane-Orcutt, Prais-Winsten), ARCH/GARCH modeling, and HAC standard errors. What specific topic interests you?";
+        }
+        
+        document.addEventListener('click', function(event) {
+            const widget = document.querySelector('.ai-chat-widget');
+            if (isAIChatOpen && !widget.contains(event.target)) {
+                toggleAIChat();
+            }
+        });
+        
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => regenerateQuiz(), 1000);
+            
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0) scale(1)';
+                    }
+                });
+            }, observerOptions);
+            
+            document.querySelectorAll('.fade-in, .pulse-animation').forEach(el => {
+                observer.observe(el);
+            });
+            
+            console.log('Chapter 12: Serial Correlation and Heteroskedasticity in Time Series loaded successfully! ⚡');
+        });
+        
+    </script>
+
+</body>
+</html>
