@@ -891,10 +891,10 @@
                 <span>←</span>
                 <span>Chapter 8</span>
             </a>
-            <div class="nav-button" style="opacity: 0.5; cursor: not-allowed;" onclick="alert('Chapter 10 coming soon!')">
+            <a href="chapter10.html" class="nav-button">
                 <span>→</span>
                 <span>Chapter 10</span>
-            </div>
+            </a>
         </div>
         
         <!-- Section 9.1: Functional Form Misspecification -->
@@ -1405,107 +1405,48 @@
         <section class="section fade-in delay-4">
             <div class="quiz-section">
                 <div class="quiz-content">
-                    <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--primary-specification);">
-                        🔍 Chapter 9 Knowledge Check: Specification and Data Issues
+                    <h3 style="text-align: center; margin-bottom: 1rem; color: var(--primary-specification);">
+                        🎯 Chapter 9 Knowledge Check: Specification and Data Issues
                     </h3>
-                    <p style="text-align: center; color: var(--tech-600); margin-bottom: 2rem;">
+                    <p style="text-align: center; color: var(--tech-600); margin-bottom: 1rem;">
                         Test your understanding of functional form, measurement error, missing data, and robust methods
                     </p>
                     
-                    <!-- Question 1 -->
-                    <div class="quiz-question">
-                        <p><strong>Question 1:</strong> The RESET test is designed to detect:</p>
-                        <div class="quiz-options">
-                            <label class="quiz-option" onclick="selectAnswer('q1', 'A')">
-                                <input type="radio" name="q1" value="A">
-                                A) Heteroskedasticity in the error terms
-                            </label>
-                            <label class="quiz-option" onclick="selectAnswer('q1', 'B')">
-                                <input type="radio" name="q1" value="B">
-                                B) Functional form misspecification
-                            </label>
-                            <label class="quiz-option" onclick="selectAnswer('q1', 'C')">
-                                <input type="radio" name="q1" value="C">
-                                C) Serial correlation in time series
-                            </label>
-                            <label class="quiz-option" onclick="selectAnswer('q1', 'D')">
-                                <input type="radio" name="q1" value="D">
-                                D) Multicollinearity between variables
-                            </label>
-                        </div>
-                        <div id="feedback1" class="quiz-feedback"></div>
+                    <!-- Regenerate Button -->
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <button onclick="regenerateQuiz()" class="action-button" style="margin: 0; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                            🔄 Generate New Questions
+                        </button>
+                        <p style="font-size: 0.8rem; color: var(--tech-600); margin-top: 0.5rem;">
+                            Click to get a fresh set of randomly generated specification and data problems
+                        </p>
                     </div>
-
-                    <!-- Question 2 -->
-                    <div class="quiz-question">
-                        <p><strong>Question 2:</strong> Measurement error in explanatory variables typically causes:</p>
-                        <div class="quiz-options">
-                            <label class="quiz-option" onclick="selectAnswer('q2', 'A')">
-                                <input type="radio" name="q2" value="A">
-                                A) Upward bias in coefficient estimates
-                            </label>
-                            <label class="quiz-option" onclick="selectAnswer('q2', 'B')">
-                                <input type="radio" name="q2" value="B">
-                                B) Attenuation bias toward zero
-                            </label>
-                            <label class="quiz-option" onclick="selectAnswer('q2', 'C')">
-                                <input type="radio" name="q2" value="C">
-                                C) No bias but increased variance
-                            </label>
-                            <label class="quiz-option" onclick="selectAnswer('q2', 'D')">
-                                <input type="radio" name="q2" value="D">
-                                D) Heteroskedasticity in residuals
-                            </label>
-                        </div>
-                        <div id="feedback2" class="quiz-feedback"></div>
+                    
+                    <div id="quizContainer">
+                        <!-- Questions will be dynamically generated here -->
                     </div>
-
-                    <!-- Question 3 -->
-                    <div class="quiz-question">
-                        <p><strong>Question 3:</strong> Least Absolute Deviations (LAD) is preferred over OLS when:</p>
-                        <div class="quiz-options">
-                            <label class="quiz-option" onclick="selectAnswer('q3', 'A')">
-                                <input type="radio" name="q3" value="A">
-                                A) Sample size is very large
-                            </label>
-                            <label class="quiz-option" onclick="selectAnswer('q3', 'B')">
-                                <input type="radio" name="q3" value="B">
-                                B) Data contains significant outliers
-                            </label>
-                            <label class="quiz-option" onclick="selectAnswer('q3', 'C')">
-                                <input type="radio" name="q3" value="C">
-                                C) Variables are perfectly correlated
-                            </label>
-                            <label class="quiz-option" onclick="selectAnswer('q3', 'D')">
-                                <input type="radio" name="q3" value="D">
-                                D) Errors are normally distributed
-                            </label>
+                    
+                    <!-- Quiz Results Summary -->
+                    <div id="quizSummary" style="display: none; margin-top: 2rem; padding: 1.5rem; background: var(--tech-50); border-radius: 8px; border-left: 4px solid var(--primary-specification);">
+                        <h4 style="color: var(--primary-specification); margin-bottom: 1rem;">Quiz Results</h4>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                            <div style="text-align: center; padding: 1rem; background: white; border-radius: 6px;">
+                                <div id="correctCount" style="font-size: 1.5rem; font-weight: bold; color: var(--status-correct);">-</div>
+                                <div style="font-size: 0.8rem; color: var(--tech-600);">Correct</div>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: white; border-radius: 6px;">
+                                <div id="totalQuestions" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-specification);">-</div>
+                                <div style="font-size: 0.8rem; color: var(--tech-600);">Total</div>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: white; border-radius: 6px;">
+                                <div id="quizScore" style="font-size: 1.5rem; font-weight: bold; color: var(--secondary-specification);">-</div>
+                                <div style="font-size: 0.8rem; color: var(--tech-600);">Score</div>
+                            </div>
                         </div>
-                        <div id="feedback3" class="quiz-feedback"></div>
-                    </div>
-
-                    <!-- Question 4 -->
-                    <div class="quiz-question">
-                        <p><strong>Question 4:</strong> Missing data is MCAR (Missing Completely at Random) when:</p>
-                        <div class="quiz-options">
-                            <label class="quiz-option" onclick="selectAnswer('q4', 'A')">
-                                <input type="radio" name="q4" value="A">
-                                A) Missingness depends on observed variables only
-                            </label>
-                            <label class="quiz-option" onclick="selectAnswer('q4', 'B')">
-                                <input type="radio" name="q4" value="B">
-                                B) Missingness is unrelated to any variables
-                            </label>
-                            <label class="quiz-option" onclick="selectAnswer('q4', 'C')">
-                                <input type="radio" name="q4" value="C">
-                                C) Missingness depends on unobserved variables
-                            </label>
-                            <label class="quiz-option" onclick="selectAnswer('q4', 'D')">
-                                <input type="radio" name="q4" value="D">
-                                D) Missing values can be predicted perfectly
-                            </label>
-                        </div>
-                        <div id="feedback4" class="quiz-feedback"></div>
+                        <div id="quizFeedback" style="color: var(--tech-700); line-height: 1.6;"></div>
+                        <button onclick="regenerateQuiz()" class="action-button" style="margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                            Try Again with New Questions
+                        </button>
                     </div>
                 </div>
             </div>
@@ -2478,6 +2419,278 @@
             document.querySelectorAll('.fade-in, .slide-up, .specification-animation').forEach(el => {
                 observer.observe(el);
             });
+        });
+        
+        // ========================================
+        // DYNAMIC QUIZ SYSTEM
+        // ========================================
+        
+        let currentQuestions = [];
+        let answeredQuestions = {};
+        
+        const questionBank = {
+            functional_form: [
+                {
+                    question: "The RESET test is designed to detect:",
+                    options: [
+                        "Heteroskedasticity in the error terms",
+                        "Functional form misspecification",
+                        "Serial correlation in time series",
+                        "Multicollinearity between variables"
+                    ],
+                    correct: 1,
+                    explanation: "RESET (Regression Specification Error Test) detects functional form misspecification by testing whether higher-order fitted values (ŷ², ŷ³) have explanatory power in the original equation."
+                },
+                {
+                    question: "In the RESET test, you regress y on x, ŷ², ŷ³ and test:",
+                    options: [
+                        "H₀: all coefficients are zero",
+                        "H₀: coefficients on ŷ², ŷ³ are zero",
+                        "H₀: coefficient on x is zero",
+                        "H₀: R² is significantly different from zero"
+                    ],
+                    correct: 1,
+                    explanation: "RESET tests H₀: δ₁ = δ₂ = 0 in the regression y = β₀ + β₁x + δ₁ŷ² + δ₂ŷ³ + error. Rejecting H₀ suggests functional form misspecification."
+                },
+                {
+                    question: "If the RESET test rejects the null hypothesis, you should:",
+                    options: [
+                        "Use robust standard errors",
+                        "Consider alternative functional forms (logs, squares, interactions)",
+                        "Increase the sample size",
+                        "Drop problematic variables"
+                    ],
+                    correct: 1,
+                    explanation: "RESET rejection suggests the linear functional form is inadequate. Try log transformations, quadratic terms, interactions, or other functional forms guided by economic theory."
+                }
+            ],
+            measurement_error: [
+                {
+                    question: "Measurement error in explanatory variables typically causes:",
+                    options: [
+                        "Upward bias in coefficient estimates",
+                        "Attenuation bias toward zero", 
+                        "No bias but increased variance",
+                        "Heteroskedasticity in residuals"
+                    ],
+                    correct: 1,
+                    explanation: "Classical measurement error in explanatory variables causes attenuation bias: plim β̂₁ = β₁ · [σ²ₓ₁*/(σ²ₓ₁* + σ²ₑ₁)], which is less than β₁ in absolute value."
+                },
+                {
+                    question: "If the reliability ratio is 0.8, the bias factor is:",
+                    options: [
+                        "0.8 (no bias)",
+                        "0.2 (coefficient is 20% of true value)",
+                        "0.8 (coefficient is 80% of true value)",
+                        "1.25 (coefficient is 125% of true value)"
+                    ],
+                    correct: 2,
+                    explanation: "The reliability ratio λ = σ²ₓ₁*/(σ²ₓ₁* + σ²ₑ₁) equals the bias factor. If λ = 0.8, then plim β̂₁ = 0.8 × β₁."
+                }
+            ],
+            missing_data: [
+                {
+                    question: "Missing data is MCAR (Missing Completely at Random) when:",
+                    options: [
+                        "Missingness depends on observed variables only",
+                        "Missingness is unrelated to any variables",
+                        "Missingness depends on unobserved variables",
+                        "Missing values can be predicted perfectly"
+                    ],
+                    correct: 1,
+                    explanation: "MCAR means the probability of missingness is constant for all observations - completely unrelated to any observed or unobserved variables."
+                },
+                {
+                    question: "MAR (Missing at Random) means missingness depends on:",
+                    options: [
+                        "Observed variables only",
+                        "Unobserved variables only",
+                        "Both observed and unobserved variables",
+                        "No variables (same as MCAR)"
+                    ],
+                    correct: 0,
+                    explanation: "MAR means missingness probability depends on observed variables but not on unobserved variables after controlling for observed ones."
+                }
+            ],
+            robust_methods: [
+                {
+                    question: "Least Absolute Deviations (LAD) is preferred over OLS when:",
+                    options: [
+                        "Sample size is very large",
+                        "Data contains significant outliers",
+                        "Variables are perfectly correlated",
+                        "Errors are normally distributed"
+                    ],
+                    correct: 1,
+                    explanation: "LAD minimizes Σ|yᵢ - xᵢβ| instead of squared residuals, making it much more robust to outliers than OLS."
+                },
+                {
+                    question: "LAD estimates:",
+                    options: [
+                        "The conditional mean E[y|x]",
+                        "The conditional median Med[y|x]",
+                        "The conditional mode Mode[y|x]",
+                        "The conditional variance Var[y|x]"
+                    ],
+                    correct: 1,
+                    explanation: "LAD estimates the conditional median, while OLS estimates the conditional mean. The median is less sensitive to extreme values."
+                }
+            ]
+        };
+        
+        function regenerateQuiz() {
+            // Clear previous state
+            answeredQuestions = {};
+            currentQuestions = [];
+            
+            // Randomly select questions from different categories
+            const categories = Object.keys(questionBank);
+            const questionsPerCategory = Math.max(1, Math.floor(5 / categories.length));
+            
+            categories.forEach(category => {
+                const categoryQuestions = questionBank[category];
+                const selectedQuestions = [];
+                const used = new Set();
+                
+                while (selectedQuestions.length < questionsPerCategory && selectedQuestions.length < categoryQuestions.length) {
+                    const randomIndex = Math.floor(Math.random() * categoryQuestions.length);
+                    if (!used.has(randomIndex)) {
+                        selectedQuestions.push({
+                            ...categoryQuestions[randomIndex],
+                            category: category,
+                            id: `q${currentQuestions.length + selectedQuestions.length + 1}`
+                        });
+                        used.add(randomIndex);
+                    }
+                }
+                
+                currentQuestions.push(...selectedQuestions);
+            });
+            
+            // Shuffle the selected questions
+            currentQuestions = shuffleArray(currentQuestions);
+            
+            // Limit to 5 questions
+            currentQuestions = currentQuestions.slice(0, 5);
+            
+            // Render the quiz
+            renderQuiz();
+            
+            // Hide summary
+            document.getElementById('quizSummary').style.display = 'none';
+        }
+        
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+        
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+            
+            let html = '';
+            currentQuestions.forEach((question, index) => {
+                html += `
+                    <div class="quiz-question">
+                        <p><strong>Question ${index + 1}:</strong> ${question.question}</p>
+                        <div class="quiz-options">
+                `;
+                
+                question.options.forEach((option, optIndex) => {
+                    html += `
+                        <label class="quiz-option" onclick="selectDynamicAnswer('${question.id}', ${optIndex})">
+                            <input type="radio" name="${question.id}" value="${optIndex}">
+                            ${String.fromCharCode(65 + optIndex)}) ${option}
+                        </label>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                        <div id="feedback${question.id}" class="quiz-feedback"></div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function selectDynamicAnswer(questionId, selectedAnswer) {
+            const question = currentQuestions.find(q => q.id === questionId);
+            if (!question) return;
+            
+            const isCorrect = selectedAnswer === question.correct;
+            answeredQuestions[questionId] = {
+                selected: selectedAnswer,
+                correct: isCorrect,
+                question: question
+            };
+            
+            // Update option styling
+            const options = document.querySelectorAll(`input[name="${questionId}"]`);
+            options.forEach((option, index) => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (index === question.correct) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            // Show feedback
+            const feedbackEl = document.getElementById(`feedback${questionId}`);
+            feedbackEl.textContent = question.explanation;
+            feedbackEl.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackEl.style.display = 'block';
+            
+            // Check if all questions are answered
+            if (Object.keys(answeredQuestions).length === currentQuestions.length) {
+                setTimeout(() => showQuizSummary(), 1000);
+            }
+        }
+        
+        function showQuizSummary() {
+            const totalQuestions = currentQuestions.length;
+            const correctAnswers = Object.values(answeredQuestions).filter(a => a.correct).length;
+            const score = Math.round((correctAnswers / totalQuestions) * 100);
+            
+            // Update summary display
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            document.getElementById('quizScore').textContent = score + '%';
+            
+            // Generate feedback
+            let feedback = '';
+            if (score >= 90) {
+                feedback = '🌟 Outstanding! You have mastered specification and data issues. You understand RESET testing, measurement error, missing data mechanisms, and robust methods.';
+            } else if (score >= 80) {
+                feedback = '👍 Excellent! Strong grasp of specification issues. Review LAD estimation and measurement error for complete mastery.';
+            } else if (score >= 70) {
+                feedback = '✨ Good progress! Focus on distinguishing MCAR/MAR/MNAR and when to use robust methods.';
+            } else {
+                feedback = '📚 Keep studying! Review Sections 9.1-9.4 on functional form, measurement error, missing data, and robust estimation.';
+            }
+            
+            document.getElementById('quizFeedback').textContent = feedback;
+            document.getElementById('quizSummary').style.display = 'block';
+            
+            // Smooth scroll to summary
+            document.getElementById('quizSummary').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+        }
+        
+        // Initialize quiz
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                regenerateQuiz();
+            }, 1000);
         });
         
     </script>
