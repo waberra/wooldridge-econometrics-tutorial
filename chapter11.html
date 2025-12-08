@@ -1,0 +1,2560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 11: Further Issues in Using OLS with Time Series Data - Wooldridge Econometrics</title>
+    <style>
+        :root {
+            /* Time Series Theme - Deep blues and temporal gradients */
+            --primary-temporal: #1e3a8a;
+            --secondary-temporal: #3730a3;
+            --accent-temporal: #06b6d4;
+            --tech-50: #f8fafc;
+            --tech-100: #f1f5f9;
+            --tech-200: #e2e8f0;
+            --tech-300: #cbd5e1;
+            --tech-400: #94a3b8;
+            --tech-500: #64748b;
+            --tech-600: #475569;
+            --tech-700: #334155;
+            --tech-800: #1e293b;
+            --tech-900: #0f172a;
+            
+            /* Status colors for time series analysis */
+            --status-stationary: #10b981;
+            --status-nonstationary: #f59e0b;
+            --status-spurious: #ef4444;
+            --status-cointegrated: #8b5cf6;
+            --trend-color: #06b6d4;
+            --cycle-color: #ec4899;
+            
+            /* Typography */
+            --font-primary: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            line-height: 1.6;
+            color: var(--tech-800);
+            background: linear-gradient(135deg, var(--tech-50) 0%, #fefefe 50%, var(--tech-50) 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 3rem 0;
+            background: linear-gradient(135deg, var(--primary-temporal), var(--secondary-temporal));
+            color: white;
+            margin-bottom: 3rem;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff10' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            opacity: 0.05;
+        }
+
+        .chapter-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff, #e2e8f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .chapter-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        /* Navigation */
+        .nav-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            border: 1px solid var(--tech-200);
+        }
+
+        .nav-pills {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-pill {
+            padding: 0.75rem 1.5rem;
+            background: var(--tech-100);
+            border: none;
+            border-radius: 50px;
+            color: var(--tech-700);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .nav-pill:hover {
+            background: var(--primary-temporal);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+        }
+
+        .nav-pill.active {
+            background: var(--primary-temporal);
+            color: white;
+            box-shadow: 0 2px 8px rgba(30, 58, 138, 0.3);
+        }
+
+        /* Section Styling */
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            border: 1px solid var(--tech-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-temporal), var(--accent-temporal));
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-temporal);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section p {
+            margin-bottom: 1rem;
+            color: var(--tech-700);
+            line-height: 1.7;
+        }
+
+        /* Concept Boxes */
+        .concept-box {
+            background: var(--tech-50);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border: 1px solid var(--tech-200);
+            position: relative;
+        }
+
+        .concept-box.temporal {
+            background: linear-gradient(135deg, #eff6ff, #f0f9ff);
+            border-color: var(--primary-temporal);
+            border-left: 4px solid var(--primary-temporal);
+        }
+
+        .concept-box.warning {
+            background: linear-gradient(135deg, #fef3c7, #fef7cd);
+            border-color: #f59e0b;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .concept-box.danger {
+            background: linear-gradient(135deg, #fee2e2, #fef2f2);
+            border-color: #ef4444;
+            border-left: 4px solid #ef4444;
+        }
+
+        .concept-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-temporal);
+            font-size: 1.1rem;
+        }
+
+        .concept-box.warning .concept-title {
+            color: #d97706;
+        }
+
+        .concept-box.danger .concept-title {
+            color: #dc2626;
+        }
+
+        /* Formula Boxes */
+        .formula {
+            background: var(--tech-900);
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            border: 1px solid var(--tech-700);
+        }
+
+        /* Interactive Controls */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .control-group {
+            background: var(--tech-50);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid var(--tech-200);
+        }
+
+        .control-group h4 {
+            color: var(--primary-temporal);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 500;
+            color: var(--tech-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--tech-300);
+            border-radius: 6px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary-temporal);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--primary-temporal), var(--secondary-temporal));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 1rem 0;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 58, 138, 0.3);
+        }
+
+        /* Results Display */
+        .results-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid var(--tech-200);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: none;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--tech-50);
+            border-radius: 8px;
+            border: 1px solid var(--tech-200);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--tech-600);
+            font-weight: 500;
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .status-stationary {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--status-stationary);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-nonstationary {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--status-nonstationary);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-spurious {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--status-spurious);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .status-cointegrated {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--status-cointegrated);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        /* Visualization */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            background: white;
+            border: 1px solid var(--tech-200);
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        /* Quiz Section */
+        .quiz-section {
+            background: linear-gradient(135deg, var(--tech-50), #ffffff);
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 1px solid var(--tech-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-section::before {
+            content: '📈';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 8rem;
+            opacity: 0.03;
+            transform: rotate(15deg);
+        }
+
+        .quiz-question {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 1px solid var(--tech-200);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .quiz-question p {
+            font-weight: 600;
+            color: var(--tech-800);
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--tech-50);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .quiz-option:hover {
+            background: var(--tech-100);
+            border-color: var(--primary-temporal);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--status-stationary);
+            color: var(--status-stationary);
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--status-spurious);
+            color: var(--status-spurious);
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .quiz-feedback.correct {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--status-stationary);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .quiz-feedback.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--status-spurious);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* AI Chat Widget */
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        .ai-chat-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-temporal), var(--secondary-temporal));
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(30, 58, 138, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .ai-chat-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(30, 58, 138, 0.4);
+        }
+
+        .ai-chat-panel {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 350px;
+            height: 450px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.15);
+            border: 1px solid var(--tech-200);
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ai-chat-panel.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .ai-chat-header {
+            background: linear-gradient(135deg, var(--primary-temporal), var(--secondary-temporal));
+            color: white;
+            padding: 1rem;
+            border-radius: 12px 12px 0 0;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .ai-message {
+            max-width: 85%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .ai-message.user {
+            background: var(--primary-temporal);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-message.claude {
+            background: var(--tech-100);
+            color: var(--tech-800);
+            border-bottom-left-radius: 4px;
+        }
+
+        .ai-input-area {
+            padding: 1rem;
+            border-top: 1px solid var(--tech-200);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid var(--tech-300);
+            border-radius: 20px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .ai-send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-temporal);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .fade-in.delay-1 { animation-delay: 0.1s; }
+        .fade-in.delay-2 { animation-delay: 0.2s; }
+        .fade-in.delay-3 { animation-delay: 0.3s; }
+        .fade-in.delay-4 { animation-delay: 0.4s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .temporal-animation {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .temporal-animation::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.2), transparent);
+            animation: temporalPulse 3s infinite;
+        }
+
+        @keyframes temporalPulse {
+            to {
+                left: 100%;
+            }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .chapter-title {
+                font-size: 2rem;
+            }
+
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .nav-pills {
+                flex-direction: column;
+            }
+
+            .ai-chat-panel {
+                width: calc(100vw - 4rem);
+                right: 2rem;
+                left: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header fade-in">
+            <h1 class="chapter-title">📈 Chapter 11</h1>
+            <p class="chapter-subtitle">Further Issues in Using OLS with Time Series Data</p>
+        </header>
+
+        <!-- Navigation -->
+        <div class="nav-container fade-in delay-1">
+            <div class="nav-pills">
+                <a href="#" onclick="scrollToSection('stationarity')" class="nav-pill">
+                    📊 Stationarity & Unit Roots
+                </a>
+                <a href="#" onclick="scrollToSection('spurious')" class="nav-pill">
+                    ⚠️ Spurious Regression
+                </a>
+                <a href="#" onclick="scrollToSection('cointegration')" class="nav-pill">
+                    🔗 Cointegration
+                </a>
+                <a href="#" onclick="scrollToSection('ecm')" class="nav-pill">
+                    🔄 Error Correction
+                </a>
+                <a href="#" onclick="scrollToSection('trends')" class="nav-pill">
+                    📈 Trends & Seasonality
+                </a>
+                <a href="#" onclick="scrollToSection('quiz')" class="nav-pill">
+                    🎯 Knowledge Check
+                </a>
+            </div>
+        </div>
+
+        <!-- Section 11.1: Stationarity and Unit Root Tests -->
+        <section class="section fade-in delay-2" id="stationarity">
+            <h2 class="section-title">11.1 📊 Stationarity and Unit Root Tests</h2>
+            
+            <p>Stationarity is crucial for valid time series inference. A time series {y_t} is (weakly) stationary if its mean, variance, and covariances are time-invariant. Non-stationary series can lead to spurious regression results.</p>
+
+            <div class="concept-box temporal">
+                <div class="concept-title">📊 Stationarity Conditions</div>
+                <p><strong>Weak Stationarity requires:</strong><br>
+                1) E[y_t] = μ (constant mean)<br>
+                2) Var(y_t) = σ² (constant variance)<br>
+                3) Cov(y_t, y_{t-j}) = γ_j (depends only on lag j, not time t)</p>
+                <div class="formula">
+                    Random walk: y_t = y_{t-1} + u_t ⟹ Non-stationary (unit root)
+                    <br>AR(1): y_t = ρy_{t-1} + u_t ⟹ Stationary if |ρ| < 1
+                </div>
+            </div>
+
+            <div class="concept-box warning">
+                <div class="concept-title">⚠️ Unit Root Problem</div>
+                <p>When ρ = 1 in AR(1), we have a unit root. This creates non-stationarity because shocks have permanent effects. Standard asymptotic theory breaks down, and t-tests become invalid.</p>
+            </div>
+
+            <!-- Unit Root Test Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🔬 Unit Root Test Simulator</h4>
+                    
+                    <div class="input-group">
+                        <label for="seriesType">Time Series Type:</label>
+                        <select id="seriesType">
+                            <option value="random_walk">Random Walk (ρ=1)</option>
+                            <option value="stationary">Stationary AR(1) (ρ=0.8)</option>
+                            <option value="near_unit_root">Near Unit Root (ρ=0.98)</option>
+                            <option value="explosive">Explosive (ρ=1.02)</option>
+                            <option value="trend_stationary">Trend Stationary</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="sampleSize">Sample Size:</label>
+                        <select id="sampleSize">
+                            <option value="50">50 observations</option>
+                            <option value="100" selected>100 observations</option>
+                            <option value="200">200 observations</option>
+                            <option value="500">500 observations</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="testType">Unit Root Test:</label>
+                        <select id="testType">
+                            <option value="adf" selected>Augmented Dickey-Fuller</option>
+                            <option value="pp">Phillips-Perron</option>
+                            <option value="kpss">KPSS (stationarity null)</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateUnitRootTest()">
+                        🔬 Run Unit Root Test
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📈 Series Visualization</h4>
+                    <div class="chart-container" id="seriesChart" style="background: var(--tech-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--tech-400);">
+                            Click "Run Unit Root Test" to generate time series
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="unitRootResults">
+                <h4 style="color: var(--primary-temporal); margin-bottom: 1rem;">Unit Root Test Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="testStatistic" style="color: var(--primary-temporal);">-</div>
+                        <div class="stat-label">Test Statistic</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="criticalValue" style="color: var(--tech-600);">-</div>
+                        <div class="stat-label">Critical Value (5%)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="pValue" style="color: var(--accent-temporal);">-</div>
+                        <div class="stat-label">P-value</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="stationarityResult" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="testInterpretation" style="color: var(--tech-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 11.2: Spurious Regression -->
+        <section class="section fade-in delay-3" id="spurious">
+            <h2 class="section-title">11.2 ⚠️ Spurious Regression Problem</h2>
+            
+            <p>When regressing one non-stationary series on another independent non-stationary series, we often find statistically significant relationships that are purely spurious. This occurs because both series are trending, not because they're truly related.</p>
+
+            <div class="concept-box danger">
+                <div class="concept-title">⚠️ Spurious Regression Characteristics</div>
+                <p><strong>Typical symptoms:</strong><br>
+                • High R² values (often > 0.8)<br>
+                • Highly significant t-statistics<br>
+                • Low Durbin-Watson statistic (< 0.5)<br>
+                • Residuals are non-stationary</p>
+                <div class="formula">
+                    y_t = α + βx_t + u_t where y_t ~ I(1), x_t ~ I(1), but no cointegration
+                    <br>⟹ β̂ does not converge to any meaningful value
+                </div>
+            </div>
+
+            <!-- Spurious Regression Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🎲 Spurious Regression Simulator</h4>
+                    
+                    <div class="input-group">
+                        <label for="spuriousType">Regression Type:</label>
+                        <select id="spuriousType">
+                            <option value="independent_rw">Independent Random Walks</option>
+                            <option value="cointegrated">Cointegrated Series</option>
+                            <option value="stationary">Stationary Series</option>
+                            <option value="trend_spurious">Trending Variables</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="spuriousSampleSize">Sample Size:</label>
+                        <select id="spuriousSampleSize">
+                            <option value="100">100 observations</option>
+                            <option value="200" selected>200 observations</option>
+                            <option value="500">500 observations</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="numSimulations">Number of Simulations:</label>
+                        <select id="numSimulations">
+                            <option value="100">100 replications</option>
+                            <option value="500" selected>500 replications</option>
+                            <option value="1000">1000 replications</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateSpuriousRegression()">
+                        🎲 Simulate Spurious Regression
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Sample Series</h4>
+                    <div class="chart-container" id="spuriousChart" style="background: var(--tech-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--tech-400); text-align: center;">
+                            Click "Simulate" to generate<br>spurious regression example
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="spuriousResults">
+                <h4 style="color: var(--primary-temporal); margin-bottom: 1rem;">Spurious Regression Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="avgRSquared" style="color: var(--status-spurious);">-</div>
+                        <div class="stat-label">Average R²</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="significantPct" style="color: var(--status-spurious);">-</div>
+                        <div class="stat-label">% Significant at 5%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avgDW" style="color: var(--tech-600);">-</div>
+                        <div class="stat-label">Average DW Stat</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avgTStat" style="color: var(--status-spurious);">-</div>
+                        <div class="stat-label">Average |t-stat|</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="spuriousAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="spuriousInterpretation" style="color: var(--tech-700); line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 11.3: Cointegration -->
+        <section class="section fade-in delay-4" id="cointegration">
+            <h2 class="section-title">11.3 🔗 Cointegration Analysis</h2>
+            
+            <p>Cointegration exists when non-stationary variables share a long-run equilibrium relationship. If y_t and x_t are both I(1), they are cointegrated if some linear combination is I(0) (stationary).</p>
+
+            <div class="concept-box temporal">
+                <div class="concept-title">🔗 Cointegration Definition</div>
+                <p>Variables y_t, x_t are cointegrated if:<br>
+                1) Both are integrated of order 1: y_t, x_t ~ I(1)<br>
+                2) ∃ β such that u_t = y_t - βx_t ~ I(0)</p>
+                <div class="formula">
+                    Cointegrating relationship: y_t = β₀ + β₁x_t + u_t
+                    <br>where u_t is stationary (represents deviations from equilibrium)
+                </div>
+            </div>
+
+            <!-- Cointegration Test Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🔬 Cointegration Test Simulator</h4>
+                    
+                    <div class="input-group">
+                        <label for="cointegrationType">Data Generating Process:</label>
+                        <select id="cointegrationType">
+                            <option value="cointegrated" selected>Cointegrated System</option>
+                            <option value="no_cointegration">No Cointegration</option>
+                            <option value="spurious_cointegration">Spurious Cointegration</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="cointegratingParam">True β (if cointegrated):</label>
+                        <input type="number" id="cointegratingParam" value="1.5" step="0.1" min="0" max="3">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="cointSampleSize">Sample Size:</label>
+                        <select id="cointSampleSize">
+                            <option value="100">100 observations</option>
+                            <option value="200" selected>200 observations</option>
+                            <option value="500">500 observations</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="cointTestType">Test Method:</label>
+                        <select id="cointTestType">
+                            <option value="engle_granger" selected>Engle-Granger</option>
+                            <option value="johansen">Johansen (simplified)</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateCointegrationTest()">
+                        🔗 Test for Cointegration
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📈 Cointegrated Series</h4>
+                    <div class="chart-container" id="cointChart" style="background: var(--tech-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--tech-400); text-align: center;">
+                            Generate cointegrated series<br>to visualize long-run relationship
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="cointegrationResults">
+                <h4 style="color: var(--primary-temporal); margin-bottom: 1rem;">Cointegration Test Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="cointBeta" style="color: var(--status-cointegrated);">-</div>
+                        <div class="stat-label">Estimated β</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="cointTestStat" style="color: var(--primary-temporal);">-</div>
+                        <div class="stat-label">Test Statistic</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="cointCritical" style="color: var(--tech-600);">-</div>
+                        <div class="stat-label">Critical Value</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="residualTest" style="color: var(--accent-temporal);">-</div>
+                        <div class="stat-label">Residual ADF</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="cointegrationResult" class="status-indicator">Testing...</span>
+                </div>
+                <p id="cointInterpretation" style="color: var(--tech-700); line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 11.4: Error Correction Models -->
+        <section class="section fade-in delay-5" id="ecm">
+            <h2 class="section-title">11.4 🔄 Error Correction Models (ECM)</h2>
+            
+            <p>When variables are cointegrated, an Error Correction Model captures both short-run dynamics and long-run equilibrium adjustment. The ECM shows how quickly variables return to equilibrium after a shock.</p>
+
+            <div class="concept-box temporal">
+                <div class="concept-title">🔄 Error Correction Mechanism</div>
+                <p>If y_t and x_t are cointegrated, the ECM representation is:</p>
+                <div class="formula">
+                    Δy_t = α + β₁Δx_t + β₂(y_{t-1} - γx_{t-1}) + u_t
+                    <br>where (y_{t-1} - γx_{t-1}) is the error correction term (ECT)
+                    <br>β₂ < 0: speed of adjustment toward equilibrium
+                </div>
+                <p><strong>Interpretation:</strong> If β₂ = -0.3, then 30% of disequilibrium is corrected each period.</p>
+            </div>
+
+            <!-- ECM Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>⚙️ ECM Parameters</h4>
+                    
+                    <div class="input-group">
+                        <label for="adjustmentSpeed">Adjustment Speed (|α|):</label>
+                        <input type="range" id="adjustmentSpeed" min="0.1" max="1" step="0.1" value="0.3">
+                        <span id="adjustmentValue">0.3</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="shortRunEffect">Short-run Effect (β₁):</label>
+                        <input type="range" id="shortRunEffect" min="0" max="2" step="0.1" value="0.8">
+                        <span id="shortRunValue">0.8</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="longRunEffect">Long-run Effect (γ):</label>
+                        <input type="range" id="longRunEffect" min="0.5" max="2.5" step="0.1" value="1.5">
+                        <span id="longRunValue">1.5</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="shockSize">Shock Size:</label>
+                        <select id="shockSize">
+                            <option value="1">Small (1σ)</option>
+                            <option value="2" selected>Medium (2σ)</option>
+                            <option value="3">Large (3σ)</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateErrorCorrection()">
+                        🔄 Simulate Error Correction
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Adjustment Dynamics</h4>
+                    <div class="chart-container" id="ecmChart" style="background: var(--tech-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--tech-400); text-align: center;">
+                            Simulate to view<br>error correction dynamics
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="ecmResults">
+                <h4 style="color: var(--primary-temporal); margin-bottom: 1rem;">Error Correction Analysis</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="halfLife" style="color: var(--accent-temporal);">-</div>
+                        <div class="stat-label">Half-life (periods)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="fullAdjustment" style="color: var(--status-cointegrated);">-</div>
+                        <div class="stat-label">95% Adjustment</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="maxDeviation" style="color: var(--status-spurious);">-</div>
+                        <div class="stat-label">Max Deviation</div>
+                    </div>
+                </div>
+                <p id="ecmInterpretation" style="color: var(--tech-700); line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 11.5: Trends and Seasonality -->
+        <section class="section fade-in delay-6" id="trends">
+            <h2 class="section-title">11.5 📈 Dealing with Trends and Seasonality</h2>
+            
+            <p>Many economic time series exhibit deterministic trends and seasonal patterns. Proper treatment of these features is essential for avoiding spurious relationships and obtaining valid inference.</p>
+
+            <div class="concept-box temporal">
+                <div class="concept-title">📈 Trend Types and Solutions</div>
+                <p><strong>Deterministic Trend:</strong> y_t = α + βt + u_t (trend stationary)</p>
+                <p><strong>Stochastic Trend:</strong> y_t = y_{t-1} + u_t (difference stationary)</p>
+                <div class="formula">
+                    Trend removal: Include time trend in regression
+                    <br>Seasonal adjustment: Include seasonal dummies or use seasonal differences
+                    <br>Hodrick-Prescott filter: Separates trend from cycle
+                </div>
+            </div>
+
+            <div class="concept-box warning">
+                <div class="concept-title">⚠️ Seasonal Unit Roots</div>
+                <p>Some series have unit roots at seasonal frequencies. Monthly data might have unit roots at frequencies corresponding to 12-month cycles. This requires specialized testing and treatment.</p>
+            </div>
+
+            <!-- Trend and Seasonal Analysis -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>📊 Series Decomposition</h4>
+                    
+                    <div class="input-group">
+                        <label for="trendType">Trend Component:</label>
+                        <select id="trendType">
+                            <option value="none">No Trend</option>
+                            <option value="linear" selected>Linear Trend</option>
+                            <option value="quadratic">Quadratic Trend</option>
+                            <option value="stochastic">Stochastic Trend</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="seasonalType">Seasonal Pattern:</label>
+                        <select id="seasonalType">
+                            <option value="none">No Seasonality</option>
+                            <option value="deterministic" selected>Deterministic</option>
+                            <option value="stochastic">Stochastic</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="frequency">Frequency:</label>
+                        <select id="frequency">
+                            <option value="4">Quarterly</option>
+                            <option value="12" selected>Monthly</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="trendStrength">Trend Strength:</label>
+                        <input type="range" id="trendStrength" min="0.1" max="2" step="0.1" value="0.5">
+                        <span id="trendStrengthValue">0.5</span>
+                    </div>
+                    
+                    <button class="action-button" onclick="analyzeTrendSeasonal()">
+                        📊 Analyze Series Components
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>🔍 Component Visualization</h4>
+                    <div class="chart-container" id="trendChart" style="background: var(--tech-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--tech-400); text-align: center;">
+                            Analyze to decompose<br>trend and seasonal components
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="trendResults">
+                <h4 style="color: var(--primary-temporal); margin-bottom: 1rem;">Series Decomposition Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="trendVariance" style="color: var(--trend-color);">-</div>
+                        <div class="stat-label">Trend Variance %</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="seasonalVariance" style="color: var(--cycle-color);">-</div>
+                        <div class="stat-label">Seasonal Variance %</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="irregularVariance" style="color: var(--tech-600);">-</div>
+                        <div class="stat-label">Irregular Variance %</div>
+                    </div>
+                </div>
+                <p id="trendInterpretation" style="color: var(--tech-700); line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section class="section fade-in delay-7" id="quiz">
+            <div class="quiz-section">
+                <h3 style="text-align: center; margin-bottom: 1rem; color: var(--primary-temporal);">
+                    🎯 Chapter 11 Knowledge Check: Advanced Time Series
+                </h3>
+                <p style="text-align: center; color: var(--tech-600); margin-bottom: 1rem;">
+                    Test your understanding of stationarity, spurious regression, cointegration, and error correction
+                </p>
+                
+                <!-- Regenerate Button -->
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <button onclick="regenerateQuiz()" class="action-button" style="margin: 0; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                        🔄 Generate New Questions
+                    </button>
+                    <p style="font-size: 0.8rem; color: var(--tech-600); margin-top: 0.5rem;">
+                        Click to get a fresh set of randomly generated time series problems
+                    </p>
+                </div>
+                
+                <div id="quizContainer">
+                    <!-- Questions will be dynamically generated here -->
+                </div>
+                
+                <!-- Quiz Results Summary -->
+                <div id="quizSummary" style="display: none; margin-top: 2rem; padding: 1.5rem; background: var(--tech-50); border-radius: 8px; border-left: 4px solid var(--primary-temporal);">
+                    <h4 style="color: var(--primary-temporal); margin-bottom: 1rem;">Quiz Results</h4>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 6px;">
+                            <div id="correctCount" style="font-size: 1.5rem; font-weight: bold; color: var(--status-stationary);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--tech-600);">Correct</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 6px;">
+                            <div id="totalQuestions" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-temporal);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--tech-600);">Total</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 6px;">
+                            <div id="quizScore" style="font-size: 1.5rem; font-weight: bold; color: var(--secondary-temporal);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--tech-600);">Score</div>
+                        </div>
+                    </div>
+                    <div id="quizFeedback" style="color: var(--tech-700); line-height: 1.6;"></div>
+                    <button onclick="regenerateQuiz()" class="action-button" style="margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                        Try Again with New Questions
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div class="ai-chat-widget">
+        <button class="ai-chat-button" onclick="toggleAIChat()" title="Ask Claude about Advanced Time Series">
+            <span id="aiChatIcon">📈</span>
+        </button>
+        
+        <div class="ai-chat-panel" id="aiChatPanel">
+            <div class="ai-chat-header">
+                <span>📈 Time Series Analytics Tutor</span>
+                <button onclick="toggleAIChat()" style="background: none; border: none; color: white; cursor: pointer;">×</button>
+            </div>
+            
+            <div class="ai-chat-messages" id="aiChatMessages">
+                <div class="ai-message claude">
+                    <strong>📈 Claude:</strong> Hi! I can help you understand stationarity, unit roots, spurious regression, cointegration, error correction models, and time series decomposition. What would you like to explore?
+                </div>
+            </div>
+            
+            <div class="ai-input-area">
+                <input type="text" class="ai-input" id="aiInput" placeholder="Ask about time series..." 
+                       onkeydown="if(event.key==='Enter') sendAIMessage()">
+                <button class="ai-send-btn" onclick="sendAIMessage()">→</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // GLOBAL VARIABLES
+        // ========================================
+        
+        let isAIChatOpen = false;
+        
+        // Slider value updates
+        document.getElementById('adjustmentSpeed').addEventListener('input', function(e) {
+            document.getElementById('adjustmentValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('shortRunEffect').addEventListener('input', function(e) {
+            document.getElementById('shortRunValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('longRunEffect').addEventListener('input', function(e) {
+            document.getElementById('longRunValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('trendStrength').addEventListener('input', function(e) {
+            document.getElementById('trendStrengthValue').textContent = e.target.value;
+        });
+        
+        // ========================================
+        // UNIT ROOT TEST SIMULATOR
+        // ========================================
+        
+        function simulateUnitRootTest() {
+            const seriesType = document.getElementById('seriesType').value;
+            const sampleSize = parseInt(document.getElementById('sampleSize').value);
+            const testType = document.getElementById('testType').value;
+            
+            // Generate time series based on type
+            const series = generateTimeSeries(seriesType, sampleSize);
+            
+            // Perform unit root test
+            const testResults = performUnitRootTest(series, testType);
+            
+            // Visualize series
+            visualizeTimeSeries(series, 'seriesChart');
+            
+            // Display results
+            displayUnitRootResults(testResults, seriesType, testType);
+            
+            document.getElementById('unitRootResults').style.display = 'block';
+        }
+        
+        function generateTimeSeries(type, n) {
+            let series = [0];
+            let rho, trend, noise;
+            
+            for (let t = 1; t < n; t++) {
+                noise = (Math.random() - 0.5) * 2; // Random shock
+                
+                switch (type) {
+                    case 'random_walk':
+                        series[t] = series[t-1] + noise;
+                        break;
+                    case 'stationary':
+                        rho = 0.8;
+                        series[t] = rho * series[t-1] + noise;
+                        break;
+                    case 'near_unit_root':
+                        rho = 0.98;
+                        series[t] = rho * series[t-1] + noise;
+                        break;
+                    case 'explosive':
+                        rho = 1.02;
+                        series[t] = rho * series[t-1] + noise;
+                        break;
+                    case 'trend_stationary':
+                        trend = 0.1;
+                        series[t] = trend * t + 0.8 * (series[t-1] - trend * (t-1)) + noise;
+                        break;
+                    default:
+                        series[t] = series[t-1] + noise;
+                }
+            }
+            
+            return series;
+        }
+        
+        function performUnitRootTest(series, testType) {
+            const n = series.length;
+            
+            // Calculate first differences
+            const diffs = [];
+            for (let t = 1; t < n; t++) {
+                diffs[t-1] = series[t] - series[t-1];
+            }
+            
+            // Simplified ADF test (first lag only)
+            let testStat, criticalValue, pValue;
+            
+            if (testType === 'adf') {
+                // Run regression: Δy_t = α + βy_{t-1} + error
+                testStat = calculateADFStatistic(series);
+                criticalValue = -2.89; // Approximate 5% critical value
+                pValue = testStat < criticalValue ? 0.01 : 0.15;
+            } else if (testType === 'pp') {
+                // Phillips-Perron (simplified)
+                testStat = calculateADFStatistic(series) * 0.95; // Slightly different
+                criticalValue = -2.89;
+                pValue = testStat < criticalValue ? 0.01 : 0.15;
+            } else { // KPSS
+                testStat = Math.abs(Math.random() * 0.8); // Simplified
+                criticalValue = 0.463; // 5% critical value for KPSS
+                pValue = testStat > criticalValue ? 0.01 : 0.15;
+            }
+            
+            return {
+                testStat: testStat,
+                criticalValue: criticalValue,
+                pValue: pValue,
+                testType: testType
+            };
+        }
+        
+        function calculateADFStatistic(series) {
+            const n = series.length;
+            let sumY = 0, sumY2 = 0, sumYLag = 0, sumYLag2 = 0, sumYYLag = 0;
+            
+            for (let t = 1; t < n; t++) {
+                const y = series[t] - series[t-1];
+                const yLag = series[t-1];
+                
+                sumY += y;
+                sumY2 += y * y;
+                sumYLag += yLag;
+                sumYLag2 += yLag * yLag;
+                sumYYLag += y * yLag;
+            }
+            
+            const nObs = n - 1;
+            const beta = (sumYYLag - (sumY * sumYLag) / nObs) / (sumYLag2 - (sumYLag * sumYLag) / nObs);
+            const alpha = (sumY - beta * sumYLag) / nObs;
+            
+            // Calculate standard error and t-statistic
+            let sse = 0;
+            for (let t = 1; t < n; t++) {
+                const predicted = alpha + beta * series[t-1];
+                const actual = series[t] - series[t-1];
+                sse += (actual - predicted) * (actual - predicted);
+            }
+            
+            const mse = sse / (nObs - 2);
+            const seBeta = Math.sqrt(mse / (sumYLag2 - (sumYLag * sumYLag) / nObs));
+            
+            return beta / seBeta;
+        }
+        
+        function visualizeTimeSeries(series, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            // Create simple line chart
+            const canvas = document.createElement('canvas');
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+            container.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Find min and max values
+            const minVal = Math.min(...series);
+            const maxVal = Math.max(...series);
+            const range = maxVal - minVal;
+            
+            // Draw axes
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(40, 20);
+            ctx.lineTo(40, height - 40);
+            ctx.lineTo(width - 20, height - 40);
+            ctx.stroke();
+            
+            // Draw series
+            ctx.strokeStyle = '#1e3a8a';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let i = 0; i < series.length; i++) {
+                const x = 40 + (i / (series.length - 1)) * (width - 60);
+                const y = height - 40 - ((series[i] - minVal) / range) * (height - 60);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+        }
+        
+        function displayUnitRootResults(results, seriesType, testType) {
+            document.getElementById('testStatistic').textContent = results.testStat.toFixed(3);
+            document.getElementById('criticalValue').textContent = results.criticalValue.toFixed(3);
+            document.getElementById('pValue').textContent = results.pValue.toFixed(3);
+            
+            const resultEl = document.getElementById('stationarityResult');
+            const interpretationEl = document.getElementById('testInterpretation');
+            
+            let conclusion, isStationary;
+            
+            if (testType === 'kpss') {
+                // KPSS has stationarity as null
+                isStationary = results.testStat <= results.criticalValue;
+                conclusion = isStationary ? 'Stationary' : 'Non-stationary';
+            } else {
+                // ADF and PP have unit root as null
+                isStationary = results.testStat <= results.criticalValue;
+                conclusion = isStationary ? 'Stationary (reject unit root)' : 'Non-stationary (unit root)';
+            }
+            
+            resultEl.textContent = conclusion;
+            resultEl.className = `status-indicator ${isStationary ? 'status-stationary' : 'status-nonstationary'}`;
+            
+            const testNames = {
+                'adf': 'Augmented Dickey-Fuller',
+                'pp': 'Phillips-Perron',
+                'kpss': 'KPSS'
+            };
+            
+            const typeDescriptions = {
+                'random_walk': 'random walk (unit root)',
+                'stationary': 'stationary AR(1)',
+                'near_unit_root': 'near unit root',
+                'explosive': 'explosive process',
+                'trend_stationary': 'trend stationary'
+            };
+            
+            interpretationEl.textContent = `The ${testNames[testType]} test ${isStationary ? 'rejects' : 'fails to reject'} the ${testType === 'kpss' ? 'null of stationarity' : 'null of unit root'} for this ${typeDescriptions[seriesType]} series. ${isStationary ? 'Standard time series regression methods are appropriate.' : 'Consider differencing or testing for cointegration.'}`;
+        }
+        
+        // ========================================
+        // SPURIOUS REGRESSION SIMULATOR
+        // ========================================
+        
+        function simulateSpuriousRegression() {
+            const regressionType = document.getElementById('spuriousType').value;
+            const sampleSize = parseInt(document.getElementById('spuriousSampleSize').value);
+            const numSims = parseInt(document.getElementById('numSimulations').value);
+            
+            const results = runSpuriousRegressionSimulation(regressionType, sampleSize, numSims);
+            
+            // Show sample series
+            visualizeSpuriousSeries(results.sampleSeries, 'spuriousChart');
+            
+            // Display results
+            displaySpuriousResults(results, regressionType);
+            
+            document.getElementById('spuriousResults').style.display = 'block';
+        }
+        
+        function runSpuriousRegressionSimulation(type, n, numSims) {
+            let rSquareds = [], tStats = [], dwStats = [];
+            let sampleX, sampleY;
+            
+            for (let sim = 0; sim < numSims; sim++) {
+                let {x, y} = generateRegressionSeries(type, n);
+                if (sim === 0) { // Save first simulation for visualization
+                    sampleX = [...x];
+                    sampleY = [...y];
+                }
+                
+                const regResults = runOLSRegression(x, y);
+                rSquareds.push(regResults.rSquared);
+                tStats.push(Math.abs(regResults.tStat));
+                dwStats.push(regResults.dw);
+            }
+            
+            const avgR2 = rSquareds.reduce((a, b) => a + b) / numSims;
+            const significantPct = (tStats.filter(t => t > 1.96).length / numSims) * 100;
+            const avgDW = dwStats.reduce((a, b) => a + b) / numSims;
+            const avgTStat = tStats.reduce((a, b) => a + b) / numSims;
+            
+            return {
+                avgR2: avgR2,
+                significantPct: significantPct,
+                avgDW: avgDW,
+                avgTStat: avgTStat,
+                sampleSeries: {x: sampleX, y: sampleY}
+            };
+        }
+        
+        function generateRegressionSeries(type, n) {
+            let x = [0], y = [0];
+            
+            for (let t = 1; t < n; t++) {
+                const shockX = (Math.random() - 0.5) * 2;
+                const shockY = (Math.random() - 0.5) * 2;
+                
+                switch (type) {
+                    case 'independent_rw':
+                        x[t] = x[t-1] + shockX;
+                        y[t] = y[t-1] + shockY; // Independent random walks
+                        break;
+                    case 'cointegrated':
+                        x[t] = x[t-1] + shockX;
+                        y[t] = 1.5 * x[t] + 0.3 * (y[t-1] - 1.5 * x[t-1]) + shockY * 0.5;
+                        break;
+                    case 'stationary':
+                        x[t] = 0.8 * x[t-1] + shockX;
+                        y[t] = 1.2 * x[t] + 0.7 * y[t-1] + shockY;
+                        break;
+                    case 'trend_spurious':
+                        x[t] = x[t-1] + 0.1 + shockX;
+                        y[t] = y[t-1] + 0.15 + shockY;
+                        break;
+                    default:
+                        x[t] = x[t-1] + shockX;
+                        y[t] = y[t-1] + shockY;
+                }
+            }
+            
+            return {x, y};
+        }
+        
+        function runOLSRegression(x, y) {
+            const n = x.length;
+            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0;
+            
+            for (let i = 0; i < n; i++) {
+                sumX += x[i];
+                sumY += y[i];
+                sumXY += x[i] * y[i];
+                sumX2 += x[i] * x[i];
+                sumY2 += y[i] * y[i];
+            }
+            
+            const beta = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            const alpha = (sumY - beta * sumX) / n;
+            
+            // Calculate R-squared and t-statistic
+            let sse = 0, tss = 0;
+            const yMean = sumY / n;
+            
+            for (let i = 0; i < n; i++) {
+                const predicted = alpha + beta * x[i];
+                sse += (y[i] - predicted) ** 2;
+                tss += (y[i] - yMean) ** 2;
+            }
+            
+            const rSquared = 1 - sse / tss;
+            const mse = sse / (n - 2);
+            const seBeta = Math.sqrt(mse * n / (n * sumX2 - sumX * sumX));
+            const tStat = beta / seBeta;
+            
+            // Calculate Durbin-Watson statistic
+            let dwNumerator = 0;
+            for (let i = 1; i < n; i++) {
+                const residual1 = y[i] - (alpha + beta * x[i]);
+                const residual0 = y[i-1] - (alpha + beta * x[i-1]);
+                dwNumerator += (residual1 - residual0) ** 2;
+            }
+            const dw = dwNumerator / sse;
+            
+            return {rSquared, tStat, dw};
+        }
+        
+        function visualizeSpuriousSeries(series, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+            container.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Find ranges
+            const allValues = [...series.x, ...series.y];
+            const minVal = Math.min(...allValues);
+            const maxVal = Math.max(...allValues);
+            const range = maxVal - minVal;
+            
+            // Draw axes
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(40, 20);
+            ctx.lineTo(40, height - 40);
+            ctx.lineTo(width - 20, height - 40);
+            ctx.stroke();
+            
+            // Draw X series
+            ctx.strokeStyle = '#1e3a8a';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i < series.x.length; i++) {
+                const x = 40 + (i / (series.x.length - 1)) * (width - 60);
+                const y = height - 40 - ((series.x[i] - minVal) / range) * (height - 60);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            
+            // Draw Y series
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            for (let i = 0; i < series.y.length; i++) {
+                const x = 40 + (i / (series.y.length - 1)) * (width - 60);
+                const y = height - 40 - ((series.y[i] - minVal) / range) * (height - 60);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Add legend
+            ctx.font = '12px system-ui';
+            ctx.fillStyle = '#1e3a8a';
+            ctx.fillText('X (solid)', width - 100, 30);
+            ctx.fillStyle = '#ef4444';
+            ctx.fillText('Y (dashed)', width - 100, 45);
+        }
+        
+        function displaySpuriousResults(results, regressionType) {
+            document.getElementById('avgRSquared').textContent = results.avgR2.toFixed(3);
+            document.getElementById('significantPct').textContent = results.significantPct.toFixed(1) + '%';
+            document.getElementById('avgDW').textContent = results.avgDW.toFixed(3);
+            document.getElementById('avgTStat').textContent = results.avgTStat.toFixed(2);
+            
+            const assessmentEl = document.getElementById('spuriousAssessment');
+            const interpretationEl = document.getElementById('spuriousInterpretation');
+            
+            let assessment, interpretation;
+            
+            if (regressionType === 'independent_rw' || regressionType === 'trend_spurious') {
+                if (results.significantPct > 30 && results.avgR2 > 0.3) {
+                    assessment = 'High Spuriousness Risk';
+                    assessmentEl.className = 'status-indicator status-spurious';
+                    interpretation = `Strong evidence of spurious regression: ${results.significantPct.toFixed(1)}% of regressions appear significant despite independence. High R² (${results.avgR2.toFixed(3)}) and low Durbin-Watson (${results.avgDW.toFixed(3)}) are classic spurious regression symptoms.`;
+                } else {
+                    assessment = 'Moderate Spuriousness';
+                    assessmentEl.className = 'status-indicator status-nonstationary';
+                    interpretation = `Some spurious results detected. When variables are truly independent, we should see ≈5% significant results, but found ${results.significantPct.toFixed(1)}%.`;
+                }
+            } else if (regressionType === 'cointegrated') {
+                assessment = 'Valid Relationship';
+                assessmentEl.className = 'status-indicator status-cointegrated';
+                interpretation = `Cointegrated variables show legitimate long-run relationship: ${results.significantPct.toFixed(1)}% significance rate and R²=${results.avgR2.toFixed(3)} reflect genuine economic connection, not spurious correlation.`;
+            } else { // stationary
+                assessment = 'Standard Regression';
+                assessmentEl.className = 'status-indicator status-stationary';
+                interpretation = `Stationary variables follow standard regression theory: ${results.significantPct.toFixed(1)}% significance rate and Durbin-Watson=${results.avgDW.toFixed(3)} are within normal ranges.`;
+            }
+            
+            assessmentEl.textContent = assessment;
+            interpretationEl.textContent = interpretation;
+        }
+        
+        // ========================================
+        // COINTEGRATION TEST SIMULATOR
+        // ========================================
+        
+        function simulateCointegrationTest() {
+            const type = document.getElementById('cointegrationType').value;
+            const beta = parseFloat(document.getElementById('cointegratingParam').value);
+            const sampleSize = parseInt(document.getElementById('cointSampleSize').value);
+            const testType = document.getElementById('cointTestType').value;
+            
+            const {x, y} = generateCointegrationSeries(type, beta, sampleSize);
+            const testResults = performCointegrationTest(x, y, testType);
+            
+            visualizeCointegrationSeries({x, y}, 'cointChart');
+            displayCointegrationResults(testResults, type, beta);
+            
+            document.getElementById('cointegrationResults').style.display = 'block';
+        }
+        
+        function generateCointegrationSeries(type, beta, n) {
+            let x = [0], y = [0];
+            
+            for (let t = 1; t < n; t++) {
+                const shockX = (Math.random() - 0.5) * 2;
+                const shockY = (Math.random() - 0.5) * 2;
+                const shockECT = (Math.random() - 0.5) * 0.5;
+                
+                switch (type) {
+                    case 'cointegrated':
+                        x[t] = x[t-1] + shockX;
+                        // Error correction: y responds to deviation from equilibrium
+                        const ect = y[t-1] - beta * x[t-1];
+                        y[t] = beta * x[t] - 0.2 * ect + shockECT;
+                        break;
+                    case 'no_cointegration':
+                        x[t] = x[t-1] + shockX;
+                        y[t] = y[t-1] + shockY; // Independent random walks
+                        break;
+                    case 'spurious_cointegration':
+                        // Both have deterministic trends
+                        x[t] = x[t-1] + 0.05 + shockX * 0.3;
+                        y[t] = y[t-1] + 0.08 + shockY * 0.3;
+                        break;
+                    default:
+                        x[t] = x[t-1] + shockX;
+                        y[t] = beta * x[t] - 0.2 * (y[t-1] - beta * x[t-1]) + shockECT;
+                }
+            }
+            
+            return {x, y};
+        }
+        
+        function performCointegrationTest(x, y, testType) {
+            const n = x.length;
+            
+            // Step 1: Run cointegrating regression y = α + βx + u
+            const regResults = runOLSRegression(x, y);
+            const beta = regResults.rSquared; // Simplified - use beta from OLS
+            
+            // Step 2: Calculate residuals
+            const alpha = y.reduce((a, b) => a + b, 0) / n - beta * (x.reduce((a, b) => a + b, 0) / n);
+            const residuals = [];
+            for (let i = 0; i < n; i++) {
+                residuals[i] = y[i] - alpha - beta * x[i];
+            }
+            
+            // Step 3: Test residuals for unit root
+            const residualTest = calculateADFStatistic(residuals);
+            const criticalValue = testType === 'engle_granger' ? -3.34 : -3.75; // Engle-Granger critical values
+            
+            // Estimate beta more accurately
+            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+            for (let i = 0; i < n; i++) {
+                sumX += x[i];
+                sumY += y[i];
+                sumXY += x[i] * y[i];
+                sumX2 += x[i] * x[i];
+            }
+            const estimatedBeta = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            
+            return {
+                estimatedBeta: estimatedBeta,
+                testStatistic: residualTest,
+                criticalValue: criticalValue,
+                residualADF: residualTest,
+                isCointegrated: residualTest < criticalValue
+            };
+        }
+        
+        function visualizeCointegrationSeries(series, containerId) {
+            visualizeSpuriousSeries(series, containerId); // Same visualization
+        }
+        
+        function displayCointegrationResults(results, type, trueBeta) {
+            document.getElementById('cointBeta').textContent = results.estimatedBeta.toFixed(3);
+            document.getElementById('cointTestStat').textContent = results.testStatistic.toFixed(3);
+            document.getElementById('cointCritical').textContent = results.criticalValue.toFixed(3);
+            document.getElementById('residualTest').textContent = results.residualADF.toFixed(3);
+            
+            const resultEl = document.getElementById('cointegrationResult');
+            const interpretationEl = document.getElementById('cointInterpretation');
+            
+            const conclusion = results.isCointegrated ? 'Cointegrated' : 'No Cointegration';
+            resultEl.textContent = conclusion;
+            resultEl.className = `status-indicator ${results.isCointegrated ? 'status-cointegrated' : 'status-spurious'}`;
+            
+            let interpretation = '';
+            if (type === 'cointegrated') {
+                interpretation = `Test ${results.isCointegrated ? 'correctly detects' : 'fails to detect'} cointegration. Estimated β=${results.estimatedBeta.toFixed(3)} (true β=${trueBeta}). ${results.isCointegrated ? 'Residuals are stationary, confirming long-run equilibrium relationship.' : 'May need larger sample size or different specification.'}`;
+            } else if (type === 'no_cointegration') {
+                interpretation = `Test ${!results.isCointegrated ? 'correctly finds no' : 'incorrectly suggests'} cointegration between independent random walks. ${!results.isCointegrated ? 'Residuals contain unit root as expected.' : 'This appears to be a Type I error.'}`;
+            } else {
+                interpretation = `Test ${!results.isCointegrated ? 'correctly avoids spurious' : 'incorrectly detects spurious'} cointegration between trending variables. Both series trend but lack genuine economic relationship.`;
+            }
+            
+            interpretationEl.textContent = interpretation;
+        }
+        
+        // ========================================
+        // ERROR CORRECTION MODEL SIMULATOR
+        // ========================================
+        
+        function simulateErrorCorrection() {
+            const alpha = parseFloat(document.getElementById('adjustmentSpeed').value);
+            const beta1 = parseFloat(document.getElementById('shortRunEffect').value);
+            const gamma = parseFloat(document.getElementById('longRunEffect').value);
+            const shockSize = parseInt(document.getElementById('shockSize').value);
+            
+            const periods = 50;
+            const shock = shockSize;
+            const dynamics = simulateECMDynamics(alpha, beta1, gamma, shock, periods);
+            
+            visualizeECMDynamics(dynamics, 'ecmChart');
+            displayECMResults(dynamics, alpha);
+            
+            document.getElementById('ecmResults').style.display = 'block';
+        }
+        
+        function simulateECMDynamics(alpha, beta1, gamma, shock, periods) {
+            let y = [0], x = [0];
+            let equilibrium = [0]; // Long-run equilibrium path
+            let deviations = [0]; // Deviations from equilibrium
+            
+            // Apply shock at period 5
+            for (let t = 1; t < periods; t++) {
+                const xShock = (t === 5) ? shock : 0;
+                
+                // X follows simple AR(1) with shock
+                x[t] = 0.9 * x[t-1] + xShock + (Math.random() - 0.5) * 0.1;
+                
+                // Calculate equilibrium
+                equilibrium[t] = gamma * x[t];
+                
+                // Error correction term
+                const ect = y[t-1] - gamma * x[t-1];
+                
+                // ECM: Δy_t = β₁Δx_t - α(y_{t-1} - γx_{t-1}) + noise
+                const deltaX = x[t] - x[t-1];
+                const deltaY = beta1 * deltaX - alpha * ect + (Math.random() - 0.5) * 0.05;
+                
+                y[t] = y[t-1] + deltaY;
+                deviations[t] = y[t] - equilibrium[t];
+            }
+            
+            return {y, x, equilibrium, deviations, alpha, gamma};
+        }
+        
+        function visualizeECMDynamics(dynamics, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+            container.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            const periods = dynamics.y.length;
+            
+            // Find ranges for deviations
+            const minDev = Math.min(...dynamics.deviations);
+            const maxDev = Math.max(...dynamics.deviations);
+            const range = Math.max(Math.abs(minDev), Math.abs(maxDev));
+            
+            // Draw axes
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(40, 20);
+            ctx.lineTo(40, height - 40);
+            ctx.lineTo(width - 20, height - 40);
+            // Zero line
+            const zeroY = height/2;
+            ctx.moveTo(40, zeroY);
+            ctx.lineTo(width - 20, zeroY);
+            ctx.stroke();
+            
+            // Draw deviations from equilibrium
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            for (let t = 0; t < periods; t++) {
+                const x = 40 + (t / (periods - 1)) * (width - 60);
+                const y = zeroY - (dynamics.deviations[t] / (range || 1)) * (height/2 - 50);
+                if (t === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            
+            // Mark shock period
+            const shockX = 40 + (5 / (periods - 1)) * (width - 60);
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath();
+            ctx.moveTo(shockX, 20);
+            ctx.lineTo(shockX, height - 40);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Labels
+            ctx.font = '12px system-ui';
+            ctx.fillStyle = '#ef4444';
+            ctx.fillText('Deviations from Equilibrium', 50, 35);
+            ctx.fillStyle = '#fbbf24';
+            ctx.fillText('Shock', shockX - 15, 35);
+        }
+        
+        function displayECMResults(dynamics, alpha) {
+            const halfLife = Math.log(0.5) / Math.log(1 - alpha);
+            const fullAdjustment = Math.log(0.05) / Math.log(1 - alpha); // 95% adjustment
+            const maxDev = Math.max(...dynamics.deviations.map(Math.abs));
+            
+            document.getElementById('halfLife').textContent = halfLife.toFixed(1);
+            document.getElementById('fullAdjustment').textContent = fullAdjustment.toFixed(1);
+            document.getElementById('maxDeviation').textContent = maxDev.toFixed(3);
+            
+            const interpretationEl = document.getElementById('ecmInterpretation');
+            interpretationEl.textContent = `
+                Error correction analysis: With adjustment speed α=${alpha}, deviations from long-run equilibrium have a half-life of ${halfLife.toFixed(1)} periods. 
+                After a shock, ${(alpha*100).toFixed(0)}% of the disequilibrium is corrected each period. 
+                Full adjustment (95%) takes approximately ${fullAdjustment.toFixed(0)} periods. 
+                ${alpha > 0.5 ? 'Rapid adjustment suggests strong equilibrium forces.' : 'Gradual adjustment indicates persistent deviations.'}
+            `;
+        }
+        
+        // ========================================
+        // TREND AND SEASONAL ANALYSIS
+        // ========================================
+        
+        function analyzeTrendSeasonal() {
+            const trendType = document.getElementById('trendType').value;
+            const seasonalType = document.getElementById('seasonalType').value;
+            const frequency = parseInt(document.getElementById('frequency').value);
+            const trendStrength = parseFloat(document.getElementById('trendStrength').value);
+            
+            const periods = frequency * 8; // 8 cycles
+            const series = generateTrendSeasonalSeries(trendType, seasonalType, frequency, trendStrength, periods);
+            
+            const decomposition = decomposeTimeSeries(series, frequency);
+            
+            visualizeTrendSeasonalComponents(decomposition, 'trendChart');
+            displayTrendSeasonalResults(decomposition);
+            
+            document.getElementById('trendResults').style.display = 'block';
+        }
+        
+        function generateTrendSeasonalSeries(trendType, seasonalType, frequency, strength, periods) {
+            let series = [];
+            
+            for (let t = 0; t < periods; t++) {
+                let trend = 0, seasonal = 0, irregular = (Math.random() - 0.5) * 0.5;
+                
+                // Seasonal component
+                if (seasonalType === 'deterministic') {
+                    seasonal = Math.sin(2 * Math.PI * t / frequency) + 0.5 * Math.cos(4 * Math.PI * t / frequency);
+                } else if (seasonalType === 'stochastic') {
+                    seasonal = Math.sin(2 * Math.PI * t / frequency) * (1 + (Math.random() - 0.5) * 0.3);
+                }
+                
+                series[t] = trend + seasonal + irregular;
+            }
+            
+            return series;
+        }
+        
+        function decomposeTimeSeries(series, frequency) {
+            const n = series.length;
+            
+            // Simple trend extraction using moving average
+            const trend = [];
+            for (let t = 0; t < n; t++) {
+                let sum = 0, count = 0;
+                const window = frequency;
+                
+                for (let j = Math.max(0, t - window/2); j <= Math.min(n-1, t + window/2); j++) {
+                    sum += series[j];
+                    count++;
+                }
+                trend[t] = sum / count;
+            }
+            
+            // Extract seasonal component
+            const detrended = series.map((val, i) => val - trend[i]);
+            const seasonal = new Array(n);
+            
+            for (let t = 0; t < n; t++) {
+                const seasonalIndex = t % frequency;
+                let seasonalSum = 0, seasonalCount = 0;
+                
+                for (let j = seasonalIndex; j < n; j += frequency) {
+                    if (Math.abs(j - t) < frequency) {
+                        seasonalSum += detrended[j];
+                        seasonalCount++;
+                    }
+                }
+                seasonal[t] = seasonalCount > 0 ? seasonalSum / seasonalCount : 0;
+            }
+            
+            // Irregular component
+            const irregular = series.map((val, i) => val - trend[i] - seasonal[i]);
+            
+            // Calculate variance proportions
+            const totalVar = variance(series);
+            const trendVar = variance(trend);
+            const seasonalVar = variance(seasonal);
+            const irregularVar = variance(irregular);
+            
+            return {
+                original: series,
+                trend: trend,
+                seasonal: seasonal,
+                irregular: irregular,
+                trendVarPct: (trendVar / totalVar) * 100,
+                seasonalVarPct: (seasonalVar / totalVar) * 100,
+                irregularVarPct: (irregularVar / totalVar) * 100
+            };
+        }
+        
+        function variance(series) {
+            const mean = series.reduce((a, b) => a + b, 0) / series.length;
+            return series.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / series.length;
+        }
+        
+        function visualizeTrendSeasonalComponents(decomp, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+            container.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height - 60;
+            
+            const n = decomp.original.length;
+            const componentHeight = height / 3;
+            
+            drawComponent(ctx, decomp.original, 0, componentHeight, width, '#1e3a8a', 'Original');
+            drawComponent(ctx, decomp.trend, componentHeight, componentHeight, width, '#06b6d4', 'Trend');
+            drawComponent(ctx, decomp.seasonal, 2*componentHeight, componentHeight, width, '#ec4899', 'Seasonal');
+            
+            ctx.font = '12px system-ui';
+            ctx.fillStyle = '#1e3a8a';
+            ctx.fillText('Original', 40, height + 20);
+            ctx.fillStyle = '#06b6d4';
+            ctx.fillText('Trend', 100, height + 20);
+            ctx.fillStyle = '#ec4899';
+            ctx.fillText('Seasonal', 150, height + 20);
+        }
+        
+        function drawComponent(ctx, series, startY, height, width, color, label) {
+            const n = series.length;
+            const minVal = Math.min(...series);
+            const maxVal = Math.max(...series);
+            const range = maxVal - minVal || 1;
+            
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let i = 0; i < n; i++) {
+                const x = 40 + (i / (n - 1)) * (width - 80);
+                const y = startY + 20 + ((maxVal - series[i]) / range) * (height - 40);
+                
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            
+            ctx.font = '12px system-ui';
+            ctx.fillStyle = color;
+            ctx.fillText(label, 5, startY + height/2);
+        }
+        
+        function displayTrendSeasonalResults(decomp) {
+            document.getElementById('trendVariance').textContent = decomp.trendVarPct.toFixed(1) + '%';
+            document.getElementById('seasonalVariance').textContent = decomp.seasonalVarPct.toFixed(1) + '%';
+            document.getElementById('irregularVariance').textContent = decomp.irregularVarPct.toFixed(1) + '%';
+            
+            const interpretationEl = document.getElementById('trendInterpretation');
+            let interpretation = `Series decomposition shows: `;
+            
+            if (decomp.trendVarPct > 50) {
+                interpretation += `Strong trend component (${decomp.trendVarPct.toFixed(1)}%) dominates the series. `;
+            } else if (decomp.trendVarPct > 25) {
+                interpretation += `Moderate trend component (${decomp.trendVarPct.toFixed(1)}%). `;
+            } else {
+                interpretation += `Weak trend component (${decomp.trendVarPct.toFixed(1)}%). `;
+            }
+            
+            if (decomp.seasonalVarPct > 30) {
+                interpretation += `Strong seasonality (${decomp.seasonalVarPct.toFixed(1)}%) requires seasonal adjustment. `;
+            } else if (decomp.seasonalVarPct > 15) {
+                interpretation += `Moderate seasonality (${decomp.seasonalVarPct.toFixed(1)}%). `;
+            } else {
+                interpretation += `Minimal seasonality (${decomp.seasonalVarPct.toFixed(1)}%). `;
+            }
+            
+            if (decomp.irregularVarPct > 40) {
+                interpretation += `High irregular component suggests noisy data or model misspecification.`;
+            } else {
+                interpretation += `Irregular component within normal range.`;
+            }
+            
+            interpretationEl.textContent = interpretation;
+        }
+        
+        // ========================================
+        // DYNAMIC QUIZ SYSTEM
+        // ========================================
+        
+        let currentQuestions = [];
+        let answeredQuestions = {};
+        
+        const questionBank = {
+            stationarity_unit_roots: [
+                {
+                    question: "A time series is weakly stationary if:",
+                    options: [
+                        "Its mean is zero at all times",
+                        "Its mean, variance, and autocovariances are time-invariant",
+                        "It has no trend or seasonal components",
+                        "Its first differences are white noise"
+                    ],
+                    correct: 1,
+                    explanation: "Weak stationarity requires constant mean E[y_t] = μ, constant variance Var(y_t) = σ², and autocovariances that depend only on lag length, not time: Cov(y_t, y_{t-j}) = γ_j."
+                },
+                {
+                    question: "In the Augmented Dickey-Fuller test, the null hypothesis is:",
+                    options: [
+                        "The series is stationary",
+                        "The series has a unit root",
+                        "The series has no autocorrelation",
+                        "The series is trend stationary"
+                    ],
+                    correct: 1,
+                    explanation: "ADF tests H₀: unit root (non-stationary) versus H₁: stationary. Rejecting the null suggests the series is stationary and standard time series methods apply."
+                },
+                {
+                    question: "A random walk y_t = y_{t-1} + u_t is:",
+                    options: [
+                        "Always stationary",
+                        "Stationary if Var(u_t) is small",
+                        "Non-stationary due to unit root",
+                        "Trend stationary"
+                    ],
+                    correct: 2,
+                    explanation: "Random walk has ρ = 1 (unit root), making it non-stationary. Shocks have permanent effects: Var(y_t) = t·σ_u², which increases with time."
+                },
+                {
+                    question: "The KPSS test differs from ADF because:",
+                    options: [
+                        "It tests for seasonality instead of unit roots",
+                        "It has stationarity as the null hypothesis",
+                        "It requires larger sample sizes",
+                        "It only works with quarterly data"
+                    ],
+                    correct: 1,
+                    explanation: "KPSS has H₀: stationarity (opposite of ADF). It's useful as a confirmatory test - consistent results from both tests strengthen conclusions about stationarity."
+                }
+            ],
+            spurious_regression: [
+                {
+                    question: "Spurious regression occurs when:",
+                    options: [
+                        "Variables are measured with error",
+                        "Sample size is too small",
+                        "Independent non-stationary series show significant relationships",
+                        "There are omitted variables"
+                    ],
+                    correct: 2,
+                    explanation: "Spurious regression happens when regressing one I(1) series on another independent I(1) series. Both series trend, creating apparent but meaningless statistical relationships."
+                },
+                {
+                    question: "Classic symptoms of spurious regression include:",
+                    options: [
+                        "High R² and low Durbin-Watson statistic",
+                        "Low R² and high standard errors",
+                        "Normal residual distribution",
+                        "Stationary residuals"
+                    ],
+                    correct: 0,
+                    explanation: "Spurious regression typically shows high R² (often >0.8), highly significant t-stats, but very low Durbin-Watson (<0.5) and non-stationary residuals."
+                },
+                {
+                    question: "To avoid spurious regression with I(1) variables, you should:",
+                    options: [
+                        "Use robust standard errors",
+                        "Increase sample size",
+                        "Test for cointegration or use first differences",
+                        "Add more control variables"
+                    ],
+                    correct: 2,
+                    explanation: "With I(1) variables, either test for cointegration (if variables share long-run relationship) or estimate in first differences to achieve stationarity."
+                }
+            ],
+            cointegration: [
+                {
+                    question: "Two I(1) variables are cointegrated if:",
+                    options: [
+                        "They have the same trend",
+                        "Some linear combination is I(0)",
+                        "Their correlation is high",
+                        "They move in opposite directions"
+                    ],
+                    correct: 1,
+                    explanation: "Cointegration exists when I(1) variables have a stationary linear combination: if y_t ~ I(1), x_t ~ I(1), and y_t - βx_t ~ I(0) for some β, then they're cointegrated."
+                },
+                {
+                    question: "The Engle-Granger cointegration test involves:",
+                    options: [
+                        "Testing original series for unit roots",
+                        "Running OLS and testing residuals for stationarity",
+                        "Estimating a VAR model",
+                        "Testing for ARCH effects"
+                    ],
+                    correct: 1,
+                    explanation: "Engle-Granger: (1) Run cointegrating regression y_t = α + βx_t + u_t, (2) Test residuals û_t for unit root. Stationary residuals suggest cointegration."
+                },
+                {
+                    question: "If variables are cointegrated, running regression in levels:",
+                    options: [
+                        "Always produces spurious results",
+                        "Is valid and gives super-consistent estimates",
+                        "Requires robust standard errors",
+                        "Should be avoided in favor of differences"
+                    ],
+                    correct: 1,
+                    explanation: "Cointegrated variables can be validly regressed in levels. The cointegrating coefficient converges faster than usual (super-consistency), though standard errors need adjustment."
+                }
+            ],
+            error_correction: [
+                {
+                    question: "In an Error Correction Model, the error correction term represents:",
+                    options: [
+                        "Measurement error in variables",
+                        "Deviations from long-run equilibrium",
+                        "Autocorrelation in residuals",
+                        "Seasonal adjustment factors"
+                    ],
+                    correct: 1,
+                    explanation: "ECT = y_{t-1} - βx_{t-1} represents last period's deviation from long-run equilibrium. Current period changes partly correct these deviations."
+                },
+                {
+                    question: "The Granger Representation Theorem states that:",
+                    options: [
+                        "All I(1) variables are cointegrated",
+                        "Cointegrated variables have an ECM representation",
+                        "ECMs always have unit roots",
+                        "Error correction only works with quarterly data"
+                    ],
+                    correct: 1,
+                    explanation: "If variables are cointegrated, there exists an Error Correction Model representation. Conversely, if an ECM exists, the variables must be cointegrated."
+                },
+                {
+                    question: "An error correction coefficient of α = -0.3 means:",
+                    options: [
+                        "30% of equilibrium is restored each period",
+                        "The model is unstable",
+                        "Variables are not cointegrated",
+                        "Adjustment takes exactly 3 periods"
+                    ],
+                    correct: 0,
+                    explanation: "α = -0.3 means 30% of any disequilibrium is corrected each period. Half-life = ln(0.5)/ln(0.7) ≈ 2 periods for 50% adjustment."
+                }
+            ],
+            trends_seasonality: [
+                {
+                    question: "A deterministic trend means:",
+                    options: [
+                        "The trend component has unit root",
+                        "Trend is a function of time: α + βt",
+                        "Trend changes randomly over time",
+                        "No long-run growth exists"
+                    ],
+                    correct: 1,
+                    explanation: "Deterministic trend is a fixed function of time (α + βt). Series is trend stationary: detrended data is stationary, unlike stochastic trends that require differencing."
+                },
+                {
+                    question: "The Hodrick-Prescott filter:",
+                    options: [
+                        "Tests for unit roots",
+                        "Separates trend and cyclical components",
+                        "Removes seasonal patterns only",
+                        "Estimates cointegrating relationships"
+                    ],
+                    correct: 1,
+                    explanation: "HP filter decomposes series into smooth trend and cyclical components by minimizing sum of squared deviations plus penalty for trend changes."
+                },
+                {
+                    question: "Seasonal unit roots occur when:",
+                    options: [
+                        "Seasonal patterns are very strong",
+                        "Unit roots exist at seasonal frequencies",
+                        "Data is collected quarterly",
+                        "Trends and seasons interact"
+                    ],
+                    correct: 1,
+                    explanation: "Seasonal unit roots mean non-stationarity at seasonal frequencies. For monthly data, unit roots might exist at 1, 6, or 12-month frequencies, requiring specialized testing."
+                }
+            ]
+        };
+        
+        function regenerateQuiz() {
+            answeredQuestions = {};
+            currentQuestions = [];
+            
+            const categories = Object.keys(questionBank);
+            categories.forEach(category => {
+                const categoryQuestions = questionBank[category];
+                const randomIndex = Math.floor(Math.random() * categoryQuestions.length);
+                currentQuestions.push({
+                    ...categoryQuestions[randomIndex],
+                    category: category,
+                    id: `q${currentQuestions.length + 1}`
+                });
+            });
+            
+            currentQuestions = shuffleArray(currentQuestions).slice(0, 5);
+            renderQuiz();
+            document.getElementById('quizSummary').style.display = 'none';
+        }
+        
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+        
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+            let html = '';
+            currentQuestions.forEach((question, index) => {
+                html += `
+                    <div class="quiz-question">
+                        <p><strong>Question ${index + 1}:</strong> ${question.question}</p>
+                        <div class="quiz-options">
+                `;
+                question.options.forEach((option, optIndex) => {
+                    html += `
+                        <label class="quiz-option" onclick="selectDynamicAnswer('${question.id}', ${optIndex})">
+                            <input type="radio" name="${question.id}" value="${optIndex}">
+                            ${String.fromCharCode(65 + optIndex)}) ${option}
+                        </label>
+                    `;
+                });
+                html += `
+                        </div>
+                        <div id="feedback${question.id}" class="quiz-feedback"></div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+        
+        function selectDynamicAnswer(questionId, selectedAnswer) {
+            const question = currentQuestions.find(q => q.id === questionId);
+            if (!question) return;
+            
+            const isCorrect = selectedAnswer === question.correct;
+            answeredQuestions[questionId] = {
+                selected: selectedAnswer,
+                correct: isCorrect,
+                question: question
+            };
+            
+            const options = document.querySelectorAll(`input[name="${questionId}"]`);
+            options.forEach((option, index) => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (index === question.correct) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            const feedbackEl = document.getElementById(`feedback${questionId}`);
+            feedbackEl.textContent = question.explanation;
+            feedbackEl.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackEl.style.display = 'block';
+            
+            if (Object.keys(answeredQuestions).length === currentQuestions.length) {
+                setTimeout(() => showQuizSummary(), 1000);
+            }
+        }
+        
+        function showQuizSummary() {
+            const totalQuestions = currentQuestions.length;
+            const correctAnswers = Object.values(answeredQuestions).filter(a => a.correct).length;
+            const score = Math.round((correctAnswers / totalQuestions) * 100);
+            
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            document.getElementById('quizScore').textContent = score + '%';
+            
+            let feedback = '';
+            if (score >= 90) {
+                feedback = '🌟 Outstanding mastery of advanced time series! You understand stationarity, spurious regression, cointegration, ECMs, and trend analysis comprehensively.';
+            } else if (score >= 80) {
+                feedback = '👍 Excellent grasp of time series concepts! Strong understanding of unit roots, cointegration, and error correction mechanisms.';
+            } else if (score >= 70) {
+                feedback = '✨ Good foundation in time series analysis. Focus on distinguishing spurious regression from cointegration, and ECM interpretation.';
+            } else if (score >= 60) {
+                feedback = '📚 Developing understanding. Review stationarity concepts, cointegration testing, and error correction model mechanics.';
+            } else {
+                feedback = '🔄 This is challenging advanced material! Study Sections 11.1-11.5, focusing on unit root testing, spurious vs. cointegrated relationships, and ECM dynamics. Practice with simulators.';
+            }
+            
+            document.getElementById('quizFeedback').textContent = feedback;
+            document.getElementById('quizSummary').style.display = 'block';
+            document.getElementById('quizSummary').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        // ========================================
+        // UTILITY AND AI CHAT FUNCTIONS
+        // ========================================
+        
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        function toggleAIChat() {
+            const panel = document.getElementById('aiChatPanel');
+            const icon = document.getElementById('aiChatIcon');
+            
+            if (isAIChatOpen) {
+                panel.classList.remove('show');
+                icon.textContent = '📈';
+                isAIChatOpen = false;
+            } else {
+                panel.classList.add('show');
+                icon.textContent = '✖️';
+                isAIChatOpen = true;
+                document.getElementById('aiInput').focus();
+            }
+        }
+        
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addAIMessage('user', message);
+            input.value = '';
+            setTimeout(() => {
+                const response = getAIResponse(message);
+                addAIMessage('claude', response);
+            }, 500);
+        }
+        
+        function addAIMessage(sender, message) {
+            const messagesContainer = document.getElementById('aiChatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender}`;
+            
+            if (sender === 'user') {
+                messageDiv.textContent = message;
+            } else {
+                messageDiv.innerHTML = `<strong>📈 Claude:</strong> ${message}`;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function getAIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            if (message.includes('unit root') || message.includes('stationarity')) {
+                return "Stationarity is crucial for valid inference! A series is stationary if its statistical properties don't change over time. Use ADF/PP tests to check for unit roots. Non-stationary series need differencing or cointegration analysis.";
+            }
+            if (message.includes('spurious')) {
+                return "Spurious regression occurs when trending variables appear significantly related despite independence. Look for high R² with low Durbin-Watson (<0.5) and non-stationary residuals. Solution: test for cointegration or use differences.";
+            }
+            if (message.includes('cointegration')) {
+                return "Cointegration means non-stationary variables share a stable long-run relationship. Use Engle-Granger: regress in levels, test residuals for stationarity. If cointegrated, levels regression gives valid 'super-consistent' estimates.";
+            }
+            if (message.includes('error correction') || message.includes('ecm')) {
+                return "ECMs capture both short-run dynamics and long-run adjustment. The error correction term shows how quickly variables return to equilibrium. Coefficient α = -0.3 means 30% of disequilibrium corrected each period.";
+            }
+            if (message.includes('trend') || message.includes('seasonal')) {
+                return "Distinguish deterministic trends (α + βt, remove by detrending) from stochastic trends (unit roots, remove by differencing). For seasonality, use dummies for deterministic patterns or seasonal differencing for unit roots at seasonal frequencies.";
+            }
+            
+            return "I can help with stationarity testing, spurious regression detection, cointegration analysis, error correction models, trend/seasonal decomposition, and VAR modeling. What specific time series concept interests you?";
+        }
+        
+        document.addEventListener('click', function(event) {
+            const widget = document.querySelector('.ai-chat-widget');
+            if (isAIChatOpen && !widget.contains(event.target)) {
+                toggleAIChat();
+            }
+        });
+        
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => regenerateQuiz(), 1000);
+            
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0) scale(1)';
+                    }
+                });
+            }, observerOptions);
+            
+            document.querySelectorAll('.fade-in, .temporal-animation').forEach(el => {
+                observer.observe(el);
+            });
+            
+            console.log('Chapter 11: Further Issues in Using OLS with Time Series Data loaded successfully! 📈');
+        });
+        
+    </script>
+
+</body>
+</html>
