@@ -578,10 +578,10 @@
                 <span>←</span>
                 <span>Chapter 7</span>
             </a>
-            <div class="nav-button" style="opacity: 0.5; cursor: not-allowed;" onclick="alert('Chapter 9 coming soon!')">
+            <a href="chapter09.html" class="nav-button">
                 <span>→</span>
                 <span>Chapter 9</span>
-            </div>
+            </a>
         </div>
         
         <!-- Section 8.1: Nature and Consequences -->
@@ -949,68 +949,48 @@
         <!-- Quiz Section -->
         <section class="section">
             <div class="quiz-section">
-                <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--primary-diagnostic);">
-                    📊 Chapter 8 Knowledge Check
+                <h3 style="text-align: center; margin-bottom: 1rem; color: var(--primary-diagnostic);">
+                    🎯 Chapter 8 Knowledge Check: Heteroskedasticity
                 </h3>
+                <p style="text-align: center; color: var(--tech-600); margin-bottom: 1rem;">
+                    Test your understanding of heteroskedasticity detection, consequences, and correction methods
+                </p>
                 
-                <!-- Question 1 -->
-                <div class="quiz-question">
-                    <p><strong>Question 1:</strong> What happens to OLS estimates under heteroskedasticity?</p>
-                    <div class="quiz-options">
-                        <label class="quiz-option" onclick="selectAnswer('q1', 'A')">
-                            <input type="radio" name="q1" value="A">
-                            A) They become biased and inefficient
-                        </label>
-                        <label class="quiz-option" onclick="selectAnswer('q1', 'B')">
-                            <input type="radio" name="q1" value="B">
-                            B) They remain unbiased but become inefficient
-                        </label>
-                        <label class="quiz-option" onclick="selectAnswer('q1', 'C')">
-                            <input type="radio" name="q1" value="C">
-                            C) They become biased but remain efficient
-                        </label>
-                    </div>
-                    <div id="feedback1" class="quiz-feedback"></div>
+                <!-- Regenerate Button -->
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <button onclick="regenerateQuiz()" class="action-button" style="margin: 0; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                        🔄 Generate New Questions
+                    </button>
+                    <p style="font-size: 0.8rem; color: var(--tech-600); margin-top: 0.5rem;">
+                        Click to get a fresh set of randomly generated heteroskedasticity problems
+                    </p>
                 </div>
-
-                <!-- Question 2 -->
-                <div class="quiz-question">
-                    <p><strong>Question 2:</strong> The main advantage of robust standard errors is:</p>
-                    <div class="quiz-options">
-                        <label class="quiz-option" onclick="selectAnswer('q2', 'A')">
-                            <input type="radio" name="q2" value="A">
-                            A) They improve coefficient efficiency
-                        </label>
-                        <label class="quiz-option" onclick="selectAnswer('q2', 'B')">
-                            <input type="radio" name="q2" value="B">
-                            B) Valid inference under heteroskedasticity without knowing variance function
-                        </label>
-                        <label class="quiz-option" onclick="selectAnswer('q2', 'C')">
-                            <input type="radio" name="q2" value="C">
-                            C) They eliminate heteroskedasticity
-                        </label>
-                    </div>
-                    <div id="feedback2" class="quiz-feedback"></div>
+                
+                <div id="quizContainer">
+                    <!-- Questions will be dynamically generated here -->
                 </div>
-
-                <!-- Question 3 -->
-                <div class="quiz-question">
-                    <p><strong>Question 3:</strong> WLS achieves efficiency by:</p>
-                    <div class="quiz-options">
-                        <label class="quiz-option" onclick="selectAnswer('q3', 'A')">
-                            <input type="radio" name="q3" value="A">
-                            A) Giving equal weight to all observations
-                        </label>
-                        <label class="quiz-option" onclick="selectAnswer('q3', 'B')">
-                            <input type="radio" name="q3" value="B">
-                            B) Giving more weight to low-variance observations
-                        </label>
-                        <label class="quiz-option" onclick="selectAnswer('q3', 'C')">
-                            <input type="radio" name="q3" value="C">
-                            C) Eliminating heteroskedasticity completely
-                        </label>
+                
+                <!-- Quiz Results Summary -->
+                <div id="quizSummary" style="display: none; margin-top: 2rem; padding: 1.5rem; background: var(--tech-50); border-radius: 8px; border-left: 4px solid var(--primary-diagnostic);">
+                    <h4 style="color: var(--primary-diagnostic); margin-bottom: 1rem;">Quiz Results</h4>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 6px;">
+                            <div id="correctCount" style="font-size: 1.5rem; font-weight: bold; color: var(--status-healthy);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--tech-600);">Correct</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 6px;">
+                            <div id="totalQuestions" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-diagnostic);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--tech-600);">Total</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 6px;">
+                            <div id="quizScore" style="font-size: 1.5rem; font-weight: bold; color: var(--secondary-diagnostic);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--tech-600);">Score</div>
+                        </div>
                     </div>
-                    <div id="feedback3" class="quiz-feedback"></div>
+                    <div id="quizFeedback" style="color: var(--tech-700); line-height: 1.6;"></div>
+                    <button onclick="regenerateQuiz()" class="action-button" style="margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                        Try Again with New Questions
+                    </button>
                 </div>
             </div>
         </section>
@@ -1387,6 +1367,278 @@
         
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Chapter 8: Heteroskedasticity loaded successfully!');
+        });
+        
+        // ========================================
+        // DYNAMIC QUIZ SYSTEM
+        // ========================================
+        
+        let currentQuestions = [];
+        let answeredQuestions = {};
+        
+        const questionBank = {
+            heteroskedasticity_nature: [
+                {
+                    question: "Under heteroskedasticity, OLS estimators are:",
+                    options: [
+                        "Biased and inefficient",
+                        "Unbiased but inefficient",
+                        "Biased but efficient",
+                        "Unbiased and efficient"
+                    ],
+                    correct: 1,
+                    explanation: "Under heteroskedasticity, OLS estimators remain unbiased (E[β̂] = β) but become inefficient because they don't achieve the minimum variance among linear unbiased estimators."
+                },
+                {
+                    question: "The main consequence of heteroskedasticity for OLS standard errors is:",
+                    options: [
+                        "Standard errors are always too large",
+                        "Standard errors are always too small", 
+                        "Standard errors are incorrect (biased/inconsistent)",
+                        "Standard errors remain valid"
+                    ],
+                    correct: 2,
+                    explanation: "Heteroskedasticity makes OLS standard errors inconsistent - they can be either too large or too small, leading to invalid t-tests and confidence intervals."
+                },
+                {
+                    question: "Heteroskedasticity means that:",
+                    options: [
+                        "Error terms are correlated across observations",
+                        "Error variance depends on explanatory variables",
+                        "Explanatory variables are perfectly correlated",
+                        "The model is nonlinear"
+                    ],
+                    correct: 1,
+                    explanation: "Heteroskedasticity means Var(u|x) = σ²(x) - the error variance is not constant but depends on the values of explanatory variables."
+                }
+            ],
+            robust_inference: [
+                {
+                    question: "The main advantage of White's robust standard errors is:",
+                    options: [
+                        "They improve coefficient efficiency",
+                        "Valid inference under heteroskedasticity without knowing variance function",
+                        "They eliminate heteroskedasticity completely",
+                        "They provide biased but consistent estimates"
+                    ],
+                    correct: 1,
+                    explanation: "Robust standard errors provide asymptotically valid inference under heteroskedasticity of unknown form, without needing to specify the variance function."
+                },
+                {
+                    question: "When should you use robust standard errors?",
+                    options: [
+                        "Only when heteroskedasticity tests reject",
+                        "Only with large sample sizes",
+                        "As a routine practice for reliable inference",
+                        "Only when using WLS"
+                    ],
+                    correct: 2,
+                    explanation: "Robust standard errors should be used routinely as best practice since they're valid under both homoskedasticity and heteroskedasticity."
+                }
+            ],
+            testing_procedures: [
+                {
+                    question: "The Breusch-Pagan test for heteroskedasticity examines whether:",
+                    options: [
+                        "Residuals are normally distributed",
+                        "Squared residuals are related to explanatory variables",
+                        "Coefficients are statistically significant",
+                        "Variables are perfectly collinear"
+                    ],
+                    correct: 1,
+                    explanation: "The BP test regresses squared OLS residuals on explanatory variables. H₀: no relationship (homoskedasticity) vs H₁: relationship exists (heteroskedasticity)."
+                },
+                {
+                    question: "The White test differs from Breusch-Pagan by:",
+                    options: [
+                        "Using different critical values",
+                        "Including squared and cross-product terms",
+                        "Testing for serial correlation instead",
+                        "Requiring knowledge of variance function"
+                    ],
+                    correct: 1,
+                    explanation: "White test includes squares and cross-products of regressors, making it more robust to functional form misspecification than the BP test."
+                }
+            ],
+            weighted_least_squares: [
+                {
+                    question: "WLS achieves efficiency by:",
+                    options: [
+                        "Giving equal weight to all observations",
+                        "Giving more weight to low-variance observations",
+                        "Eliminating heteroskedasticity completely",
+                        "Dropping high-variance observations"
+                    ],
+                    correct: 1,
+                    explanation: "WLS weights observations by 1/√Var(u|x), giving more weight to precise (low-variance) observations and less to imprecise ones."
+                },
+                {
+                    question: "For WLS to be more efficient than OLS, you need:",
+                    options: [
+                        "Large sample size only",
+                        "Correct specification of the variance function",
+                        "Normal error distribution",
+                        "No missing observations"
+                    ],
+                    correct: 1,
+                    explanation: "WLS efficiency requires correct variance function specification. Incorrect weights can make WLS less efficient than OLS."
+                }
+            ]
+        };
+        
+        function regenerateQuiz() {
+            // Clear previous state
+            answeredQuestions = {};
+            currentQuestions = [];
+            
+            // Randomly select questions from different categories
+            const categories = Object.keys(questionBank);
+            const questionsPerCategory = Math.max(1, Math.floor(5 / categories.length));
+            
+            categories.forEach(category => {
+                const categoryQuestions = questionBank[category];
+                const selectedQuestions = [];
+                const used = new Set();
+                
+                while (selectedQuestions.length < questionsPerCategory && selectedQuestions.length < categoryQuestions.length) {
+                    const randomIndex = Math.floor(Math.random() * categoryQuestions.length);
+                    if (!used.has(randomIndex)) {
+                        selectedQuestions.push({
+                            ...categoryQuestions[randomIndex],
+                            category: category,
+                            id: `q${currentQuestions.length + selectedQuestions.length + 1}`
+                        });
+                        used.add(randomIndex);
+                    }
+                }
+                
+                currentQuestions.push(...selectedQuestions);
+            });
+            
+            // Shuffle the selected questions
+            currentQuestions = shuffleArray(currentQuestions);
+            
+            // Limit to 5 questions
+            currentQuestions = currentQuestions.slice(0, 5);
+            
+            // Render the quiz
+            renderQuiz();
+            
+            // Hide summary
+            document.getElementById('quizSummary').style.display = 'none';
+        }
+        
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+        
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+            
+            let html = '';
+            currentQuestions.forEach((question, index) => {
+                html += `
+                    <div class="quiz-question">
+                        <p><strong>Question ${index + 1}:</strong> ${question.question}</p>
+                        <div class="quiz-options">
+                `;
+                
+                question.options.forEach((option, optIndex) => {
+                    html += `
+                        <label class="quiz-option" onclick="selectDynamicAnswer('${question.id}', ${optIndex})">
+                            <input type="radio" name="${question.id}" value="${optIndex}">
+                            ${String.fromCharCode(65 + optIndex)}) ${option}
+                        </label>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                        <div id="feedback${question.id}" class="quiz-feedback"></div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function selectDynamicAnswer(questionId, selectedAnswer) {
+            const question = currentQuestions.find(q => q.id === questionId);
+            if (!question) return;
+            
+            const isCorrect = selectedAnswer === question.correct;
+            answeredQuestions[questionId] = {
+                selected: selectedAnswer,
+                correct: isCorrect,
+                question: question
+            };
+            
+            // Update option styling
+            const options = document.querySelectorAll(`input[name="${questionId}"]`);
+            options.forEach((option, index) => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (index === question.correct) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            // Show feedback
+            const feedbackEl = document.getElementById(`feedback${questionId}`);
+            feedbackEl.textContent = question.explanation;
+            feedbackEl.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackEl.style.display = 'block';
+            
+            // Check if all questions are answered
+            if (Object.keys(answeredQuestions).length === currentQuestions.length) {
+                setTimeout(() => showQuizSummary(), 1000);
+            }
+        }
+        
+        function showQuizSummary() {
+            const totalQuestions = currentQuestions.length;
+            const correctAnswers = Object.values(answeredQuestions).filter(a => a.correct).length;
+            const score = Math.round((correctAnswers / totalQuestions) * 100);
+            
+            // Update summary display
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            document.getElementById('quizScore').textContent = score + '%';
+            
+            // Generate feedback
+            let feedback = '';
+            if (score >= 90) {
+                feedback = '🌟 Excellent! You have mastered heteroskedasticity concepts. You understand detection, consequences, and correction methods thoroughly.';
+            } else if (score >= 80) {
+                feedback = '👍 Great job! You have a strong grasp of heteroskedasticity. Review testing procedures and WLS/FGLS methods for even stronger mastery.';
+            } else if (score >= 70) {
+                feedback = '✨ Good work! You understand the basics well. Focus on the differences between robust SEs, WLS, and FGLS methods.';
+            } else {
+                feedback = '📚 Review Sections 8.1-8.5, focusing on why heteroskedasticity matters and how correction methods work. Practice with the interactive calculators.';
+            }
+            
+            document.getElementById('quizFeedback').textContent = feedback;
+            document.getElementById('quizSummary').style.display = 'block';
+            
+            // Smooth scroll to summary
+            document.getElementById('quizSummary').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+        }
+        
+        // Initialize quiz
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                regenerateQuiz();
+            }, 1000);
         });
         
     </script>
