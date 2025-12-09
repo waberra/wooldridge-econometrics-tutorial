@@ -1,0 +1,2132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 13: Pooled Cross Sections and Panel Data Methods - Wooldridge Econometrics</title>
+    <style>
+        :root {
+            /* Panel Data Grid Theme - Deep purples and structured aesthetics */
+            --primary-panel: #7c3aed;
+            --secondary-panel: #6d28d9;
+            --accent-diff: #a855f7;
+            --accent-fixed: #8b5cf6;
+            --accent-random: #c084fc;
+            --grid-50: #faf5ff;
+            --grid-100: #f3e8ff;
+            --grid-200: #e9d5ff;
+            --grid-300: #d8b4fe;
+            --grid-400: #c084fc;
+            --grid-500: #a855f7;
+            --grid-600: #9333ea;
+            --grid-700: #7c3aed;
+            --grid-800: #6b21a8;
+            --grid-900: #581c87;
+            
+            /* Status colors for panel data analysis */
+            --status-pooled: #10b981;
+            --status-fixed: #3b82f6;
+            --status-random: #8b5cf6;
+            --status-hausman: #f59e0b;
+            --status-policy: #ef4444;
+            
+            /* Typography */
+            --font-primary: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            line-height: 1.6;
+            color: var(--grid-800);
+            background: linear-gradient(135deg, var(--grid-50) 0%, #ffffff 50%, var(--grid-100) 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 3rem 0;
+            background: linear-gradient(135deg, var(--primary-panel), var(--secondary-panel));
+            color: white;
+            margin-bottom: 3rem;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chapter-title {
+            font-size: 3.2rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff, #e9d5ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.02em;
+        }
+
+        .chapter-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            font-weight: 400;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Navigation */
+        .nav-container {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(124, 58, 237, 0.1);
+            border: 1px solid var(--grid-200);
+        }
+
+        .nav-pills {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            justify-items: center;
+        }
+
+        .nav-pill {
+            padding: 1rem 1.75rem;
+            background: var(--grid-100);
+            border: none;
+            border-radius: 15px;
+            color: var(--grid-700);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .nav-pill:hover {
+            background: var(--primary-panel);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Section Styling */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--grid-200);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-panel);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section p {
+            margin-bottom: 1rem;
+            color: var(--grid-700);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        /* Concept Boxes */
+        .concept-box {
+            background: var(--grid-50);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 1px solid var(--grid-200);
+            border-left: 5px solid var(--primary-panel);
+        }
+
+        .concept-box.pooled { border-left-color: var(--status-pooled); }
+        .concept-box.fixed { border-left-color: var(--status-fixed); }
+        .concept-box.random { border-left-color: var(--status-random); }
+        .concept-box.policy { border-left-color: var(--status-policy); }
+
+        .concept-title {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-panel);
+            font-size: 1.2rem;
+        }
+
+        .concept-box.pooled .concept-title { color: var(--status-pooled); }
+        .concept-box.fixed .concept-title { color: var(--status-fixed); }
+        .concept-box.random .concept-title { color: var(--status-random); }
+        .concept-box.policy .concept-title { color: var(--status-policy); }
+
+        /* Formula Boxes */
+        .formula {
+            background: var(--grid-900);
+            color: #e9d5ff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        /* Interactive Controls */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .control-group {
+            background: var(--grid-50);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--grid-200);
+            transition: all 0.3s ease;
+        }
+
+        .control-group:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(124, 58, 237, 0.15);
+        }
+
+        .control-group h4 {
+            color: var(--primary-panel);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--grid-700);
+            margin-bottom: 0.75rem;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--grid-300);
+            border-radius: 10px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary-panel);
+        }
+
+        .input-group input[type="range"] {
+            background: var(--grid-200);
+            border: none;
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--primary-panel), var(--secondary-panel));
+            color: white;
+            border: none;
+            padding: 1.25rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 1.05rem;
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(124, 58, 237, 0.4);
+        }
+
+        /* Results Display */
+        .results-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 1px solid var(--grid-200);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            display: none;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: var(--grid-50);
+            border-radius: 12px;
+            border: 1px solid var(--grid-200);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            font-family: var(--font-mono);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--grid-600);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-pooled {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--status-pooled);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-fixed {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--status-fixed);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .status-random {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--status-random);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .status-hausman {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--status-hausman);
+            border: 2px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-policy {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--status-policy);
+            border: 2px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Chart containers */
+        .chart-container {
+            position: relative;
+            height: 350px;
+            background: white;
+            border: 1px solid var(--grid-200);
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+
+        /* DiD Table */
+        .diff-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 1.5rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .diff-table th {
+            background: var(--primary-panel);
+            color: white;
+            padding: 1rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .diff-table td {
+            background: white;
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--grid-200);
+            font-weight: 600;
+        }
+
+        .diff-table .treatment { background: rgba(168, 85, 247, 0.1); }
+        .diff-table .control { background: rgba(59, 130, 246, 0.1); }
+        .diff-table .difference {
+            background: var(--grid-100);
+            font-weight: 700;
+            color: var(--primary-panel);
+        }
+
+        /* Quiz Section */
+        .quiz-section {
+            background: linear-gradient(135deg, var(--grid-50), #ffffff);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 1px solid var(--grid-200);
+        }
+
+        .quiz-question {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 1px solid var(--grid-200);
+            transition: all 0.3s ease;
+        }
+
+        .quiz-question:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.15);
+        }
+
+        .quiz-question p {
+            font-weight: 600;
+            color: var(--grid-800);
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: var(--grid-50);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .quiz-option:hover {
+            background: var(--grid-100);
+            border-color: var(--primary-panel);
+            transform: translateX(6px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--status-pooled);
+            color: var(--status-pooled);
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--status-policy);
+            color: var(--status-policy);
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1.25rem;
+            border-radius: 12px;
+            display: none;
+            line-height: 1.7;
+        }
+
+        .quiz-feedback.correct {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--status-pooled);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .quiz-feedback.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--status-policy);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* AI Chat Widget */
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        .ai-chat-button {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-panel), var(--secondary-panel));
+            border: none;
+            color: white;
+            font-size: 1.7rem;
+            cursor: pointer;
+            box-shadow: 0 10px 40px rgba(124, 58, 237, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .ai-chat-button:hover {
+            transform: scale(1.15) translateY(-3px);
+            box-shadow: 0 15px 50px rgba(124, 58, 237, 0.4);
+        }
+
+        .ai-chat-panel {
+            position: absolute;
+            bottom: 85px;
+            right: 0;
+            width: 380px;
+            height: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--grid-200);
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.4s ease;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ai-chat-panel.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .ai-chat-header {
+            background: linear-gradient(135deg, var(--primary-panel), var(--secondary-panel));
+            color: white;
+            padding: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .ai-message {
+            max-width: 85%;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .ai-message.user {
+            background: var(--primary-panel);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-message.claude {
+            background: var(--grid-100);
+            color: var(--grid-800);
+            border-bottom-left-radius: 4px;
+        }
+
+        .ai-input-area {
+            padding: 1.5rem;
+            border-top: 1px solid var(--grid-200);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid var(--grid-300);
+            border-radius: 25px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .ai-send-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary-panel);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .ai-send-btn:hover {
+            background: var(--secondary-panel);
+            transform: scale(1.1);
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .fade-in.delay-1 { animation-delay: 0.1s; }
+        .fade-in.delay-2 { animation-delay: 0.2s; }
+        .fade-in.delay-3 { animation-delay: 0.3s; }
+        .fade-in.delay-4 { animation-delay: 0.4s; }
+        .fade-in.delay-5 { animation-delay: 0.5s; }
+        .fade-in.delay-6 { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .chapter-title { font-size: 2.5rem; }
+            .nav-pills { grid-template-columns: 1fr; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: repeat(2, 1fr); }
+            .ai-chat-panel { width: calc(100vw - 4rem); right: 2rem; left: 2rem; }
+        }
+
+        @media (max-width: 480px) {
+            .results-grid { grid-template-columns: 1fr; }
+            .chapter-title { font-size: 2rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header fade-in">
+            <h1 class="chapter-title">🔢 Chapter 13</h1>
+            <p class="chapter-subtitle">Pooled Cross Sections and Panel Data Methods</p>
+        </header>
+
+        <!-- Navigation -->
+        <div class="nav-container fade-in delay-1">
+            <div class="nav-pills">
+                <button onclick="scrollToSection('pooled')" class="nav-pill">
+                    🔄 Pooled Cross Sections
+                </button>
+                <button onclick="scrollToSection('diff-in-diff')" class="nav-pill">
+                    📊 Difference-in-Differences
+                </button>
+                <button onclick="scrollToSection('fixed-effects')" class="nav-pill">
+                    🎯 Fixed Effects
+                </button>
+                <button onclick="scrollToSection('random-effects')" class="nav-pill">
+                    🎲 Random Effects
+                </button>
+                <button onclick="scrollToSection('hausman')" class="nav-pill">
+                    🔍 Hausman Test
+                </button>
+                <button onclick="scrollToSection('quiz')" class="nav-pill">
+                    🎯 Knowledge Check
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 13.1: Pooled Cross Sections -->
+        <section class="section fade-in delay-2" id="pooled">
+            <h2 class="section-title">13.1 🔄 Pooled Cross-Sectional Analysis</h2>
+            
+            <p>Pooled cross sections combine multiple cross-sectional datasets from different time periods. This allows us to increase sample size and analyze changes over time while controlling for observable characteristics.</p>
+
+            <div class="concept-box pooled">
+                <div class="concept-title">🔄 Pooled OLS Model</div>
+                <p>Basic pooled cross-section regression:</p>
+                <div class="formula">
+                    y_it = β₀ + β₁x₁_it + β₂x₂_it + ... + δ₁d2_t + δ₂d3_t + ... + u_it
+                    <br>where d_t are time period dummy variables
+                    <br>i = individual, t = time period
+                </div>
+                <p><strong>Key assumptions:</strong> Same relationship across time periods, no unobserved heterogeneity affecting both x and y</p>
+            </div>
+
+            <div class="concept-box policy">
+                <div class="concept-title">📊 Policy Analysis Applications</div>
+                <p><strong>Common uses:</strong><br>
+                • Effect of minimum wage changes on employment<br>
+                • Impact of education policy reforms<br>
+                • Labor market discrimination analysis<br>
+                • Returns to education over time</p>
+            </div>
+
+            <!-- Pooled Cross-Section Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🎛️ Pooled Cross-Section Simulator</h4>
+                    
+                    <div class="input-group">
+                        <label for="pooledPeriods">Number of Time Periods:</label>
+                        <select id="pooledPeriods">
+                            <option value="2">2 periods</option>
+                            <option value="3" selected>3 periods</option>
+                            <option value="5">5 periods</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="pooledSampleSize">Sample Size per Period:</label>
+                        <select id="pooledSampleSize">
+                            <option value="100">100 individuals</option>
+                            <option value="200" selected>200 individuals</option>
+                            <option value="500">500 individuals</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="timeEffect">Time Trend Effect:</label>
+                        <input type="range" id="timeEffect" min="0" max="1" step="0.1" value="0.3">
+                        <span id="timeEffectValue">0.3</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="treatmentEffect">Treatment Effect:</label>
+                        <input type="range" id="treatmentEffect" min="0" max="2" step="0.1" value="0.8">
+                        <span id="treatmentEffectValue">0.8</span>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulatePooledCrossSection()">
+                        🔄 Simulate Pooled Analysis
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Cross-Sectional Patterns</h4>
+                    <div class="chart-container" id="pooledChart" style="background: var(--grid-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--grid-400); text-align: center;">
+                            Run simulation to visualize<br>pooled cross-sectional data patterns
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="pooledResults">
+                <h4 style="color: var(--primary-panel); margin-bottom: 1rem;">Pooled Cross-Section Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="pooledBeta" style="color: var(--status-pooled);">-</div>
+                        <div class="stat-label">Treatment Effect</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="pooledStdError" style="color: var(--grid-600);">-</div>
+                        <div class="stat-label">Standard Error</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="pooledRSquared" style="color: var(--accent-diff);">-</div>
+                        <div class="stat-label">R-squared</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="pooledObservations" style="color: var(--primary-panel);">-</div>
+                        <div class="stat-label">Total N</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="pooledAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="pooledInterpretation" style="color: var(--grid-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 13.2: Difference-in-Differences -->
+        <section class="section fade-in delay-3" id="diff-in-diff">
+            <h2 class="section-title">13.2 📊 Difference-in-Differences Analysis</h2>
+            
+            <p>Difference-in-differences (DiD) compares changes over time between treatment and control groups. This powerful method controls for time-invariant unobserved factors affecting both groups.</p>
+
+            <div class="concept-box policy">
+                <div class="concept-title">📊 DiD Framework</div>
+                <p>Two-period, two-group model:</p>
+                <div class="formula">
+                    y_it = β₀ + β₁treated_i + β₂after_t + β₃(treated_i × after_t) + u_it
+                    <br>β₃ = DiD estimator = (Ȳ_T1 - Ȳ_T0) - (Ȳ_C1 - Ȳ_C0)
+                    <br>T = treatment group, C = control group, 0/1 = before/after
+                </div>
+                <p><strong>Key identification assumption:</strong> Parallel trends in absence of treatment</p>
+            </div>
+
+            <!-- Difference-in-Differences Table -->
+            <div style="overflow-x: auto; margin: 2rem 0;">
+                <table class="diff-table">
+                    <thead>
+                        <tr>
+                            <th>Group</th>
+                            <th>Before Treatment</th>
+                            <th>After Treatment</th>
+                            <th>Difference</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="treatment">
+                            <td><strong>Treatment</strong></td>
+                            <td id="treatmentBefore">Ȳ_T0</td>
+                            <td id="treatmentAfter">Ȳ_T1</td>
+                            <td id="treatmentDiff">Ȳ_T1 - Ȳ_T0</td>
+                        </tr>
+                        <tr class="control">
+                            <td><strong>Control</strong></td>
+                            <td id="controlBefore">Ȳ_C0</td>
+                            <td id="controlAfter">Ȳ_C1</td>
+                            <td id="controlDiff">Ȳ_C1 - Ȳ_C0</td>
+                        </tr>
+                        <tr class="difference">
+                            <td><strong>Difference</strong></td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td id="didEstimate">DiD Estimate</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- DiD Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🧪 Difference-in-Differences Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="didTrueEffect">True Treatment Effect:</label>
+                        <input type="range" id="didTrueEffect" min="0" max="3" step="0.1" value="1.5">
+                        <span id="didTrueEffectValue">1.5</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="parallelTrends">Parallel Trends Violation:</label>
+                        <input type="range" id="parallelTrends" min="0" max="1" step="0.1" value="0">
+                        <span id="parallelTrendsValue">0</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="groupSize">Group Size:</label>
+                        <select id="groupSize">
+                            <option value="100">100 per group</option>
+                            <option value="250" selected>250 per group</option>
+                            <option value="500">500 per group</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="baselineLevel">Baseline Outcome Level:</label>
+                        <input type="range" id="baselineLevel" min="5" max="15" step="0.5" value="10">
+                        <span id="baselineLevelValue">10</span>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateDifferenceInDifferences()">
+                        📊 Run DiD Analysis
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📈 Parallel Trends Visualization</h4>
+                    <div class="chart-container" id="didChart" style="background: var(--grid-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--grid-400); text-align: center;">
+                            Run DiD analysis to visualize<br>treatment and control group trends
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="didResults">
+                <h4 style="color: var(--primary-panel); margin-bottom: 1rem;">Difference-in-Differences Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="didCoefficient" style="color: var(--status-policy);">-</div>
+                        <div class="stat-label">DiD Estimate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="didStdError" style="color: var(--grid-600);">-</div>
+                        <div class="stat-label">Standard Error</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="didTStat" style="color: var(--accent-diff);">-</div>
+                        <div class="stat-label">t-statistic</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="didPValue" style="color: var(--status-hausman);">-</div>
+                        <div class="stat-label">P-value</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="didAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="didInterpretation" style="color: var(--grid-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 13.3: Fixed Effects Estimation -->
+        <section class="section fade-in delay-4" id="fixed-effects">
+            <h2 class="section-title">13.3 🎯 Fixed Effects Estimation</h2>
+            
+            <p>Fixed effects (FE) estimation controls for time-invariant unobserved heterogeneity by including individual-specific intercepts. This eliminates bias from omitted variables that don't change over time.</p>
+
+            <div class="concept-box fixed">
+                <div class="concept-title">🎯 Fixed Effects Model</div>
+                <p>Individual fixed effects specification:</p>
+                <div class="formula">
+                    y_it = α_i + β₁x₁_it + β₂x₂_it + ... + u_it
+                    <br>where α_i = individual-specific intercept (fixed effect)
+                    <br>Eliminates bias from omitted variables correlated with x_it
+                </div>
+                <p><strong>Within transformation:</strong> ÿ_it = ß₁ẍ₁_it + ... + ü_it, where ÿ_it = y_it - ȳ_i</p>
+            </div>
+
+            <div class="concept-box policy">
+                <div class="concept-title">⚖️ When to Use Fixed Effects</div>
+                <p><strong>Advantages:</strong><br>
+                • Controls for all time-invariant omitted variables<br>
+                • No distributional assumptions about α_i<br>
+                • Consistent even if α_i correlates with x_it</p>
+                <p><strong>Disadvantages:</strong><br>
+                • Cannot estimate effects of time-invariant variables<br>
+                • Reduces efficiency compared to RE if assumptions hold<br>
+                • Requires within-individual variation</p>
+            </div>
+
+            <!-- Fixed Effects Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🎯 Fixed Effects Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="feIndividuals">Number of Individuals:</label>
+                        <select id="feIndividuals">
+                            <option value="50">50 individuals</option>
+                            <option value="100" selected>100 individuals</option>
+                            <option value="200">200 individuals</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="feTimePeriods">Time Periods:</label>
+                        <select id="feTimePeriods">
+                            <option value="3">3 periods</option>
+                            <option value="5" selected>5 periods</option>
+                            <option value="10">10 periods</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="unobservedCorrelation">Unobserved Heterogeneity Correlation:</label>
+                        <input type="range" id="unobservedCorrelation" min="0" max="0.8" step="0.1" value="0.5">
+                        <span id="unobservedCorrelationValue">0.5</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="trueBetaFE">True β Effect:</label>
+                        <input type="range" id="trueBetaFE" min="0.5" max="2" step="0.1" value="1.2">
+                        <span id="trueBetaFEValue">1.2</span>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateFixedEffects()">
+                        🎯 Run Fixed Effects Analysis
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Within vs. Between Variation</h4>
+                    <div class="chart-container" id="feChart" style="background: var(--grid-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--grid-400); text-align: center;">
+                            Run simulation to visualize<br>within-individual variation used by FE
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="feResults">
+                <h4 style="color: var(--primary-panel); margin-bottom: 1rem;">Fixed Effects vs. Pooled OLS Comparison</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="feBeta" style="color: var(--status-fixed);">-</div>
+                        <div class="stat-label">FE Estimate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="pooledBias" style="color: var(--status-policy);">-</div>
+                        <div class="stat-label">Pooled OLS Bias</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="feRSquaredWithin" style="color: var(--accent-fixed);">-</div>
+                        <div class="stat-label">Within R²</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="feRSquaredBetween" style="color: var(--grid-600);">-</div>
+                        <div class="stat-label">Between R²</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="feAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="feInterpretation" style="color: var(--grid-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 13.4: Random Effects Model -->
+        <section class="section fade-in delay-5" id="random-effects">
+            <h2 class="section-title">13.4 🎲 Random Effects Estimation</h2>
+            
+            <p>Random effects (RE) treats individual heterogeneity as random variables uncorrelated with regressors. This allows estimation of time-invariant variable effects while maintaining efficiency.</p>
+
+            <div class="concept-box random">
+                <div class="concept-title">🎲 Random Effects Model</div>
+                <p>Composite error specification:</p>
+                <div class="formula">
+                    y_it = β₀ + β₁x₁_it + β₂z_i + (α_i + u_it)
+                    <br>where α_i ~ iid(0, σ²_α), u_it ~ iid(0, σ²_u)
+                    <br>Composite error: v_it = α_i + u_it
+                    <br>Cov(v_it, v_is) = σ²_α for t ≠ s (within-individual correlation)
+                </div>
+                <p><strong>Key assumption:</strong> E[α_i|x_it, z_i] = 0 for all i,t</p>
+            </div>
+
+            <div class="concept-box policy">
+                <div class="concept-title">🔄 GLS Transformation</div>
+                <p>Feasible GLS uses estimated θ to transform data:</p>
+                <div class="formula">
+                    θ̂ = 1 - σ̂_u / √(σ̂²_u + T·σ̂²_α)
+                    <br>Transformation: y_it - θ̂ȳ_i regressed on (x_it - θ̂x̄_i)
+                    <br>Balances within and between variation optimally
+                </div>
+            </div>
+
+            <!-- Random Effects Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🎲 Random Effects Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="reIndividuals">Number of Individuals:</label>
+                        <select id="reIndividuals">
+                            <option value="50">50 individuals</option>
+                            <option value="100" selected>100 individuals</option>
+                            <option value="200">200 individuals</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="reTimePeriods">Time Periods:</label>
+                        <select id="reTimePeriods">
+                            <option value="3">3 periods</option>
+                            <option value="5" selected>5 periods</option>
+                            <option value="10">10 periods</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="alphaVariance">Individual Heterogeneity (σ²_α):</label>
+                        <input type="range" id="alphaVariance" min="0.1" max="2" step="0.1" value="1">
+                        <span id="alphaVarianceValue">1</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="reOrthogonality">RE Orthogonality Violation:</label>
+                        <input type="range" id="reOrthogonality" min="0" max="0.5" step="0.05" value="0">
+                        <span id="reOrthogonalityValue">0</span>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateRandomEffects()">
+                        🎲 Run Random Effects Analysis
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Efficiency Comparison</h4>
+                    <div class="chart-container" id="reChart" style="background: var(--grid-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--grid-400); text-align: center;">
+                            Run simulation to compare<br>RE efficiency vs. FE
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="reResults">
+                <h4 style="color: var(--primary-panel); margin-bottom: 1rem;">Random Effects Analysis</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="reBeta" style="color: var(--status-random);">-</div>
+                        <div class="stat-label">RE Estimate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="reTheta" style="color: var(--accent-random);">-</div>
+                        <div class="stat-label">Theta (θ̂)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="reSigmaAlpha" style="color: var(--grid-600);">-</div>
+                        <div class="stat-label">σ̂_α</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="reEfficiencyGain" style="color: var(--status-fixed);">-</div>
+                        <div class="stat-label">Efficiency vs. FE</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="reAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="reInterpretation" style="color: var(--grid-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 13.5: Hausman Test -->
+        <section class="section fade-in delay-6" id="hausman">
+            <h2 class="section-title">13.5 🔍 Hausman Test for Model Selection</h2>
+            
+            <p>The Hausman test determines whether fixed effects or random effects is more appropriate by testing whether individual effects are correlated with regressors.</p>
+
+            <div class="concept-box policy">
+                <div class="concept-title">🔍 Hausman Test Logic</div>
+                <p><strong>Null hypothesis:</strong> E[α_i|x_it] = 0 (RE is consistent and efficient)</p>
+                <p><strong>Alternative hypothesis:</strong> E[α_i|x_it] ≠ 0 (only FE is consistent)</p>
+                <div class="formula">
+                    H = (β̂_FE - β̂_RE)'[Var(β̂_FE) - Var(β̂_RE)]⁻¹(β̂_FE - β̂_RE)
+                    <br>H ~ χ²(k) under H₀
+                    <br>Reject H₀ → Use Fixed Effects (RE is inconsistent)
+                    <br>Fail to reject H₀ → Use Random Effects (more efficient)
+                </div>
+            </div>
+
+            <!-- Hausman Test Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🧪 Hausman Test Simulator</h4>
+                    
+                    <div class="input-group">
+                        <label for="hausmanN">Number of Individuals:</label>
+                        <select id="hausmanN">
+                            <option value="100">100 individuals</option>
+                            <option value="200" selected>200 individuals</option>
+                            <option value="500">500 individuals</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="hausmanT">Time Periods:</label>
+                        <select id="hausmanT">
+                            <option value="3">3 periods</option>
+                            <option value="5" selected>5 periods</option>
+                            <option value="8">8 periods</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="hausmanCorrelation">RE Assumption Violation:</label>
+                        <input type="range" id="hausmanCorrelation" min="0" max="0.6" step="0.1" value="0.2">
+                        <span id="hausmanCorrelationValue">0.2</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="hausmanSimulations">Number of Simulations:</label>
+                        <select id="hausmanSimulations">
+                            <option value="100">100 replications</option>
+                            <option value="500" selected>500 replications</option>
+                            <option value="1000">1000 replications</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateHausmanTest()">
+                        🔍 Run Hausman Test Analysis
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📈 Test Power Analysis</h4>
+                    <div class="chart-container" id="hausmanChart" style="background: var(--grid-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--grid-400); text-align: center;">
+                            Run Hausman test to analyze<br>power vs. correlation strength
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="hausmanResults">
+                <h4 style="color: var(--primary-panel); margin-bottom: 1rem;">Hausman Test Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="hausmanStatistic" style="color: var(--status-hausman);">-</div>
+                        <div class="stat-label">Hausman Statistic</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="hausmanCritical" style="color: var(--grid-600);">-</div>
+                        <div class="stat-label">Critical Value</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="hausmanPValue" style="color: var(--accent-diff);">-</div>
+                        <div class="stat-label">P-value</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="hausmanPower" style="color: var(--status-random);">-</div>
+                        <div class="stat-label">Test Power</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="hausmanAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="hausmanInterpretation" style="color: var(--grid-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section class="section fade-in delay-7" id="quiz">
+            <div class="quiz-section">
+                <h3 style="text-align: center; margin-bottom: 1rem; color: var(--primary-panel);">
+                    🎯 Chapter 13 Knowledge Check: Panel Data Methods
+                </h3>
+                <p style="text-align: center; color: var(--grid-600); margin-bottom: 1rem;">
+                    Test your understanding of pooled cross-sections, difference-in-differences, fixed effects, random effects, and model selection
+                </p>
+                
+                <!-- Regenerate Button -->
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <button onclick="regenerateQuiz()" class="action-button" style="margin: 0; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                        🔄 Generate New Questions
+                    </button>
+                    <p style="font-size: 0.8rem; color: var(--grid-600); margin-top: 0.5rem;">
+                        Click to get fresh questions on panel data econometrics
+                    </p>
+                </div>
+                
+                <div id="quizContainer">
+                    <!-- Questions will be dynamically generated here -->
+                </div>
+                
+                <!-- Quiz Results Summary -->
+                <div id="quizSummary" style="display: none; margin-top: 2rem; padding: 1.5rem; background: var(--grid-50); border-radius: 8px; border-left: 4px solid var(--primary-panel);">
+                    <h4 style="color: var(--primary-panel); margin-bottom: 1rem;">Quiz Results</h4>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 6px;">
+                            <div id="correctCount" style="font-size: 1.5rem; font-weight: bold; color: var(--status-pooled);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--grid-600);">Correct</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 6px;">
+                            <div id="totalQuestions" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-panel);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--grid-600);">Total</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 6px;">
+                            <div id="quizScore" style="font-size: 1.5rem; font-weight: bold; color: var(--secondary-panel);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--grid-600);">Score</div>
+                        </div>
+                    </div>
+                    <div id="quizFeedback" style="color: var(--grid-700); line-height: 1.6;"></div>
+                    <button onclick="regenerateQuiz()" class="action-button" style="margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                        Try Again with New Questions
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div class="ai-chat-widget">
+        <button class="ai-chat-button" onclick="toggleAIChat()" title="Ask Claude about Panel Data Methods">
+            <span id="aiChatIcon">🔢</span>
+        </button>
+        
+        <div class="ai-chat-panel" id="aiChatPanel">
+            <div class="ai-chat-header">
+                <span>🔢 Panel Data Methods Tutor</span>
+                <button onclick="toggleAIChat()" style="background: none; border: none; color: white; cursor: pointer;">×</button>
+            </div>
+            
+            <div class="ai-chat-messages" id="aiChatMessages">
+                <div class="ai-message claude">
+                    <strong>🔢 Claude:</strong> Hi! I can help you understand pooled cross-sections, difference-in-differences, fixed effects, random effects, and the Hausman test. What panel data concept interests you?
+                </div>
+            </div>
+            
+            <div class="ai-input-area">
+                <input type="text" class="ai-input" id="aiInput" placeholder="Ask about panel data..." 
+                       onkeydown="if(event.key==='Enter') sendAIMessage()">
+                <button class="ai-send-btn" onclick="sendAIMessage()">→</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let isAIChatOpen = false;
+        let currentQuestions = [];
+        let answeredQuestions = {};
+        
+        // Slider event listeners
+        document.getElementById('timeEffect').addEventListener('input', function(e) {
+            document.getElementById('timeEffectValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('treatmentEffect').addEventListener('input', function(e) {
+            document.getElementById('treatmentEffectValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('didTrueEffect').addEventListener('input', function(e) {
+            document.getElementById('didTrueEffectValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('parallelTrends').addEventListener('input', function(e) {
+            document.getElementById('parallelTrendsValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('baselineLevel').addEventListener('input', function(e) {
+            document.getElementById('baselineLevelValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('unobservedCorrelation').addEventListener('input', function(e) {
+            document.getElementById('unobservedCorrelationValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('trueBetaFE').addEventListener('input', function(e) {
+            document.getElementById('trueBetaFEValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('alphaVariance').addEventListener('input', function(e) {
+            document.getElementById('alphaVarianceValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('reOrthogonality').addEventListener('input', function(e) {
+            document.getElementById('reOrthogonalityValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('hausmanCorrelation').addEventListener('input', function(e) {
+            document.getElementById('hausmanCorrelationValue').textContent = e.target.value;
+        });
+        
+        // Simulators
+        function simulatePooledCrossSection() {
+            console.log('Starting pooled cross section simulation...');
+            
+            try {
+                const periods = parseInt(document.getElementById('pooledPeriods').value);
+                const sampleSize = parseInt(document.getElementById('pooledSampleSize').value);
+                const timeEffect = parseFloat(document.getElementById('timeEffect').value);
+                const treatmentEffect = parseFloat(document.getElementById('treatmentEffect').value);
+                
+                console.log('Parameters:', { periods, sampleSize, timeEffect, treatmentEffect });
+                
+                const totalObs = periods * sampleSize;
+                const estimatedEffect = treatmentEffect + (Math.random() - 0.5) * 0.4;
+                const stdError = 0.1 + Math.random() * 0.1;
+                const rSquared = 0.3 + Math.random() * 0.4;
+                
+                document.getElementById('pooledBeta').textContent = estimatedEffect.toFixed(3);
+                document.getElementById('pooledStdError').textContent = stdError.toFixed(3);
+                document.getElementById('pooledRSquared').textContent = rSquared.toFixed(3);
+                document.getElementById('pooledObservations').textContent = totalObs;
+                
+                const tStat = Math.abs(estimatedEffect / stdError);
+                const isSignificant = tStat > 1.96;
+                
+                const assessmentEl = document.getElementById('pooledAssessment');
+                assessmentEl.textContent = isSignificant ? 'Significant Effect' : 'No Significant Effect';
+                assessmentEl.className = `status-indicator ${isSignificant ? 'status-pooled' : 'status-hausman'}`;
+                
+                document.getElementById('pooledInterpretation').textContent = 
+                    `Pooled cross-section analysis across ${periods} periods. Estimated treatment effect: ${estimatedEffect.toFixed(3)} (SE = ${stdError.toFixed(3)}). ${isSignificant ? 'Statistically significant.' : 'Not significant.'} Total N: ${totalObs}.`;
+                
+                // Simple chart simulation
+                const chartContainer = document.getElementById('pooledChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-panel);">Pooled Cross-Section Results</h4>
+                        <p>Periods: ${periods} | Sample per period: ${sampleSize}</p>
+                        <p>Treatment Effect: ${estimatedEffect.toFixed(3)} (${isSignificant ? 'Significant' : 'Not significant'})</p>
+                        <div style="background: var(--grid-100); padding: 15px; border-radius: 8px; margin: 10px 0;">
+                            <strong>t-statistic: ${tStat.toFixed(2)}</strong>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('pooledResults').style.display = 'block';
+                console.log('Pooled cross section simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in pooled cross section simulation:', error);
+                alert('Error running simulation. Check console for details.');
+            }
+        }
+        
+        function simulateDifferenceInDifferences() {
+            console.log('Starting DiD simulation...');
+            
+            try {
+                const trueEffect = parseFloat(document.getElementById('didTrueEffect').value);
+                const parallelViolation = parseFloat(document.getElementById('parallelTrends').value);
+                const baseline = parseFloat(document.getElementById('baselineLevel').value);
+                
+                console.log('DiD Parameters:', { trueEffect, parallelViolation, baseline });
+                
+                const timeEffect = 0.5;
+                const treatmentBefore = baseline + 1;
+                const controlBefore = baseline;
+                const treatmentAfter = treatmentBefore + timeEffect + parallelViolation + trueEffect;
+                const controlAfter = controlBefore + timeEffect;
+                
+                const treatmentDiff = treatmentAfter - treatmentBefore;
+                const controlDiff = controlAfter - controlBefore;
+                const didEstimate = treatmentDiff - controlDiff;
+                
+                // Update DiD table
+                document.getElementById('treatmentBefore').textContent = treatmentBefore.toFixed(2);
+                document.getElementById('treatmentAfter').textContent = treatmentAfter.toFixed(2);
+                document.getElementById('treatmentDiff').textContent = treatmentDiff.toFixed(2);
+                document.getElementById('controlBefore').textContent = controlBefore.toFixed(2);
+                document.getElementById('controlAfter').textContent = controlAfter.toFixed(2);
+                document.getElementById('controlDiff').textContent = controlDiff.toFixed(2);
+                document.getElementById('didEstimate').textContent = didEstimate.toFixed(3);
+                
+                const stdError = 0.2 + Math.random() * 0.1;
+                const tStat = didEstimate / stdError;
+                const pValue = Math.abs(tStat) > 1.96 ? 0.02 : 0.15;
+                
+                document.getElementById('didCoefficient').textContent = didEstimate.toFixed(3);
+                document.getElementById('didStdError').textContent = stdError.toFixed(3);
+                document.getElementById('didTStat').textContent = tStat.toFixed(2);
+                document.getElementById('didPValue').textContent = pValue.toFixed(3);
+                
+                const isSignificant = Math.abs(tStat) > 1.96;
+                const assessmentEl = document.getElementById('didAssessment');
+                assessmentEl.textContent = isSignificant ? 'Significant Policy Effect' : 'No Significant Effect';
+                assessmentEl.className = `status-indicator ${isSignificant ? 'status-policy' : 'status-hausman'}`;
+                
+                document.getElementById('didInterpretation').textContent = 
+                    `DiD estimate: ${didEstimate.toFixed(3)} (SE = ${stdError.toFixed(3)}). ${isSignificant ? 'Statistically significant.' : 'Not significant.'} ${parallelViolation > 0 ? 'Warning: Parallel trends violated.' : ''}`;
+                
+                // Simple chart for parallel trends
+                const chartContainer = document.getElementById('didChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-panel);">DiD Analysis</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--grid-100); padding: 10px; border-radius: 6px;">
+                                <strong>Treatment Group</strong><br>
+                                Before: ${treatmentBefore.toFixed(2)}<br>
+                                After: ${treatmentAfter.toFixed(2)}
+                            </div>
+                            <div style="background: var(--grid-100); padding: 10px; border-radius: 6px;">
+                                <strong>Control Group</strong><br>
+                                Before: ${controlBefore.toFixed(2)}<br>
+                                After: ${controlAfter.toFixed(2)}
+                            </div>
+                        </div>
+                        <div style="background: var(--primary-panel); color: white; padding: 10px; border-radius: 8px;">
+                            <strong>DiD Estimate: ${didEstimate.toFixed(3)}</strong>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('didResults').style.display = 'block';
+                console.log('DiD simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in DiD simulation:', error);
+                alert('Error running DiD simulation. Check console for details.');
+            }
+        }
+        
+        function simulateFixedEffects() {
+            console.log('Starting Fixed Effects simulation...');
+            
+            try {
+                const correlation = parseFloat(document.getElementById('unobservedCorrelation').value);
+                const trueBeta = parseFloat(document.getElementById('trueBetaFE').value);
+                
+                console.log('FE Parameters:', { correlation, trueBeta });
+                
+                const feBeta = trueBeta + (Math.random() - 0.5) * 0.1;
+                const pooledBias = correlation * 0.8 + (Math.random() - 0.5) * 0.2;
+                const withinR2 = 0.2 + Math.random() * 0.3;
+                const betweenR2 = 0.4 + Math.random() * 0.4;
+                
+                document.getElementById('feBeta').textContent = feBeta.toFixed(3);
+                document.getElementById('pooledBias').textContent = pooledBias.toFixed(3);
+                document.getElementById('feRSquaredWithin').textContent = withinR2.toFixed(3);
+                document.getElementById('feRSquaredBetween').textContent = betweenR2.toFixed(3);
+                
+                const biasReduction = Math.abs(pooledBias) > 0.1;
+                const assessmentEl = document.getElementById('feAssessment');
+                assessmentEl.textContent = biasReduction ? 'Fixed Effects Corrects Bias' : 'Minimal Bias';
+                assessmentEl.className = `status-indicator ${biasReduction ? 'status-fixed' : 'status-hausman'}`;
+                
+                document.getElementById('feInterpretation').textContent = 
+                    `Fixed effects estimate: ${feBeta.toFixed(3)} (true β = ${trueBeta}). Pooled OLS bias: ${pooledBias.toFixed(3)}. ${biasReduction ? 'FE eliminates bias successfully.' : 'Minimal bias detected.'}`;
+                
+                // Simple chart
+                const chartContainer = document.getElementById('feChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-panel);">Fixed Effects Analysis</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--status-fixed); color: white; padding: 10px; border-radius: 6px;">
+                                <strong>FE Estimate</strong><br>
+                                ${feBeta.toFixed(3)}
+                            </div>
+                            <div style="background: var(--status-policy); color: white; padding: 10px; border-radius: 6px;">
+                                <strong>Pooled Bias</strong><br>
+                                ${pooledBias.toFixed(3)}
+                            </div>
+                        </div>
+                        <div style="background: var(--grid-100); padding: 10px; border-radius: 8px;">
+                            Within R²: ${withinR2.toFixed(3)} | Between R²: ${betweenR2.toFixed(3)}
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('feResults').style.display = 'block';
+                console.log('Fixed Effects simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in Fixed Effects simulation:', error);
+                alert('Error running Fixed Effects simulation. Check console for details.');
+            }
+        }
+        
+        function simulateRandomEffects() {
+            console.log('Starting Random Effects simulation...');
+            
+            try {
+                const T = parseInt(document.getElementById('reTimePeriods').value);
+                const sigmaAlpha = parseFloat(document.getElementById('alphaVariance').value);
+                const orthogViolation = parseFloat(document.getElementById('reOrthogonality').value);
+                
+                console.log('RE Parameters:', { T, sigmaAlpha, orthogViolation });
+                
+                const sigmaU = 1.0;
+                const theta = 1 - Math.sqrt(sigmaU**2 / (sigmaU**2 + T * sigmaAlpha**2));
+                const reBeta = 1.5 + orthogViolation + (Math.random() - 0.5) * 0.2;
+                const efficiencyGain = 1.2 + (1 - theta) * 0.8;
+                
+                document.getElementById('reBeta').textContent = reBeta.toFixed(3);
+                document.getElementById('reTheta').textContent = theta.toFixed(3);
+                document.getElementById('reSigmaAlpha').textContent = sigmaAlpha.toFixed(2);
+                document.getElementById('reEfficiencyGain').textContent = efficiencyGain.toFixed(2);
+                
+                const isEfficient = efficiencyGain > 1.2;
+                const assessmentEl = document.getElementById('reAssessment');
+                assessmentEl.textContent = isEfficient ? 'RE More Efficient' : 'Similar Efficiency';
+                assessmentEl.className = `status-indicator ${isEfficient ? 'status-random' : 'status-fixed'}`;
+                
+                document.getElementById('reInterpretation').textContent = 
+                    `RE estimate: ${reBeta.toFixed(3)} with θ = ${theta.toFixed(3)}. Efficiency gain: ${efficiencyGain.toFixed(2)}×. ${orthogViolation > 0.1 ? 'Warning: Orthogonality violated.' : 'Assumptions satisfied.'}`;
+                
+                // Simple chart
+                const chartContainer = document.getElementById('reChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-panel);">Random Effects Analysis</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--status-random); color: white; padding: 10px; border-radius: 6px;">
+                                <strong>RE Estimate</strong><br>
+                                ${reBeta.toFixed(3)}
+                            </div>
+                            <div style="background: var(--accent-random); color: white; padding: 10px; border-radius: 6px;">
+                                <strong>Theta (θ)</strong><br>
+                                ${theta.toFixed(3)}
+                            </div>
+                        </div>
+                        <div style="background: var(--grid-100); padding: 10px; border-radius: 8px;">
+                            σ_α: ${sigmaAlpha.toFixed(2)} | Efficiency gain: ${efficiencyGain.toFixed(2)}×
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('reResults').style.display = 'block';
+                console.log('Random Effects simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in Random Effects simulation:', error);
+                alert('Error running Random Effects simulation. Check console for details.');
+            }
+        }
+        
+        function simulateHausmanTest() {
+            console.log('Starting Hausman Test simulation...');
+            
+            try {
+                const correlation = parseFloat(document.getElementById('hausmanCorrelation').value);
+                const N = parseInt(document.getElementById('hausmanN').value);
+                const T = parseInt(document.getElementById('hausmanT').value);
+                
+                console.log('Hausman Parameters:', { correlation, N, T });
+                
+                const hausmanStat = (correlation ** 2) * N * T / (1 + 0.1 * Math.random());
+                const criticalValue = 3.84; // χ²(1) at 5% level
+                const pValue = hausmanStat > criticalValue ? 0.01 : 0.25;
+                const power = correlation > 0 ? Math.min(0.95, correlation * 3 + 0.1) : 0.05;
+                
+                document.getElementById('hausmanStatistic').textContent = hausmanStat.toFixed(2);
+                document.getElementById('hausmanCritical').textContent = criticalValue.toFixed(2);
+                document.getElementById('hausmanPValue').textContent = pValue.toFixed(3);
+                document.getElementById('hausmanPower').textContent = (power * 100).toFixed(1) + '%';
+                
+                const rejectNull = hausmanStat > criticalValue;
+                const assessmentEl = document.getElementById('hausmanAssessment');
+                assessmentEl.textContent = rejectNull ? 'Use Fixed Effects' : 'Use Random Effects';
+                assessmentEl.className = `status-indicator ${rejectNull ? 'status-fixed' : 'status-random'}`;
+                
+                document.getElementById('hausmanInterpretation').textContent = 
+                    `Hausman statistic: ${hausmanStat.toFixed(2)} vs. critical ${criticalValue.toFixed(2)}. ${rejectNull ? 'Reject H₀ → Use FE.' : 'Fail to reject → Use RE.'} Test power: ${(power*100).toFixed(1)}%.`;
+                
+                // Simple chart
+                const chartContainer = document.getElementById('hausmanChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-panel);">Hausman Test Results</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: ${rejectNull ? 'var(--status-fixed)' : 'var(--status-random)'}; color: white; padding: 10px; border-radius: 6px;">
+                                <strong>Decision</strong><br>
+                                ${rejectNull ? 'Use Fixed Effects' : 'Use Random Effects'}
+                            </div>
+                            <div style="background: var(--status-hausman); color: white; padding: 10px; border-radius: 6px;">
+                                <strong>Test Statistic</strong><br>
+                                ${hausmanStat.toFixed(2)}
+                            </div>
+                        </div>
+                        <div style="background: var(--grid-100); padding: 10px; border-radius: 8px;">
+                            Critical value: ${criticalValue.toFixed(2)} | P-value: ${pValue.toFixed(3)} | Power: ${(power*100).toFixed(1)}%
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('hausmanResults').style.display = 'block';
+                console.log('Hausman Test simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in Hausman Test simulation:', error);
+                alert('Error running Hausman Test simulation. Check console for details.');
+            }
+        }
+        
+        // Quiz question bank - Multiple questions per category
+        const questionBank = {
+            pooled_cross_sections: [
+                {
+                    question: "The main advantage of pooled cross-sectional data is:",
+                    options: [
+                        "It automatically controls for unobserved heterogeneity",
+                        "Increased sample size and ability to analyze changes over time",
+                        "It eliminates all forms of omitted variable bias",
+                        "It requires fewer observations than pure cross-sectional data"
+                    ],
+                    correct: 1,
+                    explanation: "Pooled cross-sections combine multiple cross-sectional datasets from different time periods, increasing sample size and allowing analysis of temporal changes."
+                },
+                {
+                    question: "In a pooled cross-section model, time dummy variables are used to:",
+                    options: [
+                        "Control for individual-specific effects",
+                        "Capture aggregate time effects affecting all individuals",
+                        "Eliminate serial correlation",
+                        "Test for structural breaks"
+                    ],
+                    correct: 1,
+                    explanation: "Time dummies capture aggregate trends or shocks that affect all individuals in a given time period, such as economic conditions or policy changes."
+                },
+                {
+                    question: "A key limitation of pooled cross-sectional analysis is:",
+                    options: [
+                        "Small sample sizes",
+                        "Cannot control for time-invariant unobserved heterogeneity",
+                        "Requires panel data structure",
+                        "Cannot include time-varying variables"
+                    ],
+                    correct: 1,
+                    explanation: "Pooled cross-sections cannot control for time-invariant individual characteristics that may be correlated with the regressors, potentially causing omitted variable bias."
+                }
+            ],
+            difference_in_differences: [
+                {
+                    question: "The key identifying assumption for difference-in-differences is:",
+                    options: [
+                        "Treatment assignment is random",
+                        "Parallel trends in the absence of treatment",
+                        "No spillover effects between groups",
+                        "Homogeneous treatment effects"
+                    ],
+                    correct: 1,
+                    explanation: "DiD requires that treatment and control groups would have followed parallel trends absent treatment, allowing the control group to serve as a counterfactual."
+                },
+                {
+                    question: "In the DiD regression y_it = β₀ + β₁treated_i + β₂after_t + β₃(treated_i × after_t) + u_it, the coefficient β₃ represents:",
+                    options: [
+                        "The baseline difference between groups",
+                        "The time trend effect",
+                        "The difference-in-differences estimate",
+                        "The treatment group mean"
+                    ],
+                    correct: 2,
+                    explanation: "β₃ is the interaction coefficient that captures the differential effect of treatment over time - the DiD estimate."
+                },
+                {
+                    question: "If the parallel trends assumption is violated, the DiD estimator will be:",
+                    options: [
+                        "Unbiased but inefficient",
+                        "Biased and inconsistent",
+                        "Consistent but not asymptotically normal",
+                        "Efficient but not consistent"
+                    ],
+                    correct: 1,
+                    explanation: "Violation of parallel trends means the control group is not a valid counterfactual, leading to biased treatment effect estimates."
+                }
+            ],
+            fixed_effects: [
+                {
+                    question: "Fixed effects estimation controls for:",
+                    options: [
+                        "Time-varying unobserved heterogeneity",
+                        "Time-invariant unobserved heterogeneity",
+                        "Serial correlation in errors",
+                        "Measurement error in variables"
+                    ],
+                    correct: 1,
+                    explanation: "Fixed effects control for all time-invariant individual characteristics that might be correlated with the regressors."
+                },
+                {
+                    question: "The within transformation used in fixed effects:",
+                    options: [
+                        "Adds individual means to eliminate trends",
+                        "Subtracts individual means to eliminate α_i",
+                        "Multiplies by individual variances",
+                        "Takes first differences of all variables"
+                    ],
+                    correct: 1,
+                    explanation: "The within transformation subtracts individual-specific means: ÿ_it = y_it - ȳ_i, eliminating the fixed effect α_i."
+                },
+                {
+                    question: "A limitation of fixed effects estimation is:",
+                    options: [
+                        "It requires large sample sizes",
+                        "Cannot estimate effects of time-invariant variables",
+                        "Only works with balanced panels",
+                        "Assumes random individual effects"
+                    ],
+                    correct: 1,
+                    explanation: "Since FE eliminates time-invariant variables through the within transformation, coefficients on variables that don't vary over time cannot be estimated."
+                },
+                {
+                    question: "Fixed effects is preferred over pooled OLS when:",
+                    options: [
+                        "Sample size is small",
+                        "Individual effects are uncorrelated with regressors",
+                        "Individual effects are correlated with regressors",
+                        "There are no individual effects"
+                    ],
+                    correct: 2,
+                    explanation: "When α_i is correlated with x_it, pooled OLS is biased due to omitted variable bias, while FE remains consistent."
+                }
+            ],
+            random_effects: [
+                {
+                    question: "Random effects treats individual heterogeneity as:",
+                    options: [
+                        "Fixed parameters to be estimated",
+                        "Random variables uncorrelated with regressors",
+                        "Deterministic functions of observables",
+                        "Time-varying coefficients"
+                    ],
+                    correct: 1,
+                    explanation: "RE assumes individual effects are random draws from a distribution with E[α_i|x_it] = 0."
+                },
+                {
+                    question: "The GLS transformation parameter θ in random effects:",
+                    options: [
+                        "Is always equal to 1",
+                        "Depends on the ratio of error variances",
+                        "Is estimated using maximum likelihood only",
+                        "Must be set by the researcher"
+                    ],
+                    correct: 1,
+                    explanation: "θ = 1 - σ_u/√(σ²_u + T·σ²_α), depending on the relative magnitudes of individual and idiosyncratic error variances."
+                },
+                {
+                    question: "Random effects is more efficient than fixed effects when:",
+                    options: [
+                        "Sample size is large",
+                        "The orthogonality assumption E[α_i|x_it] = 0 holds",
+                        "There are many time periods",
+                        "Individual effects are large"
+                    ],
+                    correct: 1,
+                    explanation: "When RE assumptions are satisfied, it uses both within and between variation optimally, making it more efficient than FE which only uses within variation."
+                },
+                {
+                    question: "The key assumption for random effects consistency is:",
+                    options: [
+                        "Homoskedasticity of errors",
+                        "No serial correlation",
+                        "Orthogonality: E[α_i|x_it] = 0",
+                        "Normally distributed individual effects"
+                    ],
+                    correct: 2,
+                    explanation: "RE requires that individual effects are uncorrelated with all regressors in all time periods for consistency."
+                }
+            ],
+            hausman_test: [
+                {
+                    question: "The Hausman test null hypothesis is:",
+                    options: [
+                        "Fixed effects is preferred",
+                        "Individual effects are correlated with regressors",
+                        "Random effects assumptions hold (orthogonality)",
+                        "There is no individual heterogeneity"
+                    ],
+                    correct: 2,
+                    explanation: "H₀: E[α_i|x_it] = 0 (RE is consistent and efficient). Under this null, both FE and RE are consistent, but RE is more efficient."
+                },
+                {
+                    question: "If the Hausman test statistic exceeds the critical value:",
+                    options: [
+                        "Use random effects (more efficient)",
+                        "Use fixed effects (RE is inconsistent)", 
+                        "Use pooled OLS",
+                        "The test is inconclusive"
+                    ],
+                    correct: 1,
+                    explanation: "Rejecting H₀ indicates that RE assumptions are violated and only FE is consistent, so FE should be used."
+                },
+                {
+                    question: "The Hausman test is based on:",
+                    options: [
+                        "Comparing R-squared values",
+                        "Testing coefficient equality across groups",
+                        "The difference between FE and RE estimates",
+                        "Residual analysis"
+                    ],
+                    correct: 2,
+                    explanation: "The test compares FE and RE estimates: under H₀ they should be similar, but under H₁ RE becomes inconsistent while FE remains consistent."
+                },
+                {
+                    question: "A potential issue with the Hausman test is:",
+                    options: [
+                        "It requires balanced panels",
+                        "The test statistic can be negative",
+                        "It only works with large samples",
+                        "It requires normally distributed errors"
+                    ],
+                    correct: 1,
+                    explanation: "In finite samples, the covariance matrix can be non-positive definite, leading to negative test statistics, which is problematic."
+                }
+            ]
+        };
+        
+        function regenerateQuiz() {
+            console.log('Starting quiz regeneration...');
+            
+            try {
+                answeredQuestions = {};
+                currentQuestions = [];
+                
+                const categories = Object.keys(questionBank);
+                console.log('Found categories:', categories);
+                
+                if (categories.length === 0) {
+                    console.error('No question categories found!');
+                    return;
+                }
+                
+                categories.forEach((category, index) => {
+                    const categoryQuestions = questionBank[category];
+                    if (!categoryQuestions || categoryQuestions.length === 0) {
+                        console.error(`No questions found for category: ${category}`);
+                        return;
+                    }
+                    
+                    const randomIndex = Math.floor(Math.random() * categoryQuestions.length);
+                    const selectedQuestion = {
+                        ...categoryQuestions[randomIndex],
+                        category: category,
+                        id: `q${index + 1}`
+                    };
+                    
+                    console.log(`Selected question for ${category}:`, selectedQuestion.question.substring(0, 50) + '...');
+                    currentQuestions.push(selectedQuestion);
+                });
+                
+                console.log(`Generated ${currentQuestions.length} questions`);
+                
+                if (currentQuestions.length > 0) {
+                    renderQuiz();
+                    document.getElementById('quizSummary').style.display = 'none';
+                    console.log('Quiz regenerated successfully');
+                } else {
+                    console.error('No questions were generated');
+                }
+                
+            } catch (error) {
+                console.error('Error regenerating quiz:', error);
+                alert('Error generating quiz. Check console for details.');
+            }
+        }
+        
+        function renderQuiz() {
+            console.log('Rendering quiz...');
+            
+            try {
+                const container = document.getElementById('quizContainer');
+                if (!container) {
+                    console.error('Quiz container not found!');
+                    return;
+                }
+                
+                let html = '';
+                currentQuestions.forEach((question, index) => {
+                    html += `
+                        <div class="quiz-question">
+                            <p><strong>Question ${index + 1}:</strong> ${question.question}</p>
+                            <div class="quiz-options">
+                    `;
+                    question.options.forEach((option, optIndex) => {
+                        html += `
+                            <label class="quiz-option" onclick="selectDynamicAnswer('${question.id}', ${optIndex})">
+                                <input type="radio" name="${question.id}" value="${optIndex}">
+                                ${String.fromCharCode(65 + optIndex)}) ${option}
+                            </label>
+                        `;
+                    });
+                    html += `
+                            </div>
+                            <div id="feedback${question.id}" class="quiz-feedback"></div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                console.log('Quiz rendered successfully');
+                
+            } catch (error) {
+                console.error('Error rendering quiz:', error);
+            }
+        }
+        
+        function selectDynamicAnswer(questionId, selectedAnswer) {
+            const question = currentQuestions.find(q => q.id === questionId);
+            if (!question) return;
+            
+            const isCorrect = selectedAnswer === question.correct;
+            answeredQuestions[questionId] = {
+                selected: selectedAnswer,
+                correct: isCorrect,
+                question: question
+            };
+            
+            const options = document.querySelectorAll(`input[name="${questionId}"]`);
+            options.forEach((option, index) => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (index === question.correct) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            const feedbackEl = document.getElementById(`feedback${questionId}`);
+            feedbackEl.textContent = question.explanation;
+            feedbackEl.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackEl.style.display = 'block';
+            
+            if (Object.keys(answeredQuestions).length === currentQuestions.length) {
+                setTimeout(() => showQuizSummary(), 1000);
+            }
+        }
+        
+        function showQuizSummary() {
+            const totalQuestions = currentQuestions.length;
+            const correctAnswers = Object.values(answeredQuestions).filter(a => a.correct).length;
+            const score = Math.round((correctAnswers / totalQuestions) * 100);
+            
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            document.getElementById('quizScore').textContent = score + '%';
+            
+            let feedback = '';
+            if (score >= 90) {
+                feedback = '🌟 Outstanding mastery of panel data methods! You excel in pooled cross-sections, DiD, fixed/random effects, and model selection.';
+            } else if (score >= 80) {
+                feedback = '👍 Excellent understanding of panel data econometrics! Strong grasp of identification strategies and estimation methods.';
+            } else if (score >= 70) {
+                feedback = '✨ Good foundation in panel data methods. Focus on DiD assumptions, FE vs. RE trade-offs, and Hausman test interpretation.';
+            } else if (score >= 60) {
+                feedback = '📚 Developing understanding. Review fixed effects assumptions, random effects efficiency conditions, and difference-in-differences framework.';
+            } else {
+                feedback = '🔄 Complex advanced material! Study Sections 13.1-13.5 carefully. Focus on panel data advantages, identification assumptions, and model selection criteria.';
+            }
+            
+            document.getElementById('quizFeedback').textContent = feedback;
+            document.getElementById('quizSummary').style.display = 'block';
+            document.getElementById('quizSummary').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        // AI Chat functions
+        function scrollToSection(sectionId) {
+            console.log('Scrolling to section:', sectionId);
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                console.log('Scrolled to:', sectionId);
+            } else {
+                console.error('Section not found:', sectionId);
+            }
+        }
+        
+        function toggleAIChat() {
+            const panel = document.getElementById('aiChatPanel');
+            const icon = document.getElementById('aiChatIcon');
+            
+            if (isAIChatOpen) {
+                panel.classList.remove('show');
+                icon.textContent = '🔢';
+                isAIChatOpen = false;
+            } else {
+                panel.classList.add('show');
+                icon.textContent = '✖️';
+                isAIChatOpen = true;
+                document.getElementById('aiInput').focus();
+            }
+        }
+        
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addAIMessage('user', message);
+            input.value = '';
+            setTimeout(() => {
+                const response = getAIResponse(message);
+                addAIMessage('claude', response);
+            }, 500);
+        }
+        
+        function addAIMessage(sender, message) {
+            const messagesContainer = document.getElementById('aiChatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender}`;
+            
+            if (sender === 'user') {
+                messageDiv.textContent = message;
+            } else {
+                messageDiv.innerHTML = `<strong>🔢 Claude:</strong> ${message}`;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function getAIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            if (message.includes('pooled cross') || message.includes('pooled data')) {
+                return "Pooled cross-sections combine multiple cross-sectional datasets. Include time dummies to control for aggregate trends. Increases sample size but can't control for unobserved individual heterogeneity.";
+            }
+            if (message.includes('did') || message.includes('difference')) {
+                return "DiD compares changes over time between treatment and control groups. Key assumption: parallel trends. β₃ in y_it = β₀ + β₁treated + β₂after + β₃(treated×after) + u_it is the DiD estimate.";
+            }
+            if (message.includes('fixed effects')) {
+                return "Fixed effects uses within transformation to control for time-invariant unobserved heterogeneity. Can't estimate time-invariant variable effects. Consistent even if α_i correlates with x_it.";
+            }
+            if (message.includes('random effects')) {
+                return "Random effects treats individual heterogeneity as random with E[α_i|x_it] = 0. Uses GLS with θ parameter. More efficient than FE when assumptions hold but inconsistent if orthogonality fails.";
+            }
+            if (message.includes('hausman')) {
+                return "Hausman test chooses between FE and RE. H₀: E[α_i|x_it] = 0. Reject → use FE (RE inconsistent). Fail to reject → use RE (more efficient).";
+            }
+            
+            return "I can help with pooled cross-sections, difference-in-differences, fixed effects, random effects, and Hausman tests. What specific concept interests you?";
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing Chapter 13...');
+            
+            // Test if all required elements exist
+            const requiredElements = [
+                'quizContainer', 'pooledChart', 'didChart', 'feChart', 
+                'reChart', 'hausmanChart', 'pooledResults', 'didResults',
+                'feResults', 'reResults', 'hausmanResults'
+            ];
+            
+            const missingElements = [];
+            requiredElements.forEach(id => {
+                if (!document.getElementById(id)) {
+                    missingElements.push(id);
+                }
+            });
+            
+            if (missingElements.length > 0) {
+                console.error('Missing required elements:', missingElements);
+            } else {
+                console.log('All required elements found');
+            }
+            
+            // Initialize quiz with a delay to ensure everything is ready
+            setTimeout(() => {
+                console.log('Initializing quiz...');
+                regenerateQuiz();
+            }, 500);
+            
+            console.log('Chapter 13: Panel Data Methods loaded successfully! 🔢');
+        });
+    </script>
+
+</body>
+</html>
