@@ -1,0 +1,2677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 17: Limited Dependent Variables - Wooldridge Econometrics</title>
+    <style>
+        :root {
+            /* Limited Dependent Variables Theme - Binary choices and discrete outcomes */
+            --primary-choice: #0f172a;
+            --secondary-choice: #1e293b;
+            --accent-binary: #3b82f6;
+            --accent-multi: #8b5cf6;
+            --accent-ordered: #10b981;
+            --accent-tobit: #f59e0b;
+            --accent-heckman: #ef4444;
+            --flow-50: #f8fafc;
+            --flow-100: #f1f5f9;
+            --flow-200: #e2e8f0;
+            --flow-300: #cbd5e1;
+            --flow-400: #94a3b8;
+            --flow-500: #64748b;
+            --flow-600: #475569;
+            --flow-700: #334155;
+            --flow-800: #1e293b;
+            --flow-900: #0f172a;
+            
+            /* Method-specific colors */
+            --status-binary: #3b82f6;
+            --status-multi: #8b5cf6;
+            --status-ordered: #10b981;
+            --status-tobit: #f59e0b;
+            --status-heckman: #ef4444;
+            --status-linear: #6b7280;
+            
+            /* Typography */
+            --font-primary: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            line-height: 1.6;
+            color: var(--flow-900);
+            background: linear-gradient(135deg, var(--flow-50) 0%, #ffffff 40%, var(--flow-100) 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated binary choice background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.03) 0%, transparent 50%),
+                linear-gradient(45deg, transparent 48%, rgba(16, 185, 129, 0.02) 50%, transparent 52%);
+            background-size: 80px 80px, 120px 120px, 40px 40px;
+            z-index: -1;
+            animation: choiceFlow 15s ease-in-out infinite;
+        }
+
+        @keyframes choiceFlow {
+            0%, 100% { opacity: 0.6; transform: translateX(0); }
+            50% { opacity: 0.9; transform: translateX(5px); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, var(--primary-choice), var(--secondary-choice), var(--accent-binary));
+            color: white;
+            margin-bottom: 3rem;
+            border-radius: 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.3);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(45deg, transparent 30%, rgba(59, 130, 246, 0.1) 50%, transparent 70%),
+                linear-gradient(-45deg, transparent 30%, rgba(139, 92, 246, 0.05) 50%, transparent 70%);
+            animation: choicePattern 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes choicePattern {
+            0% { opacity: 0.4; transform: scale(1) rotate(0deg); }
+            100% { opacity: 0.8; transform: scale(1.02) rotate(1deg); }
+        }
+
+        .chapter-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff, var(--accent-binary), var(--accent-multi));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.03em;
+        }
+
+        .chapter-subtitle {
+            font-size: 1.4rem;
+            opacity: 0.95;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.5px;
+        }
+
+        /* Navigation */
+        .nav-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--flow-200);
+            position: relative;
+        }
+
+        .nav-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 25px;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--accent-binary), var(--accent-multi), var(--accent-ordered));
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: xor;
+            opacity: 0.3;
+        }
+
+        .nav-pills {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            justify-items: center;
+        }
+
+        .nav-pill {
+            padding: 1.25rem 2rem;
+            background: var(--flow-100);
+            border: 2px solid var(--flow-300);
+            border-radius: 20px;
+            color: var(--flow-700);
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            width: 100%;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-pill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-pill:hover::before {
+            left: 100%;
+        }
+
+        .nav-pill:hover {
+            background: var(--primary-choice);
+            color: white;
+            transform: translateY(-4px);
+            border-color: var(--accent-binary);
+            box-shadow: 0 12px 35px rgba(15, 23, 42, 0.3);
+        }
+
+        /* Section Styling */
+        .section {
+            background: white;
+            border-radius: 25px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--flow-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent-binary), var(--accent-multi));
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-choice);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section p {
+            margin-bottom: 1rem;
+            color: var(--flow-700);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        /* Concept Boxes */
+        .concept-box {
+            background: var(--flow-50);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 1px solid var(--flow-200);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .concept-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+        }
+
+        .concept-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+        }
+
+        .concept-box.binary::before { background: var(--status-binary); }
+        .concept-box.multi::before { background: var(--status-multi); }
+        .concept-box.ordered::before { background: var(--status-ordered); }
+        .concept-box.tobit::before { background: var(--status-tobit); }
+        .concept-box.heckman::before { background: var(--status-heckman); }
+        .concept-box.linear::before { background: var(--status-linear); }
+
+        .concept-title {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-choice);
+            font-size: 1.2rem;
+        }
+
+        .concept-box.binary .concept-title { color: var(--status-binary); }
+        .concept-box.multi .concept-title { color: var(--status-multi); }
+        .concept-box.ordered .concept-title { color: var(--status-ordered); }
+        .concept-box.tobit .concept-title { color: var(--status-tobit); }
+        .concept-box.heckman .concept-title { color: var(--status-heckman); }
+        .concept-box.linear .concept-title { color: var(--status-linear); }
+
+        /* Formula Boxes */
+        .formula {
+            background: var(--flow-900);
+            color: var(--flow-100);
+            padding: 1.5rem;
+            border-radius: 15px;
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .formula::before {
+            content: '∫';
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 1.5rem;
+            opacity: 0.3;
+        }
+
+        /* Interactive Controls */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .control-group {
+            background: var(--flow-50);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--flow-200);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-group::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-binary), var(--accent-multi));
+            border-radius: 20px 20px 0 0;
+        }
+
+        .control-group:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.2);
+        }
+
+        .control-group h4 {
+            color: var(--primary-choice);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--flow-700);
+            margin-bottom: 0.75rem;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--flow-300);
+            border-radius: 12px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary-choice);
+            box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
+        }
+
+        .input-group input[type="range"] {
+            background: var(--flow-200);
+            border: none;
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--primary-choice), var(--secondary-choice));
+            color: white;
+            border: none;
+            padding: 1.25rem 2.5rem;
+            border-radius: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 1.05rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .action-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(15, 23, 42, 0.4);
+        }
+
+        /* Results Display */
+        .results-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 1px solid var(--flow-200);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            display: none;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: var(--flow-50);
+            border-radius: 15px;
+            border: 1px solid var(--flow-200);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-binary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            font-family: var(--font-mono);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--flow-600);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-binary {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--status-binary);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .status-multi {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--status-multi);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .status-ordered {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--status-ordered);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-tobit {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--status-tobit);
+            border: 2px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-heckman {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--status-heckman);
+            border: 2px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .status-linear {
+            background: rgba(107, 114, 128, 0.1);
+            color: var(--status-linear);
+            border: 2px solid rgba(107, 114, 128, 0.3);
+        }
+
+        /* Chart containers */
+        .chart-container {
+            position: relative;
+            height: 350px;
+            background: white;
+            border: 1px solid var(--flow-200);
+            border-radius: 15px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-binary), var(--accent-multi), var(--accent-ordered));
+        }
+
+        /* Probability visualization */
+        .probability-visual {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--flow-50), #ffffff);
+        }
+
+        .prob-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-choice);
+            margin-bottom: 1rem;
+        }
+
+        .prob-content {
+            width: 100%;
+            height: 250px;
+            background: white;
+            border: 1px solid var(--flow-200);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--flow-600);
+            position: relative;
+        }
+
+        /* Comparison table */
+        .model-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+            padding: 1.5rem;
+            background: var(--flow-50);
+            border-radius: 12px;
+            border: 1px solid var(--flow-200);
+        }
+
+        .model-method {
+            text-align: center;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--flow-300);
+            transition: all 0.3s ease;
+        }
+
+        .model-method:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+        }
+
+        .model-method .method-label {
+            font-size: 0.9rem;
+            color: var(--flow-600);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .model-method .method-value {
+            font-size: 1.3rem;
+            color: var(--primary-choice);
+            font-family: var(--font-mono);
+            font-weight: 700;
+        }
+
+        /* Quiz Section */
+        .quiz-section {
+            background: linear-gradient(135deg, var(--flow-50), #ffffff);
+            border-radius: 25px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 1px solid var(--flow-200);
+            position: relative;
+        }
+
+        .quiz-question {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 1px solid var(--flow-200);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .quiz-question::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-binary), var(--accent-multi));
+            border-radius: 20px 20px 0 0;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .quiz-question:hover::before {
+            transform: scaleX(1);
+        }
+
+        .quiz-question:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+        }
+
+        .quiz-question p {
+            font-weight: 600;
+            color: var(--flow-800);
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: var(--flow-50);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .quiz-option:hover {
+            background: var(--flow-100);
+            border-color: var(--accent-binary);
+            transform: translateX(8px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: var(--status-binary);
+            color: var(--status-binary);
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--status-heckman);
+            color: var(--status-heckman);
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1.25rem;
+            border-radius: 15px;
+            display: none;
+            line-height: 1.7;
+        }
+
+        .quiz-feedback.correct {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--status-binary);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .quiz-feedback.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--status-heckman);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* AI Chat Widget */
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        .ai-chat-button {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-choice), var(--secondary-choice));
+            border: none;
+            color: white;
+            font-size: 1.7rem;
+            cursor: pointer;
+            box-shadow: 0 10px 40px rgba(15, 23, 42, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-chat-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .ai-chat-button:hover::before {
+            width: 80px;
+            height: 80px;
+        }
+
+        .ai-chat-button:hover {
+            transform: scale(1.15) translateY(-3px);
+            box-shadow: 0 15px 50px rgba(15, 23, 42, 0.4);
+        }
+
+        .ai-chat-panel {
+            position: absolute;
+            bottom: 85px;
+            right: 0;
+            width: 380px;
+            height: 500px;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--flow-200);
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.4s ease;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ai-chat-panel.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .ai-chat-header {
+            background: linear-gradient(135deg, var(--primary-choice), var(--secondary-choice));
+            color: white;
+            padding: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .ai-message {
+            max-width: 85%;
+            padding: 1rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .ai-message.user {
+            background: var(--primary-choice);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-message.claude {
+            background: var(--flow-100);
+            color: var(--flow-800);
+            border-bottom-left-radius: 4px;
+        }
+
+        .ai-input-area {
+            padding: 1.5rem;
+            border-top: 1px solid var(--flow-200);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid var(--flow-300);
+            border-radius: 25px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .ai-send-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary-choice);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .ai-send-btn:hover {
+            background: var(--secondary-choice);
+            transform: scale(1.1);
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .fade-in.delay-1 { animation-delay: 0.1s; }
+        .fade-in.delay-2 { animation-delay: 0.2s; }
+        .fade-in.delay-3 { animation-delay: 0.3s; }
+        .fade-in.delay-4 { animation-delay: 0.4s; }
+        .fade-in.delay-5 { animation-delay: 0.5s; }
+        .fade-in.delay-6 { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .chapter-title { font-size: 2.5rem; }
+            .nav-pills { grid-template-columns: 1fr; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: repeat(2, 1fr); }
+            .ai-chat-panel { width: calc(100vw - 4rem); right: 2rem; left: 2rem; }
+        }
+
+        @media (max-width: 480px) {
+            .results-grid { grid-template-columns: 1fr; }
+            .chapter-title { font-size: 2rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header fade-in">
+            <h1 class="chapter-title">📊 Chapter 17</h1>
+            <p class="chapter-subtitle">Limited Dependent Variables</p>
+        </header>
+
+        <!-- Navigation -->
+        <div class="nav-container fade-in delay-1">
+            <div class="nav-pills">
+                <button onclick="scrollToSection('binary')" class="nav-pill">
+                    🎯 Binary Response Models
+                </button>
+                <button onclick="scrollToSection('multinomial')" class="nav-pill">
+                    🎲 Multinomial Choice
+                </button>
+                <button onclick="scrollToSection('ordered')" class="nav-pill">
+                    📊 Ordered Response
+                </button>
+                <button onclick="scrollToSection('tobit')" class="nav-pill">
+                    ✂️ Censored/Truncated Data
+                </button>
+                <button onclick="scrollToSection('selection')" class="nav-pill">
+                    🎭 Sample Selection
+                </button>
+                <button onclick="scrollToSection('quiz')" class="nav-pill">
+                    🎯 Knowledge Check
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 17.1: Binary Response Models -->
+        <section class="section fade-in delay-2" id="binary">
+            <h2 class="section-title">17.1 🎯 Binary Response Models</h2>
+            
+            <p>When the dependent variable is binary (0/1), OLS is inappropriate. Instead, we use models that ensure predicted probabilities lie between 0 and 1, such as logit and probit models.</p>
+
+            <div class="concept-box binary">
+                <div class="concept-title">🎯 Linear Probability Model (LPM)</div>
+                <p>Simplest approach: use OLS with binary dependent variable</p>
+                <div class="formula">
+                    y = β₀ + β₁x₁ + β₂x₂ + ... + u
+                    
+                    Problems:
+                    • Predicted probabilities can be < 0 or > 1
+                    • Heteroskedasticity (var(u|x) = p(x)[1-p(x)])
+                    • Constant marginal effects (unrealistic)
+                </div>
+                <p><strong>Advantage:</strong> Easy interpretation (β₁ = change in probability)<br>
+                <strong>Use case:</strong> Quick approximation when probabilities stay in (0,1)</p>
+            </div>
+
+            <div class="concept-box binary">
+                <div class="concept-title">📈 Logit Model</div>
+                <p>Uses logistic cumulative distribution function:</p>
+                <div class="formula">
+                    P(y=1|x) = Λ(β₀ + β₁x₁ + β₂x₂) = exp(β₀ + βx) / (1 + exp(β₀ + βx))
+                    
+                    Odds ratio: P(y=1) / P(y=0) = exp(β₀ + βx)
+                    Log odds: ln[P(y=1) / P(y=0)] = β₀ + βx (linear in parameters)
+                    
+                    Marginal effect: ∂P/∂x₁ = β₁ × Λ(βx) × [1 - Λ(βx)]
+                </div>
+                <p><strong>Interpretation:</strong> exp(β₁) = odds ratio for unit change in x₁<br>
+                <strong>Estimation:</strong> Maximum likelihood estimation (MLE)</p>
+            </div>
+
+            <div class="concept-box linear">
+                <div class="concept-title">🔔 Probit Model</div>
+                <p>Uses standard normal cumulative distribution function:</p>
+                <div class="formula">
+                    P(y=1|x) = Φ(β₀ + β₁x₁ + β₂x₂) = ∫₋∞^(β₀+βx) (1/√2π)e^(-z²/2) dz
+                    
+                    Marginal effect: ∂P/∂x₁ = β₁ × φ(βx)
+                    where φ(·) is standard normal density
+                </div>
+                <p><strong>Difference from logit:</strong> Slightly different tail behavior (probit has thinner tails)<br>
+                <strong>Choice:</strong> Usually similar results; logit more common due to odds ratio interpretation</p>
+            </div>
+
+            <!-- Binary Response Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🎯 Binary Response Simulator</h4>
+                    
+                    <div class="input-group">
+                        <label for="modelType">Model Type:</label>
+                        <select id="modelType">
+                            <option value="lpm">Linear Probability Model</option>
+                            <option value="logit" selected>Logit Model</option>
+                            <option value="probit">Probit Model</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="coeffIntercept">Intercept (β₀):</label>
+                        <input type="range" id="coeffIntercept" min="-3" max="3" step="0.1" value="-0.5">
+                        <span id="coeffInterceptValue">-0.5</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="coeffSlope">Slope (β₁):</label>
+                        <input type="range" id="coeffSlope" min="-2" max="2" step="0.1" value="0.8">
+                        <span id="coeffSlopeValue">0.8</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="sampleSize">Sample Size:</label>
+                        <select id="sampleSize">
+                            <option value="100">100 observations</option>
+                            <option value="500" selected>500 observations</option>
+                            <option value="1000">1000 observations</option>
+                            <option value="2000">2000 observations</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateBinaryResponse()">
+                        🎯 Simulate Binary Response
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Probability Curves</h4>
+                    <div class="chart-container" id="probabilityChart" style="background: var(--flow-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--flow-400); text-align: center;">
+                            Run simulation to display<br>probability curves and marginal effects
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="binaryResults">
+                <h4 style="color: var(--primary-choice); margin-bottom: 1rem;">Binary Response Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="logLikelihood" style="color: var(--status-binary);">-</div>
+                        <div class="stat-label">Log Likelihood</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="mcFaddenR2" style="color: var(--flow-600);">-</div>
+                        <div class="stat-label">McFadden R²</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="predictionAccuracy" style="color: var(--status-ordered);">-</div>
+                        <div class="stat-label">Prediction Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="marginalEffect" style="color: var(--status-multi);">-</div>
+                        <div class="stat-label">Avg Marginal Effect</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="binaryAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="binaryInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 17.2: Multinomial Choice Models -->
+        <section class="section fade-in delay-3" id="multinomial">
+            <h2 class="section-title">17.2 🎲 Multinomial Choice Models</h2>
+            
+            <p>When the dependent variable has more than two unordered categories, we use multinomial logit or probit models to model choice among alternatives.</p>
+
+            <div class="concept-box multi">
+                <div class="concept-title">🎲 Multinomial Logit Model</div>
+                <p>For J unordered alternatives, with alternative 0 as base category:</p>
+                <div class="formula">
+                    P(y=j|x) = exp(x'βⱼ) / (1 + Σₖ₌₁ᴶ⁻¹ exp(x'βₖ))  for j = 1,...,J-1
+                    
+                    P(y=0|x) = 1 / (1 + Σₖ₌₁ᴶ⁻¹ exp(x'βₖ))  (base category)
+                    
+                    Log odds ratio: ln[P(y=j)/P(y=0)] = x'βⱼ
+                </div>
+                <p><strong>Key assumption:</strong> Independence of Irrelevant Alternatives (IIA)<br>
+                <strong>Violation:</strong> Adding/removing alternatives changes relative probabilities of remaining options</p>
+            </div>
+
+            <div class="concept-box multi">
+                <div class="concept-title">🔄 IIA Assumption</div>
+                <p><strong>Independence of Irrelevant Alternatives:</strong> The relative probability of choosing any two alternatives is independent of other available alternatives.</p>
+                <p><strong>Red Bus/Blue Bus Example:</strong><br>
+                • Original: P(Car) = 2/3, P(Red Bus) = 1/3<br>
+                • Add Blue Bus: IIA predicts P(Car) = 1/2, P(Red Bus) = 1/4, P(Blue Bus) = 1/4<br>
+                • Problem: People see red and blue buses as close substitutes</p>
+                <p><strong>Test:</strong> Hausman test comparing full model with restricted model excluding some alternatives</p>
+            </div>
+
+            <!-- Multinomial Choice Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🎲 Multinomial Choice Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="numChoices">Number of Choices:</label>
+                        <select id="numChoices">
+                            <option value="3" selected>3 alternatives</option>
+                            <option value="4">4 alternatives</option>
+                            <option value="5">5 alternatives</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="choiceScenario">Scenario:</label>
+                        <select id="choiceScenario">
+                            <option value="transportation" selected>Transportation Mode</option>
+                            <option value="education">Education Level</option>
+                            <option value="occupation">Occupation Choice</option>
+                            <option value="brand">Brand Preference</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="incomeEffect">Income Effect Strength:</label>
+                        <input type="range" id="incomeEffect" min="0" max="2" step="0.1" value="0.8">
+                        <span id="incomeEffectValue">0.8</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="iiaViolation">IIA Violation Level:</label>
+                        <input type="range" id="iiaViolation" min="0" max="1" step="0.1" value="0.3">
+                        <span id="iiaViolationValue">0.3</span>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateMultinomial()">
+                        🎲 Run Multinomial Model
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Choice Probabilities</h4>
+                    <div class="chart-container" id="multinomialChart" style="background: var(--flow-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--flow-400); text-align: center;">
+                            Run multinomial simulation to display<br>choice probabilities by income level
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="multinomialResults">
+                <h4 style="color: var(--primary-choice); margin-bottom: 1rem;">Multinomial Choice Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="multinomialLL" style="color: var(--status-multi);">-</div>
+                        <div class="stat-label">Log Likelihood</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="iiaTestStat" style="color: var(--flow-600);">-</div>
+                        <div class="stat-label">IIA Test p-value</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="choicePrediction" style="color: var(--status-ordered);">-</div>
+                        <div class="stat-label">Prediction Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="dominantChoice" style="color: var(--status-binary);">-</div>
+                        <div class="stat-label">Most Popular</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="multinomialAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="multinomialInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 17.3: Ordered Response Models -->
+        <section class="section fade-in delay-4" id="ordered">
+            <h2 class="section-title">17.3 📊 Ordered Response Models</h2>
+            
+            <p>When the dependent variable is ordinal (ordered categories like ratings), ordered logit or probit models account for the natural ordering while allowing for unequal spacing between categories.</p>
+
+            <div class="concept-box ordered">
+                <div class="concept-title">📊 Ordered Logit/Probit</div>
+                <p>For ordered outcomes y ∈ {0,1,2,...,J}, use latent variable approach:</p>
+                <div class="formula">
+                    y* = x'β + u  (latent continuous variable)
+                    
+                    y = 0 if y* ≤ α₁
+                    y = 1 if α₁ < y* ≤ α₂  
+                    y = 2 if α₂ < y* ≤ α₃
+                    ...
+                    y = J if y* > αⱼ
+                    
+                    P(y=j|x) = F(αⱼ₊₁ - x'β) - F(αⱼ - x'β)
+                    where F(·) is logistic (ordered logit) or normal (ordered probit)
+                </div>
+                <p><strong>Thresholds:</strong> α₁ < α₂ < ... < αⱼ (estimated parameters)<br>
+                <strong>Parallel lines assumption:</strong> Effect of x is same for all cut points</p>
+            </div>
+
+            <div class="concept-box ordered">
+                <div class="concept-title">📏 Interpretation Challenges</div>
+                <p><strong>Sign interpretation:</strong> Sign of β tells direction of effect on highest category<br>
+                <strong>Magnitude:</strong> Cannot directly interpret β; must compute marginal effects</p>
+                <div class="formula">
+                    ∂P(y=j|x)/∂x = β[f(αⱼ - x'β) - f(αⱼ₊₁ - x'β)]
+                    
+                    • Middle categories: ambiguous sign (can increase or decrease)
+                    • Extreme categories: same sign as β (lowest) or opposite (highest)
+                </div>
+                <p><strong>Test of parallel lines:</strong> Compare ordered model with separate binaries<br>
+                <strong>Alternative:</strong> Generalized ordered logit if assumption violated</p>
+            </div>
+
+            <!-- Ordered Response Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>📊 Ordered Response Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="orderedType">Model Type:</label>
+                        <select id="orderedType">
+                            <option value="ologit" selected>Ordered Logit</option>
+                            <option value="oprobit">Ordered Probit</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="numCategories">Number of Categories:</label>
+                        <select id="numCategories">
+                            <option value="3">3 categories (Low/Med/High)</option>
+                            <option value="4">4 categories</option>
+                            <option value="5" selected>5 categories (1-5 scale)</option>
+                            <option value="7">7 categories (1-7 scale)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="effectStrength">Treatment Effect:</label>
+                        <input type="range" id="effectStrength" min="0" max="2" step="0.1" value="0.6">
+                        <span id="effectStrengthValue">0.6</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="thresholdSpacing">Threshold Spacing:</label>
+                        <select id="thresholdSpacing">
+                            <option value="equal">Equal spacing</option>
+                            <option value="unequal" selected>Unequal spacing</option>
+                            <option value="extreme">Extreme categories rare</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateOrdered()">
+                        📊 Run Ordered Response
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Category Probabilities</h4>
+                    <div class="chart-container" id="orderedChart" style="background: var(--flow-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--flow-400); text-align: center;">
+                            Run ordered model to display<br>probability distributions across categories
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="orderedResults">
+                <h4 style="color: var(--primary-choice); margin-bottom: 1rem;">Ordered Response Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="orderedCoeff" style="color: var(--status-ordered);">-</div>
+                        <div class="stat-label">Coefficient</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="parallelTest" style="color: var(--flow-600);">-</div>
+                        <div class="stat-label">Parallel Lines Test</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="marginalEffectHigh" style="color: var(--status-multi);">-</div>
+                        <div class="stat-label">Highest Category ME</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="marginalEffectLow" style="color: var(--status-binary);">-</div>
+                        <div class="stat-label">Lowest Category ME</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="orderedAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="orderedInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 17.4: Censored and Truncated Regression -->
+        <section class="section fade-in delay-5" id="tobit">
+            <h2 class="section-title">17.4 ✂️ Censored and Truncated Regression</h2>
+            
+            <p>When the dependent variable is observed only in a limited range due to censoring or truncation, standard regression methods are biased. Tobit models handle these issues.</p>
+
+            <div class="concept-box tobit">
+                <div class="concept-title">✂️ Censored vs. Truncated Data</div>
+                <p><strong>Censoring:</strong> We observe some limit value (e.g., y = 0) when true value is below/above threshold</p>
+                <p><strong>Truncation:</strong> We don't observe any data when value is below/above threshold</p>
+                <div class="formula">
+                    Censoring: y = max(0, y*) where y* = x'β + u
+                    • We see y = 0 for negative y* (corner solution)
+                    • Example: hours worked, charitable giving, spending on durables
+                    
+                    Truncation: y is observed only if y* > c
+                    • We lose observations entirely below threshold
+                    • Example: wages only for workers, income only for participants
+                </div>
+                <p><strong>Key insight:</strong> OLS gives biased estimates because E[u|y > 0] ≠ 0</p>
+            </div>
+
+            <div class="concept-box tobit">
+                <div class="concept-title">📐 Tobit Model (Type I)</div>
+                <p>Standard Tobit for censored data:</p>
+                <div class="formula">
+                    y* = x'β + u,  u ~ N(0,σ²)
+                    y = max(0, y*)
+                    
+                    Likelihood:
+                    L = ∏ᵢ:yᵢ=₀ [1 - Φ(x'β/σ)] × ∏ᵢ:yᵢ>₀ [(1/σ)φ((yᵢ - x'β)/σ)]
+                    
+                    E[y|x] = Φ(x'β/σ) × (x'β + σλ(x'β/σ))
+                    where λ(z) = φ(z)/Φ(z) is inverse Mills ratio
+                </div>
+                <p><strong>Marginal effects:</strong><br>
+                • Extensive margin (participation): ∂P(y>0)/∂x = (β/σ)φ(x'β/σ)<br>
+                • Intensive margin (conditional on y>0): ∂E[y|y>0,x]/∂x = β[1 - λ(z)(z + λ(z))]</p>
+            </div>
+
+            <!-- Tobit Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>✂️ Censored Regression Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="censoringType">Data Issue:</label>
+                        <select id="censoringType">
+                            <option value="censored" selected>Left Censoring at 0</option>
+                            <option value="truncated">Left Truncation</option>
+                            <option value="both">Two-sided Censoring</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="censoringLevel">Censoring Rate:</label>
+                        <input type="range" id="censoringLevel" min="0.1" max="0.6" step="0.05" value="0.25">
+                        <span id="censoringLevelValue">25%</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="trueEffect">True Effect Size:</label>
+                        <input type="range" id="trueEffect" min="0.5" max="3" step="0.1" value="1.2">
+                        <span id="trueEffectValue">1.2</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="errorVariance">Error Variance:</label>
+                        <select id="errorVariance">
+                            <option value="low">Low σ² = 1</option>
+                            <option value="moderate" selected>Moderate σ² = 4</option>
+                            <option value="high">High σ² = 9</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateTobit()">
+                        ✂️ Analyze Censored Data
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 OLS vs Tobit Estimates</h4>
+                    <div class="model-comparison" id="tobitComparison">
+                        <div style="grid-column: 1 / -1; text-align: center; color: var(--flow-400); padding: 2rem;">
+                            Run Tobit simulation to compare<br>OLS, Tobit, and true parameters
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="tobitResults">
+                <h4 style="color: var(--primary-choice); margin-bottom: 1rem;">Censored Regression Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="olsBias" style="color: var(--status-linear);">-</div>
+                        <div class="stat-label">OLS Bias</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="tobitCoeff" style="color: var(--status-tobit);">-</div>
+                        <div class="stat-label">Tobit Estimate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="marginalExtensive" style="color: var(--status-multi);">-</div>
+                        <div class="stat-label">Extensive Margin</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="marginalIntensive" style="color: var(--status-binary);">-</div>
+                        <div class="stat-label">Intensive Margin</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="tobitAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="tobitInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 17.5: Sample Selection Models -->
+        <section class="section fade-in delay-6" id="selection">
+            <h2 class="section-title">17.5 🎭 Sample Selection Models</h2>
+            
+            <p>Sample selection bias occurs when the observed sample is not random. The Heckman two-step procedure corrects for selection bias when the outcome is observed only for a selected subset.</p>
+
+            <div class="concept-box heckman">
+                <div class="concept-title">🎭 Sample Selection Problem</div>
+                <p><strong>Problem:</strong> We observe y only when a selection indicator s = 1</p>
+                <div class="formula">
+                    Selection: s* = z'γ + v,  s = 1 if s* > 0
+                    Outcome:  y = x'β + u  (observed only when s = 1)
+                    
+                    If Corr(u,v) ≠ 0: E[y|x,s=1] = x'β + E[u|v > -z'γ]
+                                                   = x'β + ρσᵤλ(z'γ)
+                    
+                    where λ(z'γ) = φ(z'γ)/Φ(z'γ) is inverse Mills ratio
+                </div>
+                <p><strong>Examples:</strong><br>
+                • Wages observed only for workers (employment selection)<br>
+                • Product quality ratings only from buyers (purchase selection)<br>
+                • Treatment effects only for compliers (treatment selection)</p>
+            </div>
+
+            <div class="concept-box heckman">
+                <div class="concept-title">🔄 Heckman Two-Step Procedure</div>
+                <p><strong>Step 1:</strong> Estimate selection equation (probit)</p>
+                <p><strong>Step 2:</strong> Include inverse Mills ratio in outcome equation</p>
+                <div class="formula">
+                    Step 1: Probit of s on z  →  get λ̂ᵢ = φ(z'γ̂)/Φ(z'γ̂)
+                    
+                    Step 2: OLS of y on x, λ̂  →  y = x'β + θλ̂ + error
+                    
+                    Identification: Need exclusion restriction (z variable not in x)
+                    Selection correction: θ̂ = ρ̂σ̂ᵤ (selection bias parameter)
+                </div>
+                <p><strong>Standard errors:</strong> Must correct for generated regressor (λ̂)<br>
+                <strong>Alternative:</strong> Full MLE (more efficient but assumes normality)<br>
+                <strong>Test:</strong> H₀: θ = 0 (no selection bias)</p>
+            </div>
+
+            <!-- Sample Selection Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🎭 Sample Selection Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="selectionScenario">Selection Scenario:</label>
+                        <select id="selectionScenario">
+                            <option value="wages" selected>Wages (Employment)</option>
+                            <option value="education">Education Returns</option>
+                            <option value="migration">Migration Outcomes</option>
+                            <option value="treatment">Treatment Effects</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="selectionCorrelation">Selection Bias (ρ):</label>
+                        <input type="range" id="selectionCorrelation" min="-0.8" max="0.8" step="0.1" value="0.4">
+                        <span id="selectionCorrelationValue">0.4</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="selectionRate">Selection Rate:</label>
+                        <input type="range" id="selectionRate" min="0.3" max="0.9" step="0.05" value="0.65">
+                        <span id="selectionRateValue">65%</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="exclusionStrength">Exclusion Restriction Strength:</label>
+                        <select id="exclusionStrength">
+                            <option value="weak">Weak Identification</option>
+                            <option value="moderate" selected>Moderate</option>
+                            <option value="strong">Strong Identification</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateSelection()">
+                        🎭 Run Heckman Model
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Selection Correction</h4>
+                    <div class="model-comparison" id="selectionComparison">
+                        <div style="grid-column: 1 / -1; text-align: center; color: var(--flow-400); padding: 2rem;">
+                            Run selection model to compare<br>naive OLS vs Heckman correction
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="selectionResults">
+                <h4 style="color: var(--primary-choice); margin-bottom: 1rem;">Sample Selection Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="selectionBias" style="color: var(--status-heckman);">-</div>
+                        <div class="stat-label">Selection Bias</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="heckmanCorrection" style="color: var(--flow-600);">-</div>
+                        <div class="stat-label">Heckman θ</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="millsSignificance" style="color: var(--status-ordered);">-</div>
+                        <div class="stat-label">Mills p-value</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="biasReduction" style="color: var(--status-binary);">-</div>
+                        <div class="stat-label">Bias Reduction</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="selectionAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="selectionInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section class="section fade-in delay-6" id="quiz">
+            <div class="quiz-section">
+                <h3 style="text-align: center; margin-bottom: 1rem; color: var(--primary-choice);">
+                    🎯 Chapter 17 Knowledge Check: Limited Dependent Variables
+                </h3>
+                <p style="text-align: center; color: var(--flow-600); margin-bottom: 1rem;">
+                    Test your understanding of binary choice, multinomial models, ordered response, censoring, and selection bias
+                </p>
+                
+                <!-- Regenerate Button -->
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <button onclick="regenerateQuiz()" class="action-button" style="margin: 0; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                        🔄 Generate New Questions
+                    </button>
+                    <p style="font-size: 0.8rem; color: var(--flow-600); margin-top: 0.5rem;">
+                        Click to get fresh questions on limited dependent variable methods
+                    </p>
+                </div>
+                
+                <div id="quizContainer">
+                    <!-- Questions will be dynamically generated here -->
+                </div>
+                
+                <!-- Quiz Results Summary -->
+                <div id="quizSummary" style="display: none; margin-top: 2rem; padding: 1.5rem; background: var(--flow-50); border-radius: 15px; border-left: 4px solid var(--primary-choice);">
+                    <h4 style="color: var(--primary-choice); margin-bottom: 1rem;">Quiz Results</h4>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 10px;">
+                            <div id="correctCount" style="font-size: 1.5rem; font-weight: bold; color: var(--status-binary);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--flow-600);">Correct</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 10px;">
+                            <div id="totalQuestions" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-choice);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--flow-600);">Total</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 10px;">
+                            <div id="quizScore" style="font-size: 1.5rem; font-weight: bold; color: var(--secondary-choice);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--flow-600);">Score</div>
+                        </div>
+                    </div>
+                    <div id="quizFeedback" style="color: var(--flow-700); line-height: 1.6;"></div>
+                    <button onclick="regenerateQuiz()" class="action-button" style="margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                        Try Again with New Questions
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div class="ai-chat-widget">
+        <button class="ai-chat-button" onclick="toggleAIChat()" title="Ask Claude about Limited Dependent Variables">
+            <span id="aiChatIcon">📊</span>
+        </button>
+        
+        <div class="ai-chat-panel" id="aiChatPanel">
+            <div class="ai-chat-header">
+                <span>📊 Limited Variables Tutor</span>
+                <button onclick="toggleAIChat()" style="background: none; border: none; color: white; cursor: pointer;">×</button>
+            </div>
+            
+            <div class="ai-chat-messages" id="aiChatMessages">
+                <div class="ai-message claude">
+                    <strong>📊 Claude:</strong> Hi! I can help you understand binary choice models (logit/probit), multinomial choice, ordered response, Tobit models, and Heckman selection correction. What limited dependent variable concept interests you?
+                </div>
+            </div>
+            
+            <div class="ai-input-area">
+                <input type="text" class="ai-input" id="aiInput" placeholder="Ask about limited dependent variables..." 
+                       onkeydown="if(event.key==='Enter') sendAIMessage()">
+                <button class="ai-send-btn" onclick="sendAIMessage()">→</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let isAIChatOpen = false;
+        let currentQuestions = [];
+        let answeredQuestions = {};
+        
+        // Slider event listeners
+        document.getElementById('coeffIntercept').addEventListener('input', function(e) {
+            document.getElementById('coeffInterceptValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('coeffSlope').addEventListener('input', function(e) {
+            document.getElementById('coeffSlopeValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('incomeEffect').addEventListener('input', function(e) {
+            document.getElementById('incomeEffectValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('iiaViolation').addEventListener('input', function(e) {
+            document.getElementById('iiaViolationValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('effectStrength').addEventListener('input', function(e) {
+            document.getElementById('effectStrengthValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('censoringLevel').addEventListener('input', function(e) {
+            document.getElementById('censoringLevelValue').textContent = (e.target.value * 100).toFixed(0) + '%';
+        });
+        
+        document.getElementById('trueEffect').addEventListener('input', function(e) {
+            document.getElementById('trueEffectValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('selectionCorrelation').addEventListener('input', function(e) {
+            document.getElementById('selectionCorrelationValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('selectionRate').addEventListener('input', function(e) {
+            document.getElementById('selectionRateValue').textContent = (e.target.value * 100).toFixed(0) + '%';
+        });
+        
+        // Binary Response Model Simulation
+        function simulateBinaryResponse() {
+            console.log('Starting binary response simulation...');
+            
+            try {
+                const modelType = document.getElementById('modelType').value;
+                const intercept = parseFloat(document.getElementById('coeffIntercept').value);
+                const slope = parseFloat(document.getElementById('coeffSlope').value);
+                const sampleSize = parseInt(document.getElementById('sampleSize').value);
+                
+                console.log('Binary Parameters:', { modelType, intercept, slope, sampleSize });
+                
+                // Simulate data
+                const logLikelihood = -250 - Math.random() * 100;
+                const mcFaddenR2 = 0.15 + Math.random() * 0.20;
+                
+                // Prediction accuracy
+                const predictionAccuracy = 0.65 + Math.abs(slope) * 0.1 + Math.random() * 0.15;
+                
+                // Average marginal effect
+                let marginalEffect;
+                if (modelType === 'lpm') {
+                    marginalEffect = slope; // Constant in LPM
+                } else if (modelType === 'logit') {
+                    marginalEffect = slope * 0.25; // Approximate for logit at mean
+                } else {
+                    marginalEffect = slope * 0.4; // Approximate for probit at mean
+                }
+                
+                // Update results
+                document.getElementById('logLikelihood').textContent = logLikelihood.toFixed(1);
+                document.getElementById('mcFaddenR2').textContent = mcFaddenR2.toFixed(3);
+                document.getElementById('predictionAccuracy').textContent = (predictionAccuracy * 100).toFixed(1) + '%';
+                document.getElementById('marginalEffect').textContent = marginalEffect.toFixed(3);
+                
+                // Probability chart
+                const chartContainer = document.getElementById('probabilityChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-choice);">${modelType.toUpperCase()} Model Results</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--status-binary); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Log Likelihood</strong><br>
+                                ${logLikelihood.toFixed(1)}
+                            </div>
+                            <div style="background: var(--status-ordered); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Prediction Rate</strong><br>
+                                ${(predictionAccuracy * 100).toFixed(1)}%
+                            </div>
+                        </div>
+                        <div style="background: var(--flow-100); padding: 12px; border-radius: 8px;">
+                            Marginal Effect: ${marginalEffect.toFixed(3)} | McFadden R²: ${mcFaddenR2.toFixed(3)}
+                        </div>
+                    </div>
+                `;
+                
+                const assessmentEl = document.getElementById('binaryAssessment');
+                const goodFit = mcFaddenR2 > 0.2;
+                const strongEffect = Math.abs(marginalEffect) > 0.2;
+                
+                if (modelType === 'lpm' && (slope < -2 || slope > 2)) {
+                    assessmentEl.textContent = 'LPM Probabilities Out of Range';
+                    assessmentEl.className = 'status-indicator status-heckman';
+                } else if (goodFit && strongEffect) {
+                    assessmentEl.textContent = 'Strong Model Fit';
+                    assessmentEl.className = 'status-indicator status-binary';
+                } else if (goodFit) {
+                    assessmentEl.textContent = 'Good Model Fit';
+                    assessmentEl.className = 'status-indicator status-ordered';
+                } else {
+                    assessmentEl.textContent = 'Weak Model';
+                    assessmentEl.className = 'status-indicator status-linear';
+                }
+                
+                document.getElementById('binaryInterpretation').textContent = 
+                    `${modelType.toUpperCase()} model: β₁ = ${slope.toFixed(2)}, marginal effect = ${marginalEffect.toFixed(3)}. Prediction accuracy: ${(predictionAccuracy*100).toFixed(1)}%. ${modelType === 'lpm' ? 'LPM provides linear marginal effects.' : modelType === 'logit' ? 'Logit allows odds ratio interpretation.' : 'Probit assumes normal errors.'} McFadden R² = ${mcFaddenR2.toFixed(3)}.`;
+                
+                document.getElementById('binaryResults').style.display = 'block';
+                console.log('Binary response simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in binary response simulation:', error);
+                alert('Error running binary response simulation. Check console for details.');
+            }
+        }
+        
+        // Multinomial Choice Simulation
+        function simulateMultinomial() {
+            console.log('Starting multinomial choice simulation...');
+            
+            try {
+                const numChoices = parseInt(document.getElementById('numChoices').value);
+                const scenario = document.getElementById('choiceScenario').value;
+                const incomeEffect = parseFloat(document.getElementById('incomeEffect').value);
+                const iiaViolation = parseFloat(document.getElementById('iiaViolation').value);
+                
+                console.log('Multinomial Parameters:', { numChoices, scenario, incomeEffect, iiaViolation });
+                
+                // Simulate results
+                const multinomialLL = -400 - Math.random() * 200;
+                const iiaTestPValue = iiaViolation > 0.5 ? 0.02 + Math.random() * 0.08 : 0.15 + Math.random() * 0.4;
+                const predictionRate = 0.4 + (1/numChoices) * 0.3 + Math.random() * 0.15;
+                
+                // Choice labels by scenario
+                const choiceLabels = {
+                    'transportation': ['Car', 'Bus', 'Train', 'Bike', 'Walk'],
+                    'education': ['No College', 'Associate', 'Bachelor', 'Master', 'PhD'],
+                    'occupation': ['Blue Collar', 'Service', 'Professional', 'Manager', 'Executive'],
+                    'brand': ['Generic', 'Store Brand', 'Premium', 'Luxury', 'Ultra Premium']
+                };
+                
+                const labels = choiceLabels[scenario].slice(0, numChoices);
+                const dominantChoice = labels[0]; // Simulate most popular choice
+                
+                document.getElementById('multinomialLL').textContent = multinomialLL.toFixed(1);
+                document.getElementById('iiaTestStat').textContent = iiaTestPValue.toFixed(3);
+                document.getElementById('choicePrediction').textContent = (predictionRate * 100).toFixed(1) + '%';
+                document.getElementById('dominantChoice').textContent = dominantChoice;
+                
+                // Multinomial chart
+                const chartContainer = document.getElementById('multinomialChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-choice);">${scenario.charAt(0).toUpperCase() + scenario.slice(1)} Choice Model</h4>
+                        <div style="display: grid; grid-template-columns: repeat(${Math.min(numChoices, 3)}, 1fr); gap: 10px; margin: 15px 0;">
+                            ${labels.map((label, i) => `
+                                <div style="background: var(--status-multi); color: white; padding: 10px; border-radius: 6px; font-size: 0.9rem;">
+                                    <strong>${label}</strong><br>
+                                    ${(0.6/numChoices + Math.random()*0.4/numChoices).toFixed(2)}
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div style="background: var(--flow-100); padding: 12px; border-radius: 8px;">
+                            Income Effect: ${incomeEffect.toFixed(1)} | IIA p-value: ${iiaTestPValue.toFixed(3)}
+                        </div>
+                    </div>
+                `;
+                
+                const assessmentEl = document.getElementById('multinomialAssessment');
+                const iiaViolated = iiaTestPValue < 0.05;
+                
+                if (iiaViolated) {
+                    assessmentEl.textContent = 'IIA Assumption Violated';
+                    assessmentEl.className = 'status-indicator status-heckman';
+                } else if (predictionRate > 0.6) {
+                    assessmentEl.textContent = 'Good Choice Prediction';
+                    assessmentEl.className = 'status-indicator status-multi';
+                } else {
+                    assessmentEl.textContent = 'Adequate Model';
+                    assessmentEl.className = 'status-indicator status-ordered';
+                }
+                
+                document.getElementById('multinomialInterpretation').textContent = 
+                    `${numChoices}-alternative ${scenario} model. Income effect: ${incomeEffect.toFixed(1)}, prediction rate: ${(predictionRate*100).toFixed(1)}%. IIA test p-value: ${iiaTestPValue.toFixed(3)} ${iiaViolated ? '(violated - consider nested logit)' : '(satisfied)'}. Most popular: ${dominantChoice}.`;
+                
+                document.getElementById('multinomialResults').style.display = 'block';
+                console.log('Multinomial choice simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in multinomial choice simulation:', error);
+                alert('Error running multinomial choice simulation. Check console for details.');
+            }
+        }
+        
+        // Ordered Response Simulation
+        function simulateOrdered() {
+            console.log('Starting ordered response simulation...');
+            
+            try {
+                const orderedType = document.getElementById('orderedType').value;
+                const numCategories = parseInt(document.getElementById('numCategories').value);
+                const effectStrength = parseFloat(document.getElementById('effectStrength').value);
+                const thresholdSpacing = document.getElementById('thresholdSpacing').value;
+                
+                console.log('Ordered Parameters:', { orderedType, numCategories, effectStrength, thresholdSpacing });
+                
+                // Simulate coefficient and test results
+                const orderedCoeff = effectStrength + (Math.random() - 0.5) * 0.2;
+                const parallelTestPValue = thresholdSpacing === 'equal' ? 0.3 + Math.random() * 0.4 : 0.01 + Math.random() * 0.1;
+                
+                // Marginal effects (highest category gets positive effect, lowest gets negative)
+                const marginalEffectHigh = effectStrength * 0.15 + Math.random() * 0.05;
+                const marginalEffectLow = -effectStrength * 0.12 - Math.random() * 0.05;
+                
+                document.getElementById('orderedCoeff').textContent = orderedCoeff.toFixed(3);
+                document.getElementById('parallelTest').textContent = parallelTestPValue.toFixed(3);
+                document.getElementById('marginalEffectHigh').textContent = marginalEffectHigh.toFixed(3);
+                document.getElementById('marginalEffectLow').textContent = marginalEffectLow.toFixed(3);
+                
+                // Ordered chart
+                const chartContainer = document.getElementById('orderedChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-choice);">${orderedType.toUpperCase()} Model (${numCategories} categories)</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--status-ordered); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Coefficient</strong><br>
+                                β = ${orderedCoeff.toFixed(3)}
+                            </div>
+                            <div style="background: var(--status-multi); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Parallel Lines</strong><br>
+                                p = ${parallelTestPValue.toFixed(3)}
+                            </div>
+                        </div>
+                        <div style="background: var(--flow-100); padding: 12px; border-radius: 8px;">
+                            ME(High): ${marginalEffectHigh.toFixed(3)} | ME(Low): ${marginalEffectLow.toFixed(3)}
+                        </div>
+                    </div>
+                `;
+                
+                const assessmentEl = document.getElementById('orderedAssessment');
+                const parallelViolated = parallelTestPValue < 0.05;
+                
+                if (parallelViolated) {
+                    assessmentEl.textContent = 'Parallel Lines Violated';
+                    assessmentEl.className = 'status-indicator status-heckman';
+                } else if (Math.abs(orderedCoeff) > 0.5) {
+                    assessmentEl.textContent = 'Strong Ordered Effect';
+                    assessmentEl.className = 'status-indicator status-ordered';
+                } else {
+                    assessmentEl.textContent = 'Modest Ordered Effect';
+                    assessmentEl.className = 'status-indicator status-binary';
+                }
+                
+                document.getElementById('orderedInterpretation').textContent = 
+                    `${orderedType.toUpperCase()} with ${numCategories} categories. β = ${orderedCoeff.toFixed(3)}. Parallel lines test p = ${parallelTestPValue.toFixed(3)} ${parallelViolated ? '(violated)' : '(satisfied)'}. ME highest: ${marginalEffectHigh.toFixed(3)}, ME lowest: ${marginalEffectLow.toFixed(3)}. ${parallelViolated ? 'Consider generalized ordered model.' : 'Standard ordered model appropriate.'}`;
+                
+                document.getElementById('orderedResults').style.display = 'block';
+                console.log('Ordered response simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in ordered response simulation:', error);
+                alert('Error running ordered response simulation. Check console for details.');
+            }
+        }
+        
+        // Tobit Model Simulation
+        function simulateTobit() {
+            console.log('Starting Tobit simulation...');
+            
+            try {
+                const censoringType = document.getElementById('censoringType').value;
+                const censoringLevel = parseFloat(document.getElementById('censoringLevel').value);
+                const trueEffect = parseFloat(document.getElementById('trueEffect').value);
+                const errorVariance = document.getElementById('errorVariance').value;
+                
+                console.log('Tobit Parameters:', { censoringType, censoringLevel, trueEffect, errorVariance });
+                
+                // Simulate bias
+                const olsBias = -censoringLevel * 0.5 * trueEffect; // OLS underestimates
+                const tobitCoeff = trueEffect + (Math.random() - 0.5) * 0.1;
+                
+                // Marginal effects
+                const marginalExtensive = 0.4 * trueEffect; // Participation margin
+                const marginalIntensive = 0.6 * trueEffect; // Intensive margin
+                
+                document.getElementById('olsBias').textContent = (Math.abs(olsBias) * 100).toFixed(1) + '%';
+                document.getElementById('tobitCoeff').textContent = tobitCoeff.toFixed(3);
+                document.getElementById('marginalExtensive').textContent = marginalExtensive.toFixed(3);
+                document.getElementById('marginalIntensive').textContent = marginalIntensive.toFixed(3);
+                
+                // Tobit comparison
+                const comparisonContainer = document.getElementById('tobitComparison');
+                const olsEst = trueEffect + olsBias;
+                comparisonContainer.innerHTML = `
+                    <div class="model-method">
+                        <div class="method-label">True Parameter</div>
+                        <div class="method-value">${trueEffect.toFixed(3)}</div>
+                    </div>
+                    <div class="model-method">
+                        <div class="method-label">OLS (Biased)</div>
+                        <div class="method-value">${olsEst.toFixed(3)}</div>
+                    </div>
+                    <div class="model-method">
+                        <div class="method-label">Tobit (MLE)</div>
+                        <div class="method-value">${tobitCoeff.toFixed(3)}</div>
+                    </div>
+                    <div class="model-method">
+                        <div class="method-label">Bias Reduction</div>
+                        <div class="method-value">${((Math.abs(olsBias) - Math.abs(tobitCoeff - trueEffect)) / Math.abs(olsBias) * 100).toFixed(0)}%</div>
+                    </div>
+                `;
+                
+                const assessmentEl = document.getElementById('tobitAssessment');
+                const severeCensoring = censoringLevel > 0.4;
+                
+                if (severeCensoring) {
+                    assessmentEl.textContent = 'Severe Censoring - Use Tobit';
+                    assessmentEl.className = 'status-indicator status-tobit';
+                } else if (censoringLevel > 0.2) {
+                    assessmentEl.textContent = 'Moderate Censoring';
+                    assessmentEl.className = 'status-indicator status-ordered';
+                } else {
+                    assessmentEl.textContent = 'Mild Censoring';
+                    assessmentEl.className = 'status-indicator status-binary';
+                }
+                
+                document.getElementById('tobitInterpretation').textContent = 
+                    `${(censoringLevel*100).toFixed(0)}% censoring rate. OLS bias: ${(Math.abs(olsBias)*100).toFixed(1)}%. Tobit estimate: ${tobitCoeff.toFixed(3)} (true: ${trueEffect}). Extensive margin: ${marginalExtensive.toFixed(3)}, intensive margin: ${marginalIntensive.toFixed(3)}. ${severeCensoring ? 'Tobit correction essential.' : 'Mild bias from censoring.'}`;
+                
+                document.getElementById('tobitResults').style.display = 'block';
+                console.log('Tobit simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in Tobit simulation:', error);
+                alert('Error running Tobit simulation. Check console for details.');
+            }
+        }
+        
+        // Sample Selection Simulation
+        function simulateSelection() {
+            console.log('Starting sample selection simulation...');
+            
+            try {
+                const scenario = document.getElementById('selectionScenario').value;
+                const correlation = parseFloat(document.getElementById('selectionCorrelation').value);
+                const selectionRate = parseFloat(document.getElementById('selectionRate').value);
+                const exclusionStrength = document.getElementById('exclusionStrength').value;
+                
+                console.log('Selection Parameters:', { scenario, correlation, selectionRate, exclusionStrength });
+                
+                // Selection bias calculation
+                const selectionBias = correlation * 0.8; // Bias depends on correlation
+                const heckmanTheta = correlation * 1.2 + (Math.random() - 0.5) * 0.2;
+                
+                // Mills ratio significance
+                let millsPValue;
+                if (Math.abs(correlation) < 0.2) {
+                    millsPValue = 0.2 + Math.random() * 0.5;
+                } else {
+                    millsPValue = 0.01 + Math.random() * 0.1;
+                }
+                
+                const biasReduction = Math.abs(selectionBias) < 0.1 ? 20 : 70 + Math.random() * 20;
+                
+                document.getElementById('selectionBias').textContent = (Math.abs(selectionBias) * 100).toFixed(1) + '%';
+                document.getElementById('heckmanCorrection').textContent = heckmanTheta.toFixed(3);
+                document.getElementById('millsSignificance').textContent = millsPValue.toFixed(3);
+                document.getElementById('biasReduction').textContent = biasReduction.toFixed(0) + '%';
+                
+                // Selection comparison
+                const comparisonContainer = document.getElementById('selectionComparison');
+                const naiveOls = 1.2 + selectionBias;
+                const heckmanEst = 1.2 + (Math.random() - 0.5) * 0.1;
+                
+                comparisonContainer.innerHTML = `
+                    <div class="model-method">
+                        <div class="method-label">Naive OLS</div>
+                        <div class="method-value">${naiveOls.toFixed(3)}</div>
+                    </div>
+                    <div class="model-method">
+                        <div class="method-label">Heckman 2-Step</div>
+                        <div class="method-value">${heckmanEst.toFixed(3)}</div>
+                    </div>
+                    <div class="model-method">
+                        <div class="method-label">Selection θ</div>
+                        <div class="method-value">${heckmanTheta.toFixed(3)}</div>
+                    </div>
+                    <div class="model-method">
+                        <div class="method-label">Mills p-value</div>
+                        <div class="method-value">${millsPValue.toFixed(3)}</div>
+                    </div>
+                `;
+                
+                const assessmentEl = document.getElementById('selectionAssessment');
+                const significantSelection = millsPValue < 0.05;
+                
+                if (significantSelection && Math.abs(correlation) > 0.5) {
+                    assessmentEl.textContent = 'Severe Selection Bias';
+                    assessmentEl.className = 'status-indicator status-heckman';
+                } else if (significantSelection) {
+                    assessmentEl.textContent = 'Selection Correction Needed';
+                    assessmentEl.className = 'status-indicator status-tobit';
+                } else {
+                    assessmentEl.textContent = 'No Selection Bias';
+                    assessmentEl.className = 'status-indicator status-binary';
+                }
+                
+                document.getElementById('selectionInterpretation').textContent = 
+                    `${scenario} selection with ρ = ${correlation.toFixed(1)}, ${(selectionRate*100).toFixed(0)}% selection rate. ${significantSelection ? 'Mills ratio significant (p=' + millsPValue.toFixed(3) + ')' : 'No selection bias detected'}. Heckman θ = ${heckmanTheta.toFixed(3)}. ${significantSelection ? 'Use Heckman correction.' : 'OLS sufficient.'}`;
+                
+                document.getElementById('selectionResults').style.display = 'block';
+                console.log('Sample selection simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in sample selection simulation:', error);
+                alert('Error running sample selection simulation. Check console for details.');
+            }
+        }
+        
+        // Quiz question bank - Limited Dependent Variables
+        const questionBank = {
+            binary_response: [
+                {
+                    question: "The main problem with using OLS for binary dependent variables is:",
+                    options: [
+                        "Heteroskedasticity in the error terms",
+                        "Predicted probabilities can be outside [0,1] range",
+                        "Non-normal error distribution",
+                        "All of the above"
+                    ],
+                    correct: 3,
+                    explanation: "OLS with binary outcomes has multiple problems: predicted probabilities outside [0,1], heteroskedasticity since var(u|x) = p(x)[1-p(x)], and non-normal errors."
+                },
+                {
+                    question: "In a logit model, the coefficient β₁ represents:",
+                    options: [
+                        "The change in probability for a unit change in x₁",
+                        "The change in log odds for a unit change in x₁",
+                        "The odds ratio for a unit change in x₁",
+                        "The marginal effect of x₁"
+                    ],
+                    correct: 1,
+                    explanation: "In logit models, ln[P/(1-P)] = βx, so β₁ is the change in log odds. The odds ratio is exp(β₁), and marginal effects require additional calculation."
+                },
+                {
+                    question: "The marginal effect in a probit model is:",
+                    options: [
+                        "Constant across all values of x",
+                        "Equal to the coefficient β",
+                        "β × φ(βx) where φ is the standard normal density",
+                        "Always positive if β is positive"
+                    ],
+                    correct: 2,
+                    explanation: "Probit marginal effects are ∂P/∂x = β × φ(βx), where φ is the standard normal density function. This varies with x values."
+                },
+                {
+                    question: "Compared to probit, logit models:",
+                    options: [
+                        "Have thicker tails in the distribution",
+                        "Always give identical results",
+                        "Are easier to interpret through odds ratios",
+                        "Require larger sample sizes"
+                    ],
+                    correct: 2,
+                    explanation: "Logit models use the logistic distribution (thicker tails than normal) and offer easy interpretation via odds ratios: exp(β) gives the odds ratio for a unit change in x."
+                },
+                {
+                    question: "McFadden's R² in binary choice models:",
+                    options: [
+                        "Can be interpreted the same as R² in linear regression",
+                        "Is 1 - (LL_model/LL_null) where LL is log likelihood",
+                        "Always equals the fraction of correct predictions",
+                        "Must be greater than 0.5 for a good model"
+                    ],
+                    correct: 1,
+                    explanation: "McFadden R² = 1 - (LL_model/LL_null) measures improvement over null model. Values of 0.2-0.4 indicate excellent fit in discrete choice models."
+                },
+                {
+                    question: "The Linear Probability Model (LPM) advantage is:",
+                    options: [
+                        "Predicted probabilities always between 0 and 1",
+                        "No heteroskedasticity problems",
+                        "Coefficients directly interpretable as marginal effects",
+                        "More efficient than logit/probit"
+                    ],
+                    correct: 2,
+                    explanation: "LPM's main advantage is that coefficients directly give marginal effects (change in probability). However, it suffers from potential probability predictions outside [0,1] and heteroskedasticity."
+                }
+            ],
+            multinomial_choice: [
+                {
+                    question: "The Independence of Irrelevant Alternatives (IIA) assumption means:",
+                    options: [
+                        "All alternatives are equally likely to be chosen",
+                        "The relative probability of any two alternatives is unaffected by other alternatives",
+                        "Alternatives must be independent of each other",
+                        "The error terms are independent across observations"
+                    ],
+                    correct: 1,
+                    explanation: "IIA means the ratio P(i)/P(j) for any two alternatives i and j doesn't change when other alternatives are added or removed. This can be violated when alternatives are close substitutes."
+                },
+                {
+                    question: "In multinomial logit, the base category:",
+                    options: [
+                        "Must always be the most frequent choice",
+                        "Has its coefficients normalized to zero for identification",
+                        "Cannot be changed once the model is estimated",
+                        "Must be the first category in the data"
+                    ],
+                    correct: 1,
+                    explanation: "The base category has coefficients set to zero for identification. Choice of base category doesn't affect relative comparisons, and results can be re-expressed relative to any category."
+                },
+                {
+                    question: "The red bus/blue bus problem illustrates:",
+                    options: [
+                        "Multinomial probit superiority over logit",
+                        "The need for larger sample sizes in choice models",
+                        "Violation of the IIA assumption",
+                        "Heteroskedasticity in discrete choice models"
+                    ],
+                    correct: 2,
+                    explanation: "This classic example shows IIA violation: when a blue bus is added to car/red bus choices, IIA predicts implausible shifts since people view red and blue buses as close substitutes."
+                },
+                {
+                    question: "To test the IIA assumption, you would use:",
+                    options: [
+                        "A likelihood ratio test comparing nested models",
+                        "The Hausman test comparing full model with restricted model",
+                        "A test of heteroskedasticity",
+                        "McFadden's R² comparison"
+                    ],
+                    correct: 1,
+                    explanation: "The Hausman test for IIA compares the full multinomial logit with a model that excludes some alternatives. If IIA holds, estimates should be similar."
+                },
+                {
+                    question: "Multinomial probit differs from multinomial logit by:",
+                    options: [
+                        "Using normal instead of logistic distribution",
+                        "Allowing correlated error terms across alternatives",
+                        "Being computationally more demanding",
+                        "All of the above"
+                    ],
+                    correct: 3,
+                    explanation: "Multinomial probit uses normal distributions, allows for correlation in unobserved factors across alternatives (relaxing IIA), but is much more computationally intensive."
+                },
+                {
+                    question: "In multinomial logit, marginal effects:",
+                    options: [
+                        "Are constant across all individuals",
+                        "Sum to zero across all alternatives for each variable",
+                        "Are always positive for positive coefficients",
+                        "Equal the estimated coefficients"
+                    ],
+                    correct: 1,
+                    explanation: "Marginal effects in multinomial logit must sum to zero across all alternatives for each explanatory variable, since probabilities sum to 1."
+                }
+            ],
+            ordered_response: [
+                {
+                    question: "In ordered logit/probit, the latent variable approach assumes:",
+                    options: [
+                        "The observed categories have equal spacing",
+                        "There's an underlying continuous variable with threshold cutoffs",
+                        "The error term has a uniform distribution",
+                        "All coefficients are positive"
+                    ],
+                    correct: 1,
+                    explanation: "Ordered models use a latent variable y* = xβ + u with threshold parameters that determine which observed category is realized when y* crosses different cutoff points."
+                },
+                {
+                    question: "The parallel lines assumption in ordered logit means:",
+                    options: [
+                        "All threshold parameters are equal",
+                        "The effect of explanatory variables is the same across all cutoff points",
+                        "Probabilities increase linearly with x",
+                        "The model is equivalent to separate binary logits"
+                    ],
+                    correct: 1,
+                    explanation: "Parallel lines assumes the effect of x is the same whether comparing categories (0 vs 1+), (0-1 vs 2+), etc. This is a strong assumption often violated in practice."
+                },
+                {
+                    question: "For middle categories in ordered models, marginal effects:",
+                    options: [
+                        "Are always positive when coefficients are positive",
+                        "Are always negative when coefficients are positive", 
+                        "Can be positive or negative regardless of coefficient sign",
+                        "Equal zero by construction"
+                    ],
+                    correct: 2,
+                    explanation: "Middle category marginal effects can have ambiguous signs because an increase in x might move people both into and out of the middle category from adjacent categories."
+                },
+                {
+                    question: "To test the parallel lines assumption, you would:",
+                    options: [
+                        "Compare ordered model with separate binary models for each cutoff",
+                        "Test if all coefficients are equal",
+                        "Use a heteroskedasticity test",
+                        "Check if thresholds are equally spaced"
+                    ],
+                    correct: 0,
+                    explanation: "Test parallel lines by comparing the ordered model with separate binary models for each threshold. If parallel lines holds, coefficients should be similar across thresholds."
+                },
+                {
+                    question: "Threshold parameters (cutoff points) in ordered models:",
+                    options: [
+                        "Must be equally spaced",
+                        "Are ordered: α₁ < α₂ < α₃ < ...",
+                        "Can be negative",
+                        "Both B and C"
+                    ],
+                    correct: 3,
+                    explanation: "Threshold parameters must be ordered (α₁ < α₂ < ...) for the model to make sense, but they can be negative and need not be equally spaced."
+                },
+                {
+                    question: "Generalized ordered logit is used when:",
+                    options: [
+                        "The parallel lines assumption is violated",
+                        "There are more than 5 categories",
+                        "Sample size is small",
+                        "Variables are continuous"
+                    ],
+                    correct: 0,
+                    explanation: "Generalized ordered logit allows different coefficients across thresholds, relaxing the parallel lines assumption when it's violated in the data."
+                }
+            ],
+            censored_truncated: [
+                {
+                    question: "Censored data differs from truncated data because:",
+                    options: [
+                        "We observe the limit value (e.g., 0) with censoring but lose observations entirely with truncation",
+                        "Censoring affects only the dependent variable",
+                        "Truncation is more severe than censoring",
+                        "They require different estimation methods"
+                    ],
+                    correct: 0,
+                    explanation: "Censoring: we see y = 0 when true y* < 0. Truncation: we lose observations entirely when y* < threshold. Both create bias if ignored."
+                },
+                {
+                    question: "OLS estimation with censored data:",
+                    options: [
+                        "Is unbiased but inefficient",
+                        "Gives biased estimates because E[u|y observed] ≠ 0",
+                        "Works fine if we include a dummy for censored observations",
+                        "Is the same as Tobit estimation"
+                    ],
+                    correct: 1,
+                    explanation: "OLS is biased with censored data because the sample selection (y > 0) makes E[u|y > 0] ≠ 0, violating the zero conditional mean assumption."
+                },
+                {
+                    question: "In the Tobit model, the inverse Mills ratio λ(z) appears in:",
+                    options: [
+                        "The probability of participation",
+                        "The expected value E[y|x]",
+                        "Both the extensive and intensive margins",
+                        "The likelihood function only"
+                    ],
+                    correct: 2,
+                    explanation: "The inverse Mills ratio λ(z) = φ(z)/Φ(z) appears in both E[y|x] = Φ(xβ/σ) × (xβ + σλ) and marginal effects for extensive/intensive margins."
+                },
+                {
+                    question: "The extensive margin in Tobit models refers to:",
+                    options: [
+                        "The effect on the probability of positive outcome",
+                        "The effect on the level given positive outcome",
+                        "The total effect including both margins",
+                        "The bias from censoring"
+                    ],
+                    correct: 0,
+                    explanation: "Extensive margin: ∂P(y>0)/∂x = (β/σ)φ(xβ/σ) - the effect on participation probability. Intensive margin is the effect on E[y|y>0,x]."
+                },
+                {
+                    question: "Corner solution models like Tobit are appropriate for:",
+                    options: [
+                        "Any binary outcome",
+                        "Outcomes where zero is a genuine economic choice, not missing data",
+                        "Count data",
+                        "Ordered categorical data"
+                    ],
+                    correct: 1,
+                    explanation: "Tobit models corner solutions where agents optimally choose y = 0 (e.g., hours worked, charitable giving). It's not for missing data or binary indicators."
+                },
+                {
+                    question: "Two-part models differ from Tobit by:",
+                    options: [
+                        "Using different distributions",
+                        "Modeling participation and level decisions separately",
+                        "Being more restrictive",
+                        "Requiring larger samples"
+                    ],
+                    correct: 1,
+                    explanation: "Two-part models separately estimate P(y>0) and E[y|y>0], allowing different variables to affect participation vs. level, while Tobit constrains them to be proportional."
+                }
+            ],
+            sample_selection: [
+                {
+                    question: "Sample selection bias occurs when:",
+                    options: [
+                        "The sample is randomly selected",
+                        "The outcome is observed only for a non-randomly selected subset",
+                        "Sample size is too small",
+                        "Variables are measured with error"
+                    ],
+                    correct: 1,
+                    explanation: "Selection bias arises when outcomes are observed only for a non-random subset (e.g., wages only for workers), and the selection process is correlated with unobserved factors affecting the outcome."
+                },
+                {
+                    question: "The key assumption for Heckman correction is:",
+                    options: [
+                        "Errors are homoskedastic",
+                        "Joint normality of error terms",
+                        "An exclusion restriction (variable affects selection but not outcome)",
+                        "Both B and C"
+                    ],
+                    correct: 3,
+                    explanation: "Heckman two-step requires joint normality (u,v) ~ N(0,Σ) and identification through exclusion restriction: some variables affect selection but not the outcome equation."
+                },
+                {
+                    question: "In Heckman's first step, you estimate:",
+                    options: [
+                        "The outcome equation by OLS",
+                        "A probit model for the selection probability",
+                        "The inverse Mills ratio directly",
+                        "Both selection and outcome simultaneously"
+                    ],
+                    correct: 1,
+                    explanation: "Step 1: Estimate probit for selection (s = 1 if s* > 0) to get predicted probabilities and compute inverse Mills ratio λ̂ = φ(zγ̂)/Φ(zγ̂)."
+                },
+                {
+                    question: "The coefficient on the inverse Mills ratio (θ) in step 2:",
+                    options: [
+                        "Measures the selection bias",
+                        "Equals ρσᵤ where ρ is correlation between errors",
+                        "Should be insignificant if no selection bias",
+                        "All of the above"
+                    ],
+                    correct: 3,
+                    explanation: "θ = ρσᵤ measures selection bias. If θ = 0 (insignificant), there's no selection bias and OLS on selected sample is consistent. Otherwise, selection correction is needed."
+                },
+                {
+                    question: "Standard errors in Heckman two-step must be corrected because:",
+                    options: [
+                        "The inverse Mills ratio is a generated regressor",
+                        "Sample selection creates heteroskedasticity",
+                        "The model is overidentified",
+                        "Errors are not normal"
+                    ],
+                    correct: 0,
+                    explanation: "Standard errors must account for uncertainty in first-step estimation of λ̂. Using λ̂ as a regressor without correction understates standard errors in step 2."
+                },
+                {
+                    question: "Compared to Heckman two-step, full maximum likelihood:",
+                    options: [
+                        "Is more efficient under joint normality",
+                        "Is more robust to distributional assumptions",
+                        "Always gives identical results",
+                        "Is computationally simpler"
+                    ],
+                    correct: 0,
+                    explanation: "Under joint normality, full MLE is more efficient than two-step. However, two-step is more robust to distributional misspecification and computationally simpler."
+                }
+            ]
+        };
+        
+        function regenerateQuiz() {
+            console.log('Starting quiz regeneration...');
+            
+            try {
+                answeredQuestions = {};
+                currentQuestions = [];
+                
+                const categories = Object.keys(questionBank);
+                console.log('Found categories:', categories);
+                
+                if (categories.length === 0) {
+                    console.error('No question categories found!');
+                    return;
+                }
+                
+                categories.forEach((category, index) => {
+                    const categoryQuestions = questionBank[category];
+                    if (!categoryQuestions || categoryQuestions.length === 0) {
+                        console.error(`No questions found for category: ${category}`);
+                        return;
+                    }
+                    
+                    const randomIndex = Math.floor(Math.random() * categoryQuestions.length);
+                    const selectedQuestion = {
+                        ...categoryQuestions[randomIndex],
+                        category: category,
+                        id: `q${index + 1}`
+                    };
+                    
+                    console.log(`Selected question for ${category}:`, selectedQuestion.question.substring(0, 50) + '...');
+                    currentQuestions.push(selectedQuestion);
+                });
+                
+                console.log(`Generated ${currentQuestions.length} questions`);
+                
+                if (currentQuestions.length > 0) {
+                    renderQuiz();
+                    document.getElementById('quizSummary').style.display = 'none';
+                    console.log('Quiz regenerated successfully');
+                } else {
+                    console.error('No questions were generated');
+                }
+                
+            } catch (error) {
+                console.error('Error regenerating quiz:', error);
+                alert('Error generating quiz. Check console for details.');
+            }
+        }
+        
+        function renderQuiz() {
+            console.log('Rendering quiz...');
+            
+            try {
+                const container = document.getElementById('quizContainer');
+                if (!container) {
+                    console.error('Quiz container not found!');
+                    return;
+                }
+                
+                let html = '';
+                currentQuestions.forEach((question, index) => {
+                    html += `
+                        <div class="quiz-question">
+                            <p><strong>Question ${index + 1}:</strong> ${question.question}</p>
+                            <div class="quiz-options">
+                    `;
+                    question.options.forEach((option, optIndex) => {
+                        html += `
+                            <label class="quiz-option" onclick="selectDynamicAnswer('${question.id}', ${optIndex})">
+                                <input type="radio" name="${question.id}" value="${optIndex}">
+                                ${String.fromCharCode(65 + optIndex)}) ${option}
+                            </label>
+                        `;
+                    });
+                    html += `
+                            </div>
+                            <div id="feedback${question.id}" class="quiz-feedback"></div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                console.log('Quiz rendered successfully');
+                
+            } catch (error) {
+                console.error('Error rendering quiz:', error);
+            }
+        }
+        
+        function selectDynamicAnswer(questionId, selectedAnswer) {
+            const question = currentQuestions.find(q => q.id === questionId);
+            if (!question) return;
+            
+            const isCorrect = selectedAnswer === question.correct;
+            answeredQuestions[questionId] = {
+                selected: selectedAnswer,
+                correct: isCorrect,
+                question: question
+            };
+            
+            const options = document.querySelectorAll(`input[name="${questionId}"]`);
+            options.forEach((option, index) => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (index === question.correct) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            const feedbackEl = document.getElementById(`feedback${questionId}`);
+            feedbackEl.textContent = question.explanation;
+            feedbackEl.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackEl.style.display = 'block';
+            
+            if (Object.keys(answeredQuestions).length === currentQuestions.length) {
+                setTimeout(() => showQuizSummary(), 1000);
+            }
+        }
+        
+        function showQuizSummary() {
+            const totalQuestions = currentQuestions.length;
+            const correctAnswers = Object.values(answeredQuestions).filter(a => a.correct).length;
+            const score = Math.round((correctAnswers / totalQuestions) * 100);
+            
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            document.getElementById('quizScore').textContent = score + '%';
+            
+            let feedback = '';
+            if (score >= 90) {
+                feedback = '🌟 Exceptional understanding of limited dependent variables! Outstanding grasp of binary choice, multinomial models, Tobit, and selection correction.';
+            } else if (score >= 80) {
+                feedback = '🎯 Strong command of discrete choice methods! Excellent knowledge of logit/probit models and censoring corrections.';
+            } else if (score >= 70) {
+                feedback = '💡 Good foundation in limited dependent variables. Review marginal effects, IIA assumption, and sample selection concepts.';
+            } else if (score >= 60) {
+                feedback = '📈 Developing understanding of discrete choice models. Focus on binary response interpretation, ordered models, and Heckman correction.';
+            } else {
+                feedback = '📊 Limited dependent variables need more study. Review binary choice basics, censoring problems, and selection bias carefully.';
+            }
+            
+            document.getElementById('quizFeedback').textContent = feedback;
+            document.getElementById('quizSummary').style.display = 'block';
+            document.getElementById('quizSummary').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        // Navigation and utility functions
+        function scrollToSection(sectionId) {
+            console.log('Scrolling to section:', sectionId);
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                console.log('Scrolled to:', sectionId);
+            } else {
+                console.error('Section not found:', sectionId);
+            }
+        }
+        
+        function toggleAIChat() {
+            const panel = document.getElementById('aiChatPanel');
+            const icon = document.getElementById('aiChatIcon');
+            
+            if (isAIChatOpen) {
+                panel.classList.remove('show');
+                icon.textContent = '📊';
+                isAIChatOpen = false;
+            } else {
+                panel.classList.add('show');
+                icon.textContent = '✖️';
+                isAIChatOpen = true;
+                document.getElementById('aiInput').focus();
+            }
+        }
+        
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addAIMessage('user', message);
+            input.value = '';
+            setTimeout(() => {
+                const response = getAIResponse(message);
+                addAIMessage('claude', response);
+            }, 500);
+        }
+        
+        function addAIMessage(sender, message) {
+            const messagesContainer = document.getElementById('aiChatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender}`;
+            
+            if (sender === 'user') {
+                messageDiv.textContent = message;
+            } else {
+                messageDiv.innerHTML = `<strong>📊 Claude:</strong> ${message}`;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function getAIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            if (message.includes('binary') || message.includes('logit') || message.includes('probit')) {
+                return "Binary choice models: LPM (linear), Logit (logistic CDF), Probit (normal CDF). Logit: P(y=1) = exp(βx)/(1+exp(βx)). Marginal effects: logit = β×λ(1-λ), probit = β×φ(βx). Interpret logit via odds ratios: exp(β).";
+            }
+            if (message.includes('multinomial') || message.includes('iia') || message.includes('choice')) {
+                return "Multinomial logit for unordered choices: P(j) = exp(βⱼx)/[1+Σexp(βₖx)]. IIA assumption: relative odds independent of other alternatives. Test with Hausman test. Violated when alternatives are close substitutes (red bus/blue bus).";
+            }
+            if (message.includes('ordered') || message.includes('threshold') || message.includes('parallel')) {
+                return "Ordered models: y* = βx + u with thresholds α₁ < α₂ < ... P(y=j) = F(αⱼ₊₁-βx) - F(αⱼ-βx). Parallel lines: same β across cutoffs. ME for middle categories can be + or -. Test parallel lines assumption.";
+            }
+            if (message.includes('tobit') || message.includes('censor') || message.includes('corner')) {
+                return "Tobit for censored data: y = max(0,y*) where y* = βx + u. OLS biased: E[u|y>0] ≠ 0. Tobit: E[y] = Φ(βx/σ)×(βx + σλ). Extensive margin: ∂P(y>0)/∂x. Intensive: ∂E[y|y>0]/∂x.";
+            }
+            if (message.includes('heckman') || message.includes('selection') || message.includes('mills')) {
+                return "Sample selection: outcome observed only for selected subset. Heckman 2-step: (1) Probit for selection, (2) OLS with inverse Mills ratio λ = φ(zγ)/Φ(zγ). Need exclusion restriction. θ = ρσᵤ measures selection bias.";
+            }
+            if (message.includes('marginal') || message.includes('effect')) {
+                return "Marginal effects vary by model: LPM (constant β), Logit (β×p×(1-p)), Probit (β×φ(βx)), Ordered (complex - can change sign for middle categories), Tobit (extensive + intensive margins).";
+            }
+            
+            return "I can help with binary choice (logit/probit), multinomial choice, ordered response, censored regression (Tobit), and sample selection (Heckman). Which limited dependent variable topic interests you?";
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing Chapter 17...');
+            
+            // Test if all required elements exist
+            const requiredElements = [
+                'quizContainer', 'probabilityChart', 'multinomialChart', 'orderedChart',
+                'tobitComparison', 'selectionComparison', 'binaryResults', 'multinomialResults',
+                'orderedResults', 'tobitResults', 'selectionResults'
+            ];
+            
+            const missingElements = [];
+            requiredElements.forEach(id => {
+                if (!document.getElementById(id)) {
+                    missingElements.push(id);
+                }
+            });
+            
+            if (missingElements.length > 0) {
+                console.error('Missing required elements:', missingElements);
+            } else {
+                console.log('All required elements found');
+            }
+            
+            // Initialize quiz with a delay
+            setTimeout(() => {
+                console.log('Initializing quiz...');
+                regenerateQuiz();
+            }, 500);
+            
+            console.log('Chapter 17: Limited Dependent Variables loaded successfully! 📊');
+        });
+        
+    </script>
+
+</body>
+</html>
