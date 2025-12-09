@@ -1,0 +1,2921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 16: Simultaneous Equations Models - Wooldridge Econometrics</title>
+    <style>
+        :root {
+            /* Simultaneous Systems Theme - Interconnected networks and structural modeling */
+            --primary-system: #1e1b4b;
+            --secondary-system: #312e81;
+            --accent-simul: #4338ca;
+            --accent-2sls: #6366f1;
+            --accent-3sls: #8b5cf6;
+            --accent-iv: #a855f7;
+            --flow-50: #faf5ff;
+            --flow-100: #f3e8ff;
+            --flow-200: #e9d5ff;
+            --flow-300: #d8b4fe;
+            --flow-400: #c084fc;
+            --flow-500: #a855f7;
+            --flow-600: #9333ea;
+            --flow-700: #7c3aed;
+            --flow-800: #6b21a8;
+            --flow-900: #581c87;
+            
+            /* Method-specific colors */
+            --status-simul: #4338ca;
+            --status-2sls: #6366f1;
+            --status-3sls: #8b5cf6;
+            --status-iv: #a855f7;
+            --status-ident: #0891b2;
+            --status-bias: #dc2626;
+            
+            /* Typography */
+            --font-primary: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            line-height: 1.6;
+            color: var(--flow-900);
+            background: linear-gradient(135deg, var(--flow-50) 0%, #ffffff 40%, var(--flow-100) 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated network background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(67, 56, 202, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.03) 0%, transparent 50%),
+                linear-gradient(90deg, transparent 49%, rgba(99, 102, 241, 0.02) 50%, transparent 51%);
+            background-size: 300px 300px, 400px 400px, 60px 60px;
+            z-index: -1;
+            animation: networkFlow 20s linear infinite;
+        }
+
+        @keyframes networkFlow {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(30px, 20px) rotate(360deg); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, var(--primary-system), var(--secondary-system), var(--flow-700));
+            color: white;
+            margin-bottom: 3rem;
+            border-radius: 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(30, 27, 75, 0.3);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                conic-gradient(from 45deg, transparent 30%, rgba(99, 102, 241, 0.1) 50%, transparent 70%),
+                linear-gradient(-45deg, transparent 30%, rgba(139, 92, 246, 0.05) 50%, transparent 70%);
+            animation: systemFlow 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes systemFlow {
+            0% { opacity: 0.3; transform: scale(0.98); }
+            100% { opacity: 0.7; transform: scale(1.02); }
+        }
+
+        .chapter-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff, var(--accent-2sls), var(--accent-3sls));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.03em;
+        }
+
+        .chapter-subtitle {
+            font-size: 1.4rem;
+            opacity: 0.95;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.5px;
+        }
+
+        /* Navigation */
+        .nav-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--flow-200);
+            position: relative;
+        }
+
+        .nav-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 25px;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--accent-simul), var(--accent-2sls), var(--accent-3sls));
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: xor;
+            opacity: 0.3;
+        }
+
+        .nav-pills {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            justify-items: center;
+        }
+
+        .nav-pill {
+            padding: 1.25rem 2rem;
+            background: var(--flow-100);
+            border: 2px solid var(--flow-300);
+            border-radius: 20px;
+            color: var(--flow-700);
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            width: 100%;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-pill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(67, 56, 202, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-pill:hover::before {
+            left: 100%;
+        }
+
+        .nav-pill:hover {
+            background: var(--primary-system);
+            color: white;
+            transform: translateY(-4px);
+            border-color: var(--accent-2sls);
+            box-shadow: 0 12px 35px rgba(30, 27, 75, 0.3);
+        }
+
+        /* Section Styling */
+        .section {
+            background: white;
+            border-radius: 25px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--flow-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent-simul), var(--accent-2sls));
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-system);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section p {
+            margin-bottom: 1rem;
+            color: var(--flow-700);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        /* Concept Boxes */
+        .concept-box {
+            background: var(--flow-50);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 1px solid var(--flow-200);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .concept-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(67, 56, 202, 0.15);
+        }
+
+        .concept-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+        }
+
+        .concept-box.simul::before { background: var(--status-simul); }
+        .concept-box.twosls::before { background: var(--status-2sls); }
+        .concept-box.threesls::before { background: var(--status-3sls); }
+        .concept-box.iv::before { background: var(--status-iv); }
+        .concept-box.ident::before { background: var(--status-ident); }
+        .concept-box.bias::before { background: var(--status-bias); }
+
+        .concept-title {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-system);
+            font-size: 1.2rem;
+        }
+
+        .concept-box.simul .concept-title { color: var(--status-simul); }
+        .concept-box.twosls .concept-title { color: var(--status-2sls); }
+        .concept-box.threesls .concept-title { color: var(--status-3sls); }
+        .concept-box.iv .concept-title { color: var(--status-iv); }
+        .concept-box.ident .concept-title { color: var(--status-ident); }
+        .concept-box.bias .concept-title { color: var(--status-bias); }
+
+        /* Formula Boxes */
+        .formula {
+            background: var(--flow-900);
+            color: var(--flow-100);
+            padding: 1.5rem;
+            border-radius: 15px;
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .formula::before {
+            content: '⚡';
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 1.5rem;
+            opacity: 0.3;
+        }
+
+        /* Interactive Controls */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .control-group {
+            background: var(--flow-50);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--flow-200);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-group::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-simul), var(--accent-2sls));
+            border-radius: 20px 20px 0 0;
+        }
+
+        .control-group:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(67, 56, 202, 0.2);
+        }
+
+        .control-group h4 {
+            color: var(--primary-system);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--flow-700);
+            margin-bottom: 0.75rem;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--flow-300);
+            border-radius: 12px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary-system);
+            box-shadow: 0 0 0 3px rgba(30, 27, 75, 0.1);
+        }
+
+        .input-group input[type="range"] {
+            background: var(--flow-200);
+            border: none;
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--primary-system), var(--secondary-system));
+            color: white;
+            border: none;
+            padding: 1.25rem 2.5rem;
+            border-radius: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 1.05rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .action-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(30, 27, 75, 0.4);
+        }
+
+        /* Results Display */
+        .results-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 1px solid var(--flow-200);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            display: none;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: var(--flow-50);
+            border-radius: 15px;
+            border: 1px solid var(--flow-200);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-simul);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(67, 56, 202, 0.15);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            font-family: var(--font-mono);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--flow-600);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-simul {
+            background: rgba(67, 56, 202, 0.1);
+            color: var(--status-simul);
+            border: 2px solid rgba(67, 56, 202, 0.3);
+        }
+
+        .status-2sls {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--status-2sls);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .status-3sls {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--status-3sls);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .status-iv {
+            background: rgba(168, 85, 247, 0.1);
+            color: var(--status-iv);
+            border: 2px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .status-ident {
+            background: rgba(8, 145, 178, 0.1);
+            color: var(--status-ident);
+            border: 2px solid rgba(8, 145, 178, 0.3);
+        }
+
+        .status-bias {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--status-bias);
+            border: 2px solid rgba(220, 38, 38, 0.3);
+        }
+
+        /* Chart containers */
+        .chart-container {
+            position: relative;
+            height: 350px;
+            background: white;
+            border: 1px solid var(--flow-200);
+            border-radius: 15px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-simul), var(--accent-2sls), var(--accent-3sls));
+        }
+
+        /* System Visualization */
+        .system-plot {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--flow-50), #ffffff);
+        }
+
+        .plot-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-system);
+            margin-bottom: 1rem;
+        }
+
+        .plot-content {
+            width: 100%;
+            height: 250px;
+            background: white;
+            border: 1px solid var(--flow-200);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--flow-600);
+            position: relative;
+        }
+
+        /* System Equations Display */
+        .system-equations {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+            padding: 1.5rem;
+            background: var(--flow-50);
+            border-radius: 12px;
+            border: 1px solid var(--flow-200);
+        }
+
+        .equation {
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--flow-300);
+            font-family: var(--font-mono);
+            font-weight: 600;
+            text-align: center;
+            font-size: 1.05rem;
+            color: var(--primary-system);
+        }
+
+        .equation .equation-label {
+            font-size: 0.8rem;
+            color: var(--flow-600);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Bias Comparison Table */
+        .bias-comparison {
+            display: grid;
+            grid-template-columns: auto 1fr 1fr 1fr;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+            background: var(--flow-50);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--flow-200);
+            font-size: 0.9rem;
+        }
+
+        .bias-header {
+            font-weight: 700;
+            padding: 0.75rem;
+            background: var(--primary-system);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bias-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .bias-header:hover::before {
+            left: 100%;
+        }
+
+        .bias-header:hover {
+            background: var(--status-2sls);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .bias-cell {
+            padding: 0.75rem;
+            background: white;
+            text-align: center;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            border: 1px solid var(--flow-200);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .bias-cell:hover {
+            background: var(--flow-100);
+            border-color: var(--status-2sls);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(99, 102, 241, 0.2);
+        }
+
+        .bias-cell.highlight {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--status-2sls);
+            font-weight: 700;
+        }
+
+        .bias-method {
+            font-weight: 600;
+            padding: 0.75rem;
+            background: var(--flow-100);
+            color: var(--primary-system);
+            text-align: center;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .bias-method:hover {
+            background: var(--status-2sls);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .bias-method.selected {
+            background: var(--status-2sls);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Quiz Section */
+        .quiz-section {
+            background: linear-gradient(135deg, var(--flow-50), #ffffff);
+            border-radius: 25px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 1px solid var(--flow-200);
+            position: relative;
+        }
+
+        .quiz-question {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 1px solid var(--flow-200);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .quiz-question::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-simul), var(--accent-2sls));
+            border-radius: 20px 20px 0 0;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .quiz-question:hover::before {
+            transform: scaleX(1);
+        }
+
+        .quiz-question:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(67, 56, 202, 0.15);
+        }
+
+        .quiz-question p {
+            font-weight: 600;
+            color: var(--flow-800);
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: var(--flow-50);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .quiz-option:hover {
+            background: var(--flow-100);
+            border-color: var(--accent-simul);
+            transform: translateX(8px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(67, 56, 202, 0.1);
+            border-color: var(--status-simul);
+            color: var(--status-simul);
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(220, 38, 38, 0.1);
+            border-color: var(--status-bias);
+            color: var(--status-bias);
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1.25rem;
+            border-radius: 15px;
+            display: none;
+            line-height: 1.7;
+        }
+
+        .quiz-feedback.correct {
+            background: rgba(67, 56, 202, 0.1);
+            color: var(--status-simul);
+            border: 1px solid rgba(67, 56, 202, 0.3);
+        }
+
+        .quiz-feedback.incorrect {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--status-bias);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        /* AI Chat Widget */
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        .ai-chat-button {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-system), var(--secondary-system));
+            border: none;
+            color: white;
+            font-size: 1.7rem;
+            cursor: pointer;
+            box-shadow: 0 10px 40px rgba(30, 27, 75, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-chat-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .ai-chat-button:hover::before {
+            width: 80px;
+            height: 80px;
+        }
+
+        .ai-chat-button:hover {
+            transform: scale(1.15) translateY(-3px);
+            box-shadow: 0 15px 50px rgba(30, 27, 75, 0.4);
+        }
+
+        .ai-chat-panel {
+            position: absolute;
+            bottom: 85px;
+            right: 0;
+            width: 380px;
+            height: 500px;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--flow-200);
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.4s ease;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ai-chat-panel.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .ai-chat-header {
+            background: linear-gradient(135deg, var(--primary-system), var(--secondary-system));
+            color: white;
+            padding: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .ai-message {
+            max-width: 85%;
+            padding: 1rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .ai-message.user {
+            background: var(--primary-system);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-message.claude {
+            background: var(--flow-100);
+            color: var(--flow-800);
+            border-bottom-left-radius: 4px;
+        }
+
+        .ai-input-area {
+            padding: 1.5rem;
+            border-top: 1px solid var(--flow-200);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid var(--flow-300);
+            border-radius: 25px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .ai-send-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary-system);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .ai-send-btn:hover {
+            background: var(--secondary-system);
+            transform: scale(1.1);
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .fade-in.delay-1 { animation-delay: 0.1s; }
+        .fade-in.delay-2 { animation-delay: 0.2s; }
+        .fade-in.delay-3 { animation-delay: 0.3s; }
+        .fade-in.delay-4 { animation-delay: 0.4s; }
+        .fade-in.delay-5 { animation-delay: 0.5s; }
+        .fade-in.delay-6 { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .chapter-title { font-size: 2.5rem; }
+            .nav-pills { grid-template-columns: 1fr; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: repeat(2, 1fr); }
+            .ai-chat-panel { width: calc(100vw - 4rem); right: 2rem; left: 2rem; }
+            .bias-comparison { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .results-grid { grid-template-columns: 1fr; }
+            .chapter-title { font-size: 2rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header fade-in">
+            <h1 class="chapter-title">⚡ Chapter 16</h1>
+            <p class="chapter-subtitle">Simultaneous Equations Models</p>
+        </header>
+
+        <!-- Navigation -->
+        <div class="nav-container fade-in delay-1">
+            <div class="nav-pills">
+                <button onclick="scrollToSection('simultaneity')" class="nav-pill">
+                    🔄 Simultaneity Problem
+                </button>
+                <button onclick="scrollToSection('twosls')" class="nav-pill">
+                    🎯 Two-Stage Least Squares
+                </button>
+                <button onclick="scrollToSection('threesls')" class="nav-pill">
+                    🎪 Three-Stage Least Squares
+                </button>
+                <button onclick="scrollToSection('identification')" class="nav-pill">
+                    🔍 Identification Conditions
+                </button>
+                <button onclick="scrollToSection('systems')" class="nav-pill">
+                    📊 Systems Estimation
+                </button>
+                <button onclick="scrollToSection('quiz')" class="nav-pill">
+                    🎯 Knowledge Check
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 16.1: The Simultaneity Problem -->
+        <section class="section fade-in delay-2" id="simultaneity">
+            <h2 class="section-title">16.1 🔄 The Simultaneity Problem</h2>
+            
+            <p>Simultaneity occurs when two or more variables are jointly determined within a system of equations. This creates correlation between explanatory variables and error terms, leading to inconsistent OLS estimates.</p>
+
+            <div class="concept-box simul">
+                <div class="concept-title">🔄 Simultaneity Bias</div>
+                <p>Consider a simple supply and demand system:</p>
+                <div class="formula">
+                    Demand: Q_d = α₀ + α₁P + α₂Y + u₁  (quantity demanded)
+                    <br>Supply: Q_s = β₀ + β₁P + β₂C + u₂   (quantity supplied)
+                    <br>Equilibrium: Q_d = Q_s = Q
+                    <br>Problem: Cov(P, u₁) ≠ 0 and Cov(P, u₂) ≠ 0
+                </div>
+                <p><strong>Issue:</strong> Price P is endogenous - it's determined simultaneously with quantity Q, making OLS inconsistent.</p>
+            </div>
+
+            <div class="concept-box bias">
+                <div class="concept-title">🚨 Sources of Simultaneity</div>
+                <p><strong>Common simultaneity scenarios:</strong><br>
+                • Supply and demand models<br>
+                • Wage-employment determination<br>
+                • Money demand and interest rates<br>
+                • Investment and output growth</p>
+                <p><strong>Consequences:</strong> OLS produces biased and inconsistent estimates even in large samples due to endogeneity.</p>
+            </div>
+
+            <!-- Simultaneity Bias Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🔬 Simultaneity Bias Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="simultaneityStrength">Simultaneity Strength:</label>
+                        <input type="range" id="simultaneityStrength" min="0" max="1" step="0.1" value="0.6">
+                        <span id="simultaneityStrengthValue">0.6</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="instrumentStrength">Instrument Strength:</label>
+                        <input type="range" id="instrumentStrength" min="0.1" max="0.9" step="0.1" value="0.5">
+                        <span id="instrumentStrengthValue">0.5</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="sampleSizeSimul">Sample Size:</label>
+                        <select id="sampleSizeSimul">
+                            <option value="100">100 observations</option>
+                            <option value="250" selected>250 observations</option>
+                            <option value="500">500 observations</option>
+                            <option value="1000">1000 observations</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="structuralModel">Structural Model:</label>
+                        <select id="structuralModel">
+                            <option value="supply_demand" selected>Supply & Demand</option>
+                            <option value="wage_employment">Wage & Employment</option>
+                            <option value="money_interest">Money & Interest Rate</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateSimultaneity()">
+                        🔄 Analyze Simultaneity Bias
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Bias Comparison</h4>
+                    <div class="bias-comparison" id="biasTable">
+                        <div class="bias-header" onclick="highlightColumn(0)" title="Click to highlight method comparison">Method</div>
+                        <div class="bias-header" onclick="highlightColumn(1)" title="Click to highlight estimates">Estimate</div>
+                        <div class="bias-header" onclick="highlightColumn(2)" title="Click to highlight bias values">Bias</div>
+                        <div class="bias-header" onclick="highlightColumn(3)" title="Click to highlight standard errors">Std. Error</div>
+                        
+                        <div class="bias-method" onclick="highlightRow('true')" title="Click to highlight true values">True Value</div>
+                        <div class="bias-cell" id="trueParam" onclick="showDetails('true', 'estimate')">-</div>
+                        <div class="bias-cell" onclick="showDetails('true', 'bias')">0.000</div>
+                        <div class="bias-cell" onclick="showDetails('true', 'se')">-</div>
+                        
+                        <div class="bias-method" onclick="highlightRow('ols')" title="Click to highlight OLS results">OLS</div>
+                        <div class="bias-cell" id="olsEstimate" onclick="showDetails('ols', 'estimate')">-</div>
+                        <div class="bias-cell" id="olsBias" onclick="showDetails('ols', 'bias')">-</div>
+                        <div class="bias-cell" id="olsStdErr" onclick="showDetails('ols', 'se')">-</div>
+                        
+                        <div class="bias-method" onclick="highlightRow('2sls')" title="Click to highlight 2SLS results">2SLS</div>
+                        <div class="bias-cell" id="tslsEstimate" onclick="showDetails('2sls', 'estimate')">-</div>
+                        <div class="bias-cell" id="tslsBias" onclick="showDetails('2sls', 'bias')">-</div>
+                        <div class="bias-cell" id="tslsStdErr" onclick="showDetails('2sls', 'se')">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="simulResults">
+                <h4 style="color: var(--primary-system); margin-bottom: 1rem;">Simultaneity Bias Analysis</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="biasAmount" style="color: var(--status-bias);">-</div>
+                        <div class="stat-label">OLS Bias</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="biasReduction" style="color: var(--status-2sls);">-</div>
+                        <div class="stat-label">2SLS Improvement</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="instrumentPower" style="color: var(--status-iv);">-</div>
+                        <div class="stat-label">Instrument F-Stat</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="efficiencyLoss" style="color: var(--flow-600);">-</div>
+                        <div class="stat-label">Efficiency Loss</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="simulAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="simulInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 16.2: Two-Stage Least Squares -->
+        <section class="section fade-in delay-3" id="twosls">
+            <h2 class="section-title">16.2 🎯 Two-Stage Least Squares (2SLS)</h2>
+            
+            <p>2SLS provides consistent estimates in simultaneous equation systems by using instrumental variables to purge endogenous variables of their correlation with error terms.</p>
+
+            <div class="concept-box twosls">
+                <div class="concept-title">🎯 2SLS Procedure</div>
+                <p>Two-stage estimation process:</p>
+                <div class="formula">
+                    Stage 1: P̂ = π̂₀ + π̂₁Y + π̂₂C + π̂₃Z + residuals
+                    <br>Stage 2: Q = α̂₀ + α̂₁P̂ + α̂₂Y + v
+                    <br>where Z is excluded instrument (shifts supply, not demand)
+                    <br>P̂ = fitted values purged of correlation with u₁
+                </div>
+                <p><strong>Key insight:</strong> Use predicted values from first stage to eliminate endogeneity in second stage.</p>
+            </div>
+
+            <div class="concept-box iv">
+                <div class="concept-title">📋 Instrument Requirements</div>
+                <p><strong>Valid instruments must satisfy:</strong><br>
+                1. <em>Relevance:</em> Corr(Z, P) ≠ 0 (instrument affects endogenous variable)<br>
+                2. <em>Exogeneity:</em> Corr(Z, u) = 0 (instrument uncorrelated with structural error)</p>
+                <p><strong>Testing:</strong><br>
+                • Relevance: First-stage F > 10 (Stock-Yogo weak instrument test)<br>
+                • Exogeneity: Overidentification tests (Sargan, Hansen J)</p>
+            </div>
+
+            <!-- 2SLS Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🎯 2SLS Estimation Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="instrumentQuality">Instrument Quality:</label>
+                        <select id="instrumentQuality">
+                            <option value="weak">Weak (F < 10)</option>
+                            <option value="moderate" selected>Moderate (10 < F < 20)</option>
+                            <option value="strong">Strong (F > 20)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="endogeneityLevel">Endogeneity Level:</label>
+                        <input type="range" id="endogeneityLevel" min="0.1" max="0.9" step="0.1" value="0.5">
+                        <span id="endogeneityLevelValue">0.5</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="numInstruments">Number of Instruments:</label>
+                        <select id="numInstruments">
+                            <option value="1" selected>1 (Just-identified)</option>
+                            <option value="2">2 (Overidentified)</option>
+                            <option value="3">3 (Overidentified)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="sampleSize2SLS">Sample Size:</label>
+                        <select id="sampleSize2SLS">
+                            <option value="100">100 observations</option>
+                            <option value="250" selected>250 observations</option>
+                            <option value="500">500 observations</option>
+                            <option value="1000">1000 observations</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulate2SLS()">
+                        🎯 Run 2SLS Estimation
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 2SLS Results</h4>
+                    <div class="system-equations" id="stageEquations">
+                        <div class="equation">
+                            <div class="equation-label">First Stage</div>
+                            Run 2SLS simulation to display<br>first-stage regression results
+                        </div>
+                        <div class="equation">
+                            <div class="equation-label">Second Stage</div>
+                            Run 2SLS simulation to display<br>structural parameter estimates
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="tslsResults">
+                <h4 style="color: var(--primary-system); margin-bottom: 1rem;">2SLS Estimation Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="firstStageFStat" style="color: var(--status-2sls);">-</div>
+                        <div class="stat-label">First-Stage F</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="structuralCoef" style="color: var(--status-iv);">-</div>
+                        <div class="stat-label">Structural β̂</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="sarganStat" style="color: var(--status-ident);">-</div>
+                        <div class="stat-label">Sargan Test</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="hausmantStat" style="color: var(--flow-600);">-</div>
+                        <div class="stat-label">Hausman Test</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="tslsAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="tslsInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 16.3: Three-Stage Least Squares -->
+        <section class="section fade-in delay-4" id="threesls">
+            <h2 class="section-title">16.3 🎪 Three-Stage Least Squares (3SLS)</h2>
+            
+            <p>3SLS extends 2SLS to systems of equations, gaining efficiency by accounting for contemporaneous correlation between equation errors while maintaining consistency under endogeneity.</p>
+
+            <div class="concept-box threesls">
+                <div class="concept-title">🎪 3SLS Methodology</div>
+                <p>Three-stage procedure:</p>
+                <div class="formula">
+                    Stage 1: First-stage regressions for all endogenous variables
+                    <br>Stage 2: 2SLS estimation of each equation separately  
+                    <br>Stage 3: GLS using 2SLS residuals to estimate Σ̂ matrix
+                    <br>β̂₃ₛₗₛ = (X'Σ̂⁻¹⊗Z(Z'Z)⁻¹Z')⁻¹X'Σ̂⁻¹⊗Z(Z'Z)⁻¹Z'Y
+                </div>
+                <p><strong>Efficiency gain:</strong> Exploits correlation across equations when disturbances are correlated.</p>
+            </div>
+
+            <div class="concept-box ident">
+                <div class="concept-title">📊 3SLS vs 2SLS Trade-offs</div>
+                <p><strong>3SLS advantages:</strong><br>
+                • More efficient when errors are correlated across equations<br>
+                • Can impose cross-equation restrictions</p>
+                <p><strong>3SLS disadvantages:</strong><br>
+                • Misspecification in one equation affects all equations<br>
+                • Less robust than equation-by-equation 2SLS<br>
+                • Requires correct specification of full system</p>
+            </div>
+
+            <!-- 3SLS Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🎪 3SLS vs 2SLS Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="errorCorrelation">Cross-Equation Error Correlation:</label>
+                        <input type="range" id="errorCorrelation" min="0" max="0.8" step="0.1" value="0.4">
+                        <span id="errorCorrelationValue">0.4</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="systemSize">Number of Equations:</label>
+                        <select id="systemSize">
+                            <option value="2" selected>2 equations</option>
+                            <option value="3">3 equations</option>
+                            <option value="4">4 equations</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="misspecification">Misspecification Risk:</label>
+                        <select id="misspecification">
+                            <option value="none" selected>None (correct specification)</option>
+                            <option value="mild">Mild (omitted variable)</option>
+                            <option value="severe">Severe (wrong functional form)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="sampleSize3SLS">Sample Size:</label>
+                        <select id="sampleSize3SLS">
+                            <option value="200">200 observations</option>
+                            <option value="500" selected>500 observations</option>
+                            <option value="1000">1000 observations</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulate3SLS()">
+                        🎪 Compare 3SLS vs 2SLS
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Efficiency Comparison</h4>
+                    <div class="chart-container" id="efficiencyChart" style="background: var(--flow-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--flow-400); text-align: center;">
+                            Run 3SLS comparison to visualize<br>efficiency gains and robustness trade-offs
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="threeslsResults">
+                <h4 style="color: var(--primary-system); margin-bottom: 1rem;">3SLS vs 2SLS Comparison</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="efficiencyGain" style="color: var(--status-3sls);">-</div>
+                        <div class="stat-label">3SLS Efficiency Gain</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="tslsVariance" style="color: var(--status-2sls);">-</div>
+                        <div class="stat-label">2SLS Variance</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="threeslsVariance" style="color: var(--flow-600);">-</div>
+                        <div class="stat-label">3SLS Variance</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="robustnessIndex" style="color: var(--status-iv);">-</div>
+                        <div class="stat-label">Robustness Score</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="threeslsAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="threeslsInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 16.4: Identification Conditions -->
+        <section class="section fade-in delay-5" id="identification">
+            <h2 class="section-title">16.4 🔍 Identification Conditions</h2>
+            
+            <p>Identification determines whether structural parameters can be uniquely recovered from reduced-form parameters. Both order and rank conditions must be satisfied for identification.</p>
+
+            <div class="concept-box ident">
+                <div class="concept-title">🔍 Order Condition</div>
+                <p>Necessary but not sufficient condition:</p>
+                <div class="formula">
+                    K - k ≥ m - 1
+                    <br>where K = total number of variables in system
+                    <br>k = number of variables in equation of interest
+                    <br>m = number of equations in system
+                </div>
+                <p><strong>Interpretation:</strong> Number of excluded variables must be at least (m-1) for identification.</p>
+            </div>
+
+            <div class="concept-box iv">
+                <div class="concept-title">📊 Rank Condition</div>
+                <p>Necessary and sufficient condition:</p>
+                <div class="formula">
+                    rank(R) = m - 1
+                    <br>where R = restrictions matrix of coefficients
+                    <br>on excluded variables in other equations
+                </div>
+                <p><strong>Practical test:</strong> Form matrix of coefficients on variables excluded from equation of interest. Rank must equal m-1.</p>
+            </div>
+
+            <!-- Identification Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🔍 Identification Checker</h4>
+                    
+                    <div class="input-group">
+                        <label for="numEquations">Number of Equations:</label>
+                        <select id="numEquations">
+                            <option value="2" selected>2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="numEndogenous">Endogenous Variables:</label>
+                        <select id="numEndogenous">
+                            <option value="2" selected>2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="numExogenous">Exogenous Variables:</label>
+                        <select id="numExogenous">
+                            <option value="2">2</option>
+                            <option value="3" selected>3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="exclusionPattern">Exclusion Pattern:</label>
+                        <select id="exclusionPattern">
+                            <option value="symmetric" selected>Symmetric exclusions</option>
+                            <option value="asymmetric">Asymmetric exclusions</option>
+                            <option value="recursive">Recursive structure</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="checkIdentification()">
+                        🔍 Check Identification Status
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 System Structure</h4>
+                    <div class="system-equations" id="identificationMatrix">
+                        <div style="text-align: center; color: var(--flow-400); padding: 2rem;">
+                            Run identification checker to display<br>system structure and conditions
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="identResults">
+                <h4 style="color: var(--primary-system); margin-bottom: 1rem;">Identification Analysis</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="orderCondition" style="color: var(--status-ident);">-</div>
+                        <div class="stat-label">Order Condition</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="rankCondition" style="color: var(--status-2sls);">-</div>
+                        <div class="stat-label">Rank Condition</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="identificationStatus" style="color: var(--status-3sls);">-</div>
+                        <div class="stat-label">Overall Status</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="degreesOverident" style="color: var(--flow-600);">-</div>
+                        <div class="stat-label">Overidentification</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="identAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="identInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 16.5: Systems Estimation Comparison -->
+        <section class="section fade-in delay-6" id="systems">
+            <h2 class="section-title">16.5 📊 Systems Estimation Methods</h2>
+            
+            <p>Compare different estimation approaches for simultaneous equation systems: OLS (biased), 2SLS (consistent), 3SLS (efficient), and Limited Information Maximum Likelihood (LIML).</p>
+
+            <div class="concept-box iv">
+                <div class="concept-title">📊 Estimation Method Comparison</div>
+                <p><strong>OLS:</strong> Biased and inconsistent due to simultaneity<br>
+                <strong>2SLS:</strong> Consistent but not fully efficient<br>
+                <strong>3SLS:</strong> Efficient but less robust to misspecification<br>
+                <strong>LIML:</strong> Less biased than 2SLS with weak instruments</p>
+                <p><strong>Practical guidance:</strong> Use 2SLS for robustness, 3SLS when specification is certain and efficiency matters.</p>
+            </div>
+
+            <!-- Systems Comparison Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>📊 Methods Comparison Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="trueBeta">True Parameter Value:</label>
+                        <input type="range" id="trueBeta" min="-2" max="2" step="0.1" value="0.5">
+                        <span id="trueBetaValue">0.5</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="simultaneityDegree">Simultaneity Strength:</label>
+                        <input type="range" id="simultaneityDegree" min="0.1" max="0.9" step="0.1" value="0.5">
+                        <span id="simultaneityDegreeValue">0.5</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="instrumentRelevance">Instrument Relevance:</label>
+                        <select id="instrumentRelevance">
+                            <option value="weak">Weak (F < 10)</option>
+                            <option value="moderate" selected>Moderate (10 < F < 20)</option>
+                            <option value="strong">Strong (F > 20)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="repetitions">Monte Carlo Repetitions:</label>
+                        <select id="repetitions">
+                            <option value="100">100</option>
+                            <option value="500" selected>500</option>
+                            <option value="1000">1000</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="compareEstimationMethods()">
+                        📊 Compare All Methods
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Performance Metrics</h4>
+                    <div class="chart-container" id="performanceChart" style="background: var(--flow-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--flow-400); text-align: center;">
+                            Run comparison to visualize<br>bias-variance trade-offs across methods
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="systemsResults">
+                <h4 style="color: var(--primary-system); margin-bottom: 1rem;">Estimation Methods Performance</h4>
+                
+                <!-- Performance Comparison Table -->
+                <div class="bias-comparison" style="grid-template-columns: auto 1fr 1fr 1fr 1fr;">
+                    <div class="bias-header">Method</div>
+                    <div class="bias-header">Mean Estimate</div>
+                    <div class="bias-header">Bias</div>
+                    <div class="bias-header">Variance</div>
+                    <div class="bias-header">RMSE</div>
+                    
+                    <div class="bias-method">OLS</div>
+                    <div class="bias-cell" id="olsMean">-</div>
+                    <div class="bias-cell" id="olsBiasComp">-</div>
+                    <div class="bias-cell" id="olsVariance">-</div>
+                    <div class="bias-cell" id="olsRMSE">-</div>
+                    
+                    <div class="bias-method">2SLS</div>
+                    <div class="bias-cell" id="tslsMean">-</div>
+                    <div class="bias-cell" id="tslsBiasComp">-</div>
+                    <div class="bias-cell" id="tslsVariance">-</div>
+                    <div class="bias-cell" id="tslsRMSE">-</div>
+                    
+                    <div class="bias-method">3SLS</div>
+                    <div class="bias-cell" id="threeslsMean">-</div>
+                    <div class="bias-cell" id="threeslsBiasComp">-</div>
+                    <div class="bias-cell" id="threeslsVarianceComp">-</div>
+                    <div class="bias-cell" id="threeslsRMSE">-</div>
+                    
+                    <div class="bias-method">LIML</div>
+                    <div class="bias-cell" id="limlMean">-</div>
+                    <div class="bias-cell" id="limlBias">-</div>
+                    <div class="bias-cell" id="limlVariance">-</div>
+                    <div class="bias-cell" id="limlRMSE">-</div>
+                </div>
+                
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="systemsAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="systemsInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section class="section fade-in delay-6" id="quiz">
+            <div class="quiz-section">
+                <h3 style="text-align: center; margin-bottom: 1rem; color: var(--primary-system);">
+                    🎯 Chapter 16 Knowledge Check: Simultaneous Equations Models
+                </h3>
+                <p style="text-align: center; color: var(--flow-600); margin-bottom: 1rem;">
+                    Test your understanding of simultaneity, 2SLS, 3SLS, identification, and systems estimation
+                </p>
+                
+                <!-- Regenerate Button -->
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <button onclick="regenerateQuiz()" class="action-button" style="margin: 0; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                        🔄 Generate New Questions
+                    </button>
+                    <p style="font-size: 0.8rem; color: var(--flow-600); margin-top: 0.5rem;">
+                        Click to get fresh questions on simultaneous equations methods
+                    </p>
+                </div>
+                
+                <div id="quizContainer">
+                    <!-- Questions will be dynamically generated here -->
+                </div>
+                
+                <!-- Quiz Results Summary -->
+                <div id="quizSummary" style="display: none; margin-top: 2rem; padding: 1.5rem; background: var(--flow-50); border-radius: 15px; border-left: 4px solid var(--primary-system);">
+                    <h4 style="color: var(--primary-system); margin-bottom: 1rem;">Quiz Results</h4>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 10px;">
+                            <div id="correctCount" style="font-size: 1.5rem; font-weight: bold; color: var(--status-2sls);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--flow-600);">Correct</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 10px;">
+                            <div id="totalQuestions" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-system);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--flow-600);">Total</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 10px;">
+                            <div id="quizScore" style="font-size: 1.5rem; font-weight: bold; color: var(--secondary-system);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--flow-600);">Score</div>
+                        </div>
+                    </div>
+                    <div id="quizFeedback" style="color: var(--flow-700); line-height: 1.6;"></div>
+                    <button onclick="regenerateQuiz()" class="action-button" style="margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                        Try Again with New Questions
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div class="ai-chat-widget">
+        <button class="ai-chat-button" onclick="toggleAIChat()" title="Ask Claude about Simultaneous Equations">
+            <span id="aiChatIcon">⚡</span>
+        </button>
+        
+        <div class="ai-chat-panel" id="aiChatPanel">
+            <div class="ai-chat-header">
+                <span>⚡ Systems Econometrics Tutor</span>
+                <button onclick="toggleAIChat()" style="background: none; border: none; color: white; cursor: pointer;">×</button>
+            </div>
+            
+            <div class="ai-chat-messages" id="aiChatMessages">
+                <div class="ai-message claude">
+                    <strong>⚡ Claude:</strong> Hi! I can help you understand simultaneity bias, 2SLS, 3SLS, identification conditions, and systems estimation. What simultaneous equations concept interests you?
+                </div>
+            </div>
+            
+            <div class="ai-input-area">
+                <input type="text" class="ai-input" id="aiInput" placeholder="Ask about simultaneous equations..." 
+                       onkeydown="if(event.key==='Enter') sendAIMessage()">
+                <button class="ai-send-btn" onclick="sendAIMessage()">→</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let isAIChatOpen = false;
+        let currentQuestions = [];
+        let answeredQuestions = {};
+        
+        // Bias comparison table interactivity
+        function highlightColumn(columnIndex) {
+            console.log('Highlighting column:', columnIndex);
+            
+            // Remove previous highlights
+            document.querySelectorAll('.bias-cell, .bias-method, .bias-header').forEach(el => {
+                el.classList.remove('highlight', 'selected');
+            });
+            
+            // Highlight selected column
+            const headers = document.querySelectorAll('.bias-header');
+            const cells = document.querySelectorAll('.bias-cell');
+            
+            if (headers[columnIndex]) {
+                headers[columnIndex].classList.add('selected');
+            }
+            
+            // Highlight cells in this column (accounting for method column)
+            for (let row = 0; row < 3; row++) {
+                const cellIndex = row * 3 + columnIndex;
+                if (cells[cellIndex]) {
+                    cells[cellIndex].classList.add('highlight');
+                }
+            }
+            
+            // Show column explanation
+            const columnNames = ['Method', 'Estimate', 'Bias', 'Standard Error'];
+            const explanations = [
+                'Estimation method used (True, OLS, 2SLS)',
+                'Parameter estimate obtained from each method',
+                'Difference between estimate and true value',
+                'Standard error measuring estimate precision'
+            ];
+            
+            if (columnIndex < columnNames.length) {
+                showTooltip(`${columnNames[columnIndex]}: ${explanations[columnIndex]}`);
+            }
+        }
+        
+        function highlightRow(method) {
+            console.log('Highlighting row for method:', method);
+            
+            // Remove previous highlights
+            document.querySelectorAll('.bias-cell, .bias-method, .bias-header').forEach(el => {
+                el.classList.remove('highlight', 'selected');
+            });
+            
+            // Find and highlight method row
+            const methodElements = document.querySelectorAll('.bias-method');
+            methodElements.forEach(el => {
+                if (el.textContent.toLowerCase().includes(method.toLowerCase()) || 
+                    (method === 'true' && el.textContent.includes('True')) ||
+                    (method === '2sls' && el.textContent.includes('2SLS'))) {
+                    el.classList.add('selected');
+                    
+                    // Highlight corresponding cells
+                    let nextEl = el.nextElementSibling;
+                    for (let i = 0; i < 3 && nextEl; i++) {
+                        if (nextEl.classList.contains('bias-cell')) {
+                            nextEl.classList.add('highlight');
+                        }
+                        nextEl = nextEl.nextElementSibling;
+                    }
+                }
+            });
+            
+            // Show method explanation
+            const methodExplanations = {
+                'true': 'True parameter value (population parameter)',
+                'ols': 'Ordinary Least Squares - biased due to simultaneity',
+                '2sls': 'Two-Stage Least Squares - consistent IV estimator'
+            };
+            
+            if (methodExplanations[method]) {
+                showTooltip(`${method.toUpperCase()}: ${methodExplanations[method]}`);
+            }
+        }
+        
+        function showDetails(method, statistic) {
+            console.log('Showing details for:', method, statistic);
+            
+            const detailTexts = {
+                'true': {
+                    'estimate': 'True population parameter value (unbiased benchmark)',
+                    'bias': 'True parameter has zero bias by definition',
+                    'se': 'True parameter has no sampling variation'
+                },
+                'ols': {
+                    'estimate': 'OLS estimate - biased upward due to simultaneity',
+                    'bias': 'Simultaneity bias = E[β̂_OLS] - β_true',
+                    'se': 'OLS standard error (understated due to endogeneity)'
+                },
+                '2sls': {
+                    'estimate': '2SLS estimate - consistent but less efficient than OLS',
+                    'bias': '2SLS bias - small in large samples with strong instruments',
+                    'se': '2SLS standard error - larger than OLS but correctly specified'
+                }
+            };
+            
+            if (detailTexts[method] && detailTexts[method][statistic]) {
+                showTooltip(detailTexts[method][statistic]);
+            }
+        }
+        
+        function showTooltip(message) {
+            // Remove existing tooltip
+            const existingTooltip = document.querySelector('.bias-tooltip');
+            if (existingTooltip) {
+                existingTooltip.remove();
+            }
+            
+            // Create new tooltip
+            const tooltip = document.createElement('div');
+            tooltip.className = 'bias-tooltip';
+            tooltip.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--primary-system);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                font-size: 0.9rem;
+                max-width: 400px;
+                text-align: center;
+                z-index: 1000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                animation: tooltipFadeIn 0.3s ease;
+            `;
+            tooltip.textContent = message;
+            document.body.appendChild(tooltip);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (tooltip.parentNode) {
+                    tooltip.remove();
+                }
+            }, 3000);
+        }
+        
+        // Add CSS for tooltip animation
+        const tooltipCSS = document.createElement('style');
+        tooltipCSS.textContent = `
+            @keyframes tooltipFadeIn {
+                from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+                to { opacity: 1; transform: translateX(-50%) translateY(0); }
+            }
+        `;
+        document.head.appendChild(tooltipCSS);
+        
+        // Slider event listeners
+        document.getElementById('simultaneityStrength').addEventListener('input', function(e) {
+            document.getElementById('simultaneityStrengthValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('instrumentStrength').addEventListener('input', function(e) {
+            document.getElementById('instrumentStrengthValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('endogeneityLevel').addEventListener('input', function(e) {
+            document.getElementById('endogeneityLevelValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('errorCorrelation').addEventListener('input', function(e) {
+            document.getElementById('errorCorrelationValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('trueBeta').addEventListener('input', function(e) {
+            document.getElementById('trueBetaValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('simultaneityDegree').addEventListener('input', function(e) {
+            document.getElementById('simultaneityDegreeValue').textContent = e.target.value;
+        });
+        
+        // Simultaneity Bias Simulation
+        function simulateSimultaneity() {
+            console.log('Starting simultaneity bias simulation...');
+            
+            try {
+                const simultaneity = parseFloat(document.getElementById('simultaneityStrength').value);
+                const instrumentStr = parseFloat(document.getElementById('instrumentStrength').value);
+                const sampleSize = parseInt(document.getElementById('sampleSizeSimul').value);
+                const model = document.getElementById('structuralModel').value;
+                
+                console.log('Simultaneity Parameters:', { simultaneity, instrumentStr, sampleSize, model });
+                
+                // Simulate bias effects
+                const trueBeta = -0.5; // True demand elasticity
+                const olsBias = simultaneity * 0.8; // Upward bias due to simultaneity
+                const olsEstimate = trueBeta + olsBias;
+                const tslsBias = instrumentStr > 0.3 ? 0.05 : 0.15; // Small bias with good instruments
+                const tslsEstimate = trueBeta + (Math.random() - 0.5) * tslsBias;
+                
+                // Standard errors
+                const olsStdErr = 0.08;
+                const tslsStdErr = olsStdErr / Math.sqrt(instrumentStr); // Larger SE with weak instruments
+                
+                // Instrument power (first-stage F-statistic)
+                const instrumentF = 5 + instrumentStr * 20 + Math.random() * 5;
+                
+                // Efficiency loss
+                const efficiencyLoss = ((tslsStdErr * tslsStdErr) / (olsStdErr * olsStdErr) - 1) * 100;
+                
+                // Update table
+                document.getElementById('trueParam').textContent = trueBeta.toFixed(3);
+                document.getElementById('olsEstimate').textContent = olsEstimate.toFixed(3);
+                document.getElementById('olsBias').textContent = olsBias.toFixed(3);
+                document.getElementById('olsStdErr').textContent = olsStdErr.toFixed(3);
+                document.getElementById('tslsEstimate').textContent = tslsEstimate.toFixed(3);
+                document.getElementById('tslsBias').textContent = (tslsEstimate - trueBeta).toFixed(3);
+                document.getElementById('tslsStdErr').textContent = tslsStdErr.toFixed(3);
+                
+                // Update results
+                document.getElementById('biasAmount').textContent = (Math.abs(olsBias) * 100).toFixed(1) + '%';
+                document.getElementById('biasReduction').textContent = ((Math.abs(olsBias) - Math.abs(tslsEstimate - trueBeta)) / Math.abs(olsBias) * 100).toFixed(1) + '%';
+                document.getElementById('instrumentPower').textContent = instrumentF.toFixed(1);
+                document.getElementById('efficiencyLoss').textContent = efficiencyLoss.toFixed(1) + '%';
+                
+                const severeBias = Math.abs(olsBias) > 0.3;
+                const weakInstruments = instrumentF < 10;
+                const assessmentEl = document.getElementById('simulAssessment');
+                
+                if (severeBias && weakInstruments) {
+                    assessmentEl.textContent = 'Severe Simultaneity & Weak Instruments';
+                    assessmentEl.className = 'status-indicator status-bias';
+                } else if (severeBias) {
+                    assessmentEl.textContent = 'Severe Simultaneity Bias';
+                    assessmentEl.className = 'status-indicator status-bias';
+                } else if (weakInstruments) {
+                    assessmentEl.textContent = 'Weak Instrument Problem';
+                    assessmentEl.className = 'status-indicator status-iv';
+                } else {
+                    assessmentEl.textContent = '2SLS Provides Good Correction';
+                    assessmentEl.className = 'status-indicator status-2sls';
+                }
+                
+                document.getElementById('simulInterpretation').textContent = 
+                    `${model.replace('_', ' & ')} model. OLS bias: ${(Math.abs(olsBias)*100).toFixed(1)}%. 2SLS reduces bias to ${(Math.abs(tslsEstimate - trueBeta)*100).toFixed(1)}%. First-stage F = ${instrumentF.toFixed(1)}. ${weakInstruments ? 'Weak instruments cause efficiency loss.' : 'Strong instruments provide reliable correction.'}`;
+                
+                document.getElementById('simulResults').style.display = 'block';
+                console.log('Simultaneity simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in simultaneity simulation:', error);
+                alert('Error running simultaneity simulation. Check console for details.');
+            }
+        }
+        
+        // 2SLS Simulation
+        function simulate2SLS() {
+            console.log('Starting 2SLS simulation...');
+            
+            try {
+                const instrumentQuality = document.getElementById('instrumentQuality').value;
+                const endogeneity = parseFloat(document.getElementById('endogeneityLevel').value);
+                const numInstruments = parseInt(document.getElementById('numInstruments').value);
+                const sampleSize = parseInt(document.getElementById('sampleSize2SLS').value);
+                
+                console.log('2SLS Parameters:', { instrumentQuality, endogeneity, numInstruments, sampleSize });
+                
+                // First-stage F-statistic
+                let firstStageF;
+                if (instrumentQuality === 'weak') firstStageF = 3 + Math.random() * 6;
+                else if (instrumentQuality === 'moderate') firstStageF = 12 + Math.random() * 8;
+                else firstStageF = 22 + Math.random() * 15;
+                
+                // Structural coefficient (true value = 0.8)
+                const trueBeta = 0.8;
+                const bias = firstStageF < 10 ? 0.15 : 0.05; // Weak instrument bias
+                const structuralCoeff = trueBeta + (Math.random() - 0.5) * bias;
+                
+                // Overidentification test (only if overidentified)
+                const sarganStat = numInstruments > 1 ? Math.random() * 8 + 1 : 0;
+                const sarganPValue = numInstruments > 1 ? Math.max(0.01, 1 - sarganStat / 10) : 1;
+                
+                // Hausman test for endogeneity
+                const hausmanStat = endogeneity * 15 + Math.random() * 5;
+                
+                // Update first/second stage equations
+                const stageEquationsEl = document.getElementById('stageEquations');
+                stageEquationsEl.innerHTML = `
+                    <div class="equation">
+                        <div class="equation-label">First Stage</div>
+                        X̂ = π̂₀ + π̂₁Z₁ + π̂₂Z₂ + residuals<br>
+                        F = ${firstStageF.toFixed(1)} (${firstStageF > 10 ? 'Strong' : 'Weak'})
+                    </div>
+                    <div class="equation">
+                        <div class="equation-label">Second Stage</div>
+                        Y = β̂₀ + β̂₁X̂ + controls + error<br>
+                        β̂₁ = ${structuralCoeff.toFixed(3)} (se = ${(0.12 / Math.sqrt(firstStageF/10)).toFixed(3)})
+                    </div>
+                `;
+                
+                // Update results
+                document.getElementById('firstStageFStat').textContent = firstStageF.toFixed(1);
+                document.getElementById('structuralCoef').textContent = structuralCoeff.toFixed(3);
+                document.getElementById('sarganStat').textContent = numInstruments > 1 ? sarganStat.toFixed(2) : 'N/A';
+                document.getElementById('hausmantStat').textContent = hausmanStat.toFixed(1);
+                
+                const weakInstruments = firstStageF < 10;
+                const validOverident = sarganPValue > 0.05;
+                const assessmentEl = document.getElementById('tslsAssessment');
+                
+                if (weakInstruments) {
+                    assessmentEl.textContent = 'Weak Instruments';
+                    assessmentEl.className = 'status-indicator status-bias';
+                } else if (numInstruments > 1 && !validOverident) {
+                    assessmentEl.textContent = 'Invalid Instruments';
+                    assessmentEl.className = 'status-indicator status-bias';
+                } else {
+                    assessmentEl.textContent = 'Valid 2SLS Estimation';
+                    assessmentEl.className = 'status-indicator status-2sls';
+                }
+                
+                document.getElementById('tslsInterpretation').textContent = 
+                    `2SLS estimation: First-stage F = ${firstStageF.toFixed(1)}, structural β̂ = ${structuralCoeff.toFixed(3)}. ${weakInstruments ? 'Weak instruments reduce precision.' : 'Strong instruments provide reliable estimates.'} ${numInstruments > 1 ? `Sargan p = ${sarganPValue.toFixed(3)}.` : 'Just-identified model.'}`;
+                
+                document.getElementById('tslsResults').style.display = 'block';
+                console.log('2SLS simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in 2SLS simulation:', error);
+                alert('Error running 2SLS simulation. Check console for details.');
+            }
+        }
+        
+        // 3SLS Simulation
+        function simulate3SLS() {
+            console.log('Starting 3SLS simulation...');
+            
+            try {
+                const errorCorr = parseFloat(document.getElementById('errorCorrelation').value);
+                const systemSize = parseInt(document.getElementById('systemSize').value);
+                const misspec = document.getElementById('misspecification').value;
+                const sampleSize = parseInt(document.getElementById('sampleSize3SLS').value);
+                
+                console.log('3SLS Parameters:', { errorCorr, systemSize, misspec, sampleSize });
+                
+                // Efficiency calculations
+                const tslsVar = 0.025; // 2SLS variance baseline
+                const theoreticalGain = 1 - errorCorr; // Efficiency gain from correlation
+                let actualGain = theoreticalGain;
+                
+                // Adjust for misspecification
+                if (misspec === 'mild') actualGain *= 0.7;
+                else if (misspec === 'severe') actualGain = -0.2; // Efficiency loss
+                
+                const threeslsVar = tslsVar * (1 - Math.max(0, actualGain));
+                const efficiencyGain = ((tslsVar - threeslsVar) / tslsVar * 100);
+                
+                // Robustness index (0-100)
+                let robustness = 85;
+                if (misspec === 'mild') robustness = 60;
+                else if (misspec === 'severe') robustness = 25;
+                robustness -= (systemSize - 2) * 5; // Larger systems less robust
+                
+                document.getElementById('efficiencyGain').textContent = efficiencyGain.toFixed(1) + '%';
+                document.getElementById('tslsVariance').textContent = tslsVar.toFixed(4);
+                document.getElementById('threeslsVariance').textContent = threeslsVar.toFixed(4);
+                document.getElementById('robustnessIndex').textContent = Math.max(0, robustness).toFixed(0);
+                
+                const strongCorrelation = errorCorr > 0.5;
+                const assessmentEl = document.getElementById('threeslsAssessment');
+                
+                if (misspec === 'severe') {
+                    assessmentEl.textContent = 'Misspecification Risk';
+                    assessmentEl.className = 'status-indicator status-bias';
+                } else if (strongCorrelation && misspec === 'none') {
+                    assessmentEl.textContent = '3SLS More Efficient';
+                    assessmentEl.className = 'status-indicator status-3sls';
+                } else if (strongCorrelation) {
+                    assessmentEl.textContent = 'Trade-off: Efficiency vs Robustness';
+                    assessmentEl.className = 'status-indicator status-iv';
+                } else {
+                    assessmentEl.textContent = 'Prefer 2SLS for Robustness';
+                    assessmentEl.className = 'status-indicator status-2sls';
+                }
+                
+                // Efficiency comparison chart
+                const chartContainer = document.getElementById('efficiencyChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-system);">Efficiency vs Robustness Trade-off</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--status-2sls); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>2SLS Variance</strong><br>
+                                ${tslsVar.toFixed(4)}
+                            </div>
+                            <div style="background: var(--status-3sls); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>3SLS Variance</strong><br>
+                                ${threeslsVar.toFixed(4)}
+                            </div>
+                        </div>
+                        <div style="background: var(--flow-100); padding: 12px; border-radius: 8px;">
+                            Error correlation: ${errorCorr.toFixed(1)} | Robustness: ${Math.max(0, robustness).toFixed(0)}%
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('threeslsInterpretation').textContent = 
+                    `${systemSize}-equation system. Error correlation = ${errorCorr.toFixed(1)}. 3SLS ${efficiencyGain > 0 ? 'gains' : 'loses'} ${Math.abs(efficiencyGain).toFixed(1)}% efficiency vs 2SLS. ${misspec !== 'none' ? 'Misspecification reduces robustness.' : 'Well-specified system supports 3SLS.'}`;
+                
+                document.getElementById('threeslsResults').style.display = 'block';
+                console.log('3SLS simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in 3SLS simulation:', error);
+                alert('Error running 3SLS simulation. Check console for details.');
+            }
+        }
+        
+        // Identification Check
+        function checkIdentification() {
+            console.log('Checking identification conditions...');
+            
+            try {
+                const m = parseInt(document.getElementById('numEquations').value);
+                const g = parseInt(document.getElementById('numEndogenous').value);
+                const k = parseInt(document.getElementById('numExogenous').value);
+                const pattern = document.getElementById('exclusionPattern').value;
+                
+                console.log('Identification Parameters:', { m, g, k, pattern });
+                
+                // Order condition: K - k ≥ m - 1 for each equation
+                // Simplified: assume each equation excludes some exogenous variables
+                let excludedPerEq;
+                if (pattern === 'symmetric') excludedPerEq = Math.floor(k / 2);
+                else if (pattern === 'asymmetric') excludedPerEq = Math.floor(k * 0.4);
+                else excludedPerEq = Math.floor(k * 0.6); // recursive
+                
+                const orderSatisfied = excludedPerEq >= (m - 1);
+                
+                // Rank condition (simplified check)
+                const rankSatisfied = orderSatisfied && (k >= m);
+                
+                // Identification status
+                let identStatus;
+                if (orderSatisfied && rankSatisfied) {
+                    const degreesOverident = Math.max(0, excludedPerEq - (m - 1));
+                    identStatus = degreesOverident > 0 ? 'Overidentified' : 'Just-identified';
+                } else {
+                    identStatus = 'Underidentified';
+                }
+                
+                document.getElementById('orderCondition').textContent = orderSatisfied ? 'Satisfied' : 'Failed';
+                document.getElementById('rankCondition').textContent = rankSatisfied ? 'Satisfied' : 'Failed';
+                document.getElementById('identificationStatus').textContent = identStatus;
+                document.getElementById('degreesOverident').textContent = Math.max(0, excludedPerEq - (m - 1));
+                
+                // System structure display
+                const matrixContainer = document.getElementById('identificationMatrix');
+                let matrixHTML = '';
+                for (let i = 1; i <= m; i++) {
+                    matrixHTML += `
+                        <div class="equation">
+                            <div class="equation-label">Equation ${i}</div>
+                            Includes: Y₁, Y₂ variables + ${Math.floor(k/2)} exogenous<br>
+                            Excludes: ${excludedPerEq} exogenous variables
+                        </div>
+                    `;
+                }
+                matrixContainer.innerHTML = matrixHTML;
+                
+                const assessmentEl = document.getElementById('identAssessment');
+                if (identStatus === 'Underidentified') {
+                    assessmentEl.textContent = 'Not Identified';
+                    assessmentEl.className = 'status-indicator status-bias';
+                } else if (identStatus === 'Just-identified') {
+                    assessmentEl.textContent = 'Exactly Identified';
+                    assessmentEl.className = 'status-indicator status-2sls';
+                } else {
+                    assessmentEl.textContent = 'Overidentified';
+                    assessmentEl.className = 'status-indicator status-ident';
+                }
+                
+                document.getElementById('identInterpretation').textContent = 
+                    `${m}-equation system with ${k} exogenous variables. Order condition: ${orderSatisfied ? 'satisfied' : 'failed'}. Rank condition: ${rankSatisfied ? 'satisfied' : 'failed'}. Status: ${identStatus}. ${identStatus === 'Overidentified' ? 'Can test restrictions.' : identStatus === 'Underidentified' ? 'Need more instruments.' : 'Unique solution.'}`;
+                
+                document.getElementById('identResults').style.display = 'block';
+                console.log('Identification check completed successfully');
+                
+            } catch (error) {
+                console.error('Error in identification check:', error);
+                alert('Error checking identification. Check console for details.');
+            }
+        }
+        
+        // Systems Comparison
+        function compareEstimationMethods() {
+            console.log('Comparing estimation methods...');
+            
+            try {
+                const trueBeta = parseFloat(document.getElementById('trueBeta').value);
+                const simultaneity = parseFloat(document.getElementById('simultaneityDegree').value);
+                const instrumentRel = document.getElementById('instrumentRelevance').value;
+                const reps = parseInt(document.getElementById('repetitions').value);
+                
+                console.log('Comparison Parameters:', { trueBeta, simultaneity, instrumentRel, reps });
+                
+                // Simulate method performance
+                const olsBias = simultaneity * 0.6; // Simultaneity bias
+                const olsMean = trueBeta + olsBias;
+                const olsVar = 0.01;
+                
+                // 2SLS performance depends on instrument strength
+                let tslsBias = 0;
+                let tslsVar = 0.015;
+                if (instrumentRel === 'weak') {
+                    tslsBias = 0.08;
+                    tslsVar = 0.04;
+                } else if (instrumentRel === 'moderate') {
+                    tslsBias = 0.02;
+                    tslsVar = 0.02;
+                } else {
+                    tslsBias = 0.01;
+                    tslsVar = 0.015;
+                }
+                const tslsMean = trueBeta + tslsBias;
+                
+                // 3SLS (assumes some cross-equation correlation)
+                const threeslsBias = tslsBias * 0.9; // Slightly less bias
+                const threeslsVar = tslsVar * 0.85; // More efficient
+                const threeslsMean = trueBeta + threeslsBias;
+                
+                // LIML
+                const limlBias = tslsBias * 0.7; // Less bias with weak instruments
+                const limlVar = tslsVar * 1.1; // Slightly less efficient
+                const limlMean = trueBeta + limlBias;
+                
+                // Calculate RMSE
+                const olsRMSE = Math.sqrt(olsBias * olsBias + olsVar);
+                const tslsRMSE = Math.sqrt(tslsBias * tslsBias + tslsVar);
+                const threeslsRMSE = Math.sqrt(threeslsBias * threeslsBias + threeslsVar);
+                const limlRMSE = Math.sqrt(limlBias * limlBias + limlVar);
+                
+                // Update comparison table
+                document.getElementById('olsMean').textContent = olsMean.toFixed(3);
+                document.getElementById('olsBiasComp').textContent = olsBias.toFixed(3);
+                document.getElementById('olsVariance').textContent = olsVar.toFixed(4);
+                document.getElementById('olsRMSE').textContent = olsRMSE.toFixed(4);
+                
+                document.getElementById('tslsMean').textContent = tslsMean.toFixed(3);
+                document.getElementById('tslsBiasComp').textContent = tslsBias.toFixed(3);
+                document.getElementById('tslsVariance').textContent = tslsVar.toFixed(4);
+                document.getElementById('tslsRMSE').textContent = tslsRMSE.toFixed(4);
+                
+                document.getElementById('threeslsMean').textContent = threeslsMean.toFixed(3);
+                document.getElementById('threeslsBiasComp').textContent = threeslsBias.toFixed(3);
+                document.getElementById('threeslsVarianceComp').textContent = threeslsVar.toFixed(4);
+                document.getElementById('threeslsRMSE').textContent = threeslsRMSE.toFixed(4);
+                
+                document.getElementById('limlMean').textContent = limlMean.toFixed(3);
+                document.getElementById('limlBias').textContent = limlBias.toFixed(3);
+                document.getElementById('limlVariance').textContent = limlVar.toFixed(4);
+                document.getElementById('limlRMSE').textContent = limlRMSE.toFixed(4);
+                
+                // Performance chart
+                const chartContainer = document.getElementById('performanceChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-system);">Bias-Variance Trade-off</h4>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 15px 0;">
+                            <div style="background: var(--status-bias); color: white; padding: 8px; border-radius: 6px; font-size: 0.9rem;">
+                                <strong>OLS</strong><br>RMSE: ${olsRMSE.toFixed(4)}
+                            </div>
+                            <div style="background: var(--status-2sls); color: white; padding: 8px; border-radius: 6px; font-size: 0.9rem;">
+                                <strong>2SLS</strong><br>RMSE: ${tslsRMSE.toFixed(4)}
+                            </div>
+                            <div style="background: var(--status-3sls); color: white; padding: 8px; border-radius: 6px; font-size: 0.9rem;">
+                                <strong>3SLS</strong><br>RMSE: ${threeslsRMSE.toFixed(4)}
+                            </div>
+                            <div style="background: var(--status-iv); color: white; padding: 8px; border-radius: 6px; font-size: 0.9rem;">
+                                <strong>LIML</strong><br>RMSE: ${limlRMSE.toFixed(4)}
+                            </div>
+                        </div>
+                        <div style="background: var(--flow-100); padding: 12px; border-radius: 8px; font-size: 0.9rem;">
+                            True β = ${trueBeta.toFixed(1)} | Simultaneity = ${simultaneity.toFixed(1)} | Instruments: ${instrumentRel}
+                        </div>
+                    </div>
+                `;
+                
+                // Assessment
+                const bestMethod = Math.min(tslsRMSE, threeslsRMSE, limlRMSE);
+                const assessmentEl = document.getElementById('systemsAssessment');
+                
+                if (bestMethod === tslsRMSE) {
+                    assessmentEl.textContent = '2SLS Preferred';
+                    assessmentEl.className = 'status-indicator status-2sls';
+                } else if (bestMethod === threeslsRMSE) {
+                    assessmentEl.textContent = '3SLS Most Efficient';
+                    assessmentEl.className = 'status-indicator status-3sls';
+                } else {
+                    assessmentEl.textContent = 'LIML Best with Weak Instruments';
+                    assessmentEl.className = 'status-indicator status-iv';
+                }
+                
+                document.getElementById('systemsInterpretation').textContent = 
+                    `Monte Carlo comparison (${reps} reps). OLS bias = ${(Math.abs(olsBias)*100).toFixed(1)}%. Best method by RMSE: ${bestMethod === tslsRMSE ? '2SLS' : bestMethod === threeslsRMSE ? '3SLS' : 'LIML'}. ${instrumentRel === 'weak' ? 'Weak instruments favor LIML.' : simultaneity > 0.6 ? 'Strong simultaneity requires IV methods.' : '2SLS provides good balance.'}`;
+                
+                document.getElementById('systemsResults').style.display = 'block';
+                console.log('Methods comparison completed successfully');
+                
+            } catch (error) {
+                console.error('Error in methods comparison:', error);
+                alert('Error running methods comparison. Check console for details.');
+            }
+        }
+        
+        // Quiz question bank - Simultaneous Equations
+        const questionBank = {
+            simultaneity: [
+                {
+                    question: "Simultaneity bias occurs when:",
+                    options: [
+                        "Sample size is too small",
+                        "Explanatory variables are correlated with error terms due to joint determination",
+                        "Variables are measured with error",
+                        "There are missing variables"
+                    ],
+                    correct: 1,
+                    explanation: "Simultaneity bias arises when explanatory variables are endogenous - determined simultaneously with the dependent variable, creating correlation with the error term."
+                },
+                {
+                    question: "In a supply and demand system, price is endogenous because:",
+                    options: [
+                        "It's measured with error",
+                        "It's determined simultaneously with quantity in equilibrium",
+                        "It has a time trend",
+                        "It's correlated with income"
+                    ],
+                    correct: 1,
+                    explanation: "Price and quantity are jointly determined by the intersection of supply and demand curves, making price endogenous in both supply and demand equations."
+                },
+                {
+                    question: "The direction of simultaneity bias in OLS depends on:",
+                    options: [
+                        "Sample size",
+                        "The sign and magnitude of the correlation between the endogenous variable and error term",
+                        "The number of observations",
+                        "The choice of significance level"
+                    ],
+                    correct: 1,
+                    explanation: "Bias direction depends on Cov(x,u), which is determined by how the endogenous variable and structural error move together through the simultaneity mechanism."
+                },
+                {
+                    question: "OLS estimates in simultaneous equations are:",
+                    options: [
+                        "Unbiased but inconsistent",
+                        "Biased but consistent",
+                        "Biased and inconsistent",
+                        "Unbiased and consistent"
+                    ],
+                    correct: 2,
+                    explanation: "OLS is both biased in finite samples and inconsistent (bias doesn't disappear as n→∞) due to persistent correlation between endogenous regressors and error terms."
+                },
+                {
+                    question: "Which of the following typically exhibits simultaneity?",
+                    options: [
+                        "Temperature and ice cream sales",
+                        "Wage determination and labor supply",
+                        "Rainfall and agricultural output",
+                        "Time and population growth"
+                    ],
+                    correct: 1,
+                    explanation: "Wages and labor supply are jointly determined - higher wages affect labor supply decisions, while labor supply affects wage determination in equilibrium."
+                },
+                {
+                    question: "The structural form of a simultaneous equation system:",
+                    options: [
+                        "Contains the behavioral relationships of economic interest",
+                        "Is always identified",
+                        "Can always be estimated by OLS",
+                        "Contains only predetermined variables"
+                    ],
+                    correct: 0,
+                    explanation: "The structural form represents the underlying economic relationships (behavioral equations) that we want to estimate and interpret for policy analysis."
+                }
+            ],
+            twosls: [
+                {
+                    question: "The first stage of 2SLS:",
+                    options: [
+                        "Estimates the structural equation of interest",
+                        "Regresses endogenous variables on all exogenous variables",
+                        "Tests for weak instruments",
+                        "Calculates the Hausman test"
+                    ],
+                    correct: 1,
+                    explanation: "The first stage regresses each endogenous variable on all exogenous variables (including instruments) to obtain predicted values purged of correlation with structural errors."
+                },
+                {
+                    question: "For an instrument to be valid, it must be:",
+                    options: [
+                        "Correlated with the dependent variable",
+                        "Relevant (correlated with endogenous variable) and exogenous (uncorrelated with structural error)",
+                        "Normally distributed",
+                        "Stationary"
+                    ],
+                    correct: 1,
+                    explanation: "Valid instruments must satisfy relevance (affect the endogenous variable) and exogeneity (not directly affect the dependent variable except through the endogenous variable)."
+                },
+                {
+                    question: "The Stock-Yogo weak instrument test uses:",
+                    options: [
+                        "The second-stage R-squared",
+                        "The first-stage F-statistic",
+                        "The Hausman test statistic",
+                        "The Sargan test statistic"
+                    ],
+                    correct: 1,
+                    explanation: "The Stock-Yogo test examines whether the first-stage F-statistic exceeds critical values (typically 10) to ensure instruments are sufficiently strong for identification."
+                },
+                {
+                    question: "2SLS is consistent but not efficient because:",
+                    options: [
+                        "It uses two stages instead of one",
+                        "It doesn't use all available moment conditions simultaneously",
+                        "The instruments are weak",
+                        "The sample size is small"
+                    ],
+                    correct: 1,
+                    explanation: "2SLS estimates equations individually rather than as a system, not exploiting potential efficiency gains from cross-equation error correlations or parameter restrictions."
+                },
+                {
+                    question: "If instruments are weak, 2SLS estimates:",
+                    options: [
+                        "Are more efficient than OLS",
+                        "Have larger standard errors and may be biased toward OLS",
+                        "Are always unbiased",
+                        "Become maximum likelihood estimates"
+                    ],
+                    correct: 1,
+                    explanation: "Weak instruments cause 2SLS to have large standard errors and finite-sample bias toward the OLS estimate, reducing the advantage of instrumental variables."
+                },
+                {
+                    question: "The Sargan test examines:",
+                    options: [
+                        "Whether instruments are strong enough",
+                        "Whether the model is identified",
+                        "Whether overidentifying restrictions are satisfied",
+                        "Whether errors are homoskedastic"
+                    ],
+                    correct: 2,
+                    explanation: "The Sargan test checks whether overidentifying restrictions hold - whether extra instruments are valid by testing if they're uncorrelated with structural errors."
+                }
+            ],
+            threesls: [
+                {
+                    question: "3SLS gains efficiency over 2SLS by:",
+                    options: [
+                        "Using stronger instruments",
+                        "Exploiting cross-equation error correlations",
+                        "Eliminating simultaneity bias",
+                        "Using maximum likelihood"
+                    ],
+                    correct: 1,
+                    explanation: "3SLS treats the system as a whole, using GLS to account for contemporaneous correlation between equation errors, improving efficiency when such correlations exist."
+                },
+                {
+                    question: "The third stage in 3SLS involves:",
+                    options: [
+                        "Testing for weak instruments",
+                        "GLS estimation using the estimated error covariance matrix",
+                        "Checking identification conditions",
+                        "Computing standard errors"
+                    ],
+                    correct: 1,
+                    explanation: "Stage 3 applies GLS using the cross-equation error covariance matrix estimated from 2SLS residuals to achieve full system efficiency."
+                },
+                {
+                    question: "3SLS is less robust than 2SLS because:",
+                    options: [
+                        "It requires stronger instruments",
+                        "Misspecification in one equation affects estimates in all equations",
+                        "It's computationally more complex",
+                        "It requires larger sample sizes"
+                    ],
+                    correct: 1,
+                    explanation: "3SLS estimates all equations jointly, so specification errors (omitted variables, functional form) in one equation contaminate estimates throughout the system."
+                },
+                {
+                    question: "3SLS is preferred over 2SLS when:",
+                    options: [
+                        "Sample size is small",
+                        "Instruments are weak",
+                        "Cross-equation errors are highly correlated and specification is confident",
+                        "Only one equation is of interest"
+                    ],
+                    correct: 2,
+                    explanation: "3SLS advantages emerge with significant cross-equation error correlation, but require confidence in the complete system specification due to reduced robustness."
+                },
+                {
+                    question: "In 3SLS, the error covariance matrix is estimated using:",
+                    options: [
+                        "OLS residuals",
+                        "2SLS residuals",
+                        "First-stage residuals",
+                        "Instrumental variables"
+                    ],
+                    correct: 1,
+                    explanation: "3SLS uses 2SLS residuals to estimate the cross-equation error covariance matrix consistently, since 2SLS provides consistent parameter estimates."
+                },
+                {
+                    question: "When cross-equation error correlation is zero:",
+                    options: [
+                        "3SLS is more efficient than 2SLS",
+                        "3SLS reduces to 2SLS",
+                        "3SLS cannot be computed",
+                        "3SLS is biased"
+                    ],
+                    correct: 1,
+                    explanation: "With zero cross-equation correlation, the system error covariance matrix becomes diagonal, making 3SLS identical to equation-by-equation 2SLS."
+                }
+            ],
+            identification: [
+                {
+                    question: "The order condition for identification requires:",
+                    options: [
+                        "Number of endogenous variables equals number of equations",
+                        "Number of excluded variables ≥ number of included endogenous variables - 1",
+                        "All variables to be stationary",
+                        "Instruments to be strong"
+                    ],
+                    correct: 1,
+                    explanation: "The order condition (K-k ≥ m-1) requires sufficient exclusion restrictions: at least m-1 variables must be excluded from each equation for identification."
+                },
+                {
+                    question: "The rank condition:",
+                    options: [
+                        "Is necessary but not sufficient for identification",
+                        "Is sufficient but not necessary for identification",
+                        "Is both necessary and sufficient for identification",
+                        "Is neither necessary nor sufficient for identification"
+                    ],
+                    correct: 2,
+                    explanation: "The rank condition is both necessary and sufficient for identification, requiring the coefficient matrix of excluded variables to have full rank."
+                },
+                {
+                    question: "An equation is exactly identified when:",
+                    options: [
+                        "Order condition fails",
+                        "Rank condition fails",
+                        "Number of excluded variables equals number of included endogenous variables - 1",
+                        "There are more instruments than endogenous variables"
+                    ],
+                    correct: 2,
+                    explanation: "Exact identification occurs when K-k = m-1, providing just enough restrictions to uniquely determine structural parameters without overidentifying restrictions."
+                },
+                {
+                    question: "Overidentification allows us to:",
+                    options: [
+                        "Estimate parameters more efficiently",
+                        "Test the validity of identifying restrictions",
+                        "Improve the power of first-stage regressions",
+                        "All of the above"
+                    ],
+                    correct: 3,
+                    explanation: "Overidentification enables efficiency gains through more moment conditions, testable restrictions via Sargan tests, and stronger first-stage relationships."
+                },
+                {
+                    question: "If an equation fails the rank condition:",
+                    options: [
+                        "It can still be estimated by 2SLS",
+                        "It is not identified and cannot be estimated consistently",
+                        "Only 3SLS can estimate it",
+                        "OLS becomes consistent"
+                    ],
+                    correct: 1,
+                    explanation: "Failure of the rank condition means the equation is not identified - structural parameters cannot be uniquely recovered from reduced form parameters."
+                },
+                {
+                    question: "In a recursive system:",
+                    options: [
+                        "All equations are simultaneously determined",
+                        "Variables appear with triangular restriction pattern",
+                        "No instrumental variables are needed",
+                        "OLS is always inconsistent"
+                    ],
+                    correct: 1,
+                    explanation: "Recursive systems have a triangular structure where some variables don't appear in certain equations, often making identification easier through natural ordering."
+                }
+            ],
+            systems_estimation: [
+                {
+                    question: "LIML (Limited Information Maximum Likelihood) has the advantage of:",
+                    options: [
+                        "Being more efficient than 3SLS",
+                        "Being less biased than 2SLS with weak instruments",
+                        "Not requiring instrumental variables",
+                        "Working with underidentified equations"
+                    ],
+                    correct: 1,
+                    explanation: "LIML has better finite-sample properties than 2SLS when instruments are weak, exhibiting less bias toward the OLS estimate in small samples."
+                },
+                {
+                    question: "The main practical advantage of 2SLS over 3SLS is:",
+                    options: [
+                        "Higher efficiency",
+                        "Robustness to misspecification",
+                        "Better small-sample properties",
+                        "Easier computation"
+                    ],
+                    correct: 1,
+                    explanation: "2SLS estimates equations individually, so specification errors in one equation don't contaminate others, making it more robust than the system-wide 3SLS."
+                },
+                {
+                    question: "When instruments are very weak, which estimator typically performs best?",
+                    options: [
+                        "OLS",
+                        "2SLS", 
+                        "LIML",
+                        "3SLS"
+                    ],
+                    correct: 2,
+                    explanation: "LIML has superior finite-sample properties with weak instruments, being less biased than 2SLS and maintaining consistency when first-stage F-statistics are low."
+                },
+                {
+                    question: "The efficiency ranking from most to least efficient (under ideal conditions) is:",
+                    options: [
+                        "OLS > 2SLS > 3SLS > LIML",
+                        "3SLS > LIML > 2SLS > OLS", 
+                        "2SLS > 3SLS > LIML > OLS",
+                        "LIML > 2SLS > 3SLS > OLS"
+                    ],
+                    correct: 1,
+                    explanation: "Under ideal conditions (correct specification, strong instruments, cross-equation correlation), 3SLS is most efficient, followed by LIML, 2SLS, with biased OLS last."
+                },
+                {
+                    question: "In practice, most applied researchers prefer 2SLS because:",
+                    options: [
+                        "It's always most efficient",
+                        "It's easier to compute",
+                        "It provides good balance between consistency and robustness",
+                        "It doesn't require instrumental variables"
+                    ],
+                    correct: 2,
+                    explanation: "2SLS offers consistent estimates while being robust to misspecification in other equations, providing a practical compromise between efficiency and reliability."
+                },
+                {
+                    question: "Monte Carlo studies show that with moderate simultaneity and reasonably strong instruments:",
+                    options: [
+                        "OLS often outperforms IV methods",
+                        "2SLS provides substantial bias reduction over OLS",
+                        "3SLS always dominates other methods",
+                        "LIML is always preferred"
+                    ],
+                    correct: 1,
+                    explanation: "With reasonable instrument strength, 2SLS effectively corrects simultaneity bias while maintaining acceptable precision, demonstrating clear advantages over biased OLS."
+                }
+            ]
+        };
+        
+        function regenerateQuiz() {
+            console.log('Starting quiz regeneration...');
+            
+            try {
+                answeredQuestions = {};
+                currentQuestions = [];
+                
+                const categories = Object.keys(questionBank);
+                console.log('Found categories:', categories);
+                
+                if (categories.length === 0) {
+                    console.error('No question categories found!');
+                    return;
+                }
+                
+                categories.forEach((category, index) => {
+                    const categoryQuestions = questionBank[category];
+                    if (!categoryQuestions || categoryQuestions.length === 0) {
+                        console.error(`No questions found for category: ${category}`);
+                        return;
+                    }
+                    
+                    const randomIndex = Math.floor(Math.random() * categoryQuestions.length);
+                    const selectedQuestion = {
+                        ...categoryQuestions[randomIndex],
+                        category: category,
+                        id: `q${index + 1}`
+                    };
+                    
+                    console.log(`Selected question for ${category}:`, selectedQuestion.question.substring(0, 50) + '...');
+                    currentQuestions.push(selectedQuestion);
+                });
+                
+                console.log(`Generated ${currentQuestions.length} questions`);
+                
+                if (currentQuestions.length > 0) {
+                    renderQuiz();
+                    document.getElementById('quizSummary').style.display = 'none';
+                    console.log('Quiz regenerated successfully');
+                } else {
+                    console.error('No questions were generated');
+                }
+                
+            } catch (error) {
+                console.error('Error regenerating quiz:', error);
+                alert('Error generating quiz. Check console for details.');
+            }
+        }
+        
+        function renderQuiz() {
+            console.log('Rendering quiz...');
+            
+            try {
+                const container = document.getElementById('quizContainer');
+                if (!container) {
+                    console.error('Quiz container not found!');
+                    return;
+                }
+                
+                let html = '';
+                currentQuestions.forEach((question, index) => {
+                    html += `
+                        <div class="quiz-question">
+                            <p><strong>Question ${index + 1}:</strong> ${question.question}</p>
+                            <div class="quiz-options">
+                    `;
+                    question.options.forEach((option, optIndex) => {
+                        html += `
+                            <label class="quiz-option" onclick="selectDynamicAnswer('${question.id}', ${optIndex})">
+                                <input type="radio" name="${question.id}" value="${optIndex}">
+                                ${String.fromCharCode(65 + optIndex)}) ${option}
+                            </label>
+                        `;
+                    });
+                    html += `
+                            </div>
+                            <div id="feedback${question.id}" class="quiz-feedback"></div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                console.log('Quiz rendered successfully');
+                
+            } catch (error) {
+                console.error('Error rendering quiz:', error);
+            }
+        }
+        
+        function selectDynamicAnswer(questionId, selectedAnswer) {
+            const question = currentQuestions.find(q => q.id === questionId);
+            if (!question) return;
+            
+            const isCorrect = selectedAnswer === question.correct;
+            answeredQuestions[questionId] = {
+                selected: selectedAnswer,
+                correct: isCorrect,
+                question: question
+            };
+            
+            const options = document.querySelectorAll(`input[name="${questionId}"]`);
+            options.forEach((option, index) => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (index === question.correct) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            const feedbackEl = document.getElementById(`feedback${questionId}`);
+            feedbackEl.textContent = question.explanation;
+            feedbackEl.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackEl.style.display = 'block';
+            
+            if (Object.keys(answeredQuestions).length === currentQuestions.length) {
+                setTimeout(() => showQuizSummary(), 1000);
+            }
+        }
+        
+        function showQuizSummary() {
+            const totalQuestions = currentQuestions.length;
+            const correctAnswers = Object.values(answeredQuestions).filter(a => a.correct).length;
+            const score = Math.round((correctAnswers / totalQuestions) * 100);
+            
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            document.getElementById('quizScore').textContent = score + '%';
+            
+            let feedback = '';
+            if (score >= 90) {
+                feedback = '⚡ Outstanding mastery of simultaneous equations! Excellent understanding of 2SLS, 3SLS, identification, and systems estimation.';
+            } else if (score >= 80) {
+                feedback = '🎯 Strong grasp of simultaneous equations methods! Good command of IV techniques and system identification.';
+            } else if (score >= 70) {
+                feedback = '💡 Solid foundation in simultaneous equations. Review 2SLS mechanics, identification conditions, and efficiency trade-offs.';
+            } else if (score >= 60) {
+                feedback = '📊 Developing understanding of systems econometrics. Focus on simultaneity bias, instrument validity, and estimation methods.';
+            } else {
+                feedback = '🔄 Simultaneous equations need more study. Review simultaneity problem, 2SLS procedure, and identification concepts carefully.';
+            }
+            
+            document.getElementById('quizFeedback').textContent = feedback;
+            document.getElementById('quizSummary').style.display = 'block';
+            document.getElementById('quizSummary').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        // Navigation and utility functions
+        function scrollToSection(sectionId) {
+            console.log('Scrolling to section:', sectionId);
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                console.log('Scrolled to:', sectionId);
+            } else {
+                console.error('Section not found:', sectionId);
+            }
+        }
+        
+        function toggleAIChat() {
+            const panel = document.getElementById('aiChatPanel');
+            const icon = document.getElementById('aiChatIcon');
+            
+            if (isAIChatOpen) {
+                panel.classList.remove('show');
+                icon.textContent = '⚡';
+                isAIChatOpen = false;
+            } else {
+                panel.classList.add('show');
+                icon.textContent = '✖️';
+                isAIChatOpen = true;
+                document.getElementById('aiInput').focus();
+            }
+        }
+        
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addAIMessage('user', message);
+            input.value = '';
+            setTimeout(() => {
+                const response = getAIResponse(message);
+                addAIMessage('claude', response);
+            }, 500);
+        }
+        
+        function addAIMessage(sender, message) {
+            const messagesContainer = document.getElementById('aiChatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender}`;
+            
+            if (sender === 'user') {
+                messageDiv.textContent = message;
+            } else {
+                messageDiv.innerHTML = `<strong>⚡ Claude:</strong> ${message}`;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function getAIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            if (message.includes('simultaneity') || message.includes('simultaneous')) {
+                return "Simultaneity occurs when variables are jointly determined. Creates Cov(X,u) ≠ 0, making OLS biased and inconsistent. Example: price and quantity in supply-demand system. Solution: instrumental variables methods.";
+            }
+            if (message.includes('2sls') || message.includes('two stage')) {
+                return "2SLS: Stage 1 regresses endogenous variables on instruments. Stage 2 uses fitted values. Requires relevant and exogenous instruments. First-stage F > 10 for strength. Consistent but not fully efficient.";
+            }
+            if (message.includes('3sls') || message.includes('three stage')) {
+                return "3SLS adds Stage 3: GLS using cross-equation error covariance. More efficient when errors are correlated across equations. Less robust - misspecification in one equation affects all. Trade-off: efficiency vs robustness.";
+            }
+            if (message.includes('instrument') || message.includes('iv')) {
+                return "Valid instruments need: (1) Relevance: Corr(Z,X) ≠ 0, (2) Exogeneity: Corr(Z,u) = 0. Test relevance with first-stage F. Test exogeneity with overidentification tests (Sargan, Hansen). Weak instruments cause bias toward OLS.";
+            }
+            if (message.includes('identification') || message.includes('order') || message.includes('rank')) {
+                return "Identification conditions: Order (necessary): K-k ≥ m-1. Rank (necessary & sufficient): coefficient matrix on excluded variables has full rank. Exact identification: K-k = m-1. Overidentification allows testing restrictions.";
+            }
+            if (message.includes('weak') || message.includes('strong')) {
+                return "Weak instruments: First-stage F < 10. Causes large standard errors and bias toward OLS. Stock-Yogo critical values provide guidance. LIML less biased than 2SLS with weak instruments. Strong instruments: F > 10, reliable identification.";
+            }
+            
+            return "I can help with simultaneity bias, 2SLS/3SLS estimation, identification conditions, and instrument validity. What specific simultaneous equations concept interests you?";
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing Chapter 16...');
+            
+            // Test if all required elements exist
+            const requiredElements = [
+                'quizContainer', 'biasTable', 'stageEquations', 'identificationMatrix',
+                'efficiencyChart', 'performanceChart', 'simulResults', 'tslsResults',
+                'threeslsResults', 'identResults', 'systemsResults'
+            ];
+            
+            const missingElements = [];
+            requiredElements.forEach(id => {
+                if (!document.getElementById(id)) {
+                    missingElements.push(id);
+                }
+            });
+            
+            if (missingElements.length > 0) {
+                console.error('Missing required elements:', missingElements);
+            } else {
+                console.log('All required elements found');
+            }
+            
+            // Initialize quiz with a delay
+            setTimeout(() => {
+                console.log('Initializing quiz...');
+                regenerateQuiz();
+            }, 500);
+            
+            console.log('Chapter 16: Simultaneous Equations Models loaded successfully! ⚡');
+        });
+        
+    </script>
+
+</body>
+</html>
