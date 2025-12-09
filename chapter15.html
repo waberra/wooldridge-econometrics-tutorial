@@ -1,0 +1,2832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 14: Advanced Panel Data Methods - Wooldridge Econometrics</title>
+    <style>
+        :root {
+            /* Dynamic Systems Theme - Deep blues, teals, and electric accents */
+            --primary-dynamic: #0f172a;
+            --secondary-dynamic: #1e293b;
+            --accent-electric: #06b6d4;
+            --accent-flow: #0284c7;
+            --accent-iv: #0ea5e9;
+            --accent-cluster: #38bdf8;
+            --accent-selection: #7dd3fc;
+            
+            /* Extended palette for advanced techniques */
+            --flow-50: #f0f9ff;
+            --flow-100: #e0f2fe;
+            --flow-200: #bae6fd;
+            --flow-300: #7dd3fc;
+            --flow-400: #38bdf8;
+            --flow-500: #0ea5e9;
+            --flow-600: #0284c7;
+            --flow-700: #0369a1;
+            --flow-800: #075985;
+            --flow-900: #0c4a6e;
+            
+            /* Status colors for advanced methods */
+            --status-dynamic: #059669;
+            --status-iv: #dc2626;
+            --status-multi: #7c3aed;
+            --status-cluster: #ea580c;
+            --status-selection: #0891b2;
+            
+            /* Typography - Distinctive pairing for advanced content */
+            --font-primary: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+            --font-display: 'Inter Display', 'SF Pro Display', system-ui, sans-serif;
+            --font-body: 'Inter', 'SF Pro Text', system-ui, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.6;
+            color: var(--flow-900);
+            background: linear-gradient(135deg, var(--flow-50) 0%, #ffffff 30%, var(--flow-100) 70%, var(--flow-200) 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Dynamic background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(6, 182, 212, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(14, 165, 233, 0.08) 0%, transparent 40%),
+                linear-gradient(45deg, transparent 48%, rgba(56, 189, 248, 0.02) 50%, transparent 52%);
+            z-index: -1;
+            animation: flowBackground 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes flowBackground {
+            0% { transform: translateX(0) scale(1); }
+            100% { transform: translateX(10px) scale(1.02); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header with dynamic flow effect */
+        .header {
+            text-align: center;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, var(--primary-dynamic), var(--secondary-dynamic), var(--flow-700));
+            color: white;
+            margin-bottom: 3rem;
+            border-radius: 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.3);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(6, 182, 212, 0.1),
+                transparent
+            );
+            animation: headerFlow 3s ease-in-out infinite;
+        }
+
+        @keyframes headerFlow {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .chapter-title {
+            font-family: var(--font-display);
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff, var(--accent-electric), var(--accent-flow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.03em;
+            text-shadow: 0 0 30px rgba(6, 182, 212, 0.3);
+        }
+
+        .chapter-subtitle {
+            font-family: var(--font-primary);
+            font-size: 1.4rem;
+            opacity: 0.95;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.5px;
+        }
+
+        /* Advanced Navigation with flowing design */
+        .nav-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--flow-200);
+            position: relative;
+        }
+
+        .nav-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 25px;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--accent-electric), var(--accent-flow), var(--accent-iv));
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: xor;
+            opacity: 0.3;
+        }
+
+        .nav-pills {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            justify-items: center;
+        }
+
+        .nav-pill {
+            padding: 1.25rem 2rem;
+            background: var(--flow-100);
+            border: 2px solid var(--flow-300);
+            border-radius: 20px;
+            color: var(--flow-700);
+            text-decoration: none;
+            font-weight: 700;
+            font-family: var(--font-primary);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            width: 100%;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-pill:hover {
+            background: linear-gradient(135deg, var(--accent-flow), var(--accent-electric));
+            color: white;
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(2, 132, 199, 0.4);
+            border-color: var(--accent-electric);
+        }
+
+        .nav-pill:hover::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.2) 50%, transparent 70%);
+            animation: pillShine 0.6s ease-out;
+        }
+
+        @keyframes pillShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Section Styling with dynamic elements */
+        .section {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--flow-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-electric), var(--accent-flow), var(--accent-iv));
+            animation: sectionFlow 4s ease-in-out infinite;
+        }
+
+        @keyframes sectionFlow {
+            0%, 100% { left: -100%; opacity: 0.7; }
+            50% { left: 100%; opacity: 1; }
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--primary-dynamic);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-flow), transparent);
+            margin-left: 1rem;
+        }
+
+        .section p {
+            margin-bottom: 1.25rem;
+            color: var(--flow-800);
+            line-height: 1.8;
+            font-size: 1.1rem;
+            font-family: var(--font-body);
+        }
+
+        /* Advanced Concept Boxes */
+        .concept-box {
+            background: linear-gradient(135deg, var(--flow-50), rgba(255, 255, 255, 0.8));
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 2px solid var(--flow-200);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .concept-box::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 6px;
+            background: linear-gradient(180deg, var(--accent-flow), var(--accent-electric));
+            border-radius: 0 6px 6px 0;
+        }
+
+        .concept-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(14, 165, 233, 0.15);
+            border-color: var(--accent-flow);
+        }
+
+        .concept-box.dynamic { 
+            border-left: 6px solid var(--status-dynamic); 
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.05), rgba(255, 255, 255, 0.9));
+        }
+        .concept-box.iv { 
+            border-left: 6px solid var(--status-iv); 
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.05), rgba(255, 255, 255, 0.9));
+        }
+        .concept-box.multi { 
+            border-left: 6px solid var(--status-multi); 
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(255, 255, 255, 0.9));
+        }
+        .concept-box.cluster { 
+            border-left: 6px solid var(--status-cluster); 
+            background: linear-gradient(135deg, rgba(234, 88, 12, 0.05), rgba(255, 255, 255, 0.9));
+        }
+        .concept-box.selection { 
+            border-left: 6px solid var(--status-selection); 
+            background: linear-gradient(135deg, rgba(8, 145, 178, 0.05), rgba(255, 255, 255, 0.9));
+        }
+
+        .concept-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            color: var(--primary-dynamic);
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .concept-box.dynamic .concept-title { color: var(--status-dynamic); }
+        .concept-box.iv .concept-title { color: var(--status-iv); }
+        .concept-box.multi .concept-title { color: var(--status-multi); }
+        .concept-box.cluster .concept-title { color: var(--status-cluster); }
+        .concept-box.selection .concept-title { color: var(--status-selection); }
+
+        /* Advanced Formula Styling */
+        .formula {
+            background: var(--primary-dynamic);
+            color: var(--accent-electric);
+            padding: 2rem;
+            border-radius: 15px;
+            font-family: var(--font-primary);
+            font-size: 1rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            box-shadow: inset 0 0 20px rgba(6, 182, 212, 0.1);
+            border: 1px solid var(--secondary-dynamic);
+            position: relative;
+        }
+
+        .formula::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-electric), transparent);
+            animation: formulaGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes formulaGlow {
+            0% { opacity: 0.5; transform: scaleX(0.8); }
+            100% { opacity: 1; transform: scaleX(1); }
+        }
+
+        /* Interactive Controls with flowing design */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2.5rem 0;
+        }
+
+        .control-group {
+            background: linear-gradient(135deg, var(--flow-50), rgba(255, 255, 255, 0.95));
+            backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            border-radius: 20px;
+            border: 2px solid var(--flow-200);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-group:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(14, 165, 233, 0.2);
+            border-color: var(--accent-flow);
+        }
+
+        .control-group::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent 49%, rgba(6, 182, 212, 0.03) 50%, transparent 51%);
+            pointer-events: none;
+        }
+
+        .control-group h4 {
+            color: var(--primary-dynamic);
+            margin-bottom: 2rem;
+            font-weight: 800;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .input-group {
+            margin-bottom: 2rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            color: var(--flow-800);
+            margin-bottom: 1rem;
+            font-family: var(--font-primary);
+            font-size: 0.9rem;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 1.25rem;
+            border: 2px solid var(--flow-300);
+            border-radius: 12px;
+            font-family: var(--font-body);
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--accent-flow);
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+            transform: scale(1.02);
+        }
+
+        .input-group input[type="range"] {
+            background: var(--flow-200);
+            border: none;
+            height: 10px;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .input-group input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-flow), var(--accent-electric));
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .input-group input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.6);
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--accent-flow), var(--accent-electric));
+            color: white;
+            border: none;
+            padding: 1.5rem 3rem;
+            border-radius: 15px;
+            font-weight: 800;
+            font-family: var(--font-primary);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            font-size: 1.1rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(14, 165, 233, 0.5);
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.2) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .action-button:hover::before {
+            transform: translateX(100%);
+        }
+
+        /* Results Display with dynamic styling */
+        .results-panel {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), var(--flow-50));
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 2.5rem 0;
+            border: 2px solid var(--flow-200);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+            display: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .results-panel::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-electric), var(--accent-flow), var(--accent-iv));
+            border-radius: 20px 20px 0 0;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2.5rem;
+            background: linear-gradient(135deg, var(--flow-50), rgba(255, 255, 255, 0.9));
+            border-radius: 15px;
+            border: 2px solid var(--flow-200);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            border-color: var(--accent-flow);
+            box-shadow: 0 15px 40px rgba(14, 165, 233, 0.2);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(6, 182, 212, 0.05) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-value {
+            font-size: 2.8rem;
+            font-weight: 900;
+            margin-bottom: 0.75rem;
+            font-family: var(--font-primary);
+            background: linear-gradient(135deg, var(--accent-flow), var(--accent-electric));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--flow-600);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: var(--font-primary);
+        }
+
+        /* Status Indicators with dynamic styling */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            font-family: var(--font-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-indicator::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.2) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 1s ease;
+        }
+
+        .status-indicator:hover::before {
+            transform: translateX(100%);
+        }
+
+        .status-dynamic {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(5, 150, 105, 0.2));
+            color: var(--status-dynamic);
+            border: 2px solid var(--status-dynamic);
+        }
+
+        .status-iv {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(220, 38, 38, 0.2));
+            color: var(--status-iv);
+            border: 2px solid var(--status-iv);
+        }
+
+        .status-multi {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(124, 58, 237, 0.2));
+            color: var(--status-multi);
+            border: 2px solid var(--status-multi);
+        }
+
+        .status-cluster {
+            background: linear-gradient(135deg, rgba(234, 88, 12, 0.1), rgba(234, 88, 12, 0.2));
+            color: var(--status-cluster);
+            border: 2px solid var(--status-cluster);
+        }
+
+        .status-selection {
+            background: linear-gradient(135deg, rgba(8, 145, 178, 0.1), rgba(8, 145, 178, 0.2));
+            color: var(--status-selection);
+            border: 2px solid var(--status-selection);
+        }
+
+        /* Chart containers with dynamic styling */
+        .chart-container {
+            position: relative;
+            height: 400px;
+            background: linear-gradient(135deg, var(--flow-50), rgba(255, 255, 255, 0.9));
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--flow-200);
+            border-radius: 15px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 70% 30%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
+        }
+
+        /* Dynamic table styling */
+        .advanced-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 2rem 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .advanced-table th {
+            background: linear-gradient(135deg, var(--primary-dynamic), var(--secondary-dynamic));
+            color: white;
+            padding: 1.5rem;
+            font-weight: 800;
+            text-align: center;
+            font-family: var(--font-primary);
+            position: relative;
+        }
+
+        .advanced-table th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-electric), var(--accent-flow));
+        }
+
+        .advanced-table td {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.25rem;
+            text-align: center;
+            border-bottom: 1px solid var(--flow-200);
+            font-weight: 600;
+            font-family: var(--font-primary);
+            transition: all 0.3s ease;
+        }
+
+        .advanced-table td:hover {
+            background: var(--flow-100);
+        }
+
+        /* Quiz Section with advanced styling */
+        .quiz-section {
+            background: linear-gradient(135deg, var(--flow-50), rgba(255, 255, 255, 0.95));
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 3rem;
+            margin: 2.5rem 0;
+            border: 2px solid var(--flow-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(6, 182, 212, 0.03) 120deg, transparent 240deg);
+            animation: quizRotate 20s linear infinite;
+        }
+
+        @keyframes quizRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .quiz-question {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 2px solid var(--flow-200);
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .quiz-question:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(14, 165, 233, 0.15);
+            border-color: var(--accent-flow);
+        }
+
+        .quiz-question p {
+            font-weight: 700;
+            color: var(--flow-900);
+            margin-bottom: 2rem;
+            font-family: var(--font-body);
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            padding: 1.5rem;
+            background: var(--flow-50);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid var(--flow-200);
+            font-family: var(--font-body);
+        }
+
+        .quiz-option:hover {
+            background: var(--flow-100);
+            border-color: var(--accent-flow);
+            transform: translateX(8px);
+        }
+
+        .quiz-option.correct {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(5, 150, 105, 0.2));
+            border-color: var(--status-dynamic);
+            color: var(--status-dynamic);
+        }
+
+        .quiz-option.incorrect {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(220, 38, 38, 0.2));
+            border-color: var(--status-iv);
+            color: var(--status-iv);
+        }
+
+        .quiz-feedback {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 15px;
+            display: none;
+            line-height: 1.8;
+            font-family: var(--font-body);
+        }
+
+        .quiz-feedback.correct {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(5, 150, 105, 0.15));
+            color: var(--status-dynamic);
+            border: 2px solid rgba(5, 150, 105, 0.3);
+        }
+
+        .quiz-feedback.incorrect {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(220, 38, 38, 0.15));
+            color: var(--status-iv);
+            border: 2px solid rgba(220, 38, 38, 0.3);
+        }
+
+        /* AI Chat Widget with dynamic styling */
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        .ai-chat-button {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-flow), var(--accent-electric));
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            box-shadow: 0 15px 50px rgba(14, 165, 233, 0.4);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-chat-button::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--accent-electric), var(--accent-flow), var(--accent-iv));
+            z-index: -1;
+            animation: buttonPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes buttonPulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .ai-chat-button:hover {
+            transform: scale(1.2) translateY(-5px);
+            box-shadow: 0 20px 60px rgba(14, 165, 233, 0.6);
+        }
+
+        .ai-chat-panel {
+            position: absolute;
+            bottom: 95px;
+            right: 0;
+            width: 400px;
+            height: 550px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(30px);
+            border-radius: 25px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
+            border: 2px solid var(--flow-200);
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.4s ease;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ai-chat-panel.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .ai-chat-header {
+            background: linear-gradient(135deg, var(--primary-dynamic), var(--secondary-dynamic));
+            color: white;
+            padding: 2rem;
+            font-weight: 800;
+            font-family: var(--font-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .ai-chat-header::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-electric), var(--accent-flow));
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            background: linear-gradient(135deg, var(--flow-50), rgba(255, 255, 255, 0.8));
+        }
+
+        .ai-message {
+            max-width: 85%;
+            padding: 1.25rem;
+            border-radius: 15px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            font-family: var(--font-body);
+            position: relative;
+        }
+
+        .ai-message.user {
+            background: linear-gradient(135deg, var(--accent-flow), var(--accent-electric));
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 6px;
+        }
+
+        .ai-message.claude {
+            background: linear-gradient(135deg, var(--flow-100), rgba(255, 255, 255, 0.9));
+            color: var(--flow-900);
+            border-bottom-left-radius: 6px;
+            border: 1px solid var(--flow-200);
+        }
+
+        .ai-input-area {
+            padding: 2rem;
+            border-top: 2px solid var(--flow-200);
+            display: flex;
+            gap: 1.25rem;
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 1.25rem;
+            border: 2px solid var(--flow-300);
+            border-radius: 25px;
+            outline: none;
+            font-family: var(--font-body);
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .ai-input:focus {
+            border-color: var(--accent-flow);
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+        }
+
+        .ai-send-btn {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-flow), var(--accent-electric));
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .ai-send-btn:hover {
+            background: linear-gradient(135deg, var(--accent-electric), var(--accent-iv));
+            transform: scale(1.1);
+        }
+
+        /* Animations and Effects */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .fade-in.delay-1 { animation-delay: 0.1s; }
+        .fade-in.delay-2 { animation-delay: 0.2s; }
+        .fade-in.delay-3 { animation-delay: 0.3s; }
+        .fade-in.delay-4 { animation-delay: 0.4s; }
+        .fade-in.delay-5 { animation-delay: 0.5s; }
+        .fade-in.delay-6 { animation-delay: 0.6s; }
+        .fade-in.delay-7 { animation-delay: 0.7s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Flow animation for dynamic elements */
+        .flow-animation {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .flow-animation::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(6, 182, 212, 0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            animation: flowEffect 3s ease-in-out infinite;
+        }
+
+        @keyframes flowEffect {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .chapter-title { font-size: 2.8rem; }
+            .nav-pills { grid-template-columns: 1fr; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: repeat(2, 1fr); }
+            .ai-chat-panel { 
+                width: calc(100vw - 4rem); 
+                right: 2rem; 
+                left: 2rem;
+                height: 500px;
+            }
+            .section { padding: 2rem; }
+            .concept-box { padding: 2rem; }
+        }
+
+        @media (max-width: 480px) {
+            .results-grid { grid-template-columns: 1fr; }
+            .chapter-title { font-size: 2.2rem; }
+            .section-title { font-size: 1.8rem; }
+            .nav-pills { gap: 1rem; }
+            .ai-chat-panel { height: 450px; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header fade-in">
+            <h1 class="chapter-title">⚡ Chapter 14</h1>
+            <p class="chapter-subtitle">Advanced Panel Data Methods</p>
+        </header>
+
+        <!-- Navigation -->
+        <div class="nav-container fade-in delay-1">
+            <div class="nav-pills">
+                <button onclick="scrollToSection('dynamic')" class="nav-pill">
+                    🔄 Dynamic Panel Models
+                </button>
+                <button onclick="scrollToSection('instrumental')" class="nav-pill">
+                    🎯 IV in Panel Data
+                </button>
+                <button onclick="scrollToSection('multi-period')" class="nav-pill">
+                    📊 Multi-Period DiD
+                </button>
+                <button onclick="scrollToSection('clustered')" class="nav-pill">
+                    🔗 Clustered Standard Errors
+                </button>
+                <button onclick="scrollToSection('unbalanced')" class="nav-pill">
+                    ⚖️ Unbalanced Panels
+                </button>
+                <button onclick="scrollToSection('quiz')" class="nav-pill">
+                    🧠 Knowledge Check
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 14.1: Dynamic Panel Models -->
+        <section class="section fade-in delay-2" id="dynamic">
+            <h2 class="section-title">14.1 ⚡ Dynamic Panel Data Models</h2>
+            
+            <p>Dynamic panel models include lagged dependent variables or autocorrelated errors, capturing persistence and adjustment processes in panel data. These models require careful treatment to avoid bias from the correlation between lagged variables and individual effects.</p>
+
+            <div class="concept-box dynamic">
+                <div class="concept-title">🔄 AR(1) Panel Model</div>
+                <p>Panel data with AR(1) errors:</p>
+                <div class="formula">
+                    y_it = α_i + β₁x_it + u_it
+                    <br>u_it = ρu_(i,t-1) + ε_it, |ρ| < 1
+                    <br>where ε_it ~ iid(0, σ²_ε)
+                    <br>Serial correlation requires robust standard errors or FGLS
+                </div>
+                <p><strong>Key challenge:</strong> Standard panel estimators become biased when ρ ≠ 0</p>
+            </div>
+
+            <div class="concept-box iv">
+                <div class="concept-title">📈 Lagged Dependent Variable Model</div>
+                <p>Dynamic panel with lagged y:</p>
+                <div class="formula">
+                    y_it = γy_(i,t-1) + β₁x_it + α_i + u_it
+                    <br>Problem: y_(i,t-1) correlated with α_i
+                    <br>Solution: Anderson-Hsiao estimator or System GMM
+                    <br>First difference: Δy_it = γΔy_(i,t-1) + β₁Δx_it + Δu_it
+                </div>
+                <p><strong>Bias source:</strong> E[y_(i,t-1) · α_i] ≠ 0 makes standard FE/RE inconsistent</p>
+            </div>
+
+            <!-- Dynamic Panel Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>⚡ Dynamic Panel Simulator</h4>
+                    
+                    <div class="input-group">
+                        <label for="dynamicIndividuals">Number of Individuals:</label>
+                        <select id="dynamicIndividuals">
+                            <option value="50">50 individuals</option>
+                            <option value="100" selected>100 individuals</option>
+                            <option value="200">200 individuals</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="dynamicTimePeriods">Time Periods:</label>
+                        <select id="dynamicTimePeriods">
+                            <option value="5">5 periods</option>
+                            <option value="10" selected>10 periods</option>
+                            <option value="20">20 periods</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="autoCorrelation">AR(1) Parameter (ρ):</label>
+                        <input type="range" id="autoCorrelation" min="0" max="0.9" step="0.1" value="0.6">
+                        <span id="autoCorrelationValue">0.6</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="laggedCoefficient">Lagged Y Coefficient (γ):</label>
+                        <input type="range" id="laggedCoefficient" min="0" max="0.8" step="0.1" value="0.4">
+                        <span id="laggedCoefficientValue">0.4</span>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateDynamicPanel()">
+                        ⚡ Run Dynamic Panel Analysis
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📈 Persistence & Adjustment Path</h4>
+                    <div class="chart-container" id="dynamicChart" style="background: var(--flow-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--flow-400); text-align: center;">
+                            Run simulation to visualize<br>dynamic adjustment patterns
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="dynamicResults">
+                <h4 style="color: var(--primary-dynamic); margin-bottom: 1rem;">Dynamic Panel Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="dynamicBias" style="color: var(--status-dynamic);">-</div>
+                        <div class="stat-label">Standard FE Bias</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="dynamicCorrection" style="color: var(--status-iv);">-</div>
+                        <div class="stat-label">Anderson-Hsiao</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="dynamicPersistence" style="color: var(--accent-flow);">-</div>
+                        <div class="stat-label">Persistence</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="dynamicHalfLife" style="color: var(--accent-electric);">-</div>
+                        <div class="stat-label">Half-Life</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="dynamicAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="dynamicInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 14.2: Instrumental Variables in Panel Data -->
+        <section class="section fade-in delay-3" id="instrumental">
+            <h2 class="section-title">14.2 🎯 Instrumental Variables in Panel Data</h2>
+            
+            <p>Panel data provides additional instruments through lagged variables and enables identification of causal effects even when standard panel methods fail due to endogeneity.</p>
+
+            <div class="concept-box iv">
+                <div class="concept-title">🎯 IV with Fixed Effects</div>
+                <p>Two-stage least squares with individual effects:</p>
+                <div class="formula">
+                    y_it = α_i + β₁x₁_it + β₂x₂_it + u_it
+                    <br>where x₂_it is endogenous: Cov(x₂_it, u_it) ≠ 0
+                    <br>First stage: x₂_it = π₀ + π₁z_it + π₂x₁_it + α_i + v_it
+                    <br>Use within transformation then 2SLS
+                </div>
+                <p><strong>Instrument requirement:</strong> Cov(z_it, u_it) = 0 and Cov(z_it, x₂_it) ≠ 0</p>
+            </div>
+
+            <div class="concept-box cluster">
+                <div class="concept-title">📊 Panel IV Identification</div>
+                <p><strong>Sources of identification in panels:</strong><br>
+                • Lagged values as instruments: x_(i,t-2), x_(i,t-3), ...<br>
+                • Cross-sectional variation in timing<br>
+                • External instruments varying across i and t<br>
+                • Differences-in-differences with IV</p>
+                <p><strong>Sargan test:</strong> Test overidentifying restrictions when multiple instruments available</p>
+            </div>
+
+            <!-- IV Panel Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🎯 IV Panel Laboratory</h4>
+                    
+                    <div class="input-group">
+                        <label for="ivIndividuals">Number of Individuals:</label>
+                        <select id="ivIndividuals">
+                            <option value="100">100 individuals</option>
+                            <option value="200" selected>200 individuals</option>
+                            <option value="500">500 individuals</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="ivTimePeriods">Time Periods:</label>
+                        <select id="ivTimePeriods">
+                            <option value="5">5 periods</option>
+                            <option value="8" selected>8 periods</option>
+                            <option value="12">12 periods</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="endogeneityStrength">Endogeneity Strength:</label>
+                        <input type="range" id="endogeneityStrength" min="0" max="0.8" step="0.1" value="0.5">
+                        <span id="endogeneityStrengthValue">0.5</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="instrumentStrength">Instrument Strength:</label>
+                        <input type="range" id="instrumentStrength" min="0.2" max="0.9" step="0.1" value="0.7">
+                        <span id="instrumentStrengthValue">0.7</span>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateIVPanel()">
+                        🎯 Run IV-FE Analysis
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Bias Correction Comparison</h4>
+                    <div class="chart-container" id="ivChart" style="background: var(--flow-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--flow-400); text-align: center;">
+                            Run IV analysis to compare<br>FE vs. IV-FE estimation
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="ivResults">
+                <h4 style="color: var(--primary-dynamic); margin-bottom: 1rem;">IV-Panel Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="ivFEBias" style="color: var(--status-iv);">-</div>
+                        <div class="stat-label">FE Bias</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="ivFEEstimate" style="color: var(--status-dynamic);">-</div>
+                        <div class="stat-label">IV-FE Estimate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="firstStageF" style="color: var(--accent-electric);">-</div>
+                        <div class="stat-label">First-stage F</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="sarganTest" style="color: var(--status-cluster);">-</div>
+                        <div class="stat-label">Sargan p-value</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="ivAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="ivInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 14.3: Multi-Period Difference-in-Differences -->
+        <section class="section fade-in delay-4" id="multi-period">
+            <h2 class="section-title">14.3 📊 Multi-Period Difference-in-Differences</h2>
+            
+            <p>Extending DiD to multiple time periods and staggered treatment adoption requires careful attention to treatment effect heterogeneity and dynamic effects.</p>
+
+            <div class="concept-box multi">
+                <div class="concept-title">📈 Staggered DiD Design</div>
+                <p>Treatment introduced at different times across units:</p>
+                <div class="formula">
+                    y_it = α_i + λ_t + β·D_it + u_it
+                    <br>where D_it = 1 if unit i is treated at time t
+                    <br>Identifying assumption: Parallel trends for all groups
+                    <br>Recent concern: Heterogeneous treatment effects bias
+                </div>
+                <p><strong>Modern approach:</strong> Callaway & Sant'Anna, Sun & Abraham estimators</p>
+            </div>
+
+            <div class="concept-box selection">
+                <div class="concept-title">⏱️ Event Study Design</div>
+                <p>Examining treatment effects around implementation:</p>
+                <div class="formula">
+                    y_it = α_i + λ_t + Σ(k=-K to K) β_k·D_it^k + u_it
+                    <br>where D_it^k = 1 if unit i is k periods relative to treatment
+                    <br>Pre-treatment coefficients test parallel trends
+                    <br>Post-treatment coefficients show dynamic effects
+                </div>
+            </div>
+
+            <!-- Multi-Period DiD Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>📊 Staggered DiD Simulator</h4>
+                    
+                    <div class="input-group">
+                        <label for="multiIndividuals">Number of Units:</label>
+                        <select id="multiIndividuals">
+                            <option value="100">100 units</option>
+                            <option value="200" selected>200 units</option>
+                            <option value="300">300 units</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="multiTimePeriods">Time Periods:</label>
+                        <select id="multiTimePeriods">
+                            <option value="10">10 periods</option>
+                            <option value="15" selected>15 periods</option>
+                            <option value="20">20 periods</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="treatmentHeterogeneity">Effect Heterogeneity:</label>
+                        <input type="range" id="treatmentHeterogeneity" min="0" max="1" step="0.1" value="0.3">
+                        <span id="treatmentHeterogeneityValue">0.3</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="dynamicEffect">Dynamic Treatment Effects:</label>
+                        <input type="range" id="dynamicEffect" min="0" max="0.8" step="0.1" value="0.4">
+                        <span id="dynamicEffectValue">0.4</span>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateMultiPeriodDiD()">
+                        📊 Run Staggered DiD
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>⏱️ Event Study Plot</h4>
+                    <div class="chart-container" id="multiChart" style="background: var(--flow-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--flow-400); text-align: center;">
+                            Run simulation to visualize<br>event study coefficients
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="multiResults">
+                <h4 style="color: var(--primary-dynamic); margin-bottom: 1rem;">Multi-Period DiD Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="multiStandardDiD" style="color: var(--status-multi);">-</div>
+                        <div class="stat-label">Standard DiD</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="multiCallaway" style="color: var(--status-dynamic);">-</div>
+                        <div class="stat-label">Callaway-Sant'Anna</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="multiPreTrends" style="color: var(--accent-flow);">-</div>
+                        <div class="stat-label">Pre-trends p-value</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="multiDynamicRange" style="color: var(--accent-electric);">-</div>
+                        <div class="stat-label">Dynamic Range</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="multiAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="multiInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 14.4: Clustered Standard Errors -->
+        <section class="section fade-in delay-5" id="clustered">
+            <h2 class="section-title">14.4 🔗 Clustered Standard Errors</h2>
+            
+            <p>When errors are correlated within clusters (individuals, regions, time periods), standard errors must be adjusted to provide valid inference. Clustering is essential in panel data analysis.</p>
+
+            <div class="concept-box cluster">
+                <div class="concept-title">🔗 Cluster-Robust Variance</div>
+                <p>Adjusting for within-cluster correlation:</p>
+                <div class="formula">
+                    Var(β̂) = (X'X)⁻¹ [Σ(g=1 to G) X_g'û_g û_g'X_g] (X'X)⁻¹
+                    <br>where g indexes clusters, û_g are cluster residuals
+                    <br>Requires G → ∞ for consistency (rule: G ≥ 42)
+                    <br>Alternative: Bootstrap cluster standard errors
+                </div>
+                <p><strong>Clustering choices:</strong> Individual, time, two-way, or higher-level clustering</p>
+            </div>
+
+            <div class="concept-box selection">
+                <div class="concept-title">🔍 Clustering Decisions</div>
+                <p><strong>When to cluster:</strong><br>
+                • Serial correlation within individuals<br>
+                • Spatial correlation across regions<br>
+                • Common shocks affecting groups<br>
+                • Policy variation at aggregate level</p>
+                <p><strong>Multiple dimensions:</strong> Cameron, Gelbach & Miller two-way clustering</p>
+            </div>
+
+            <!-- Clustered SE Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🔗 Cluster SE Simulator</h4>
+                    
+                    <div class="input-group">
+                        <label for="clusterIndividuals">Number of Individuals:</label>
+                        <select id="clusterIndividuals">
+                            <option value="50">50 individuals</option>
+                            <option value="100" selected>100 individuals</option>
+                            <option value="200">200 individuals</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="clusterTimePeriods">Time Periods:</label>
+                        <select id="clusterTimePeriods">
+                            <option value="5">5 periods</option>
+                            <option value="10" selected>10 periods</option>
+                            <option value="15">15 periods</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="withinClusterCorr">Within-Cluster Correlation:</label>
+                        <input type="range" id="withinClusterCorr" min="0" max="0.8" step="0.1" value="0.5">
+                        <span id="withinClusterCorrValue">0.5</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="clusterSize">Cluster Size Variation:</label>
+                        <input type="range" id="clusterSize" min="0" max="1" step="0.1" value="0.3">
+                        <span id="clusterSizeValue">0.3</span>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateClusteredSE()">
+                        🔗 Compare Standard Errors
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 SE Comparison</h4>
+                    <div class="chart-container" id="clusterChart" style="background: var(--flow-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--flow-400); text-align: center;">
+                            Run simulation to compare<br>standard vs. clustered SEs
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="clusterResults">
+                <h4 style="color: var(--primary-dynamic); margin-bottom: 1rem;">Clustered Standard Errors Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="standardSE" style="color: var(--status-iv);">-</div>
+                        <div class="stat-label">Standard SE</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="clusteredSE" style="color: var(--status-cluster);">-</div>
+                        <div class="stat-label">Clustered SE</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="seDifference" style="color: var(--accent-flow);">-</div>
+                        <div class="stat-label">SE Ratio</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="significanceChange" style="color: var(--status-selection);">-</div>
+                        <div class="stat-label">Inference Change</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="clusterAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="clusterInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 14.5: Unbalanced Panels and Sample Selection -->
+        <section class="section fade-in delay-6" id="unbalanced">
+            <h2 class="section-title">14.5 ⚖️ Unbalanced Panels and Sample Selection</h2>
+            
+            <p>Real-world panel data often suffers from missing observations due to attrition, non-response, or entry/exit. Handling unbalanced panels requires understanding the missingness mechanism.</p>
+
+            <div class="concept-box selection">
+                <div class="concept-title">⚖️ Missing Data Mechanisms</div>
+                <p><strong>Missing Completely at Random (MCAR):</strong> Missingness independent of all variables<br>
+                <strong>Missing at Random (MAR):</strong> Missingness depends only on observed variables<br>
+                <strong>Missing Not at Random (MNAR):</strong> Missingness depends on unobserved factors</p>
+                <p><strong>Panel context:</strong> Attrition often depends on previous outcomes (MNAR)</p>
+            </div>
+
+            <div class="concept-box dynamic">
+                <div class="concept-title">🔄 Handling Unbalanced Panels</div>
+                <p><strong>Standard approaches:</strong><br>
+                • Complete case analysis (listwise deletion)<br>
+                • Available case analysis (pairwise deletion)<br>
+                • Inverse probability weighting<br>
+                • Multiple imputation<br>
+                • Selection models (Heckman-type)</p>
+                <div class="formula">
+                    Selection model: 
+                    <br>Selection equation: s_it = 1[γz_it + η_i + v_it > 0]
+                    <br>Outcome equation: y_it = βx_it + α_i + u_it (if s_it = 1)
+                    <br>Key: E[u_it, v_it] may be non-zero
+                </div>
+            </div>
+
+            <!-- Unbalanced Panel Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>⚖️ Unbalanced Panel Simulator</h4>
+                    
+                    <div class="input-group">
+                        <label for="unbalancedIndividuals">Number of Individuals:</label>
+                        <select id="unbalancedIndividuals">
+                            <option value="100">100 individuals</option>
+                            <option value="200" selected>200 individuals</option>
+                            <option value="500">500 individuals</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="unbalancedTimePeriods">Maximum Time Periods:</label>
+                        <select id="unbalancedTimePeriods">
+                            <option value="8">8 periods</option>
+                            <option value="12" selected>12 periods</option>
+                            <option value="15">15 periods</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="attritionRate">Attrition Rate per Period:</label>
+                        <input type="range" id="attritionRate" min="0.05" max="0.25" step="0.05" value="0.10">
+                        <span id="attritionRateValue">0.10</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="selectionBias">Selection Bias Strength:</label>
+                        <input type="range" id="selectionBias" min="0" max="0.8" step="0.1" value="0.4">
+                        <span id="selectionBiasValue">0.4</span>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateUnbalancedPanel()">
+                        ⚖️ Analyze Unbalanced Panel
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Attrition Patterns</h4>
+                    <div class="chart-container" id="unbalancedChart" style="background: var(--flow-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--flow-400); text-align: center;">
+                            Run simulation to visualize<br>attrition and selection bias
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="unbalancedResults">
+                <h4 style="color: var(--primary-dynamic); margin-bottom: 1rem;">Unbalanced Panel Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="completeCaseBias" style="color: var(--status-iv);">-</div>
+                        <div class="stat-label">Complete Case Bias</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="ipwCorrection" style="color: var(--status-selection);">-</div>
+                        <div class="stat-label">IPW Correction</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="finalSampleSize" style="color: var(--accent-flow);">-</div>
+                        <div class="stat-label">Final Sample %</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="balancednessRatio" style="color: var(--status-dynamic);">-</div>
+                        <div class="stat-label">Balancedness</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="unbalancedAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="unbalancedInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section class="section fade-in delay-7" id="quiz">
+            <div class="quiz-section">
+                <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--primary-dynamic); font-family: var(--font-display); font-size: 2rem; font-weight: 900;">
+                    🧠 Chapter 14 Knowledge Check: Advanced Panel Methods
+                </h3>
+                <p style="text-align: center; color: var(--flow-600); margin-bottom: 2rem; font-family: var(--font-body);">
+                    Test your mastery of dynamic models, IV estimation, multi-period DiD, clustered inference, and unbalanced panels
+                </p>
+                
+                <!-- Regenerate Button -->
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <button onclick="regenerateQuiz()" class="action-button" style="margin: 0; padding: 1rem 2rem; font-size: 1rem; max-width: 300px;">
+                        🔄 Generate New Questions
+                    </button>
+                    <p style="font-size: 0.9rem; color: var(--flow-600); margin-top: 1rem; font-family: var(--font-primary);">
+                        Advanced panel data methods comprehensive assessment
+                    </p>
+                </div>
+                
+                <div id="quizContainer">
+                    <!-- Questions will be dynamically generated here -->
+                </div>
+                
+                <!-- Quiz Results Summary -->
+                <div id="quizSummary" style="display: none; margin-top: 2.5rem; padding: 2rem; background: linear-gradient(135deg, var(--flow-50), rgba(255, 255, 255, 0.95)); border-radius: 15px; border: 2px solid var(--flow-200);">
+                    <h4 style="color: var(--primary-dynamic); margin-bottom: 1.5rem; font-family: var(--font-display);">📊 Advanced Methods Assessment Results</h4>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+                        <div style="text-align: center; padding: 1.5rem; background: rgba(255, 255, 255, 0.9); border-radius: 10px; border: 1px solid var(--flow-200);">
+                            <div id="correctCount" style="font-size: 2rem; font-weight: bold; color: var(--status-dynamic); font-family: var(--font-primary);">-</div>
+                            <div style="font-size: 0.9rem; color: var(--flow-600); font-weight: 600; font-family: var(--font-primary);">CORRECT</div>
+                        </div>
+                        <div style="text-align: center; padding: 1.5rem; background: rgba(255, 255, 255, 0.9); border-radius: 10px; border: 1px solid var(--flow-200);">
+                            <div id="totalQuestions" style="font-size: 2rem; font-weight: bold; color: var(--accent-flow); font-family: var(--font-primary);">-</div>
+                            <div style="font-size: 0.9rem; color: var(--flow-600); font-weight: 600; font-family: var(--font-primary);">TOTAL</div>
+                        </div>
+                        <div style="text-align: center; padding: 1.5rem; background: rgba(255, 255, 255, 0.9); border-radius: 10px; border: 1px solid var(--flow-200);">
+                            <div id="quizScore" style="font-size: 2rem; font-weight: bold; color: var(--accent-electric); font-family: var(--font-primary);">-</div>
+                            <div style="font-size: 0.9rem; color: var(--flow-600); font-weight: 600; font-family: var(--font-primary);">SCORE</div>
+                        </div>
+                    </div>
+                    <div id="quizFeedback" style="color: var(--flow-700); line-height: 1.8; text-align: center; font-family: var(--font-body);"></div>
+                    <button onclick="regenerateQuiz()" class="action-button" style="margin-top: 1.5rem; padding: 1rem 2rem; font-size: 1rem;">
+                        🔄 Try New Advanced Questions
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div class="ai-chat-widget">
+        <button class="ai-chat-button" onclick="toggleAIChat()" title="Ask Claude about Advanced Panel Methods">
+            <span id="aiChatIcon">⚡</span>
+        </button>
+        
+        <div class="ai-chat-panel" id="aiChatPanel">
+            <div class="ai-chat-header">
+                <span>⚡ Advanced Panel Methods Assistant</span>
+                <button onclick="toggleAIChat()" style="background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem;">×</button>
+            </div>
+            
+            <div class="ai-chat-messages" id="aiChatMessages">
+                <div class="ai-message claude">
+                    <strong>⚡ Claude:</strong> Ready to explore advanced panel data methods! I can help with dynamic models, IV estimation, multi-period DiD, clustered inference, and unbalanced panels. What would you like to discuss?
+                </div>
+            </div>
+            
+            <div class="ai-input-area">
+                <input type="text" class="ai-input" id="aiInput" placeholder="Ask about advanced panel methods..." 
+                       onkeydown="if(event.key==='Enter') sendAIMessage()">
+                <button class="ai-send-btn" onclick="sendAIMessage()">→</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let isAIChatOpen = false;
+        let currentQuestions = [];
+        let answeredQuestions = {};
+        
+        // Slider event listeners
+        document.getElementById('autoCorrelation').addEventListener('input', function(e) {
+            document.getElementById('autoCorrelationValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('laggedCoefficient').addEventListener('input', function(e) {
+            document.getElementById('laggedCoefficientValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('endogeneityStrength').addEventListener('input', function(e) {
+            document.getElementById('endogeneityStrengthValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('instrumentStrength').addEventListener('input', function(e) {
+            document.getElementById('instrumentStrengthValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('treatmentHeterogeneity').addEventListener('input', function(e) {
+            document.getElementById('treatmentHeterogeneityValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('dynamicEffect').addEventListener('input', function(e) {
+            document.getElementById('dynamicEffectValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('withinClusterCorr').addEventListener('input', function(e) {
+            document.getElementById('withinClusterCorrValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('clusterSize').addEventListener('input', function(e) {
+            document.getElementById('clusterSizeValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('attritionRate').addEventListener('input', function(e) {
+            document.getElementById('attritionRateValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('selectionBias').addEventListener('input', function(e) {
+            document.getElementById('selectionBiasValue').textContent = e.target.value;
+        });
+        
+        // Advanced simulators
+        function simulateDynamicPanel() {
+            console.log('Starting Dynamic Panel simulation...');
+            
+            try {
+                const rho = parseFloat(document.getElementById('autoCorrelation').value);
+                const gamma = parseFloat(document.getElementById('laggedCoefficient').value);
+                const N = parseInt(document.getElementById('dynamicIndividuals').value);
+                const T = parseInt(document.getElementById('dynamicTimePeriods').value);
+                
+                console.log('Dynamic Parameters:', { rho, gamma, N, T });
+                
+                // Nickell bias approximation
+                const nickellBias = -gamma * (1 + gamma) / T;
+                const andersonHsiao = gamma + (Math.random() - 0.5) * 0.1;
+                const persistence = gamma / (1 - rho);
+                const halfLife = Math.log(0.5) / Math.log(gamma);
+                
+                document.getElementById('dynamicBias').textContent = nickellBias.toFixed(3);
+                document.getElementById('dynamicCorrection').textContent = andersonHsiao.toFixed(3);
+                document.getElementById('dynamicPersistence').textContent = persistence.toFixed(3);
+                document.getElementById('dynamicHalfLife').textContent = halfLife.toFixed(1);
+                
+                const significantBias = Math.abs(nickellBias) > 0.05;
+                const assessmentEl = document.getElementById('dynamicAssessment');
+                assessmentEl.textContent = significantBias ? 'Significant Dynamic Bias' : 'Minimal Bias';
+                assessmentEl.className = `status-indicator ${significantBias ? 'status-iv' : 'status-dynamic'}`;
+                
+                document.getElementById('dynamicInterpretation').textContent = 
+                    `Dynamic panel analysis: Nickell bias = ${nickellBias.toFixed(3)}, corrected estimate = ${andersonHsiao.toFixed(3)}. Persistence = ${persistence.toFixed(2)}, half-life = ${halfLife.toFixed(1)} periods. ${significantBias ? 'Use Anderson-Hsiao or GMM.' : 'Standard FE acceptable.'}`;
+                
+                // Simple visualization
+                const chartContainer = document.getElementById('dynamicChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-dynamic);">Dynamic Panel Analysis</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--status-iv); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Nickell Bias</strong><br>
+                                ${nickellBias.toFixed(3)}
+                            </div>
+                            <div style="background: var(--status-dynamic); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Corrected Est.</strong><br>
+                                ${andersonHsiao.toFixed(3)}
+                            </div>
+                        </div>
+                        <div style="background: var(--flow-100); padding: 12px; border-radius: 8px; margin-top: 10px;">
+                            <strong>Persistence:</strong> ${persistence.toFixed(2)} | <strong>Half-life:</strong> ${halfLife.toFixed(1)} periods
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('dynamicResults').style.display = 'block';
+                console.log('Dynamic panel simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in Dynamic Panel simulation:', error);
+                alert('Error running Dynamic Panel simulation. Check console for details.');
+            }
+        }
+        
+        function simulateIVPanel() {
+            console.log('Starting IV Panel simulation...');
+            
+            try {
+                const endogeneity = parseFloat(document.getElementById('endogeneityStrength').value);
+                const instrumentStrength = parseFloat(document.getElementById('instrumentStrength').value);
+                const N = parseInt(document.getElementById('ivIndividuals').value);
+                const T = parseInt(document.getElementById('ivTimePeriods').value);
+                
+                console.log('IV Parameters:', { endogeneity, instrumentStrength, N, T });
+                
+                // Simulate biases
+                const feBias = endogeneity * 0.8 + (Math.random() - 0.5) * 0.2;
+                const ivfeBias = (Math.random() - 0.5) * 0.15; // Should be close to zero
+                const firstStageF = instrumentStrength * 50 + Math.random() * 20;
+                const sarganP = Math.random() > 0.8 ? 0.03 : 0.45; // Sometimes reject
+                
+                const trueBeta = 1.2;
+                const feEstimate = trueBeta + feBias;
+                const ivfeEstimate = trueBeta + ivfeBias;
+                
+                document.getElementById('ivFEBias').textContent = feBias.toFixed(3);
+                document.getElementById('ivFEEstimate').textContent = ivfeEstimate.toFixed(3);
+                document.getElementById('firstStageF').textContent = firstStageF.toFixed(1);
+                document.getElementById('sarganTest').textContent = sarganP.toFixed(3);
+                
+                const strongInstrument = firstStageF > 10;
+                const validInstruments = sarganP > 0.05;
+                const assessmentEl = document.getElementById('ivAssessment');
+                
+                if (strongInstrument && validInstruments) {
+                    assessmentEl.textContent = 'Valid IV Identification';
+                    assessmentEl.className = 'status-indicator status-dynamic';
+                } else if (!strongInstrument) {
+                    assessmentEl.textContent = 'Weak Instruments';
+                    assessmentEl.className = 'status-indicator status-cluster';
+                } else {
+                    assessmentEl.textContent = 'Invalid Instruments';
+                    assessmentEl.className = 'status-indicator status-iv';
+                }
+                
+                document.getElementById('ivInterpretation').textContent = 
+                    `IV-FE analysis: FE bias = ${feBias.toFixed(3)}, IV-FE estimate = ${ivfeEstimate.toFixed(3)}. First-stage F = ${firstStageF.toFixed(1)}, Sargan p = ${sarganP.toFixed(3)}. ${strongInstrument && validInstruments ? 'Valid identification achieved.' : strongInstrument ? 'Check instrument validity.' : 'Strengthen instruments.'}`;
+                
+                // Chart visualization
+                const chartContainer = document.getElementById('ivChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-dynamic);">IV-FE vs Standard FE</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--status-iv); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>FE (Biased)</strong><br>
+                                ${feEstimate.toFixed(3)}
+                            </div>
+                            <div style="background: var(--status-dynamic); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>IV-FE</strong><br>
+                                ${ivfeEstimate.toFixed(3)}
+                            </div>
+                        </div>
+                        <div style="background: var(--flow-100); padding: 12px; border-radius: 8px;">
+                            First-stage F: ${firstStageF.toFixed(1)} | Sargan p-value: ${sarganP.toFixed(3)}
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('ivResults').style.display = 'block';
+                console.log('IV Panel simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in IV Panel simulation:', error);
+                alert('Error running IV Panel simulation. Check console for details.');
+            }
+        }
+        
+        function simulateMultiPeriodDiD() {
+            console.log('Starting Multi-Period DiD simulation...');
+            
+            try {
+                const heterogeneity = parseFloat(document.getElementById('treatmentHeterogeneity').value);
+                const dynamicStrength = parseFloat(document.getElementById('dynamicEffect').value);
+                
+                console.log('Multi-DiD Parameters:', { heterogeneity, dynamicStrength });
+                
+                // Simulate biased standard DiD vs. improved estimators
+                const standardDiD = 1.5 + heterogeneity * 0.6 + (Math.random() - 0.5) * 0.2;
+                const callawaySA = 1.5 + (Math.random() - 0.5) * 0.15; // Less biased
+                const preTrendsP = heterogeneity > 0.4 ? 0.02 : 0.8; // Violation if high heterogeneity
+                const dynamicRange = dynamicStrength * 2.5;
+                
+                document.getElementById('multiStandardDiD').textContent = standardDiD.toFixed(3);
+                document.getElementById('multiCallaway').textContent = callawaySA.toFixed(3);
+                document.getElementById('multiPreTrends').textContent = preTrendsP.toFixed(3);
+                document.getElementById('multiDynamicRange').textContent = dynamicRange.toFixed(2);
+                
+                const parallelTrendsViolated = preTrendsP < 0.05;
+                const significantHeterogeneity = Math.abs(standardDiD - callawaySA) > 0.2;
+                
+                const assessmentEl = document.getElementById('multiAssessment');
+                if (parallelTrendsViolated) {
+                    assessmentEl.textContent = 'Parallel Trends Violated';
+                    assessmentEl.className = 'status-indicator status-iv';
+                } else if (significantHeterogeneity) {
+                    assessmentEl.textContent = 'Use Modern DiD Methods';
+                    assessmentEl.className = 'status-indicator status-multi';
+                } else {
+                    assessmentEl.textContent = 'Standard DiD Valid';
+                    assessmentEl.className = 'status-indicator status-dynamic';
+                }
+                
+                document.getElementById('multiInterpretation').textContent = 
+                    `Multi-period DiD: Standard estimate = ${standardDiD.toFixed(3)}, Callaway-Sant'Anna = ${callawaySA.toFixed(3)}. Pre-trends p = ${preTrendsP.toFixed(3)}. ${parallelTrendsViolated ? 'Pre-trends violated.' : significantHeterogeneity ? 'Heterogeneous effects detected.' : 'Standard DiD appropriate.'}`;
+                
+                // Event study visualization
+                const chartContainer = document.getElementById('multiChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-dynamic);">Event Study Results</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--status-multi); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Standard DiD</strong><br>
+                                ${standardDiD.toFixed(3)}
+                            </div>
+                            <div style="background: var(--status-dynamic); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Modern Methods</strong><br>
+                                ${callawaySA.toFixed(3)}
+                            </div>
+                        </div>
+                        <div style="background: var(--flow-100); padding: 12px; border-radius: 8px;">
+                            Pre-trends p: ${preTrendsP.toFixed(3)} | Dynamic range: ±${dynamicRange.toFixed(2)}
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('multiResults').style.display = 'block';
+                console.log('Multi-Period DiD simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in Multi-Period DiD simulation:', error);
+                alert('Error running Multi-Period DiD simulation. Check console for details.');
+            }
+        }
+        
+        function simulateClusteredSE() {
+            console.log('Starting Clustered SE simulation...');
+            
+            try {
+                const correlation = parseFloat(document.getElementById('withinClusterCorr').value);
+                const clusterSizeVar = parseFloat(document.getElementById('clusterSize').value);
+                
+                console.log('Cluster Parameters:', { correlation, clusterSizeVar });
+                
+                const standardSE = 0.15;
+                const clusteredSE = standardSE * Math.sqrt(1 + correlation * 5); // Approximate formula
+                const seRatio = clusteredSE / standardSE;
+                
+                const betaEst = 1.2;
+                const standardSignificant = Math.abs(betaEst / standardSE) > 1.96;
+                const clusteredSignificant = Math.abs(betaEst / clusteredSE) > 1.96;
+                const inferenceChange = standardSignificant !== clusteredSignificant;
+                
+                document.getElementById('standardSE').textContent = standardSE.toFixed(3);
+                document.getElementById('clusteredSE').textContent = clusteredSE.toFixed(3);
+                document.getElementById('seDifference').textContent = seRatio.toFixed(2);
+                document.getElementById('significanceChange').textContent = inferenceChange ? 'Yes' : 'No';
+                
+                const substantialIncrease = seRatio > 1.5;
+                const assessmentEl = document.getElementById('clusterAssessment');
+                
+                if (inferenceChange) {
+                    assessmentEl.textContent = 'Clustering Changes Inference';
+                    assessmentEl.className = 'status-indicator status-iv';
+                } else if (substantialIncrease) {
+                    assessmentEl.textContent = 'Large SE Correction';
+                    assessmentEl.className = 'status-indicator status-cluster';
+                } else {
+                    assessmentEl.textContent = 'Minimal Clustering Effect';
+                    assessmentEl.className = 'status-indicator status-dynamic';
+                }
+                
+                document.getElementById('clusterInterpretation').textContent = 
+                    `Clustered SE analysis: Standard SE = ${standardSE.toFixed(3)}, clustered SE = ${clusteredSE.toFixed(3)} (ratio = ${seRatio.toFixed(2)}). ${inferenceChange ? 'Statistical significance changes.' : substantialIncrease ? 'Large upward correction in SEs.' : 'Modest clustering correction.'}`;
+                
+                // SE comparison chart
+                const chartContainer = document.getElementById('clusterChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-dynamic);">Standard Error Comparison</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--status-iv); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Standard SE</strong><br>
+                                ${standardSE.toFixed(3)}
+                            </div>
+                            <div style="background: var(--status-cluster); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Clustered SE</strong><br>
+                                ${clusteredSE.toFixed(3)}
+                            </div>
+                        </div>
+                        <div style="background: var(--flow-100); padding: 12px; border-radius: 8px;">
+                            Ratio: ${seRatio.toFixed(2)} | Inference change: ${inferenceChange ? 'Yes' : 'No'}
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('clusterResults').style.display = 'block';
+                console.log('Clustered SE simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in Clustered SE simulation:', error);
+                alert('Error running Clustered SE simulation. Check console for details.');
+            }
+        }
+        
+        function simulateUnbalancedPanel() {
+            console.log('Starting Unbalanced Panel simulation...');
+            
+            try {
+                const attritionRate = parseFloat(document.getElementById('attritionRate').value);
+                const selectionStrength = parseFloat(document.getElementById('selectionBias').value);
+                const N = parseInt(document.getElementById('unbalancedIndividuals').value);
+                const T = parseInt(document.getElementById('unbalancedTimePeriods').value);
+                
+                console.log('Unbalanced Parameters:', { attritionRate, selectionStrength, N, T });
+                
+                // Calculate final sample
+                const survivalRate = Math.pow(1 - attritionRate, T - 1);
+                const finalSamplePct = survivalRate * 100;
+                
+                // Selection bias
+                const completeCaseBias = selectionStrength * 0.4;
+                const ipwCorrection = completeCaseBias * 0.7; // Partial correction
+                const balancedness = 1 - (attritionRate * T / 2); // Measure of balance
+                
+                document.getElementById('completeCaseBias').textContent = completeCaseBias.toFixed(3);
+                document.getElementById('ipwCorrection').textContent = ipwCorrection.toFixed(3);
+                document.getElementById('finalSampleSize').textContent = finalSamplePct.toFixed(1) + '%';
+                document.getElementById('balancednessRatio').textContent = balancedness.toFixed(3);
+                
+                const severeAttrition = finalSamplePct < 50;
+                const significantBias = Math.abs(completeCaseBias) > 0.2;
+                
+                const assessmentEl = document.getElementById('unbalancedAssessment');
+                if (severeAttrition && significantBias) {
+                    assessmentEl.textContent = 'Severe Selection Issues';
+                    assessmentEl.className = 'status-indicator status-iv';
+                } else if (significantBias) {
+                    assessmentEl.textContent = 'Selection Bias Present';
+                    assessmentEl.className = 'status-indicator status-cluster';
+                } else if (severeAttrition) {
+                    assessmentEl.textContent = 'High Attrition, Low Bias';
+                    assessmentEl.className = 'status-indicator status-multi';
+                } else {
+                    assessmentEl.textContent = 'Manageable Unbalance';
+                    assessmentEl.className = 'status-indicator status-selection';
+                }
+                
+                document.getElementById('unbalancedInterpretation').textContent = 
+                    `Unbalanced panel analysis: ${finalSamplePct.toFixed(1)}% final sample, selection bias = ${completeCaseBias.toFixed(3)}. IPW reduces bias to ${ipwCorrection.toFixed(3)}. ${severeAttrition ? 'Consider selection modeling.' : significantBias ? 'Use IPW or selection correction.' : 'Standard methods adequate.'}`;
+                
+                // Attrition pattern visualization
+                const chartContainer = document.getElementById('unbalancedChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-dynamic);">Attrition Analysis</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--status-iv); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Selection Bias</strong><br>
+                                ${completeCaseBias.toFixed(3)}
+                            </div>
+                            <div style="background: var(--status-selection); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>IPW Corrected</strong><br>
+                                ${ipwCorrection.toFixed(3)}
+                            </div>
+                        </div>
+                        <div style="background: var(--flow-100); padding: 12px; border-radius: 8px;">
+                            Final sample: ${finalSamplePct.toFixed(1)}% | Balancedness: ${balancedness.toFixed(3)}
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('unbalancedResults').style.display = 'block';
+                console.log('Unbalanced Panel simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in Unbalanced Panel simulation:', error);
+                alert('Error running Unbalanced Panel simulation. Check console for details.');
+            }
+        }
+        
+        // Quiz question bank - Advanced panel methods (EXPANDED)
+        const questionBank = {
+            dynamic_models: [
+                {
+                    question: "In a dynamic panel model with lagged dependent variable, why is the standard FE estimator biased?",
+                    options: [
+                        "Because of serial correlation in errors",
+                        "Because y_(i,t-1) is correlated with α_i",
+                        "Because of measurement error in variables",
+                        "Because of heteroskedasticity"
+                    ],
+                    correct: 1,
+                    explanation: "The lagged dependent variable y_(i,t-1) is mechanically correlated with the individual effect α_i, violating the strict exogeneity assumption required for FE consistency."
+                },
+                {
+                    question: "The Anderson-Hsiao estimator for dynamic panels uses:",
+                    options: [
+                        "Within transformation to eliminate fixed effects",
+                        "First differences and lagged levels as instruments",
+                        "Random effects with GLS transformation",
+                        "Two-way clustering for standard errors"
+                    ],
+                    correct: 1,
+                    explanation: "Anderson-Hsiao takes first differences to eliminate α_i and uses y_(i,t-2) as an instrument for Δy_(i,t-1) since levels are valid instruments for differences."
+                },
+                {
+                    question: "The Nickell bias in dynamic panels is approximately:",
+                    options: [
+                        "-1/T",
+                        "-γ/T where γ is the lagged coefficient",
+                        "-(1+γ)/T where γ is the lagged coefficient",
+                        "Always negligible when T > 10"
+                    ],
+                    correct: 2,
+                    explanation: "The Nickell bias is approximately -(1+γ)/T, where γ is the coefficient on the lagged dependent variable. It decreases with T but can be substantial for moderate T."
+                },
+                {
+                    question: "System GMM (Blundell-Bond) improves on difference GMM by:",
+                    options: [
+                        "Using only first differences",
+                        "Adding level equations with lagged differences as instruments",
+                        "Eliminating the need for instruments",
+                        "Using only within-group variation"
+                    ],
+                    correct: 1,
+                    explanation: "System GMM combines differenced equations (with lagged levels as instruments) and level equations (with lagged differences as instruments), improving efficiency especially when series are persistent."
+                },
+                {
+                    question: "In System GMM, the additional orthogonality condition for levels equations requires:",
+                    options: [
+                        "E[Δy_(i,t-1) * (α_i + u_it)] = 0",
+                        "E[y_(i,t-1) * u_it] = 0",
+                        "E[Δy_(i,t-1) * u_it] = 0",
+                        "All individual effects are zero"
+                    ],
+                    correct: 0,
+                    explanation: "The key additional assumption is E[Δy_(i,t-1) * (α_i + u_it)] = 0, meaning lagged differences are uncorrelated with the combined error including individual effects."
+                },
+                {
+                    question: "The Arellano-Bond test for serial correlation tests:",
+                    options: [
+                        "AR(1) in levels",
+                        "AR(2) in first differences",
+                        "Both AR(1) and AR(2) in first differences",
+                        "Only contemporaneous correlation"
+                    ],
+                    correct: 2,
+                    explanation: "We test both AR(1) and AR(2) in differences. AR(1) should be negative (expected with MA(1) structure), but AR(2) should be zero for instrument validity."
+                },
+                {
+                    question: "Dynamic panel bias is most severe when:",
+                    options: [
+                        "T is large and γ is small",
+                        "T is small and γ approaches 1",
+                        "N is large",
+                        "There's no serial correlation"
+                    ],
+                    correct: 1,
+                    explanation: "Bias is most problematic with small T (few time periods) and γ close to 1 (highly persistent series), making the lagged dependent variable almost perfectly correlated with individual effects."
+                },
+                {
+                    question: "A valid instrument for Δy_(i,t-1) in the Anderson-Hsiao approach is:",
+                    options: [
+                        "y_(i,t-1)",
+                        "y_(i,t-2)",
+                        "Δy_(i,t-2)",
+                        "Any past value y_(i,s) where s < t-1"
+                    ],
+                    correct: 3,
+                    explanation: "Any lagged level y_(i,s) with s ≤ t-2 is a valid instrument for Δy_(i,t-1) since levels dated t-2 and earlier are uncorrelated with the difference u_it - u_(i,t-1)."
+                }
+            ],
+            instrumental_variables: [
+                {
+                    question: "When using IV with fixed effects (IV-FE), the instruments must be:",
+                    options: [
+                        "Time-invariant within individuals",
+                        "Uncorrelated with both u_it and α_i",
+                        "Perfectly correlated with the endogenous variable",
+                        "Normally distributed"
+                    ],
+                    correct: 1,
+                    explanation: "In IV-FE, instruments must be uncorrelated with both the idiosyncratic error u_it and the individual effect α_i after within transformation."
+                },
+                {
+                    question: "The first-stage F-statistic in IV estimation tests:",
+                    options: [
+                        "Whether the instruments are valid (uncorrelated with errors)",
+                        "Whether the instruments are relevant (correlated with endogenous variables)",
+                        "Whether there is heteroskedasticity",
+                        "Whether fixed effects are necessary"
+                    ],
+                    correct: 1,
+                    explanation: "The first-stage F-statistic tests instrument relevance - whether instruments are sufficiently correlated with endogenous variables. Weak instruments (F < 10) cause bias."
+                },
+                {
+                    question: "The Sargan test in panel IV estimation tests:",
+                    options: [
+                        "Instrument strength",
+                        "Presence of serial correlation",
+                        "Overidentifying restrictions (instrument validity)",
+                        "Need for fixed effects"
+                    ],
+                    correct: 2,
+                    explanation: "The Sargan test examines whether overidentifying restrictions hold, testing whether instruments are valid (uncorrelated with the error term) when there are more instruments than endogenous variables."
+                },
+                {
+                    question: "In panel data, lagged values make good instruments because:",
+                    options: [
+                        "They are always available",
+                        "They are correlated with current values but uncorrelated with current errors under strict exogeneity",
+                        "They eliminate fixed effects automatically",
+                        "They are normally distributed"
+                    ],
+                    correct: 1,
+                    explanation: "Under strict exogeneity (E[u_it|x_i1,...,x_iT, α_i] = 0), lagged values are correlated with current endogenous variables but uncorrelated with current errors, making them valid instruments."
+                },
+                {
+                    question: "Weak instrument bias in 2SLS is:",
+                    options: [
+                        "Toward zero (attenuation bias)",
+                        "Toward the OLS estimate",
+                        "Always upward",
+                        "Eliminated with large samples"
+                    ],
+                    correct: 1,
+                    explanation: "With weak instruments, 2SLS is biased toward the OLS estimate. The bias persists even in large samples if instruments remain weak (concentration parameter doesn't grow)."
+                },
+                {
+                    question: "The Kleibergen-Paap test is used for:",
+                    options: [
+                        "Testing for weak identification in IV",
+                        "Testing for serial correlation",
+                        "Choosing between FE and RE",
+                        "Testing for instrument validity"
+                    ],
+                    correct: 0,
+                    explanation: "The Kleibergen-Paap test is a robust version of the first-stage F-test that works with non-iid errors, testing whether instruments are sufficiently strong for identification."
+                },
+                {
+                    question: "An internal instrument in panel data is:",
+                    options: [
+                        "An instrument constructed from the data itself",
+                        "A time-invariant characteristic",
+                        "Always a lagged value of variables in the model",
+                        "An instrument that's part of the original dataset"
+                    ],
+                    correct: 0,
+                    explanation: "Internal instruments are constructed from the data itself (like lagged values) rather than coming from external sources, exploiting the panel structure for identification."
+                },
+                {
+                    question: "The Hansen J-test for overidentification:",
+                    options: [
+                        "Is asymptotically distributed as N(0,1)",
+                        "Is robust to heteroskedasticity and clustering",
+                        "Tests the null that all instruments are endogenous",
+                        "Requires exactly identified models"
+                    ],
+                    correct: 1,
+                    explanation: "The Hansen J-test is the heteroskedasticity-robust version of the Sargan test, testing whether overidentifying restrictions hold when errors are non-iid."
+                }
+            ],
+            multi_period_did: [
+                {
+                    question: "The main problem with standard two-way fixed effects DiD in staggered designs is:",
+                    options: [
+                        "It cannot handle multiple time periods",
+                        "It uses already-treated units as controls, causing bias with heterogeneous effects",
+                        "It requires balanced panels",
+                        "It assumes no serial correlation"
+                    ],
+                    correct: 1,
+                    explanation: "In staggered designs, standard TWFE uses already-treated units as implicit controls for newly treated units, creating bias when treatment effects are heterogeneous across units or time."
+                },
+                {
+                    question: "The Callaway-Sant'Anna estimator addresses staggered DiD problems by:",
+                    options: [
+                        "Using only never-treated units as controls",
+                        "Averaging group-time specific treatment effects appropriately",
+                        "Eliminating the need for parallel trends",
+                        "Both A and B"
+                    ],
+                    correct: 3,
+                    explanation: "Callaway-Sant'Anna uses clean comparison groups (never-treated or not-yet-treated units) and constructs proper averages of group-time treatment effects, avoiding problematic comparisons."
+                },
+                {
+                    question: "Event study designs are useful for:",
+                    options: [
+                        "Testing pre-treatment parallel trends",
+                        "Examining dynamic treatment effects",
+                        "Identifying the precise timing of effects",
+                        "All of the above"
+                    ],
+                    correct: 3,
+                    explanation: "Event studies test pre-treatment parallel trends (coefficients before treatment should be zero), reveal dynamic post-treatment effects, and show precisely when effects occur."
+                },
+                {
+                    question: "Pre-treatment coefficients in an event study should be:",
+                    options: [
+                        "Large and significant",
+                        "Statistically indistinguishable from zero",
+                        "Increasing over time",
+                        "Negative"
+                    ],
+                    correct: 1,
+                    explanation: "Pre-treatment coefficients should be zero (statistically insignificant) to support the parallel trends assumption. Significant pre-treatment effects suggest assumption violations."
+                },
+                {
+                    question: "The 'forbidden comparison' problem in staggered DiD refers to:",
+                    options: [
+                        "Comparing treatment and control groups",
+                        "Using already-treated units as controls for newly treated units",
+                        "Comparing different time periods",
+                        "Using leads and lags in event studies"
+                    ],
+                    correct: 1,
+                    explanation: "The forbidden comparison uses units treated in earlier periods as implicit controls for units treated later, which is problematic if treatment effects are heterogeneous or evolve over time."
+                },
+                {
+                    question: "Sun and Abraham (2020) interaction-weighted estimator:",
+                    options: [
+                        "Uses only never-treated units",
+                        "Reweights TWFE to avoid forbidden comparisons",
+                        "Requires balanced panels",
+                        "Cannot handle dynamic effects"
+                    ],
+                    correct: 1,
+                    explanation: "Sun-Abraham reweights the standard TWFE estimator to remove the problematic variance weights that create forbidden comparisons while maintaining computational simplicity."
+                },
+                {
+                    question: "In staggered DiD, heterogeneous treatment effects cause TWFE bias because:",
+                    options: [
+                        "Different groups have different treatment timing",
+                        "TWFE uses a weighted average with potentially negative weights",
+                        "Parallel trends are violated",
+                        "Sample sizes are unbalanced"
+                    ],
+                    correct: 1,
+                    explanation: "TWFE creates a weighted average of all 2×2 DiD comparisons, but some comparisons receive negative weights when treatment effects are heterogeneous, causing bias."
+                },
+                {
+                    question: "The 'doubly robust' property in DiD means:",
+                    options: [
+                        "Both group and time fixed effects are included",
+                        "The estimator is consistent if either the outcome or selection model is correct",
+                        "Standard errors are robust to both heteroskedasticity and clustering",
+                        "The estimator works with both balanced and unbalanced panels"
+                    ],
+                    correct: 1,
+                    explanation: "Doubly robust estimators (like those using IPW) are consistent if either the outcome regression or the propensity score model is correctly specified."
+                },
+                {
+                    question: "Goodman-Bacon decomposition shows that TWFE DiD is:",
+                    options: [
+                        "Always unbiased",
+                        "A variance-weighted average of all possible 2×2 DiD estimates",
+                        "Only valid with never-treated controls",
+                        "Equivalent to first-differencing"
+                    ],
+                    correct: 1,
+                    explanation: "Goodman-Bacon decomposes TWFE into all possible 2×2 DiD comparisons with variance-based weights, revealing when problematic comparisons receive substantial weight."
+                }
+            ],
+            clustered_errors: [
+                {
+                    question: "Clustering standard errors is necessary when:",
+                    options: [
+                        "Sample size is small",
+                        "Errors are correlated within clusters",
+                        "Treatment varies at the individual level",
+                        "Using fixed effects"
+                    ],
+                    correct: 1,
+                    explanation: "Clustering is required when errors are correlated within clusters (individuals, regions, time periods), violating the independence assumption needed for standard standard errors."
+                },
+                {
+                    question: "The rule of thumb for minimum number of clusters is:",
+                    options: [
+                        "At least 20 clusters",
+                        "At least 42 clusters", 
+                        "At least 100 clusters",
+                        "No minimum required"
+                    ],
+                    correct: 1,
+                    explanation: "The conventional rule suggests at least 42 clusters for cluster-robust standard errors to be reliable, though this can vary depending on cluster size balance and other factors."
+                },
+                {
+                    question: "Two-way clustering (e.g., by individual and time) is appropriate when:",
+                    options: [
+                        "You have exactly two explanatory variables",
+                        "Errors may be correlated within individuals AND within time periods",
+                        "Sample size is very large",
+                        "Using random effects"
+                    ],
+                    correct: 1,
+                    explanation: "Two-way clustering allows for correlation within individuals (across time) AND within time periods (across individuals), using the Cameron-Gelbach-Miller adjustment."
+                },
+                {
+                    question: "When cluster-robust standard errors are much larger than standard errors:",
+                    options: [
+                        "There's an error in calculation",
+                        "There's significant within-cluster correlation",
+                        "Fixed effects are inappropriate",
+                        "The model is misspecified"
+                    ],
+                    correct: 1,
+                    explanation: "Large increases in clustered SEs indicate substantial within-cluster correlation that was ignored by standard SEs, demonstrating the importance of the clustering adjustment."
+                },
+                {
+                    question: "The Moulton factor in clustered data reflects:",
+                    options: [
+                        "The ratio of clustered to standard standard errors",
+                        "The intra-cluster correlation and cluster size",
+                        "The number of observations per cluster",
+                        "The variance inflation from clustering"
+                    ],
+                    correct: 3,
+                    explanation: "The Moulton factor = √[1 + ρ(m-1)] where ρ is intra-cluster correlation and m is cluster size, showing how clustering inflates standard errors."
+                },
+                {
+                    question: "Wild cluster bootstrap is useful when:",
+                    options: [
+                        "Number of clusters is small",
+                        "Clusters are perfectly balanced",
+                        "Using time series data",
+                        "Sample size is very large"
+                    ],
+                    correct: 0,
+                    explanation: "Wild cluster bootstrap provides more reliable inference when the number of clusters is small (e.g., less than 42), where asymptotic cluster-robust methods may perform poorly."
+                },
+                {
+                    question: "Multi-way clustering (beyond two-way) is:",
+                    options: [
+                        "Always more conservative than two-way",
+                        "Computationally simple using inclusion-exclusion",
+                        "Only valid with balanced panels",
+                        "Equivalent to using the highest level cluster only"
+                    ],
+                    correct: 1,
+                    explanation: "Multi-way clustering uses the inclusion-exclusion principle to combine variance estimates from all possible clustering combinations, though it can become computationally intensive."
+                },
+                {
+                    question: "Spatial clustering should be used when:",
+                    options: [
+                        "Data has a geographic component",
+                        "Errors are correlated between nearby locations",
+                        "Treatment effects vary by region",
+                        "All of the above"
+                    ],
+                    correct: 3,
+                    explanation: "Spatial clustering addresses correlation between geographically proximate units, especially important when spillovers, common shocks, or spatial sorting create correlation patterns."
+                }
+            ],
+            unbalanced_panels: [
+                {
+                    question: "Missing Completely at Random (MCAR) means:",
+                    options: [
+                        "Missingness depends on observed variables only",
+                        "Missingness depends on unobserved variables",
+                        "Missingness is independent of all variables",
+                        "Missingness has a seasonal pattern"
+                    ],
+                    correct: 2,
+                    explanation: "MCAR means the probability of missing data is completely independent of both observed and unobserved variables - the strongest (and least realistic) missing data assumption."
+                },
+                {
+                    question: "Attrition in panel studies is typically:",
+                    options: [
+                        "Missing Completely at Random (MCAR)",
+                        "Missing at Random (MAR)",
+                        "Missing Not at Random (MNAR)",
+                        "Always ignorable"
+                    ],
+                    correct: 2,
+                    explanation: "Panel attrition is usually MNAR because the decision to drop out often depends on unobserved factors or future outcomes that would have occurred, making it non-ignorable."
+                },
+                {
+                    question: "Inverse probability weighting (IPW) for panel attrition:",
+                    options: [
+                        "Weights observations by their treatment status",
+                        "Weights observations by inverse of their selection probability",
+                        "Only works with balanced panels",
+                        "Eliminates all selection bias"
+                    ],
+                    correct: 1,
+                    explanation: "IPW weights observations by the inverse of their estimated probability of being observed, giving higher weight to observations that are similar to those that dropped out."
+                },
+                {
+                    question: "The advantage of using all available data (pairwise deletion) over complete cases is:",
+                    options: [
+                        "Larger effective sample size",
+                        "Simpler analysis",
+                        "Always unbiased estimates",
+                        "No computational burden"
+                    ],
+                    correct: 0,
+                    explanation: "Using all available data maintains larger sample sizes and can improve efficiency, though it may complicate standard error calculations and doesn't necessarily eliminate bias."
+                },
+                {
+                    question: "The Heckman selection model for panel data requires:",
+                    options: [
+                        "An exclusion restriction in the selection equation",
+                        "Normally distributed errors",
+                        "Balanced panels",
+                        "Time-invariant selection"
+                    ],
+                    correct: 0,
+                    explanation: "Heckman selection models require at least one variable that affects selection but not the outcome (exclusion restriction) for identification, though distributional assumptions help efficiency."
+                },
+                {
+                    question: "Missing at Random (MAR) assumption means:",
+                    options: [
+                        "Missingness is completely random",
+                        "Missingness depends only on observed variables",
+                        "Missingness depends on unobserved variables",
+                        "No assumptions about missingness"
+                    ],
+                    correct: 1,
+                    explanation: "MAR means missingness depends only on observed variables, not on the missing values themselves or other unobserved factors."
+                },
+                {
+                    question: "Monotone missing patterns occur when:",
+                    options: [
+                        "Missing data has no pattern",
+                        "Once an individual drops out, they never return",
+                        "Missingness alternates over time",
+                        "All individuals have the same missing pattern"
+                    ],
+                    correct: 1,
+                    explanation: "Monotone patterns occur when individuals drop out permanently (common in panels), making some imputation methods more tractable than with arbitrary missing patterns."
+                },
+                {
+                    question: "Multiple imputation for panel data should account for:",
+                    options: [
+                        "Only cross-sectional relationships",
+                        "Both cross-sectional and temporal correlations",
+                        "Only the most recent observation",
+                        "Only between-individual variation"
+                    ],
+                    correct: 1,
+                    explanation: "Panel data imputation should preserve both cross-sectional relationships between variables and temporal correlations within individuals, requiring specialized imputation models."
+                }
+            ]
+        };
+        
+        function regenerateQuiz() {
+            console.log('Starting quiz regeneration...');
+            
+            try {
+                answeredQuestions = {};
+                currentQuestions = [];
+                
+                const categories = Object.keys(questionBank);
+                console.log('Found categories:', categories);
+                
+                if (categories.length === 0) {
+                    console.error('No question categories found!');
+                    return;
+                }
+                
+                categories.forEach((category, index) => {
+                    const categoryQuestions = questionBank[category];
+                    if (!categoryQuestions || categoryQuestions.length === 0) {
+                        console.error(`No questions found for category: ${category}`);
+                        return;
+                    }
+                    
+                    const randomIndex = Math.floor(Math.random() * categoryQuestions.length);
+                    const selectedQuestion = {
+                        ...categoryQuestions[randomIndex],
+                        category: category,
+                        id: `q${index + 1}`
+                    };
+                    
+                    console.log(`Selected question for ${category}:`, selectedQuestion.question.substring(0, 50) + '...');
+                    currentQuestions.push(selectedQuestion);
+                });
+                
+                console.log(`Generated ${currentQuestions.length} questions`);
+                
+                if (currentQuestions.length > 0) {
+                    renderQuiz();
+                    document.getElementById('quizSummary').style.display = 'none';
+                    console.log('Quiz regenerated successfully');
+                } else {
+                    console.error('No questions were generated');
+                }
+                
+            } catch (error) {
+                console.error('Error regenerating quiz:', error);
+                alert('Error generating quiz. Check console for details.');
+            }
+        }
+        
+        function renderQuiz() {
+            console.log('Rendering quiz...');
+            
+            try {
+                const container = document.getElementById('quizContainer');
+                if (!container) {
+                    console.error('Quiz container not found!');
+                    return;
+                }
+                
+                let html = '';
+                currentQuestions.forEach((question, index) => {
+                    html += `
+                        <div class="quiz-question">
+                            <p><strong>Question ${index + 1}:</strong> ${question.question}</p>
+                            <div class="quiz-options">
+                    `;
+                    question.options.forEach((option, optIndex) => {
+                        html += `
+                            <label class="quiz-option" onclick="selectDynamicAnswer('${question.id}', ${optIndex})">
+                                <input type="radio" name="${question.id}" value="${optIndex}">
+                                ${String.fromCharCode(65 + optIndex)}) ${option}
+                            </label>
+                        `;
+                    });
+                    html += `
+                            </div>
+                            <div id="feedback${question.id}" class="quiz-feedback"></div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                console.log('Quiz rendered successfully');
+                
+            } catch (error) {
+                console.error('Error rendering quiz:', error);
+            }
+        }
+        
+        function selectDynamicAnswer(questionId, selectedAnswer) {
+            const question = currentQuestions.find(q => q.id === questionId);
+            if (!question) return;
+            
+            const isCorrect = selectedAnswer === question.correct;
+            answeredQuestions[questionId] = {
+                selected: selectedAnswer,
+                correct: isCorrect,
+                question: question
+            };
+            
+            const options = document.querySelectorAll(`input[name="${questionId}"]`);
+            options.forEach((option, index) => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (index === question.correct) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            const feedbackEl = document.getElementById(`feedback${questionId}`);
+            feedbackEl.textContent = question.explanation;
+            feedbackEl.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackEl.style.display = 'block';
+            
+            if (Object.keys(answeredQuestions).length === currentQuestions.length) {
+                setTimeout(() => showQuizSummary(), 1000);
+            }
+        }
+        
+        function showQuizSummary() {
+            const totalQuestions = currentQuestions.length;
+            const correctAnswers = Object.values(answeredQuestions).filter(a => a.correct).length;
+            const score = Math.round((correctAnswers / totalQuestions) * 100);
+            
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            document.getElementById('quizScore').textContent = score + '%';
+            
+            let feedback = '';
+            if (score >= 90) {
+                feedback = '🌟 Exceptional mastery of advanced panel methods! Outstanding understanding of dynamic models, IV estimation, modern DiD, clustering, and selection issues.';
+            } else if (score >= 80) {
+                feedback = '🎯 Excellent grasp of advanced econometric techniques! Strong command of sophisticated panel data methods and their implementation challenges.';
+            } else if (score >= 70) {
+                feedback = '💡 Solid foundation in advanced methods. Review dynamic panel bias, IV identification, clustering decisions, and modern DiD approaches.';
+            } else if (score >= 60) {
+                feedback = '📈 Developing expertise in advanced methods. Focus on instrument validity, selection mechanisms, and heterogeneous treatment effects.';
+            } else {
+                feedback = '🔬 Complex advanced material requires more study. Master Chapter 13 basics first, then study dynamic models, IV theory, and modern DiD literature carefully.';
+            }
+            
+            document.getElementById('quizFeedback').textContent = feedback;
+            document.getElementById('quizSummary').style.display = 'block';
+            document.getElementById('quizSummary').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        // Navigation and utility functions
+        function scrollToSection(sectionId) {
+            console.log('Scrolling to section:', sectionId);
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                console.log('Scrolled to:', sectionId);
+            } else {
+                console.error('Section not found:', sectionId);
+            }
+        }
+        
+        function toggleAIChat() {
+            const panel = document.getElementById('aiChatPanel');
+            const icon = document.getElementById('aiChatIcon');
+            
+            if (isAIChatOpen) {
+                panel.classList.remove('show');
+                icon.textContent = '⚡';
+                isAIChatOpen = false;
+            } else {
+                panel.classList.add('show');
+                icon.textContent = '✖️';
+                isAIChatOpen = true;
+                document.getElementById('aiInput').focus();
+            }
+        }
+        
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addAIMessage('user', message);
+            input.value = '';
+            setTimeout(() => {
+                const response = getAIResponse(message);
+                addAIMessage('claude', response);
+            }, 500);
+        }
+        
+        function addAIMessage(sender, message) {
+            const messagesContainer = document.getElementById('aiChatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender}`;
+            
+            if (sender === 'user') {
+                messageDiv.textContent = message;
+            } else {
+                messageDiv.innerHTML = `<strong>⚡ Claude:</strong> ${message}`;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function getAIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            if (message.includes('dynamic') || message.includes('lagged') || message.includes('nickell')) {
+                return "Dynamic panels with lagged y_it face Nickell bias: y_(i,t-1) correlates with α_i. Use Anderson-Hsiao (first differences + lagged levels as instruments) or System GMM. Bias ≈ -(1+γ)/T.";
+            }
+            if (message.includes('iv') || message.includes('instrumental') || message.includes('endogeneity')) {
+                return "IV in panels: Use lagged values as instruments under strict exogeneity. Check first-stage F > 10 for relevance, Sargan test for validity. IV-FE combines within transformation with 2SLS.";
+            }
+            if (message.includes('multi') || message.includes('staggered') || message.includes('callaway')) {
+                return "Staggered DiD problems: Standard TWFE uses treated units as controls, causing bias. Solutions: Callaway-Sant'Anna, Sun-Abraham. Use clean control groups and proper effect averaging.";
+            }
+            if (message.includes('cluster') || message.includes('standard error') || message.includes('correlation')) {
+                return "Cluster standard errors when errors correlate within groups. Need 42+ clusters. Two-way clustering handles correlation within individuals AND time periods. Large SE increases indicate substantial clustering.";
+            }
+            if (message.includes('unbalanced') || message.includes('attrition') || message.includes('missing')) {
+                return "Panel attrition is usually MNAR (depends on unobservables). Solutions: IPW (reweight by selection probability), selection models, multiple imputation. Test sensitivity to missing assumptions.";
+            }
+            if (message.includes('gmm') || message.includes('system') || message.includes('blundell')) {
+                return "System GMM combines difference equations (levels as instruments) with level equations (differences as instruments). More efficient than difference GMM for persistent series. Check AR tests and instrument validity.";
+            }
+            
+            return "I can help with dynamic panel models, IV estimation, multi-period DiD, clustered standard errors, and unbalanced panels. What specific advanced method interests you?";
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing Chapter 14...');
+            
+            // Test if all required elements exist
+            const requiredElements = [
+                'quizContainer', 'dynamicChart', 'ivChart', 'multiChart', 
+                'clusterChart', 'unbalancedChart', 'dynamicResults', 'ivResults',
+                'multiResults', 'clusterResults', 'unbalancedResults'
+            ];
+            
+            const missingElements = [];
+            requiredElements.forEach(id => {
+                if (!document.getElementById(id)) {
+                    missingElements.push(id);
+                }
+            });
+            
+            if (missingElements.length > 0) {
+                console.error('Missing required elements:', missingElements);
+            } else {
+                console.log('All required elements found');
+            }
+            
+            // Initialize quiz with a delay
+            setTimeout(() => {
+                console.log('Initializing quiz...');
+                regenerateQuiz();
+            }, 500);
+            
+            console.log('Chapter 14: Advanced Panel Data Methods loaded successfully! ⚡');
+        });
+        
+    </script>
+
+</body>
+</html>
