@@ -1,0 +1,2562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 15: Advanced Time Series Topics - Wooldridge Econometrics</title>
+    <style>
+        :root {
+            /* Advanced Time Series Theme - Deep greens and temporal flows */
+            --primary-time: #064e3b;
+            --secondary-time: #065f46;
+            --accent-var: #059669;
+            --accent-coint: #10b981;
+            --accent-impulse: #34d399;
+            --accent-granger: #6ee7b7;
+            --flow-50: #ecfdf5;
+            --flow-100: #d1fae5;
+            --flow-200: #a7f3d0;
+            --flow-300: #6ee7b7;
+            --flow-400: #34d399;
+            --flow-500: #10b981;
+            --flow-600: #059669;
+            --flow-700: #047857;
+            --flow-800: #065f46;
+            --flow-900: #064e3b;
+            
+            /* Method-specific colors */
+            --status-var: #059669;
+            --status-coint: #0891b2;
+            --status-impulse: #7c3aed;
+            --status-granger: #dc2626;
+            --status-structural: #ea580c;
+            --status-forecast: #0284c7;
+            
+            /* Typography */
+            --font-primary: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            line-height: 1.6;
+            color: var(--flow-900);
+            background: linear-gradient(135deg, var(--flow-50) 0%, #ffffff 40%, var(--flow-100) 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated time series background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(90deg, transparent 49%, rgba(5, 150, 105, 0.03) 50%, transparent 51%),
+                linear-gradient(0deg, transparent 49%, rgba(16, 185, 129, 0.02) 50%, transparent 51%);
+            background-size: 40px 40px;
+            z-index: -1;
+            animation: timeFlow 15s linear infinite;
+        }
+
+        @keyframes timeFlow {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(40px); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, var(--primary-time), var(--secondary-time), var(--flow-700));
+            color: white;
+            margin-bottom: 3rem;
+            border-radius: 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(6, 78, 59, 0.3);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(45deg, transparent 30%, rgba(16, 185, 129, 0.1) 50%, transparent 70%),
+                linear-gradient(-45deg, transparent 30%, rgba(52, 211, 153, 0.05) 50%, transparent 70%);
+            animation: temporalFlow 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes temporalFlow {
+            0% { opacity: 0.3; transform: translateX(-10px); }
+            100% { opacity: 0.7; transform: translateX(10px); }
+        }
+
+        .chapter-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff, var(--accent-var), var(--accent-impulse));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.03em;
+        }
+
+        .chapter-subtitle {
+            font-size: 1.4rem;
+            opacity: 0.95;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.5px;
+        }
+
+        /* Navigation */
+        .nav-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--flow-200);
+            position: relative;
+        }
+
+        .nav-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 25px;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--accent-var), var(--accent-coint), var(--accent-impulse));
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: xor;
+            opacity: 0.3;
+        }
+
+        .nav-pills {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            justify-items: center;
+        }
+
+        .nav-pill {
+            padding: 1.25rem 2rem;
+            background: var(--flow-100);
+            border: 2px solid var(--flow-300);
+            border-radius: 20px;
+            color: var(--flow-700);
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            width: 100%;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-pill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-pill:hover::before {
+            left: 100%;
+        }
+
+        .nav-pill:hover {
+            background: var(--primary-time);
+            color: white;
+            transform: translateY(-4px);
+            border-color: var(--accent-var);
+            box-shadow: 0 12px 35px rgba(6, 78, 59, 0.3);
+        }
+
+        /* Section Styling */
+        .section {
+            background: white;
+            border-radius: 25px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--flow-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent-var), var(--accent-coint));
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-time);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section p {
+            margin-bottom: 1rem;
+            color: var(--flow-700);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        /* Concept Boxes */
+        .concept-box {
+            background: var(--flow-50);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 1px solid var(--flow-200);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .concept-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(5, 150, 105, 0.15);
+        }
+
+        .concept-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+        }
+
+        .concept-box.var::before { background: var(--status-var); }
+        .concept-box.coint::before { background: var(--status-coint); }
+        .concept-box.impulse::before { background: var(--status-impulse); }
+        .concept-box.granger::before { background: var(--status-granger); }
+        .concept-box.structural::before { background: var(--status-structural); }
+        .concept-box.forecast::before { background: var(--status-forecast); }
+
+        .concept-title {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-time);
+            font-size: 1.2rem;
+        }
+
+        .concept-box.var .concept-title { color: var(--status-var); }
+        .concept-box.coint .concept-title { color: var(--status-coint); }
+        .concept-box.impulse .concept-title { color: var(--status-impulse); }
+        .concept-box.granger .concept-title { color: var(--status-granger); }
+        .concept-box.structural .concept-title { color: var(--status-structural); }
+        .concept-box.forecast .concept-title { color: var(--status-forecast); }
+
+        /* Formula Boxes */
+        .formula {
+            background: var(--flow-900);
+            color: var(--flow-100);
+            padding: 1.5rem;
+            border-radius: 15px;
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .formula::before {
+            content: '∑';
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 1.5rem;
+            opacity: 0.3;
+        }
+
+        /* Interactive Controls */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .control-group {
+            background: var(--flow-50);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--flow-200);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-group::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-var), var(--accent-coint));
+            border-radius: 20px 20px 0 0;
+        }
+
+        .control-group:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(5, 150, 105, 0.2);
+        }
+
+        .control-group h4 {
+            color: var(--primary-time);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--flow-700);
+            margin-bottom: 0.75rem;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--flow-300);
+            border-radius: 12px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary-time);
+            box-shadow: 0 0 0 3px rgba(6, 78, 59, 0.1);
+        }
+
+        .input-group input[type="range"] {
+            background: var(--flow-200);
+            border: none;
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--primary-time), var(--secondary-time));
+            color: white;
+            border: none;
+            padding: 1.25rem 2.5rem;
+            border-radius: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 1.05rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .action-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(6, 78, 59, 0.4);
+        }
+
+        /* Results Display */
+        .results-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 1px solid var(--flow-200);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            display: none;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: var(--flow-50);
+            border-radius: 15px;
+            border: 1px solid var(--flow-200);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-var);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(5, 150, 105, 0.15);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            font-family: var(--font-mono);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--flow-600);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-var {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--status-var);
+            border: 2px solid rgba(5, 150, 105, 0.3);
+        }
+
+        .status-coint {
+            background: rgba(8, 145, 178, 0.1);
+            color: var(--status-coint);
+            border: 2px solid rgba(8, 145, 178, 0.3);
+        }
+
+        .status-impulse {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--status-impulse);
+            border: 2px solid rgba(124, 58, 237, 0.3);
+        }
+
+        .status-granger {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--status-granger);
+            border: 2px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .status-structural {
+            background: rgba(234, 88, 12, 0.1);
+            color: var(--status-structural);
+            border: 2px solid rgba(234, 88, 12, 0.3);
+        }
+
+        .status-forecast {
+            background: rgba(2, 132, 199, 0.1);
+            color: var(--status-forecast);
+            border: 2px solid rgba(2, 132, 199, 0.3);
+        }
+
+        /* Chart containers */
+        .chart-container {
+            position: relative;
+            height: 350px;
+            background: white;
+            border: 1px solid var(--flow-200);
+            border-radius: 15px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-var), var(--accent-coint), var(--accent-impulse));
+        }
+
+        /* Time Series Visualization */
+        .time-series-plot {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--flow-50), #ffffff);
+        }
+
+        .plot-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-time);
+            margin-bottom: 1rem;
+        }
+
+        .plot-content {
+            width: 100%;
+            height: 250px;
+            background: white;
+            border: 1px solid var(--flow-200);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--flow-600);
+            position: relative;
+        }
+
+        /* VAR Matrix Display */
+        .var-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+            padding: 1.5rem;
+            background: var(--flow-50);
+            border-radius: 12px;
+            border: 1px solid var(--flow-200);
+        }
+
+        .var-coefficient {
+            text-align: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--flow-300);
+            font-family: var(--font-mono);
+            font-weight: 600;
+        }
+
+        .var-coefficient .coef-label {
+            font-size: 0.8rem;
+            color: var(--flow-600);
+            margin-bottom: 0.5rem;
+        }
+
+        .var-coefficient .coef-value {
+            font-size: 1.1rem;
+            color: var(--primary-time);
+        }
+
+        /* Quiz Section */
+        .quiz-section {
+            background: linear-gradient(135deg, var(--flow-50), #ffffff);
+            border-radius: 25px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 1px solid var(--flow-200);
+            position: relative;
+        }
+
+        .quiz-question {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 1px solid var(--flow-200);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .quiz-question::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-var), var(--accent-coint));
+            border-radius: 20px 20px 0 0;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .quiz-question:hover::before {
+            transform: scaleX(1);
+        }
+
+        .quiz-question:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(5, 150, 105, 0.15);
+        }
+
+        .quiz-question p {
+            font-weight: 600;
+            color: var(--flow-800);
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: var(--flow-50);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .quiz-option:hover {
+            background: var(--flow-100);
+            border-color: var(--accent-var);
+            transform: translateX(8px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(5, 150, 105, 0.1);
+            border-color: var(--status-var);
+            color: var(--status-var);
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(220, 38, 38, 0.1);
+            border-color: var(--status-granger);
+            color: var(--status-granger);
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1.25rem;
+            border-radius: 15px;
+            display: none;
+            line-height: 1.7;
+        }
+
+        .quiz-feedback.correct {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--status-var);
+            border: 1px solid rgba(5, 150, 105, 0.3);
+        }
+
+        .quiz-feedback.incorrect {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--status-granger);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        /* AI Chat Widget */
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        .ai-chat-button {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-time), var(--secondary-time));
+            border: none;
+            color: white;
+            font-size: 1.7rem;
+            cursor: pointer;
+            box-shadow: 0 10px 40px rgba(6, 78, 59, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-chat-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .ai-chat-button:hover::before {
+            width: 80px;
+            height: 80px;
+        }
+
+        .ai-chat-button:hover {
+            transform: scale(1.15) translateY(-3px);
+            box-shadow: 0 15px 50px rgba(6, 78, 59, 0.4);
+        }
+
+        .ai-chat-panel {
+            position: absolute;
+            bottom: 85px;
+            right: 0;
+            width: 380px;
+            height: 500px;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--flow-200);
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.4s ease;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ai-chat-panel.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .ai-chat-header {
+            background: linear-gradient(135deg, var(--primary-time), var(--secondary-time));
+            color: white;
+            padding: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .ai-message {
+            max-width: 85%;
+            padding: 1rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .ai-message.user {
+            background: var(--primary-time);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-message.claude {
+            background: var(--flow-100);
+            color: var(--flow-800);
+            border-bottom-left-radius: 4px;
+        }
+
+        .ai-input-area {
+            padding: 1.5rem;
+            border-top: 1px solid var(--flow-200);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid var(--flow-300);
+            border-radius: 25px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .ai-send-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary-time);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .ai-send-btn:hover {
+            background: var(--secondary-time);
+            transform: scale(1.1);
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .fade-in.delay-1 { animation-delay: 0.1s; }
+        .fade-in.delay-2 { animation-delay: 0.2s; }
+        .fade-in.delay-3 { animation-delay: 0.3s; }
+        .fade-in.delay-4 { animation-delay: 0.4s; }
+        .fade-in.delay-5 { animation-delay: 0.5s; }
+        .fade-in.delay-6 { animation-delay: 0.6s; }
+        .fade-in.delay-7 { animation-delay: 0.7s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .chapter-title { font-size: 2.5rem; }
+            .nav-pills { grid-template-columns: 1fr; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: repeat(2, 1fr); }
+            .ai-chat-panel { width: calc(100vw - 4rem); right: 2rem; left: 2rem; }
+        }
+
+        @media (max-width: 480px) {
+            .results-grid { grid-template-columns: 1fr; }
+            .chapter-title { font-size: 2rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header fade-in">
+            <h1 class="chapter-title">⏱️ Chapter 15</h1>
+            <p class="chapter-subtitle">Advanced Time Series Topics</p>
+        </header>
+
+        <!-- Navigation -->
+        <div class="nav-container fade-in delay-1">
+            <div class="nav-pills">
+                <button onclick="scrollToSection('var')" class="nav-pill">
+                    📈 Vector Autoregressions
+                </button>
+                <button onclick="scrollToSection('cointegration')" class="nav-pill">
+                    🔗 Cointegration & ECM
+                </button>
+                <button onclick="scrollToSection('impulse')" class="nav-pill">
+                    ⚡ Impulse Responses
+                </button>
+                <button onclick="scrollToSection('granger')" class="nav-pill">
+                    🔍 Granger Causality
+                </button>
+                <button onclick="scrollToSection('structural')" class="nav-pill">
+                    🏗️ Structural VARs
+                </button>
+                <button onclick="scrollToSection('quiz')" class="nav-pill">
+                    🎯 Knowledge Check
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 15.1: Vector Autoregressions (VAR) -->
+        <section class="section fade-in delay-2" id="var">
+            <h2 class="section-title">15.1 📈 Vector Autoregressions (VAR)</h2>
+            
+            <p>Vector Autoregressions provide a flexible framework for modeling multiple interrelated time series variables. VAR models treat all variables as endogenous and allow for rich dynamic interactions.</p>
+
+            <div class="concept-box var">
+                <div class="concept-title">📈 VAR(p) Model Specification</div>
+                <p>A VAR(p) model with k variables:</p>
+                <div class="formula">
+                    Y_t = c + A₁Y_{t-1} + A₂Y_{t-2} + ... + A_pY_{t-p} + u_t
+                    <br>where Y_t = [y₁_t, y₂_t, ..., y_k_t]' is k×1 vector
+                    <br>A_i are k×k coefficient matrices
+                    <br>u_t ~ iid(0, Σ) is k×1 innovation vector
+                </div>
+                <p><strong>Key features:</strong> Each variable depends on its own lags and lags of all other variables in the system.</p>
+            </div>
+
+            <div class="concept-box structural">
+                <div class="concept-title">🎯 VAR Model Selection and Estimation</div>
+                <p><strong>Lag Length Selection:</strong><br>
+                • Information criteria: AIC, BIC, HQC<br>
+                • Sequential likelihood ratio tests<br>
+                • Final Prediction Error (FPE)</p>
+                <p><strong>Estimation:</strong><br>
+                • OLS equation by equation (efficient under normality)<br>
+                • Maximum likelihood for system estimation<br>
+                • Seemingly Unrelated Regressions (SUR)</p>
+            </div>
+
+            <!-- VAR Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🎛️ VAR Model Simulator</h4>
+                    
+                    <div class="input-group">
+                        <label for="varLags">Number of Lags (p):</label>
+                        <select id="varLags">
+                            <option value="1">1 lag</option>
+                            <option value="2" selected>2 lags</option>
+                            <option value="3">3 lags</option>
+                            <option value="4">4 lags</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="varVariables">Number of Variables:</label>
+                        <select id="varVariables">
+                            <option value="2" selected>2 variables</option>
+                            <option value="3">3 variables</option>
+                            <option value="4">4 variables</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="varStability">System Stability:</label>
+                        <input type="range" id="varStability" min="0.3" max="0.95" step="0.05" value="0.8">
+                        <span id="varStabilityValue">0.8</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="varSampleSize">Sample Size:</label>
+                        <select id="varSampleSize">
+                            <option value="100">100 observations</option>
+                            <option value="200" selected>200 observations</option>
+                            <option value="500">500 observations</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateVAR()">
+                        📈 Estimate VAR Model
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 VAR Coefficient Matrix</h4>
+                    <div class="var-matrix" id="varMatrix">
+                        <div style="grid-column: 1 / -1; text-align: center; color: var(--flow-400); padding: 2rem;">
+                            Run VAR simulation to display<br>coefficient estimates
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="varResults">
+                <h4 style="color: var(--primary-time); margin-bottom: 1rem;">VAR Model Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="varLogLikelihood" style="color: var(--status-var);">-</div>
+                        <div class="stat-label">Log Likelihood</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="varAIC" style="color: var(--flow-600);">-</div>
+                        <div class="stat-label">AIC</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="varBIC" style="color: var(--accent-coint);">-</div>
+                        <div class="stat-label">BIC</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="varStable" style="color: var(--primary-time);">-</div>
+                        <div class="stat-label">Stability</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="varAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="varInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 15.2: Cointegration and Error Correction -->
+        <section class="section fade-in delay-3" id="cointegration">
+            <h2 class="section-title">15.2 🔗 Cointegration and Error Correction Models</h2>
+            
+            <p>When multiple non-stationary series share common stochastic trends, they may be cointegrated. Error Correction Models capture both short-run dynamics and long-run equilibrium relationships.</p>
+
+            <div class="concept-box coint">
+                <div class="concept-title">🔗 Cointegration Concept</div>
+                <p>Variables x_t and y_t are cointegrated CI(1,1) if:</p>
+                <div class="formula">
+                    1. Both x_t and y_t are I(1) [integrated of order 1]
+                    2. ∃ vector β such that βx_t + y_t ~ I(0)
+                    <br>β is the cointegrating vector
+                    <br>u_t = y_t - βx_t is the error correction term
+                </div>
+                <p><strong>Economic interpretation:</strong> Long-run equilibrium relationship between non-stationary variables.</p>
+            </div>
+
+            <div class="concept-box impulse">
+                <div class="concept-title">⚡ Vector Error Correction Model (VECM)</div>
+                <p>VECM representation of cointegrated VAR:</p>
+                <div class="formula">
+                    ΔY_t = αβ'Y_{t-1} + Γ₁ΔY_{t-1} + ... + Γ_{p-1}ΔY_{t-p+1} + u_t
+                    <br>where α = adjustment coefficients (speed of correction)
+                    <br>β' = cointegrating relationships
+                    <br>αβ' = error correction mechanism
+                </div>
+                <p><strong>Granger Representation Theorem:</strong> If variables are cointegrated, there exists an ECM representation.</p>
+            </div>
+
+            <!-- Cointegration Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🧪 Cointegration Test Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="cointStrength">Cointegration Strength:</label>
+                        <input type="range" id="cointStrength" min="0" max="1" step="0.1" value="0.7">
+                        <span id="cointStrengthValue">0.7</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="adjustmentSpeed">Error Correction Speed:</label>
+                        <input type="range" id="adjustmentSpeed" min="0.1" max="0.8" step="0.1" value="0.3">
+                        <span id="adjustmentSpeedValue">0.3</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="cointSampleSize">Sample Size:</label>
+                        <select id="cointSampleSize">
+                            <option value="100">100 observations</option>
+                            <option value="200" selected>200 observations</option>
+                            <option value="500">500 observations</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="cointRank">Cointegrating Rank:</label>
+                        <select id="cointRank">
+                            <option value="0">No cointegration</option>
+                            <option value="1" selected>1 cointegrating relationship</option>
+                            <option value="2">2 cointegrating relationships</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateCointegration()">
+                        🔗 Test for Cointegration
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📈 Long-Run Relationship</h4>
+                    <div class="chart-container" id="cointChart" style="background: var(--flow-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--flow-400); text-align: center;">
+                            Run cointegration test to visualize<br>long-run equilibrium relationship
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="cointResults">
+                <h4 style="color: var(--primary-time); margin-bottom: 1rem;">Cointegration Test Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="johannsenTrace" style="color: var(--status-coint);">-</div>
+                        <div class="stat-label">Johansen Trace</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="criticalValue" style="color: var(--flow-600);">-</div>
+                        <div class="stat-label">Critical Value</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="cointVector" style="color: var(--accent-impulse);">-</div>
+                        <div class="stat-label">Cointegrating β</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="errorCorrection" style="color: var(--status-var);">-</div>
+                        <div class="stat-label">α (Speed)</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="cointAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="cointInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 15.3: Impulse Response Functions -->
+        <section class="section fade-in delay-4" id="impulse">
+            <h2 class="section-title">15.3 ⚡ Impulse Response Functions</h2>
+            
+            <p>Impulse Response Functions trace out the response of all variables in the VAR to a one-unit shock in any variable. They reveal the dynamic interactions and persistence of shocks in the system.</p>
+
+            <div class="concept-box impulse">
+                <div class="concept-title">⚡ IRF Methodology</div>
+                <p>Moving Average representation of VAR:</p>
+                <div class="formula">
+                    Y_t = μ + Σ(i=0 to ∞) Ψ_i u_{t-i}
+                    <br>where Ψ_i matrices contain impulse responses
+                    <br>Ψ₀ = I_k, Ψ_i = A₁Ψ_{i-1} + A₂Ψ_{i-2} + ... + A_pΨ_{i-p}
+                    <br>IRF(h) = ∂Y_{t+h}/∂u_t = Ψ_h
+                </div>
+                <p><strong>Interpretation:</strong> Response of all variables to a one-standard-deviation shock in each variable.</p>
+            </div>
+
+            <div class="concept-box forecast">
+                <div class="concept-title">📊 Confidence Bands and Bootstrap</div>
+                <p><strong>Uncertainty quantification for IRFs:</strong><br>
+                • Asymptotic standard errors (Delta method)<br>
+                • Bootstrap confidence intervals<br>
+                • Hall's percentile method<br>
+                • Bias-corrected bootstrap</p>
+                <p><strong>Bootstrap procedure:</strong> Resample VAR residuals, re-estimate model, compute IRFs, repeat B times.</p>
+            </div>
+
+            <!-- Impulse Response Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>⚡ Impulse Response Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="irfHorizon">Response Horizon:</label>
+                        <select id="irfHorizon">
+                            <option value="10">10 periods</option>
+                            <option value="15" selected>15 periods</option>
+                            <option value="20">20 periods</option>
+                            <option value="30">30 periods</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="shockPersistence">Shock Persistence:</label>
+                        <input type="range" id="shockPersistence" min="0.1" max="0.9" step="0.1" value="0.6">
+                        <span id="shockPersistenceValue">0.6</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="crossVariable">Cross-Variable Effect:</label>
+                        <input type="range" id="crossVariable" min="0" max="0.8" step="0.1" value="0.4">
+                        <span id="crossVariableValue">0.4</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="confidenceLevel">Confidence Level:</label>
+                        <select id="confidenceLevel">
+                            <option value="0.90">90%</option>
+                            <option value="0.95" selected>95%</option>
+                            <option value="0.99">99%</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateImpulseResponse()">
+                        ⚡ Generate Impulse Responses
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 IRF Visualization</h4>
+                    <div class="chart-container" id="irfChart" style="background: var(--flow-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--flow-400); text-align: center;">
+                            Run IRF simulation to visualize<br>dynamic responses to shocks
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="irfResults">
+                <h4 style="color: var(--primary-time); margin-bottom: 1rem;">Impulse Response Analysis</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="irfPeakResponse" style="color: var(--status-impulse);">-</div>
+                        <div class="stat-label">Peak Response</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="irfPeakPeriod" style="color: var(--flow-600);">-</div>
+                        <div class="stat-label">Peak Period</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="irfHalfLife" style="color: var(--accent-coint);">-</div>
+                        <div class="stat-label">Half-Life</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="irfCumulativeEffect" style="color: var(--status-var);">-</div>
+                        <div class="stat-label">Cumulative</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="irfAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="irfInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 15.4: Granger Causality -->
+        <section class="section fade-in delay-5" id="granger">
+            <h2 class="section-title">15.4 🔍 Granger Causality Testing</h2>
+            
+            <p>Granger causality tests whether past values of one variable contain information useful for predicting another variable, beyond what's contained in the past values of the predicted variable itself.</p>
+
+            <div class="concept-box granger">
+                <div class="concept-title">🔍 Granger Causality Definition</div>
+                <p>x_t Granger-causes y_t if:</p>
+                <div class="formula">
+                    MSE[y_t | Ω_{t-1}] < MSE[y_t | Ω_{t-1}^{-x}]
+                    <br>where Ω_{t-1} = all information available at time t-1
+                    <br>Ω_{t-1}^{-x} = all information except past values of x_t
+                    <br>Test: H₀: x does not Granger-cause y
+                </div>
+                <p><strong>Implementation:</strong> F-test for joint significance of lagged x variables in y equation.</p>
+            </div>
+
+            <div class="concept-box structural">
+                <div class="concept-title">🎯 Granger Causality Tests</div>
+                <p><strong>Bivariate Test:</strong><br>
+                y_t = α + Σβ_i y_{t-i} + Σγ_j x_{t-j} + u_t<br>
+                H₀: γ₁ = γ₂ = ... = γ_p = 0</p>
+                <p><strong>Multivariate Extension:</strong><br>
+                • Block exogeneity tests in VAR<br>
+                • Instantaneous causality<br>
+                • Long-run causality (VECM framework)</p>
+            </div>
+
+            <!-- Granger Causality Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🧪 Granger Causality Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="grangerLags">Test Lag Length:</label>
+                        <select id="grangerLags">
+                            <option value="2">2 lags</option>
+                            <option value="4" selected>4 lags</option>
+                            <option value="6">6 lags</option>
+                            <option value="8">8 lags</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="trueCausality">True Causality Strength:</label>
+                        <input type="range" id="trueCausality" min="0" max="0.8" step="0.1" value="0.4">
+                        <span id="trueCausalityValue">0.4</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="grangerSampleSize">Sample Size:</label>
+                        <select id="grangerSampleSize">
+                            <option value="100">100 observations</option>
+                            <option value="200" selected>200 observations</option>
+                            <option value="500">500 observations</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="bidirectional">Bidirectional Causality:</label>
+                        <select id="bidirectional">
+                            <option value="false">Unidirectional</option>
+                            <option value="true" selected>Bidirectional</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateGrangerCausality()">
+                        🔍 Test Granger Causality
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Causality Direction</h4>
+                    <div class="chart-container" id="grangerChart" style="background: var(--flow-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--flow-400); text-align: center;">
+                            Run Granger causality test to visualize<br>information flow patterns
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="grangerResults">
+                <h4 style="color: var(--primary-time); margin-bottom: 1rem;">Granger Causality Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="grangerFStat" style="color: var(--status-granger);">-</div>
+                        <div class="stat-label">F-Statistic</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="grangerPValue" style="color: var(--flow-600);">-</div>
+                        <div class="stat-label">P-value</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="grangerDirection" style="color: var(--accent-impulse);">-</div>
+                        <div class="stat-label">Direction</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="grangerPower" style="color: var(--status-var);">-</div>
+                        <div class="stat-label">Test Power</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="grangerAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="grangerInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 15.5: Structural VARs -->
+        <section class="section fade-in delay-6" id="structural">
+            <h2 class="section-title">15.5 🏗️ Structural Vector Autoregressions</h2>
+            
+            <p>Structural VARs identify economically meaningful shocks by imposing theoretical restrictions on the contemporaneous relationships between variables, enabling causal interpretation of impulse responses.</p>
+
+            <div class="concept-box structural">
+                <div class="concept-title">🏗️ SVAR Identification</div>
+                <p>Structural form to reduced form transformation:</p>
+                <div class="formula">
+                    Structural: B₀Y_t = B₁Y_{t-1} + ... + B_pY_{t-p} + ε_t
+                    <br>Reduced form: Y_t = A₁Y_{t-1} + ... + A_pY_{t-p} + u_t
+                    <br>Relationship: u_t = B₀⁻¹ε_t
+                    <br>where ε_t are structural shocks, u_t are reduced-form residuals
+                </div>
+                <p><strong>Identification problem:</strong> Need k(k-1)/2 restrictions to identify B₀ matrix.</p>
+            </div>
+
+            <div class="concept-box forecast">
+                <div class="concept-title">🎯 SVAR Identification Strategies</div>
+                <p><strong>Recursive (Cholesky):</strong><br>
+                • Lower triangular B₀ (contemporaneous recursive structure)<br>
+                • Variable ordering matters crucially</p>
+                <p><strong>Long-run restrictions:</strong><br>
+                • Some shocks have no permanent effect on some variables<br>
+                • Example: Nominal shocks don't affect real variables long-run</p>
+                <p><strong>Sign restrictions:</strong><br>
+                • IRFs satisfy economic theory sign predictions<br>
+                • Agnostic about exact magnitudes</p>
+            </div>
+
+            <!-- Structural VAR Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🏗️ Structural VAR Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="svarIdentification">Identification Scheme:</label>
+                        <select id="svarIdentification">
+                            <option value="recursive" selected>Recursive (Cholesky)</option>
+                            <option value="longrun">Long-run restrictions</option>
+                            <option value="signs">Sign restrictions</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="svarShockSize">Structural Shock Size:</label>
+                        <input type="range" id="svarShockSize" min="0.5" max="2" step="0.1" value="1">
+                        <span id="svarShockSizeValue">1</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="contemporaneousEffect">Contemporaneous Effect:</label>
+                        <input type="range" id="contemporaneousEffect" min="0" max="0.8" step="0.1" value="0.3">
+                        <span id="contemporaneousEffectValue">0.3</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="svarHorizon">IRF Horizon:</label>
+                        <select id="svarHorizon">
+                            <option value="12">12 periods</option>
+                            <option value="20" selected>20 periods</option>
+                            <option value="40">40 periods</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateStructuralVAR()">
+                        🏗️ Estimate Structural VAR
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Structural IRFs</h4>
+                    <div class="chart-container" id="svarChart" style="background: var(--flow-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--flow-400); text-align: center;">
+                            Run SVAR estimation to visualize<br>structural impulse responses
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="svarResults">
+                <h4 style="color: var(--primary-time); margin-bottom: 1rem;">Structural VAR Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="svarImpactEffect" style="color: var(--status-structural);">-</div>
+                        <div class="stat-label">Impact Effect</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="svarLongRunEffect" style="color: var(--flow-600);">-</div>
+                        <div class="stat-label">Long-Run Effect</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="svarVarianceDecomp" style="color: var(--accent-impulse);">-</div>
+                        <div class="stat-label">Variance Explained</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="svarIdentified" style="color: var(--status-var);">-</div>
+                        <div class="stat-label">Identified Shocks</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="svarAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="svarInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section class="section fade-in delay-7" id="quiz">
+            <div class="quiz-section">
+                <h3 style="text-align: center; margin-bottom: 1rem; color: var(--primary-time);">
+                    🎯 Chapter 15 Knowledge Check: Advanced Time Series
+                </h3>
+                <p style="text-align: center; color: var(--flow-600); margin-bottom: 1rem;">
+                    Test your understanding of VARs, cointegration, impulse responses, Granger causality, and structural identification
+                </p>
+                
+                <!-- Regenerate Button -->
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <button onclick="regenerateQuiz()" class="action-button" style="margin: 0; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                        🔄 Generate New Questions
+                    </button>
+                    <p style="font-size: 0.8rem; color: var(--flow-600); margin-top: 0.5rem;">
+                        Click to get fresh questions on advanced time series methods
+                    </p>
+                </div>
+                
+                <div id="quizContainer">
+                    <!-- Questions will be dynamically generated here -->
+                </div>
+                
+                <!-- Quiz Results Summary -->
+                <div id="quizSummary" style="display: none; margin-top: 2rem; padding: 1.5rem; background: var(--flow-50); border-radius: 15px; border-left: 4px solid var(--primary-time);">
+                    <h4 style="color: var(--primary-time); margin-bottom: 1rem;">Quiz Results</h4>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 10px;">
+                            <div id="correctCount" style="font-size: 1.5rem; font-weight: bold; color: var(--status-var);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--flow-600);">Correct</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 10px;">
+                            <div id="totalQuestions" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-time);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--flow-600);">Total</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 10px;">
+                            <div id="quizScore" style="font-size: 1.5rem; font-weight: bold; color: var(--secondary-time);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--flow-600);">Score</div>
+                        </div>
+                    </div>
+                    <div id="quizFeedback" style="color: var(--flow-700); line-height: 1.6;"></div>
+                    <button onclick="regenerateQuiz()" class="action-button" style="margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                        Try Again with New Questions
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div class="ai-chat-widget">
+        <button class="ai-chat-button" onclick="toggleAIChat()" title="Ask Claude about Advanced Time Series">
+            <span id="aiChatIcon">⏱️</span>
+        </button>
+        
+        <div class="ai-chat-panel" id="aiChatPanel">
+            <div class="ai-chat-header">
+                <span>⏱️ Time Series Methods Tutor</span>
+                <button onclick="toggleAIChat()" style="background: none; border: none; color: white; cursor: pointer;">×</button>
+            </div>
+            
+            <div class="ai-chat-messages" id="aiChatMessages">
+                <div class="ai-message claude">
+                    <strong>⏱️ Claude:</strong> Hi! I can help you understand VARs, cointegration, impulse responses, Granger causality, and structural identification. What advanced time series concept interests you?
+                </div>
+            </div>
+            
+            <div class="ai-input-area">
+                <input type="text" class="ai-input" id="aiInput" placeholder="Ask about time series..." 
+                       onkeydown="if(event.key==='Enter') sendAIMessage()">
+                <button class="ai-send-btn" onclick="sendAIMessage()">→</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let isAIChatOpen = false;
+        let currentQuestions = [];
+        let answeredQuestions = {};
+        
+        // Slider event listeners
+        document.getElementById('varStability').addEventListener('input', function(e) {
+            document.getElementById('varStabilityValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('cointStrength').addEventListener('input', function(e) {
+            document.getElementById('cointStrengthValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('adjustmentSpeed').addEventListener('input', function(e) {
+            document.getElementById('adjustmentSpeedValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('shockPersistence').addEventListener('input', function(e) {
+            document.getElementById('shockPersistenceValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('crossVariable').addEventListener('input', function(e) {
+            document.getElementById('crossVariableValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('trueCausality').addEventListener('input', function(e) {
+            document.getElementById('trueCausalityValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('svarShockSize').addEventListener('input', function(e) {
+            document.getElementById('svarShockSizeValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('contemporaneousEffect').addEventListener('input', function(e) {
+            document.getElementById('contemporaneousEffectValue').textContent = e.target.value;
+        });
+        
+        // VAR Simulation
+        function simulateVAR() {
+            console.log('Starting VAR simulation...');
+            
+            try {
+                const lags = parseInt(document.getElementById('varLags').value);
+                const variables = parseInt(document.getElementById('varVariables').value);
+                const stability = parseFloat(document.getElementById('varStability').value);
+                const sampleSize = parseInt(document.getElementById('varSampleSize').value);
+                
+                console.log('VAR Parameters:', { lags, variables, stability, sampleSize });
+                
+                // Simulate VAR coefficients
+                const totalParams = variables * variables * lags;
+                const logLikelihood = -totalParams * Math.log(2 * Math.PI) - sampleSize * Math.log(stability);
+                const aic = -2 * logLikelihood + 2 * totalParams;
+                const bic = -2 * logLikelihood + Math.log(sampleSize) * totalParams;
+                const isStable = stability < 0.9 ? 'Stable' : 'Unstable';
+                
+                document.getElementById('varLogLikelihood').textContent = logLikelihood.toFixed(1);
+                document.getElementById('varAIC').textContent = aic.toFixed(1);
+                document.getElementById('varBIC').textContent = bic.toFixed(1);
+                document.getElementById('varStable').textContent = isStable;
+                
+                // Generate coefficient matrix
+                const matrixContainer = document.getElementById('varMatrix');
+                let matrixHTML = '';
+                for (let i = 1; i <= variables; i++) {
+                    for (let j = 1; j <= variables; j++) {
+                        for (let lag = 1; lag <= lags; lag++) {
+                            const coef = (Math.random() - 0.5) * stability;
+                            matrixHTML += `
+                                <div class="var-coefficient">
+                                    <div class="coef-label">Y${i},t-${lag} → Y${j},t</div>
+                                    <div class="coef-value">${coef.toFixed(3)}</div>
+                                </div>
+                            `;
+                        }
+                    }
+                }
+                matrixContainer.innerHTML = matrixHTML;
+                
+                const modelFit = aic < bic ? 'AIC Preferred' : 'BIC Preferred';
+                const assessmentEl = document.getElementById('varAssessment');
+                assessmentEl.textContent = isStable === 'Stable' ? 'Stable VAR System' : 'Check Stability';
+                assessmentEl.className = `status-indicator ${isStable === 'Stable' ? 'status-var' : 'status-granger'}`;
+                
+                document.getElementById('varInterpretation').textContent = 
+                    `VAR(${lags}) model with ${variables} variables. ${isStable} system. AIC = ${aic.toFixed(1)}, BIC = ${bic.toFixed(1)}. ${modelFit} based on information criteria.`;
+                
+                document.getElementById('varResults').style.display = 'block';
+                console.log('VAR simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in VAR simulation:', error);
+                alert('Error running VAR simulation. Check console for details.');
+            }
+        }
+        
+        // Cointegration Simulation
+        function simulateCointegration() {
+            console.log('Starting cointegration simulation...');
+            
+            try {
+                const strength = parseFloat(document.getElementById('cointStrength').value);
+                const speed = parseFloat(document.getElementById('adjustmentSpeed').value);
+                const sampleSize = parseInt(document.getElementById('cointSampleSize').value);
+                const rank = parseInt(document.getElementById('cointRank').value);
+                
+                console.log('Cointegration Parameters:', { strength, speed, sampleSize, rank });
+                
+                // Johansen trace test simulation
+                const traceStatistic = rank > 0 ? 20 + strength * 15 + Math.random() * 10 : 5 + Math.random() * 10;
+                const criticalValue = rank === 1 ? 15.41 : rank === 2 ? 29.68 : 3.76;
+                const cointVector = rank > 0 ? 1 - strength * 0.3 + (Math.random() - 0.5) * 0.2 : 0;
+                const alpha = rank > 0 ? -speed + (Math.random() - 0.5) * 0.1 : 0;
+                
+                document.getElementById('johannsenTrace').textContent = traceStatistic.toFixed(2);
+                document.getElementById('criticalValue').textContent = criticalValue.toFixed(2);
+                document.getElementById('cointVector').textContent = cointVector.toFixed(3);
+                document.getElementById('errorCorrection').textContent = alpha.toFixed(3);
+                
+                const isCointegrated = traceStatistic > criticalValue;
+                const assessmentEl = document.getElementById('cointAssessment');
+                
+                if (rank === 0) {
+                    assessmentEl.textContent = 'No Cointegration';
+                    assessmentEl.className = 'status-indicator status-granger';
+                } else if (isCointegrated) {
+                    assessmentEl.textContent = `${rank} Cointegrating Relationship${rank > 1 ? 's' : ''}`;
+                    assessmentEl.className = 'status-indicator status-coint';
+                } else {
+                    assessmentEl.textContent = 'Weak Evidence';
+                    assessmentEl.className = 'status-indicator status-forecast';
+                }
+                
+                document.getElementById('cointInterpretation').textContent = 
+                    `Johansen trace = ${traceStatistic.toFixed(2)} vs. critical ${criticalValue.toFixed(2)}. ${isCointegrated ? 'Evidence of cointegration.' : 'No cointegration detected.'} Error correction speed = ${alpha.toFixed(3)}.`;
+                
+                // Simple visualization
+                const chartContainer = document.getElementById('cointChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-time);">Cointegration Analysis</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--status-coint); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Trace Statistic</strong><br>
+                                ${traceStatistic.toFixed(2)}
+                            </div>
+                            <div style="background: var(--status-var); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Cointegrating β</strong><br>
+                                ${cointVector.toFixed(3)}
+                            </div>
+                        </div>
+                        <div style="background: var(--flow-100); padding: 12px; border-radius: 8px;">
+                            Critical value: ${criticalValue.toFixed(2)} | Adjustment speed: ${alpha.toFixed(3)}
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('cointResults').style.display = 'block';
+                console.log('Cointegration simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in cointegration simulation:', error);
+                alert('Error running cointegration simulation. Check console for details.');
+            }
+        }
+        
+        // Impulse Response Simulation
+        function simulateImpulseResponse() {
+            console.log('Starting impulse response simulation...');
+            
+            try {
+                const horizon = parseInt(document.getElementById('irfHorizon').value);
+                const persistence = parseFloat(document.getElementById('shockPersistence').value);
+                const crossEffect = parseFloat(document.getElementById('crossVariable').value);
+                const confidence = parseFloat(document.getElementById('confidenceLevel').value);
+                
+                console.log('IRF Parameters:', { horizon, persistence, crossEffect, confidence });
+                
+                // Simulate IRF characteristics
+                const peakResponse = 1 + crossEffect;
+                const peakPeriod = Math.max(1, Math.round(3 * persistence));
+                const halfLife = -Math.log(2) / Math.log(persistence);
+                const cumulativeEffect = peakResponse / (1 - persistence);
+                
+                document.getElementById('irfPeakResponse').textContent = peakResponse.toFixed(3);
+                document.getElementById('irfPeakPeriod').textContent = peakPeriod;
+                document.getElementById('irfHalfLife').textContent = halfLife.toFixed(1);
+                document.getElementById('irfCumulativeEffect').textContent = cumulativeEffect.toFixed(2);
+                
+                const isPersistent = persistence > 0.7;
+                const assessmentEl = document.getElementById('irfAssessment');
+                assessmentEl.textContent = isPersistent ? 'Persistent Response' : 'Transitory Response';
+                assessmentEl.className = `status-indicator ${isPersistent ? 'status-impulse' : 'status-forecast'}`;
+                
+                document.getElementById('irfInterpretation').textContent = 
+                    `Peak response: ${peakResponse.toFixed(3)} at period ${peakPeriod}. Half-life: ${halfLife.toFixed(1)} periods. ${isPersistent ? 'Highly persistent shock effects.' : 'Effects die out relatively quickly.'}`;
+                
+                // IRF visualization
+                const chartContainer = document.getElementById('irfChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-time);">Impulse Response Function</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--status-impulse); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Peak Response</strong><br>
+                                ${peakResponse.toFixed(3)}
+                            </div>
+                            <div style="background: var(--status-forecast); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Half-Life</strong><br>
+                                ${halfLife.toFixed(1)} periods
+                            </div>
+                        </div>
+                        <div style="background: var(--flow-100); padding: 12px; border-radius: 8px;">
+                            Cumulative effect: ${cumulativeEffect.toFixed(2)} | Confidence: ${(confidence*100)}%
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('irfResults').style.display = 'block';
+                console.log('IRF simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in IRF simulation:', error);
+                alert('Error running IRF simulation. Check console for details.');
+            }
+        }
+        
+        // Granger Causality Simulation
+        function simulateGrangerCausality() {
+            console.log('Starting Granger causality simulation...');
+            
+            try {
+                const lags = parseInt(document.getElementById('grangerLags').value);
+                const causality = parseFloat(document.getElementById('trueCausality').value);
+                const sampleSize = parseInt(document.getElementById('grangerSampleSize').value);
+                const bidirectional = document.getElementById('bidirectional').value === 'true';
+                
+                console.log('Granger Parameters:', { lags, causality, sampleSize, bidirectional });
+                
+                // Simulate F-test results
+                const fStatistic = causality > 0 ? 2 + causality * 8 + Math.random() * 3 : 1 + Math.random() * 2;
+                const criticalValue = 2.37; // Approximate F(4,∞) at 5%
+                const pValue = fStatistic > criticalValue ? 0.01 + Math.random() * 0.04 : 0.15 + Math.random() * 0.3;
+                const power = causality > 0 ? Math.min(0.95, 0.3 + causality * 0.7) : 0.05;
+                
+                let direction = 'None';
+                if (causality > 0.2) {
+                    if (bidirectional) {
+                        direction = 'Bidirectional';
+                    } else {
+                        direction = 'X → Y';
+                    }
+                }
+                
+                document.getElementById('grangerFStat').textContent = fStatistic.toFixed(2);
+                document.getElementById('grangerPValue').textContent = pValue.toFixed(3);
+                document.getElementById('grangerDirection').textContent = direction;
+                document.getElementById('grangerPower').textContent = (power * 100).toFixed(1) + '%';
+                
+                const isCausal = pValue < 0.05;
+                const assessmentEl = document.getElementById('grangerAssessment');
+                
+                if (isCausal && bidirectional) {
+                    assessmentEl.textContent = 'Bidirectional Causality';
+                    assessmentEl.className = 'status-indicator status-impulse';
+                } else if (isCausal) {
+                    assessmentEl.textContent = 'Unidirectional Causality';
+                    assessmentEl.className = 'status-indicator status-granger';
+                } else {
+                    assessmentEl.textContent = 'No Granger Causality';
+                    assessmentEl.className = 'status-indicator status-forecast';
+                }
+                
+                document.getElementById('grangerInterpretation').textContent = 
+                    `F-statistic = ${fStatistic.toFixed(2)}, p-value = ${pValue.toFixed(3)}. ${isCausal ? 'Reject null hypothesis.' : 'Fail to reject null.'} ${direction} causality detected. Test power: ${(power*100).toFixed(1)}%.`;
+                
+                // Causality visualization
+                const chartContainer = document.getElementById('grangerChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-time);">Granger Causality Test</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--status-granger); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>F-Statistic</strong><br>
+                                ${fStatistic.toFixed(2)}
+                            </div>
+                            <div style="background: var(--status-var); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Direction</strong><br>
+                                ${direction}
+                            </div>
+                        </div>
+                        <div style="background: var(--flow-100); padding: 12px; border-radius: 8px;">
+                            P-value: ${pValue.toFixed(3)} | Power: ${(power*100).toFixed(1)}%
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('grangerResults').style.display = 'block';
+                console.log('Granger causality simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in Granger causality simulation:', error);
+                alert('Error running Granger causality simulation. Check console for details.');
+            }
+        }
+        
+        // Structural VAR Simulation
+        function simulateStructuralVAR() {
+            console.log('Starting SVAR simulation...');
+            
+            try {
+                const identification = document.getElementById('svarIdentification').value;
+                const shockSize = parseFloat(document.getElementById('svarShockSize').value);
+                const contemporaneous = parseFloat(document.getElementById('contemporaneousEffect').value);
+                const horizon = parseInt(document.getElementById('svarHorizon').value);
+                
+                console.log('SVAR Parameters:', { identification, shockSize, contemporaneous, horizon });
+                
+                // Simulate SVAR results
+                const impactEffect = shockSize * (1 + contemporaneous);
+                const longRunEffect = identification === 'longrun' ? 0 : impactEffect * 0.7;
+                const varianceExplained = Math.min(85, 20 + contemporaneous * 60);
+                const identifiedShocks = identification === 'recursive' ? 'Full' : 'Partial';
+                
+                document.getElementById('svarImpactEffect').textContent = impactEffect.toFixed(3);
+                document.getElementById('svarLongRunEffect').textContent = longRunEffect.toFixed(3);
+                document.getElementById('svarVarianceDecomp').textContent = varianceExplained.toFixed(1) + '%';
+                document.getElementById('svarIdentified').textContent = identifiedShocks;
+                
+                const assessmentEl = document.getElementById('svarAssessment');
+                
+                if (identification === 'recursive') {
+                    assessmentEl.textContent = 'Recursive Identification';
+                    assessmentEl.className = 'status-indicator status-structural';
+                } else if (identification === 'longrun') {
+                    assessmentEl.textContent = 'Long-run Restrictions';
+                    assessmentEl.className = 'status-indicator status-coint';
+                } else {
+                    assessmentEl.textContent = 'Sign Restrictions';
+                    assessmentEl.className = 'status-indicator status-impulse';
+                }
+                
+                document.getElementById('svarInterpretation').textContent = 
+                    `${identification.charAt(0).toUpperCase() + identification.slice(1)} identification. Impact effect: ${impactEffect.toFixed(3)}, long-run: ${longRunEffect.toFixed(3)}. Explains ${varianceExplained.toFixed(1)}% of forecast variance.`;
+                
+                // SVAR visualization
+                const chartContainer = document.getElementById('svarChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-time);">Structural VAR Results</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--status-structural); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Impact Effect</strong><br>
+                                ${impactEffect.toFixed(3)}
+                            </div>
+                            <div style="background: var(--status-coint); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Long-Run Effect</strong><br>
+                                ${longRunEffect.toFixed(3)}
+                            </div>
+                        </div>
+                        <div style="background: var(--flow-100); padding: 12px; border-radius: 8px;">
+                            ${identification} identification | Variance explained: ${varianceExplained.toFixed(1)}%
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('svarResults').style.display = 'block';
+                console.log('SVAR simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in SVAR simulation:', error);
+                alert('Error running SVAR simulation. Check console for details.');
+            }
+        }
+        
+        // Quiz question bank - Advanced Time Series
+        const questionBank = {
+            var_models: [
+                {
+                    question: "In a VAR(p) model, each variable depends on:",
+                    options: [
+                        "Only its own lags",
+                        "Only lags of other variables",
+                        "Its own lags and lags of all other variables",
+                        "Only contemporaneous values of other variables"
+                    ],
+                    correct: 2,
+                    explanation: "VAR models are characterized by each variable depending on its own lags and lags of all other variables in the system, allowing for rich dynamic interactions."
+                },
+                {
+                    question: "For VAR lag length selection, the BIC criterion typically:",
+                    options: [
+                        "Selects the same lag length as AIC",
+                        "Selects longer lag lengths than AIC",
+                        "Selects shorter lag lengths than AIC",
+                        "Is not applicable to VAR models"
+                    ],
+                    correct: 2,
+                    explanation: "BIC penalizes additional parameters more heavily than AIC (using log(T) vs. 2), typically resulting in more parsimonious models with shorter lag lengths."
+                },
+                {
+                    question: "VAR stability requires that:",
+                    options: [
+                        "All eigenvalues of the companion matrix lie inside the unit circle",
+                        "All variables are stationary",
+                        "The determinant of the coefficient matrix equals zero",
+                        "All variables have the same order of integration"
+                    ],
+                    correct: 0,
+                    explanation: "VAR stability is ensured when all eigenvalues of the companion matrix lie strictly inside the unit circle, guaranteeing convergence and stationarity of the VAR process."
+                },
+                {
+                    question: "OLS estimation of individual VAR equations is efficient when:",
+                    options: [
+                        "The sample size is large",
+                        "Errors are normally distributed and the same regressors appear in each equation",
+                        "Variables are cointegrated",
+                        "The VAR includes only stationary variables"
+                    ],
+                    correct: 1,
+                    explanation: "When errors are normally distributed and each equation has the same set of regressors (as in VAR), OLS is as efficient as system methods like SUR or MLE."
+                },
+                {
+                    question: "In VAR models, the forecast error variance decomposition shows:",
+                    options: [
+                        "The contribution of each variable's innovations to forecast errors",
+                        "The optimal lag length for forecasting",
+                        "Whether variables are cointegrated",
+                        "The stability of the VAR system"
+                    ],
+                    correct: 0,
+                    explanation: "Forecast error variance decomposition reveals how much of the forecast error variance of each variable is due to its own innovations versus innovations in other variables."
+                },
+                {
+                    question: "The reduced form VAR residuals are:",
+                    options: [
+                        "The same as structural shocks",
+                        "Linear combinations of structural shocks",
+                        "Independent of structural shocks",
+                        "Only present when the VAR is misspecified"
+                    ],
+                    correct: 1,
+                    explanation: "Reduced form residuals are linear combinations of structural shocks: u_t = B₀⁻¹ε_t, where B₀ captures contemporaneous relationships between variables."
+                }
+            ],
+            cointegration: [
+                {
+                    question: "Two I(1) variables are cointegrated if:",
+                    options: [
+                        "They have the same trend",
+                        "Their linear combination is I(0)",
+                        "They have the same variance",
+                        "They are both stationary"
+                    ],
+                    correct: 1,
+                    explanation: "Cointegration means that while individual series are I(1), there exists a linear combination that is stationary I(0), indicating a long-run equilibrium relationship."
+                },
+                {
+                    question: "The Granger Representation Theorem states that:",
+                    options: [
+                        "All I(1) variables are cointegrated",
+                        "Cointegrated variables have a Vector Error Correction representation",
+                        "VARs are always stable",
+                        "Impulse responses die out over time"
+                    ],
+                    correct: 1,
+                    explanation: "The Granger Representation Theorem establishes that if variables are cointegrated, they can be represented in Vector Error Correction Model (VECM) form."
+                },
+                {
+                    question: "In a VECM, the error correction term:",
+                    options: [
+                        "Measures short-run dynamics",
+                        "Represents the speed of adjustment to long-run equilibrium",
+                        "Should be I(1)",
+                        "Is the same as the cointegrating vector"
+                    ],
+                    correct: 1,
+                    explanation: "The error correction term (αβ'Y_{t-1}) captures how quickly variables adjust back to their long-run equilibrium relationship after a deviation."
+                },
+                {
+                    question: "The Johansen test is used to determine:",
+                    options: [
+                        "VAR lag length",
+                        "The number of cointegrating relationships",
+                        "Whether variables are stationary",
+                        "Optimal forecasting horizon"
+                    ],
+                    correct: 1,
+                    explanation: "The Johansen test uses maximum likelihood to determine the cointegrating rank (number of cointegrating relationships) in a system of variables."
+                },
+                {
+                    question: "If variables are cointegrated, running a VAR in levels:",
+                    options: [
+                        "Is invalid because variables are non-stationary",
+                        "Is valid and can be used for inference",
+                        "Requires first-differencing all variables",
+                        "Only works with exactly one cointegrating relationship"
+                    ],
+                    correct: 1,
+                    explanation: "Even with non-stationary variables, if they're cointegrated, VAR in levels is valid for inference due to super-consistency properties, though VECM is more efficient."
+                },
+                {
+                    question: "The adjustment coefficient α in a VECM:",
+                    options: [
+                        "Should be positive for stability",
+                        "Measures the strength of the cointegrating relationship",
+                        "Indicates how fast variables return to equilibrium",
+                        "Is the same across all variables"
+                    ],
+                    correct: 2,
+                    explanation: "The adjustment coefficient α measures the speed of adjustment toward the long-run equilibrium, with larger absolute values indicating faster error correction."
+                }
+            ],
+            impulse_responses: [
+                {
+                    question: "Impulse Response Functions show:",
+                    options: [
+                        "The effect of a permanent change in one variable",
+                        "The dynamic response to a one-time shock in any variable",
+                        "The long-run relationships between variables",
+                        "The forecasting accuracy of the VAR model"
+                    ],
+                    correct: 1,
+                    explanation: "IRFs trace the dynamic response of all variables in the system to a one-time shock (innovation) in any single variable over time."
+                },
+                {
+                    question: "The cumulative impulse response represents:",
+                    options: [
+                        "The peak response to a shock",
+                        "The total long-run effect of a permanent shock",
+                        "The sum of all responses over the specified horizon",
+                        "The half-life of the response"
+                    ],
+                    correct: 2,
+                    explanation: "Cumulative IRFs sum up all the individual period responses, showing the total accumulated effect of a shock over the specified time horizon."
+                },
+                {
+                    question: "Bootstrap confidence bands for IRFs are necessary because:",
+                    options: [
+                        "IRFs are nonlinear functions of VAR parameters",
+                        "VAR residuals are not normally distributed",
+                        "The sample size is always small",
+                        "Variables must be stationary"
+                    ],
+                    correct: 0,
+                    explanation: "IRFs are complex nonlinear functions of VAR coefficient estimates, making analytical standard errors difficult; bootstrap provides better approximation of the sampling distribution."
+                },
+                {
+                    question: "A persistent IRF typically indicates:",
+                    options: [
+                        "The VAR is unstable",
+                        "Shocks have long-lasting effects on the system",
+                        "Variables are not cointegrated",
+                        "The model is misspecified"
+                    ],
+                    correct: 1,
+                    explanation: "Persistent IRFs that decay slowly indicate that shocks to the system have long-lasting effects, often due to high persistence in the underlying data generating process."
+                },
+                {
+                    question: "The half-life of an impulse response is:",
+                    options: [
+                        "The period when response reaches its peak",
+                        "The time it takes for response to reach 50% of its peak",
+                        "The time for response to decay to half its initial value",
+                        "Always equal to the number of lags in the VAR"
+                    ],
+                    correct: 2,
+                    explanation: "Half-life measures how long it takes for an impulse response to decay to half of its initial impact value, providing insight into shock persistence."
+                },
+                {
+                    question: "Generalized impulse responses (Pesaran-Shin) differ from orthogonalized IRFs in that they:",
+                    options: [
+                        "Don't require variable ordering",
+                        "Only work with cointegrated variables",
+                        "Assume structural identification",
+                        "Cannot be used with VAR models"
+                    ],
+                    correct: 0,
+                    explanation: "Generalized IRFs account for the actual correlation structure of shocks without requiring orthogonalization or specific variable ordering, making them invariant to variable ordering."
+                }
+            ],
+            granger_causality: [
+                {
+                    question: "Granger causality means that:",
+                    options: [
+                        "One variable directly causes another",
+                        "Past values of one variable help predict another",
+                        "Variables move together contemporaneously",
+                        "One variable responds to shocks in another"
+                    ],
+                    correct: 1,
+                    explanation: "Granger causality is about predictive content: X Granger-causes Y if past values of X contain information useful for predicting Y beyond what's in past values of Y alone."
+                },
+                {
+                    question: "The null hypothesis in a Granger causality test is:",
+                    options: [
+                        "X causes Y",
+                        "X does not Granger-cause Y",
+                        "X and Y are cointegrated",
+                        "The VAR is stable"
+                    ],
+                    correct: 1,
+                    explanation: "The null hypothesis is that X does not Granger-cause Y, tested by examining whether coefficients on lagged X variables are jointly zero in the Y equation."
+                },
+                {
+                    question: "In a VAR framework, block exogeneity tests examine:",
+                    options: [
+                        "Whether individual variables Granger-cause others",
+                        "Whether a group of variables jointly Granger-cause another group",
+                        "Whether the VAR is stable",
+                        "Whether variables are cointegrated"
+                    ],
+                    correct: 1,
+                    explanation: "Block exogeneity tests examine whether a block (group) of variables jointly Granger-causes another block, testing multiple exclusion restrictions simultaneously."
+                },
+                {
+                    question: "If X does not Granger-cause Y, then:",
+                    options: [
+                        "Y does not Granger-cause X",
+                        "X and Y are independent",
+                        "Past X values don't improve Y forecasts beyond past Y values",
+                        "X has no effect on Y"
+                    ],
+                    correct: 2,
+                    explanation: "Failing to Granger-cause means past values of X don't provide additional predictive information for Y beyond what's already contained in past values of Y."
+                },
+                {
+                    question: "Instantaneous Granger causality refers to:",
+                    options: [
+                        "Very fast adjustment to shocks",
+                        "Contemporaneous correlation between innovations",
+                        "Causality that occurs within one period",
+                        "Structural relationships between variables"
+                    ],
+                    correct: 1,
+                    explanation: "Instantaneous Granger causality tests whether innovations in one variable are contemporaneously correlated with innovations in another, beyond lagged relationships."
+                },
+                {
+                    question: "In a VECM framework, long-run Granger causality is tested through:",
+                    options: [
+                        "The significance of lagged differences",
+                        "The significance of the error correction term",
+                        "The cointegrating rank",
+                        "The adjustment coefficient values"
+                    ],
+                    correct: 1,
+                    explanation: "In VECMs, long-run Granger causality is tested by examining whether the error correction term is significant, indicating that past deviations from equilibrium affect current changes."
+                }
+            ],
+            structural_vars: [
+                {
+                    question: "The main identification problem in structural VARs is:",
+                    options: [
+                        "Too many parameters to estimate",
+                        "Recovering structural shocks from reduced-form residuals",
+                        "Determining optimal lag length",
+                        "Testing for cointegration"
+                    ],
+                    correct: 1,
+                    explanation: "The key challenge is identifying structural shocks from reduced-form residuals, which requires imposing k(k-1)/2 restrictions to identify the contemporaneous relationships matrix B₀."
+                },
+                {
+                    question: "Recursive identification (Cholesky decomposition) assumes:",
+                    options: [
+                        "All variables affect each other contemporaneously",
+                        "A specific causal ordering of variables within the period",
+                        "All structural shocks are uncorrelated",
+                        "Variables are cointegrated"
+                    ],
+                    correct: 1,
+                    explanation: "Recursive identification imposes a lower triangular structure on B₀, implying a specific causal ordering where some variables cannot affect others within the same period."
+                },
+                {
+                    question: "Long-run restrictions in SVARs typically assume:",
+                    options: [
+                        "All shocks have permanent effects",
+                        "Certain shocks have no long-run effects on specific variables",
+                        "The VAR is stable",
+                        "All variables are stationary"
+                    ],
+                    correct: 1,
+                    explanation: "Long-run restrictions impose that certain structural shocks have no permanent effect on specific variables, often based on economic theory (e.g., nominal shocks don't affect real variables long-run)."
+                },
+                {
+                    question: "Sign restrictions in SVAR identification:",
+                    options: [
+                        "Require exact numerical values for parameters",
+                        "Impose inequality constraints on impulse responses",
+                        "Only work with two variables",
+                        "Are the same as long-run restrictions"
+                    ],
+                    correct: 1,
+                    explanation: "Sign restrictions impose that certain impulse responses must be positive or negative for specified periods, based on economic theory, without requiring exact magnitudes."
+                },
+                {
+                    question: "The advantage of structural VARs over reduced-form VARs is:",
+                    options: [
+                        "Better forecasting performance",
+                        "Easier estimation",
+                        "Economically interpretable impulse responses",
+                        "No need for lag length selection"
+                    ],
+                    correct: 2,
+                    explanation: "SVARs provide economically meaningful structural shocks and impulse responses that can be interpreted as policy experiments or structural changes, unlike reduced-form innovations."
+                },
+                {
+                    question: "In a just-identified SVAR:",
+                    options: [
+                        "There are more restrictions than needed",
+                        "There are exactly enough restrictions for identification",
+                        "The model cannot be estimated",
+                        "All impulse responses are zero"
+                    ],
+                    correct: 1,
+                    explanation: "Just-identification occurs when there are exactly k(k-1)/2 restrictions, providing unique structural parameter estimates without over-restricting the model."
+                }
+            ]
+        };
+        
+        function regenerateQuiz() {
+            console.log('Starting quiz regeneration...');
+            
+            try {
+                answeredQuestions = {};
+                currentQuestions = [];
+                
+                const categories = Object.keys(questionBank);
+                console.log('Found categories:', categories);
+                
+                if (categories.length === 0) {
+                    console.error('No question categories found!');
+                    return;
+                }
+                
+                categories.forEach((category, index) => {
+                    const categoryQuestions = questionBank[category];
+                    if (!categoryQuestions || categoryQuestions.length === 0) {
+                        console.error(`No questions found for category: ${category}`);
+                        return;
+                    }
+                    
+                    const randomIndex = Math.floor(Math.random() * categoryQuestions.length);
+                    const selectedQuestion = {
+                        ...categoryQuestions[randomIndex],
+                        category: category,
+                        id: `q${index + 1}`
+                    };
+                    
+                    console.log(`Selected question for ${category}:`, selectedQuestion.question.substring(0, 50) + '...');
+                    currentQuestions.push(selectedQuestion);
+                });
+                
+                console.log(`Generated ${currentQuestions.length} questions`);
+                
+                if (currentQuestions.length > 0) {
+                    renderQuiz();
+                    document.getElementById('quizSummary').style.display = 'none';
+                    console.log('Quiz regenerated successfully');
+                } else {
+                    console.error('No questions were generated');
+                }
+                
+            } catch (error) {
+                console.error('Error regenerating quiz:', error);
+                alert('Error generating quiz. Check console for details.');
+            }
+        }
+        
+        function renderQuiz() {
+            console.log('Rendering quiz...');
+            
+            try {
+                const container = document.getElementById('quizContainer');
+                if (!container) {
+                    console.error('Quiz container not found!');
+                    return;
+                }
+                
+                let html = '';
+                currentQuestions.forEach((question, index) => {
+                    html += `
+                        <div class="quiz-question">
+                            <p><strong>Question ${index + 1}:</strong> ${question.question}</p>
+                            <div class="quiz-options">
+                    `;
+                    question.options.forEach((option, optIndex) => {
+                        html += `
+                            <label class="quiz-option" onclick="selectDynamicAnswer('${question.id}', ${optIndex})">
+                                <input type="radio" name="${question.id}" value="${optIndex}">
+                                ${String.fromCharCode(65 + optIndex)}) ${option}
+                            </label>
+                        `;
+                    });
+                    html += `
+                            </div>
+                            <div id="feedback${question.id}" class="quiz-feedback"></div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                console.log('Quiz rendered successfully');
+                
+            } catch (error) {
+                console.error('Error rendering quiz:', error);
+            }
+        }
+        
+        function selectDynamicAnswer(questionId, selectedAnswer) {
+            const question = currentQuestions.find(q => q.id === questionId);
+            if (!question) return;
+            
+            const isCorrect = selectedAnswer === question.correct;
+            answeredQuestions[questionId] = {
+                selected: selectedAnswer,
+                correct: isCorrect,
+                question: question
+            };
+            
+            const options = document.querySelectorAll(`input[name="${questionId}"]`);
+            options.forEach((option, index) => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (index === question.correct) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            const feedbackEl = document.getElementById(`feedback${questionId}`);
+            feedbackEl.textContent = question.explanation;
+            feedbackEl.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackEl.style.display = 'block';
+            
+            if (Object.keys(answeredQuestions).length === currentQuestions.length) {
+                setTimeout(() => showQuizSummary(), 1000);
+            }
+        }
+        
+        function showQuizSummary() {
+            const totalQuestions = currentQuestions.length;
+            const correctAnswers = Object.values(answeredQuestions).filter(a => a.correct).length;
+            const score = Math.round((correctAnswers / totalQuestions) * 100);
+            
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            document.getElementById('quizScore').textContent = score + '%';
+            
+            let feedback = '';
+            if (score >= 90) {
+                feedback = '🌟 Outstanding mastery of advanced time series methods! Excellent understanding of VARs, cointegration, IRFs, and structural identification.';
+            } else if (score >= 80) {
+                feedback = '🎯 Strong grasp of advanced time series econometrics! Good command of VAR methodology and dynamic analysis techniques.';
+            } else if (score >= 70) {
+                feedback = '💡 Solid foundation in advanced time series. Review VAR estimation, cointegration testing, and impulse response interpretation.';
+            } else if (score >= 60) {
+                feedback = '📈 Developing understanding of multivariate time series. Focus on VAR basics, Granger causality, and structural identification concepts.';
+            } else {
+                feedback = '🔄 Advanced time series requires more study. Review VAR fundamentals, cointegration theory, and dynamic modeling concepts carefully.';
+            }
+            
+            document.getElementById('quizFeedback').textContent = feedback;
+            document.getElementById('quizSummary').style.display = 'block';
+            document.getElementById('quizSummary').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        // Navigation and utility functions
+        function scrollToSection(sectionId) {
+            console.log('Scrolling to section:', sectionId);
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                console.log('Scrolled to:', sectionId);
+            } else {
+                console.error('Section not found:', sectionId);
+            }
+        }
+        
+        function toggleAIChat() {
+            const panel = document.getElementById('aiChatPanel');
+            const icon = document.getElementById('aiChatIcon');
+            
+            if (isAIChatOpen) {
+                panel.classList.remove('show');
+                icon.textContent = '⏱️';
+                isAIChatOpen = false;
+            } else {
+                panel.classList.add('show');
+                icon.textContent = '✖️';
+                isAIChatOpen = true;
+                document.getElementById('aiInput').focus();
+            }
+        }
+        
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addAIMessage('user', message);
+            input.value = '';
+            setTimeout(() => {
+                const response = getAIResponse(message);
+                addAIMessage('claude', response);
+            }, 500);
+        }
+        
+        function addAIMessage(sender, message) {
+            const messagesContainer = document.getElementById('aiChatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender}`;
+            
+            if (sender === 'user') {
+                messageDiv.textContent = message;
+            } else {
+                messageDiv.innerHTML = `<strong>⏱️ Claude:</strong> ${message}`;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function getAIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            if (message.includes('var') || message.includes('vector autoregression')) {
+                return "VARs model multiple time series where each variable depends on lags of itself and all others: Y_t = c + A₁Y_{t-1} + ... + A_pY_{t-p} + u_t. Use AIC/BIC for lag selection. Check stability via eigenvalues of companion matrix.";
+            }
+            if (message.includes('cointegration') || message.includes('error correction')) {
+                return "Cointegration: I(1) variables with I(0) linear combination. Johansen test determines cointegrating rank. VECM: ΔY_t = αβ'Y_{t-1} + lags. α = speed of adjustment, β = long-run relationships. Granger Representation Theorem guarantees ECM form.";
+            }
+            if (message.includes('impulse response') || message.includes('irf')) {
+                return "IRFs show dynamic response to one-time shocks. From MA representation: Y_t = Σ Ψᵢu_{t-i}. Bootstrap confidence bands for nonlinear parameter functions. Cumulative IRFs show total effects. Half-life measures persistence.";
+            }
+            if (message.includes('granger') || message.includes('causality')) {
+                return "Granger causality: X helps predict Y beyond Y's own lags. Test H₀: coefficients on lagged X = 0 in Y equation. F-test for significance. In VAR: block exogeneity tests. VECM: long-run causality via error correction significance.";
+            }
+            if (message.includes('structural') || message.includes('svar') || message.includes('identification')) {
+                return "SVARs identify structural shocks from reduced form. Need k(k-1)/2 restrictions. Recursive: Cholesky ordering. Long-run: some shocks no permanent effects. Sign restrictions: theory-based IRF signs. Just-identified = exact restrictions.";
+            }
+            if (message.includes('johansen') || message.includes('trace')) {
+                return "Johansen test uses trace and max eigenvalue statistics to determine cointegrating rank. Likelihood ratio tests H₀: r cointegrating relationships vs. H₁: r+1. Critical values depend on trend assumptions and number of variables.";
+            }
+            
+            return "I can help with Vector Autoregressions, cointegration testing, impulse response functions, Granger causality, and structural identification. What specific advanced time series concept interests you?";
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing Chapter 15...');
+            
+            // Test if all required elements exist
+            const requiredElements = [
+                'quizContainer', 'varMatrix', 'cointChart', 'irfChart', 
+                'grangerChart', 'svarChart', 'varResults', 'cointResults',
+                'irfResults', 'grangerResults', 'svarResults'
+            ];
+            
+            const missingElements = [];
+            requiredElements.forEach(id => {
+                if (!document.getElementById(id)) {
+                    missingElements.push(id);
+                }
+            });
+            
+            if (missingElements.length > 0) {
+                console.error('Missing required elements:', missingElements);
+            } else {
+                console.log('All required elements found');
+            }
+            
+            // Initialize quiz with a delay
+            setTimeout(() => {
+                console.log('Initializing quiz...');
+                regenerateQuiz();
+            }, 500);
+            
+            console.log('Chapter 15: Advanced Time Series Topics loaded successfully! ⏱️');
+        });
+        
+    </script>
+
+</body>
+</html>
