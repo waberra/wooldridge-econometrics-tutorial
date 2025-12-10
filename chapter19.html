@@ -1,0 +1,2343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 19: Econometric Research Methods and Applications - Wooldridge Econometrics</title>
+    <style>
+        :root {
+            /* Capstone Theme - Integration and mastery */
+            --primary-capstone: #1e1b4b;
+            --secondary-capstone: #312e81;
+            --accent-research: #3730a3;
+            --accent-design: #4338ca;
+            --accent-empirical: #4f46e5;
+            --accent-causal: #6366f1;
+            --accent-policy: #818cf8;
+            --accent-synthesis: #a5b4fc;
+            --flow-50: #f8fafc;
+            --flow-100: #f1f5f9;
+            --flow-200: #e2e8f0;
+            --flow-300: #cbd5e1;
+            --flow-400: #94a3b8;
+            --flow-500: #64748b;
+            --flow-600: #475569;
+            --flow-700: #334155;
+            --flow-800: #1e293b;
+            --flow-900: #0f172a;
+            
+            /* Method-specific colors */
+            --status-research: #3730a3;
+            --status-design: #4338ca;
+            --status-empirical: #4f46e5;
+            --status-causal: #6366f1;
+            --status-policy: #818cf8;
+            --status-synthesis: #a5b4fc;
+            
+            /* Typography */
+            --font-primary: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            line-height: 1.6;
+            color: var(--flow-900);
+            background: linear-gradient(135deg, var(--flow-50) 0%, #ffffff 40%, var(--flow-100) 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated capstone background with integration patterns */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 15% 25%, rgba(55, 48, 163, 0.04) 0%, transparent 60%),
+                radial-gradient(circle at 85% 75%, rgba(79, 70, 229, 0.04) 0%, transparent 60%),
+                radial-gradient(circle at 50% 10%, rgba(99, 102, 241, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 25% 90%, rgba(129, 140, 248, 0.03) 0%, transparent 50%),
+                linear-gradient(45deg, transparent 48%, rgba(165, 180, 252, 0.02) 50%, transparent 52%),
+                linear-gradient(-45deg, transparent 48%, rgba(55, 48, 163, 0.02) 50%, transparent 52%);
+            background-size: 120px 120px, 180px 180px, 90px 90px, 150px 150px, 60px 60px, 80px 80px;
+            z-index: -1;
+            animation: capstoneFlow 25s ease-in-out infinite;
+        }
+
+        @keyframes capstoneFlow {
+            0%, 100% { opacity: 0.6; transform: rotate(0deg) scale(1); }
+            25% { opacity: 0.8; transform: rotate(1deg) scale(1.02); }
+            50% { opacity: 0.7; transform: rotate(-0.5deg) scale(0.98); }
+            75% { opacity: 0.9; transform: rotate(0.8deg) scale(1.01); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 5rem 0;
+            background: linear-gradient(135deg, var(--primary-capstone), var(--secondary-capstone), var(--accent-research), var(--accent-empirical));
+            color: white;
+            margin-bottom: 3rem;
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 25px 80px rgba(30, 27, 75, 0.4);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(45deg, transparent 25%, rgba(99, 102, 241, 0.15) 50%, transparent 75%),
+                linear-gradient(-45deg, transparent 25%, rgba(129, 140, 248, 0.08) 50%, transparent 75%),
+                radial-gradient(circle at center, transparent 40%, rgba(55, 48, 163, 0.1) 70%, transparent 100%);
+            animation: capstonePattern 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes capstonePattern {
+            0% { opacity: 0.4; transform: scale(1) rotate(0deg); }
+            50% { opacity: 0.7; transform: scale(1.03) rotate(2deg); }
+            100% { opacity: 0.6; transform: scale(1.01) rotate(-1deg); }
+        }
+
+        .chapter-title {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff, var(--accent-causal), var(--accent-synthesis));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.04em;
+        }
+
+        .chapter-subtitle {
+            font-size: 1.6rem;
+            opacity: 0.95;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.8px;
+        }
+
+        .completion-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Navigation */
+        .nav-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(25px);
+            border-radius: 30px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--flow-200);
+            position: relative;
+        }
+
+        .nav-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 30px;
+            padding: 3px;
+            background: linear-gradient(135deg, var(--accent-research), var(--accent-empirical), var(--accent-synthesis));
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: xor;
+            opacity: 0.4;
+        }
+
+        .nav-pills {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.8rem;
+            justify-items: center;
+        }
+
+        .nav-pill {
+            padding: 1.5rem 2.2rem;
+            background: var(--flow-100);
+            border: 2px solid var(--flow-300);
+            border-radius: 25px;
+            color: var(--flow-700);
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1rem;
+            width: 100%;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-pill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(55, 48, 163, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .nav-pill:hover::before {
+            left: 100%;
+        }
+
+        .nav-pill:hover {
+            background: var(--primary-capstone);
+            color: white;
+            transform: translateY(-5px);
+            border-color: var(--accent-research);
+            box-shadow: 0 15px 45px rgba(30, 27, 75, 0.4);
+        }
+
+        /* Section Styling */
+        .section {
+            background: white;
+            border-radius: 30px;
+            padding: 3rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--flow-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent-research), var(--accent-synthesis));
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary-capstone);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section p {
+            margin-bottom: 1.2rem;
+            color: var(--flow-700);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        /* Concept Boxes */
+        .concept-box {
+            background: var(--flow-50);
+            border-radius: 25px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 1px solid var(--flow-200);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .concept-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(55, 48, 163, 0.15);
+        }
+
+        .concept-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+        }
+
+        .concept-box.research::before { background: var(--status-research); }
+        .concept-box.design::before { background: var(--status-design); }
+        .concept-box.empirical::before { background: var(--status-empirical); }
+        .concept-box.causal::before { background: var(--status-causal); }
+        .concept-box.policy::before { background: var(--status-policy); }
+        .concept-box.synthesis::before { background: var(--status-synthesis); }
+
+        .concept-title {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--primary-capstone);
+            font-size: 1.3rem;
+        }
+
+        .concept-box.research .concept-title { color: var(--status-research); }
+        .concept-box.design .concept-title { color: var(--status-design); }
+        .concept-box.empirical .concept-title { color: var(--status-empirical); }
+        .concept-box.causal .concept-title { color: var(--status-causal); }
+        .concept-box.policy .concept-title { color: var(--status-policy); }
+        .concept-box.synthesis .concept-title { color: var(--status-synthesis); }
+
+        /* Formula Boxes */
+        .formula {
+            background: var(--flow-900);
+            color: var(--flow-100);
+            padding: 2rem;
+            border-radius: 20px;
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .formula::before {
+            content: '∑';
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            font-size: 2rem;
+            opacity: 0.3;
+        }
+
+        /* Research Framework */
+        .research-framework {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .framework-step {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid var(--flow-300);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .framework-step::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--accent-research);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .framework-step:hover::before {
+            transform: scaleX(1);
+        }
+
+        .framework-step:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(55, 48, 163, 0.2);
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--accent-research);
+            color: white;
+            border-radius: 50%;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-capstone);
+            margin-bottom: 1rem;
+        }
+
+        .step-description {
+            color: var(--flow-700);
+            line-height: 1.6;
+        }
+
+        /* Interactive Controls */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .control-group {
+            background: var(--flow-50);
+            padding: 2.5rem;
+            border-radius: 25px;
+            border: 1px solid var(--flow-200);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-group::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent-research), var(--accent-synthesis));
+            border-radius: 25px 25px 0 0;
+        }
+
+        .control-group:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(55, 48, 163, 0.2);
+        }
+
+        .control-group h4 {
+            color: var(--primary-capstone);
+            margin-bottom: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.8rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--flow-700);
+            margin-bottom: 1rem;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 1.2rem;
+            border: 2px solid var(--flow-300);
+            border-radius: 15px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary-capstone);
+            box-shadow: 0 0 0 3px rgba(30, 27, 75, 0.1);
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--primary-capstone), var(--secondary-capstone));
+            color: white;
+            border: none;
+            padding: 1.5rem 3rem;
+            border-radius: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            width: 100%;
+            font-size: 1.1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transition: all 0.4s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .action-button:hover::before {
+            width: 350px;
+            height: 350px;
+        }
+
+        .action-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 45px rgba(30, 27, 75, 0.4);
+        }
+
+        /* Comprehensive Quiz Section */
+        .final-quiz-section {
+            background: linear-gradient(135deg, var(--flow-50), #ffffff, var(--flow-100));
+            border-radius: 30px;
+            padding: 3rem;
+            margin: 2rem 0;
+            border: 1px solid var(--flow-200);
+            position: relative;
+            box-shadow: 0 20px 60px rgba(30, 27, 75, 0.1);
+        }
+
+        .final-quiz-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--accent-research), var(--accent-empirical), var(--accent-synthesis));
+            border-radius: 30px 30px 0 0;
+        }
+
+        .quiz-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--flow-200);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-research);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(55, 48, 163, 0.15);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            font-family: var(--font-mono);
+            color: var(--accent-research);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--flow-600);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Quiz Question */
+        .quiz-question {
+            background: white;
+            border-radius: 25px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 1px solid var(--flow-200);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-question::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent-research), var(--accent-synthesis));
+            border-radius: 25px 25px 0 0;
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .quiz-question:hover::before {
+            transform: scaleX(1);
+        }
+
+        .quiz-question:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(55, 48, 163, 0.15);
+        }
+
+        .quiz-question p {
+            font-weight: 600;
+            color: var(--flow-800);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            padding: 1.5rem;
+            background: var(--flow-50);
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .quiz-option:hover {
+            background: var(--flow-100);
+            border-color: var(--accent-research);
+            transform: translateX(10px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(55, 48, 163, 0.1);
+            border-color: var(--status-research);
+            color: var(--status-research);
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .quiz-feedback {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 18px;
+            display: none;
+            line-height: 1.7;
+        }
+
+        .quiz-feedback.correct {
+            background: rgba(55, 48, 163, 0.1);
+            color: var(--status-research);
+            border: 1px solid rgba(55, 48, 163, 0.3);
+        }
+
+        .quiz-feedback.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Progress Tracker */
+        .progress-tracker {
+            background: white;
+            border-radius: 25px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid var(--flow-200);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: var(--flow-200);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-research), var(--accent-synthesis));
+            border-radius: 6px;
+            transition: width 1s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: var(--flow-700);
+            font-weight: 600;
+        }
+
+        /* Completion Certificate */
+        .completion-section {
+            background: linear-gradient(135deg, var(--primary-capstone), var(--secondary-capstone));
+            color: white;
+            border-radius: 30px;
+            padding: 4rem;
+            margin: 3rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 25px 80px rgba(30, 27, 75, 0.3);
+        }
+
+        .completion-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+            animation: certificateGlow 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes certificateGlow {
+            0% { opacity: 0.5; }
+            100% { opacity: 0.9; }
+        }
+
+        .certificate-title {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .certificate-text {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* AI Chat Widget */
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        .ai-chat-button {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-capstone), var(--secondary-capstone));
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            box-shadow: 0 12px 45px rgba(30, 27, 75, 0.4);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-chat-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transition: all 0.4s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .ai-chat-button:hover::before {
+            width: 85px;
+            height: 85px;
+        }
+
+        .ai-chat-button:hover {
+            transform: scale(1.2) translateY(-4px);
+            box-shadow: 0 20px 60px rgba(30, 27, 75, 0.5);
+        }
+
+        .ai-chat-panel {
+            position: absolute;
+            bottom: 95px;
+            right: 0;
+            width: 420px;
+            height: 550px;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--flow-200);
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+            transition: all 0.5s ease;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ai-chat-panel.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .ai-chat-header {
+            background: linear-gradient(135deg, var(--primary-capstone), var(--secondary-capstone));
+            color: white;
+            padding: 2rem;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .ai-message {
+            max-width: 85%;
+            padding: 1.2rem;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .ai-message.user {
+            background: var(--primary-capstone);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 6px;
+        }
+
+        .ai-message.claude {
+            background: var(--flow-100);
+            color: var(--flow-800);
+            border-bottom-left-radius: 6px;
+        }
+
+        .ai-input-area {
+            padding: 2rem;
+            border-top: 1px solid var(--flow-200);
+            display: flex;
+            gap: 1.2rem;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 1.2rem;
+            border: 1px solid var(--flow-300);
+            border-radius: 25px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .ai-send-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-capstone);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .ai-send-btn:hover {
+            background: var(--secondary-capstone);
+            transform: scale(1.15);
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .fade-in.delay-1 { animation-delay: 0.15s; }
+        .fade-in.delay-2 { animation-delay: 0.3s; }
+        .fade-in.delay-3 { animation-delay: 0.45s; }
+        .fade-in.delay-4 { animation-delay: 0.6s; }
+        .fade-in.delay-5 { animation-delay: 0.75s; }
+        .fade-in.delay-6 { animation-delay: 0.9s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .chapter-title { font-size: 2.8rem; }
+            .nav-pills { grid-template-columns: 1fr; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .ai-chat-panel { width: calc(100vw - 4rem); right: 2rem; left: 2rem; }
+            .research-framework { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .chapter-title { font-size: 2.2rem; }
+            .certificate-title { font-size: 2rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header fade-in">
+            <h1 class="chapter-title">🎓 Chapter 19</h1>
+            <p class="chapter-subtitle">Econometric Research Methods and Applications</p>
+            <div class="completion-badge">
+                🏆 Capstone Chapter - Complete Tutorial Mastery
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <div class="nav-container fade-in delay-1">
+            <div class="nav-pills">
+                <button onclick="scrollToSection('research-design')" class="nav-pill">
+                    🔬 Research Design
+                </button>
+                <button onclick="scrollToSection('empirical-strategies')" class="nav-pill">
+                    📊 Empirical Strategies
+                </button>
+                <button onclick="scrollToSection('causal-inference')" class="nav-pill">
+                    🎯 Causal Inference
+                </button>
+                <button onclick="scrollToSection('policy-evaluation')" class="nav-pill">
+                    📈 Policy Evaluation
+                </button>
+                <button onclick="scrollToSection('research-synthesis')" class="nav-pill">
+                    🔄 Research Synthesis
+                </button>
+                <button onclick="scrollToSection('final-assessment')" class="nav-pill">
+                    🎯 Final Assessment
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 19.1: Research Design Framework -->
+        <section class="section fade-in delay-2" id="research-design">
+            <h2 class="section-title">19.1 🔬 Research Design Framework</h2>
+            
+            <p>Effective econometric research requires careful planning, clear research questions, and appropriate methodological choices. This section integrates all previous chapters into a comprehensive research framework.</p>
+
+            <div class="concept-box research">
+                <div class="concept-title">🔬 The Research Process</div>
+                <p>Systematic approach to econometric research:</p>
+                <div class="formula">
+                    Research Pipeline:
+                    1. Question Formulation: What is the economic question?
+                    2. Literature Review: What do we know? What gaps exist?
+                    3. Theoretical Framework: What model guides the analysis?
+                    4. Data Collection: What data answers the question?
+                    5. Identification Strategy: How do we establish causation?
+                    6. Estimation Method: Which technique fits the data/question?
+                    7. Robustness Checks: How sensitive are results?
+                    8. Interpretation: What do results mean for theory/policy?
+                </div>
+                <p><strong>Key principle:</strong> Let the research question drive methodology choice, not the reverse</p>
+            </div>
+
+            <div class="research-framework">
+                <div class="framework-step">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Question & Theory</div>
+                    <div class="step-description">Develop clear research question grounded in economic theory. Specify hypotheses and expected relationships.</div>
+                </div>
+                <div class="framework-step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Data & Measurement</div>
+                    <div class="step-description">Identify appropriate data sources. Consider measurement issues, sample selection, and data limitations.</div>
+                </div>
+                <div class="framework-step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Identification</div>
+                    <div class="step-description">Design identification strategy. Address endogeneity, confounding, and selection bias through appropriate methods.</div>
+                </div>
+                <div class="framework-step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Estimation</div>
+                    <div class="step-description">Select estimation method based on data structure and identification strategy. Consider robustness and efficiency.</div>
+                </div>
+                <div class="framework-step">
+                    <div class="step-number">5</div>
+                    <div class="step-title">Inference</div>
+                    <div class="step-description">Conduct proper statistical inference. Address multiple testing, clustering, and heteroskedasticity.</div>
+                </div>
+                <div class="framework-step">
+                    <div class="step-number">6</div>
+                    <div class="step-title">Interpretation</div>
+                    <div class="step-description">Interpret results carefully. Distinguish correlation from causation. Discuss economic significance.</div>
+                </div>
+            </div>
+
+            <div class="concept-box design">
+                <div class="concept-title">📋 Research Design Checklist</div>
+                <p><strong>Before Starting Analysis:</strong></p>
+                <ul style="margin-left: 2rem; color: var(--flow-700);">
+                    <li>Is the research question clearly defined and economically meaningful?</li>
+                    <li>Does the data match the theoretical population of interest?</li>
+                    <li>Are key variables properly measured and defined?</li>
+                    <li>What are the main threats to identification?</li>
+                    <li>Is the sample size adequate for the intended analysis?</li>
+                    <li>Are there ethical considerations in the research design?</li>
+                </ul>
+                <p><strong>During Analysis:</strong></p>
+                <ul style="margin-left: 2rem; color: var(--flow-700);">
+                    <li>Have you explored the data thoroughly (descriptive statistics, plots)?</li>
+                    <li>Are model assumptions satisfied?</li>
+                    <li>Have you conducted appropriate robustness checks?</li>
+                    <li>Are standard errors correctly specified for your data structure?</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 19.2: Empirical Strategies Integration -->
+        <section class="section fade-in delay-3" id="empirical-strategies">
+            <h2 class="section-title">19.2 📊 Empirical Strategies Integration</h2>
+            
+            <p>This section synthesizes methodological approaches from previous chapters, providing guidance on when and how to combine different econometric techniques for robust empirical research.</p>
+
+            <div class="concept-box empirical">
+                <div class="concept-title">📊 Method Selection Matrix</div>
+                <div class="formula">
+                    Cross-Sectional Data:
+                    • Binary outcome → Logit/Probit (Ch. 17)
+                    • Count outcome → Poisson/NB (Ch. 18)
+                    • Censored outcome → Tobit (Ch. 17)
+                    • Endogenous regressors → IV/2SLS (Ch. 15)
+                    • Selection bias → Heckman (Ch. 17)
+                    
+                    Panel Data:
+                    • Unobserved heterogeneity → Fixed/Random Effects (Ch. 13-14)
+                    • Dynamic models → GMM (Ch. 15)
+                    • Treatment effects → Difference-in-differences (Ch. 13)
+                    
+                    Time Series:
+                    • Non-stationarity → Cointegration (Ch. 15, 18)
+                    • Policy breaks → Structural break tests (Ch. 12)
+                    • Forecasting → VAR models (Ch. 15)
+                </div>
+                <p><strong>Integration principle:</strong> Combine methods to address multiple data issues simultaneously</p>
+            </div>
+
+            <div class="concept-box empirical">
+                <div class="concept-title">🔧 Multi-Stage Empirical Strategies</div>
+                <p><strong>Example 1: Treatment Effect with Selection</strong></p>
+                <p>Problem: Estimate effect of job training on wages, but participation is non-random</p>
+                <div class="formula">
+                    Stage 1: Heckman selection model (Ch. 17)
+                    • Model training participation: P(Training) = Φ(Z'γ)
+                    • Need exclusion restriction in Z (policy variation)
+                    
+                    Stage 2: Difference-in-differences (Ch. 13)
+                    • Compare before/after for treated vs control
+                    • Control for time trends and individual effects
+                    
+                    Stage 3: Robustness checks
+                    • Matching on propensity scores
+                    • Instrumental variables if available
+                    • Sensitivity analysis for hidden bias
+                </div>
+                
+                <p><strong>Example 2: Policy Evaluation with Spillovers</strong></p>
+                <div class="formula">
+                    Stage 1: Spatial econometrics (Ch. 15)
+                    • Account for geographic spillovers: Y = ρWY + Xβ + u
+                    • Test for spatial dependence
+                    
+                    Stage 2: Panel data methods (Ch. 13-14)
+                    • Control for unobserved regional characteristics
+                    • Use within variation for identification
+                    
+                    Stage 3: Heterogeneous treatment effects
+                    • Quantile regression for distributional effects
+                    • Interaction terms for heterogeneity
+                </div>
+            </div>
+
+            <!-- Empirical Strategy Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>📊 Empirical Strategy Designer</h4>
+                    
+                    <div class="input-group">
+                        <label for="researchQuestion">Research Question Type:</label>
+                        <select id="researchQuestion">
+                            <option value="treatment_effect" selected>Treatment Effect Estimation</option>
+                            <option value="prediction">Prediction/Forecasting</option>
+                            <option value="structural">Structural Parameter Estimation</option>
+                            <option value="policy_evaluation">Policy Evaluation</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="dataStructure">Data Structure:</label>
+                        <select id="dataStructure">
+                            <option value="cross_section">Cross-sectional</option>
+                            <option value="panel" selected>Panel Data</option>
+                            <option value="time_series">Time Series</option>
+                            <option value="experimental">Experimental</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="outcomeType">Outcome Variable:</label>
+                        <select id="outcomeType">
+                            <option value="continuous" selected>Continuous</option>
+                            <option value="binary">Binary</option>
+                            <option value="count">Count</option>
+                            <option value="duration">Duration</option>
+                            <option value="ordered">Ordered</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="endogeneityRisk">Endogeneity Risk:</label>
+                        <select id="endogeneityRisk">
+                            <option value="low">Low (randomized/quasi-random)</option>
+                            <option value="moderate">Moderate (some confounding)</option>
+                            <option value="high" selected>High (serious endogeneity)</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="designEmpiricalStrategy()">
+                        📊 Design Optimal Strategy
+                    </button>
+                </div>
+                
+                <div class="control-group" id="strategyOutput" style="display: none;">
+                    <h4>🎯 Recommended Strategy</h4>
+                    <div id="strategyDetails" style="background: white; padding: 1.5rem; border-radius: 15px; margin-top: 1rem;">
+                        <!-- Strategy details will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 19.3: Advanced Causal Inference -->
+        <section class="section fade-in delay-4" id="causal-inference">
+            <h2 class="section-title">19.3 🎯 Causal Inference Integration</h2>
+            
+            <p>Causal inference is the central challenge of empirical economics. This section integrates identification strategies from across the tutorial to provide a comprehensive approach to establishing causation.</p>
+
+            <div class="concept-box causal">
+                <div class="concept-title">🎯 The Fundamental Problem of Causal Inference</div>
+                <div class="formula">
+                    Treatment Effects Framework:
+                    
+                    Potential Outcomes: Y₁ᵢ (treated), Y₀ᵢ (control) for individual i
+                    Individual Treatment Effect: τᵢ = Y₁ᵢ - Y₀ᵢ (unobservable!)
+                    
+                    Average Treatment Effect: ATE = E[Y₁ᵢ - Y₀ᵢ]
+                    Treatment on Treated: ATT = E[Y₁ᵢ - Y₀ᵢ | Dᵢ = 1]
+                    
+                    Selection Bias: E[Y₀ᵢ | Dᵢ = 1] - E[Y₀ᵢ | Dᵢ = 0]
+                    
+                    Identification requires: E[Y₀ᵢ | Dᵢ = 1] = E[Y₀ᵢ | Dᵢ = 0]
+                    (Treatment independent of potential outcomes)
+                </div>
+                <p><strong>Solutions:</strong> Randomization, natural experiments, instrumental variables, discontinuities</p>
+            </div>
+
+            <div class="concept-box causal">
+                <div class="concept-title">🔬 Identification Strategy Hierarchy</div>
+                <p><strong>Gold Standard (Strongest Identification):</strong></p>
+                <ol style="margin-left: 2rem; color: var(--flow-700);">
+                    <li><strong>Randomized Controlled Trials (RCT):</strong> True randomization</li>
+                    <li><strong>Natural Experiments:</strong> As-good-as-random variation</li>
+                    <li><strong>Regression Discontinuity:</strong> Sharp cutoff rules</li>
+                    <li><strong>Instrumental Variables:</strong> Valid instruments</li>
+                    <li><strong>Difference-in-Differences:</strong> Parallel trends</li>
+                    <li><strong>Fixed Effects:</strong> Controls for unobservable heterogeneity</li>
+                    <li><strong>Matching/Propensity Scores:</strong> Selection on observables</li>
+                </ol>
+                
+                <p><strong>Credibility Checklist:</strong></p>
+                <div class="formula">
+                    For each strategy, ask:
+                    1. Is the identifying variation plausibly exogenous?
+                    2. Are the assumptions testable? Have they been tested?
+                    3. Is the identifying variation relevant to the research question?
+                    4. Are there alternative explanations for the results?
+                    5. How generalizable are the findings?
+                </div>
+            </div>
+
+            <div class="concept-box causal">
+                <div class="concept-title">⚖️ Threats to Causal Inference</div>
+                <p><strong>Internal Validity Threats:</strong></p>
+                <ul style="margin-left: 2rem; color: var(--flow-700);">
+                    <li><strong>Omitted Variable Bias:</strong> Confounding factors</li>
+                    <li><strong>Selection Bias:</strong> Non-random assignment/participation</li>
+                    <li><strong>Reverse Causality:</strong> Y affects X, not just X affects Y</li>
+                    <li><strong>Measurement Error:</strong> Attenuation bias, non-classical error</li>
+                    <li><strong>Sample Selection:</strong> Non-representative samples</li>
+                </ul>
+                
+                <p><strong>External Validity Threats:</strong></p>
+                <ul style="margin-left: 2rem; color: var(--flow-700);">
+                    <li><strong>Population Generalizability:</strong> Different populations</li>
+                    <li><strong>Setting Generalizability:</strong> Different contexts</li>
+                    <li><strong>Treatment Generalizability:</strong> Different implementations</li>
+                    <li><strong>Temporal Generalizability:</strong> Different time periods</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 19.4: Policy Evaluation Framework -->
+        <section class="section fade-in delay-5" id="policy-evaluation">
+            <h2 class="section-title">19.4 📈 Policy Evaluation Framework</h2>
+            
+            <p>Policy evaluation requires combining causal inference methods with practical considerations of policy implementation, heterogeneous effects, and welfare analysis.</p>
+
+            <div class="concept-box policy">
+                <div class="concept-title">📈 Policy Evaluation Steps</div>
+                <div class="formula">
+                    1. Define Policy Question:
+                       • What is the policy intervention?
+                       • What outcome(s) matter for welfare?
+                       • Who is affected? (Target population)
+                    
+                    2. Establish Counterfactual:
+                       • What would have happened without policy?
+                       • Use appropriate identification strategy
+                    
+                    3. Estimate Effects:
+                       • Average effects (ATE)
+                       • Distributional effects (quantile regression)
+                       • Heterogeneous effects (by demographics, etc.)
+                    
+                    4. Welfare Analysis:
+                       • Cost-benefit analysis
+                       • Distributional consequences
+                       • Spillover effects
+                    
+                    5. Policy Recommendations:
+                       • Should policy continue/expand?
+                       • How to improve implementation?
+                       • External validity for other contexts?
+                </div>
+            </div>
+
+            <div class="concept-box policy">
+                <div class="concept-title">🎯 Heterogeneous Treatment Effects</div>
+                <p>Policies rarely affect everyone the same way. Important to understand:</p>
+                <div class="formula">
+                    Conditional Average Treatment Effects:
+                    CATE(X) = E[Y₁ - Y₀ | X] where X are characteristics
+                    
+                    Methods for heterogeneity:
+                    • Interaction terms: Y = α + βD + γ(D×X) + δX + u
+                    • Quantile regression: Q_τ(Y|D,X) = α_τ + β_τD + γ_τX
+                    • Machine learning: Causal forests, double ML
+                    • Subgroup analysis: Estimate separately by groups
+                    
+                    Policy targeting: Target treatment where β_τ or CATE is largest
+                </div>
+                <p><strong>Equity considerations:</strong> Even if average effects are positive, some groups may be harmed</p>
+            </div>
+
+            <!-- Policy Evaluation Designer -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>📈 Policy Evaluation Designer</h4>
+                    
+                    <div class="input-group">
+                        <label for="policyType">Policy Type:</label>
+                        <select id="policyType">
+                            <option value="education" selected>Education Policy</option>
+                            <option value="healthcare">Healthcare Policy</option>
+                            <option value="employment">Employment Program</option>
+                            <option value="environmental">Environmental Regulation</option>
+                            <option value="tax">Tax Policy</option>
+                            <option value="welfare">Welfare Program</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="evaluationPeriod">Evaluation Period:</label>
+                        <select id="evaluationPeriod">
+                            <option value="short">Short-term (< 1 year)</option>
+                            <option value="medium" selected>Medium-term (1-5 years)</option>
+                            <option value="long">Long-term (5+ years)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="implementationScope">Implementation Scope:</label>
+                        <select id="implementationScope">
+                            <option value="pilot">Pilot Program</option>
+                            <option value="regional" selected>Regional Rollout</option>
+                            <option value="national">National Implementation</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="heterogeneityLevel">Expected Heterogeneity:</label>
+                        <select id="heterogeneityLevel">
+                            <option value="low">Low (uniform effects)</option>
+                            <option value="moderate" selected>Moderate (some variation)</option>
+                            <option value="high">High (very different effects)</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="designPolicyEvaluation()">
+                        📈 Design Policy Evaluation
+                    </button>
+                </div>
+                
+                <div class="control-group" id="policyOutput" style="display: none;">
+                    <h4>🎯 Evaluation Framework</h4>
+                    <div id="policyDetails" style="background: white; padding: 1.5rem; border-radius: 15px; margin-top: 1rem;">
+                        <!-- Policy details will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 19.5: Research Synthesis and Meta-Analysis -->
+        <section class="section fade-in delay-6" id="research-synthesis">
+            <h2 class="section-title">19.5 🔄 Research Synthesis and Meta-Analysis</h2>
+            
+            <p>Individual studies provide pieces of the puzzle. Research synthesis combines evidence across studies to draw broader conclusions and identify areas where evidence is lacking.</p>
+
+            <div class="concept-box synthesis">
+                <div class="concept-title">🔄 Meta-Analysis Framework</div>
+                <div class="formula">
+                    Fixed Effects Meta-Analysis:
+                    θ̂_FE = (Σᵢ wᵢθ̂ᵢ) / (Σᵢ wᵢ) where wᵢ = 1/σᵢ²
+                    
+                    Random Effects Meta-Analysis:
+                    θ̂_RE = (Σᵢ w*ᵢθ̂ᵢ) / (Σᵢ w*ᵢ) where w*ᵢ = 1/(σᵢ² + τ²)
+                    
+                    Heterogeneity Tests:
+                    • Q-test: Q = Σᵢ wᵢ(θ̂ᵢ - θ̂_FE)² ~ χ²(k-1)
+                    • I²: Proportion of variation due to heterogeneity
+                    • τ²: Between-study variance
+                    
+                    Publication Bias Tests:
+                    • Funnel plot asymmetry
+                    • Egger regression test
+                    • Selection models
+                </div>
+                <p><strong>Key challenge:</strong> Studies differ in populations, methods, contexts - how to combine?</p>
+            </div>
+
+            <div class="concept-box synthesis">
+                <div class="concept-title">📚 Systematic Literature Review Protocol</div>
+                <p><strong>PRISMA Guidelines for Economic Research:</strong></p>
+                <ol style="margin-left: 2rem; color: var(--flow-700);">
+                    <li><strong>Research Question:</strong> PICO framework (Population, Intervention, Comparison, Outcome)</li>
+                    <li><strong>Search Strategy:</strong> Databases, keywords, time period</li>
+                    <li><strong>Inclusion Criteria:</strong> Study design, quality, language</li>
+                    <li><strong>Data Extraction:</strong> Standardized forms for effect sizes, methods</li>
+                    <li><strong>Quality Assessment:</strong> Risk of bias tools</li>
+                    <li><strong>Statistical Analysis:</strong> Meta-analysis if appropriate</li>
+                    <li><strong>Interpretation:</strong> Strength of evidence, policy implications</li>
+                </ol>
+                
+                <p><strong>Economic-Specific Considerations:</strong></p>
+                <ul style="margin-left: 2rem; color: var(--flow-700);">
+                    <li>Identification strategy quality</li>
+                    <li>External validity across contexts</li>
+                    <li>Publication bias in economics journals</li>
+                    <li>Heterogeneity by institutional settings</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Progress Tracker -->
+        <div class="progress-tracker fade-in delay-6">
+            <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--primary-capstone);">📊 Tutorial Completion Progress</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="tutorialProgress"></div>
+            </div>
+            <div class="progress-text" id="progressText">19 of 19 Chapters Complete - 100%</div>
+        </div>
+
+        <!-- Final Comprehensive Assessment -->
+        <section class="section fade-in delay-6" id="final-assessment">
+            <div class="final-quiz-section">
+                <h3 style="text-align: center; margin-bottom: 1rem; color: var(--primary-capstone); font-size: 2.2rem;">
+                    🎯 Final Comprehensive Assessment
+                </h3>
+                <p style="text-align: center; color: var(--flow-600); margin-bottom: 2rem; font-size: 1.1rem;">
+                    Test your mastery of all econometric concepts from the complete tutorial
+                </p>
+                
+                <!-- Quiz Statistics -->
+                <div class="quiz-stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalConcepts">19</div>
+                        <div class="stat-label">Chapters Covered</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalMethods">50+</div>
+                        <div class="stat-label">Methods Learned</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalQuestions">570+</div>
+                        <div class="stat-label">Practice Questions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="readyLevel">Expert</div>
+                        <div class="stat-label">Readiness Level</div>
+                    </div>
+                </div>
+                
+                <!-- Final Assessment Button -->
+                <div style="text-align: center; margin: 2.5rem 0;">
+                    <button onclick="startFinalAssessment()" class="action-button" style="margin: 0; padding: 1.5rem 3rem; font-size: 1.2rem;">
+                        🎯 Begin Final Assessment (20 Questions)
+                    </button>
+                    <p style="font-size: 0.9rem; color: var(--flow-600); margin-top: 1rem;">
+                        Comprehensive test covering all 19 chapters and major econometric concepts
+                    </p>
+                </div>
+                
+                <div id="finalQuizContainer" style="display: none;">
+                    <!-- Final assessment questions will be dynamically generated here -->
+                </div>
+                
+                <!-- Final Quiz Results -->
+                <div id="finalQuizResults" style="display: none; margin-top: 3rem; padding: 2.5rem; background: white; border-radius: 25px; border: 2px solid var(--accent-research);">
+                    <h4 style="color: var(--primary-capstone); margin-bottom: 1.5rem; text-align: center; font-size: 1.8rem;">📊 Final Assessment Results</h4>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+                        <div style="text-align: center; padding: 1.5rem; background: var(--flow-50); border-radius: 15px;">
+                            <div id="finalCorrect" style="font-size: 2rem; font-weight: bold; color: var(--status-research);">-</div>
+                            <div style="font-size: 0.9rem; color: var(--flow-600);">Correct</div>
+                        </div>
+                        <div style="text-align: center; padding: 1.5rem; background: var(--flow-50); border-radius: 15px;">
+                            <div id="finalTotal" style="font-size: 2rem; font-weight: bold; color: var(--primary-capstone);">20</div>
+                            <div style="font-size: 0.9rem; color: var(--flow-600);">Total</div>
+                        </div>
+                        <div style="text-align: center; padding: 1.5rem; background: var(--flow-50); border-radius: 15px;">
+                            <div id="finalScore" style="font-size: 2rem; font-weight: bold; color: var(--accent-empirical);">-</div>
+                            <div style="font-size: 0.9rem; color: var(--flow-600);">Score</div>
+                        </div>
+                        <div style="text-align: center; padding: 1.5rem; background: var(--flow-50); border-radius: 15px;">
+                            <div id="masteryLevel" style="font-size: 2rem; font-weight: bold; color: var(--accent-synthesis);">-</div>
+                            <div style="font-size: 0.9rem; color: var(--flow-600);">Mastery Level</div>
+                        </div>
+                    </div>
+                    <div id="finalFeedback" style="color: var(--flow-700); line-height: 1.7; text-align: center; font-size: 1.1rem;"></div>
+                    
+                    <!-- Certificate Generation -->
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <button id="generateCertificate" onclick="generateCertificate()" class="action-button" style="margin: 0; padding: 1.2rem 2.5rem; font-size: 1.1rem; display: none;">
+                            🏆 Generate Completion Certificate
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Completion Certificate Section -->
+        <div class="completion-section fade-in delay-6" id="certificateSection" style="display: none;">
+            <h2 class="certificate-title">🏆 Certificate of Completion</h2>
+            <p class="certificate-text">
+                Congratulations! You have successfully completed the comprehensive Wooldridge Econometrics Tutorial, 
+                mastering advanced statistical methods for economic research and data analysis.
+            </p>
+            <div style="background: rgba(255,255,255,0.2); padding: 2rem; border-radius: 20px; margin: 2rem 0;">
+                <h3 style="margin-bottom: 1rem;">Skills Mastered:</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; color: white;">
+                    <div>✓ Multiple Regression Analysis</div>
+                    <div>✓ Panel Data Methods</div>
+                    <div>✓ Instrumental Variables</div>
+                    <div>✓ Time Series Econometrics</div>
+                    <div>✓ Limited Dependent Variables</div>
+                    <div>✓ Advanced Topics & Research Methods</div>
+                </div>
+            </div>
+            <button onclick="downloadCertificate()" class="action-button" style="margin-top: 1.5rem; padding: 1.2rem 2.5rem;">
+                📄 Download Certificate
+            </button>
+        </div>
+
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div class="ai-chat-widget">
+        <button class="ai-chat-button" onclick="toggleAIChat()" title="Ask Claude about Research Methods">
+            <span id="aiChatIcon">🎓</span>
+        </button>
+        
+        <div class="ai-chat-panel" id="aiChatPanel">
+            <div class="ai-chat-header">
+                <span>🎓 Research Methods Tutor</span>
+                <button onclick="toggleAIChat()" style="background: none; border: none; color: white; cursor: pointer;">×</button>
+            </div>
+            
+            <div class="ai-chat-messages" id="aiChatMessages">
+                <div class="ai-message claude">
+                    <strong>🎓 Claude:</strong> Congratulations on reaching the final chapter! I can help you integrate all econometric methods, design research strategies, plan causal inference approaches, and prepare for your final assessment. What research methodology question can I assist with?
+                </div>
+            </div>
+            
+            <div class="ai-input-area">
+                <input type="text" class="ai-input" id="aiInput" placeholder="Ask about research design..." 
+                       onkeydown="if(event.key==='Enter') sendAIMessage()">
+                <button class="ai-send-btn" onclick="sendAIMessage()">→</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let isAIChatOpen = false;
+        let finalQuizQuestions = [];
+        let finalAnsweredQuestions = {};
+        let assessmentStarted = false;
+        
+        // Initialize progress bar animation
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const progressFill = document.getElementById('tutorialProgress');
+                if (progressFill) {
+                    progressFill.style.width = '100%';
+                }
+            }, 1000);
+        });
+        
+        // Empirical Strategy Designer
+        function designEmpiricalStrategy() {
+            console.log('Designing empirical strategy...');
+            
+            try {
+                const question = document.getElementById('researchQuestion').value;
+                const dataStructure = document.getElementById('dataStructure').value;
+                const outcomeType = document.getElementById('outcomeType').value;
+                const endogeneityRisk = document.getElementById('endogeneityRisk').value;
+                
+                let strategy = '';
+                let methods = [];
+                let considerations = [];
+                
+                // Base method selection
+                if (outcomeType === 'binary') {
+                    methods.push('Logit/Probit Models (Chapter 17)');
+                } else if (outcomeType === 'count') {
+                    methods.push('Poisson/Negative Binomial (Chapter 18)');
+                } else if (outcomeType === 'duration') {
+                    methods.push('Survival/Duration Models (Chapter 18)');
+                } else if (outcomeType === 'ordered') {
+                    methods.push('Ordered Response Models (Chapter 17)');
+                } else {
+                    methods.push('Linear Regression (Chapters 2-4)');
+                }
+                
+                // Panel data extensions
+                if (dataStructure === 'panel') {
+                    methods.push('Fixed/Random Effects (Chapters 13-14)');
+                    if (question === 'treatment_effect') {
+                        methods.push('Difference-in-Differences (Chapter 13)');
+                    }
+                    considerations.push('Test for unobserved heterogeneity (Hausman test)');
+                    considerations.push('Consider dynamic effects if relevant');
+                }
+                
+                // Time series extensions  
+                if (dataStructure === 'time_series') {
+                    methods.push('Time Series Methods (Chapters 11-12, 15)');
+                    considerations.push('Test for unit roots and cointegration');
+                    considerations.push('Check for structural breaks');
+                }
+                
+                // Endogeneity solutions
+                if (endogeneityRisk === 'high') {
+                    methods.push('Instrumental Variables (Chapter 15)');
+                    considerations.push('Find valid instruments (relevance + exogeneity)');
+                    considerations.push('Test for weak instruments');
+                    if (dataStructure === 'panel') {
+                        methods.push('GMM Estimation (Chapter 15)');
+                    }
+                } else if (endogeneityRisk === 'moderate') {
+                    considerations.push('Consider propensity score matching');
+                    considerations.push('Include rich set of controls');
+                }
+                
+                // Treatment effect specific
+                if (question === 'treatment_effect') {
+                    methods.push('Causal Inference Methods (Chapter 19)');
+                    considerations.push('Establish identification strategy');
+                    considerations.push('Test parallel trends assumption (if diff-in-diff)');
+                    considerations.push('Check for heterogeneous treatment effects');
+                }
+                
+                // Policy evaluation specific
+                if (question === 'policy_evaluation') {
+                    methods.push('Policy Evaluation Framework (Chapter 19)');
+                    considerations.push('Consider spillover effects');
+                    considerations.push('Analyze distributional impacts (quantile regression)');
+                    considerations.push('Conduct cost-benefit analysis');
+                }
+                
+                // Generate strategy
+                strategy = `
+                    <h5 style="color: var(--accent-research); margin-bottom: 1rem;">📊 Recommended Methods:</h5>
+                    <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                        ${methods.map(method => `<li>${method}</li>`).join('')}
+                    </ul>
+                    
+                    <h5 style="color: var(--accent-empirical); margin-bottom: 1rem;">⚠️ Key Considerations:</h5>
+                    <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                        ${considerations.map(consideration => `<li>${consideration}</li>`).join('')}
+                    </ul>
+                    
+                    <h5 style="color: var(--accent-causal); margin-bottom: 1rem;">🔄 Robustness Checks:</h5>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Alternative specifications</li>
+                        <li>Different subsamples</li>
+                        <li>Placebo tests</li>
+                        ${endogeneityRisk === 'high' ? '<li>Alternative identification strategies</li>' : ''}
+                        ${dataStructure === 'panel' ? '<li>Alternative time periods</li>' : ''}
+                    </ul>
+                `;
+                
+                document.getElementById('strategyDetails').innerHTML = strategy;
+                document.getElementById('strategyOutput').style.display = 'block';
+                
+                console.log('Empirical strategy designed successfully');
+                
+            } catch (error) {
+                console.error('Error in empirical strategy design:', error);
+                alert('Error designing strategy. Check console for details.');
+            }
+        }
+        
+        // Policy Evaluation Designer
+        function designPolicyEvaluation() {
+            console.log('Designing policy evaluation...');
+            
+            try {
+                const policyType = document.getElementById('policyType').value;
+                const period = document.getElementById('evaluationPeriod').value;
+                const scope = document.getElementById('implementationScope').value;
+                const heterogeneity = document.getElementById('heterogeneityLevel').value;
+                
+                let framework = '';
+                let outcomes = [];
+                let methods = [];
+                let challenges = [];
+                
+                // Policy-specific outcomes
+                const policyOutcomes = {
+                    'education': ['Test scores', 'Graduation rates', 'College enrollment', 'Long-term earnings'],
+                    'healthcare': ['Health outcomes', 'Healthcare utilization', 'Medical costs', 'Quality of life'],
+                    'employment': ['Employment rates', 'Wages', 'Job quality', 'Skills development'],
+                    'environmental': ['Pollution levels', 'Health effects', 'Economic costs', 'Compliance'],
+                    'tax': ['Tax revenue', 'Economic activity', 'Income distribution', 'Behavior changes'],
+                    'welfare': ['Poverty rates', 'Work incentives', 'Child outcomes', 'Long-term dependency']
+                };
+                
+                outcomes = policyOutcomes[policyType] || ['Primary outcomes', 'Secondary outcomes'];
+                
+                // Methods based on scope and heterogeneity
+                if (scope === 'pilot') {
+                    methods.push('Randomized Controlled Trial (if feasible)');
+                    methods.push('Regression Discontinuity (if eligibility cutoff)');
+                } else if (scope === 'regional') {
+                    methods.push('Difference-in-Differences');
+                    methods.push('Synthetic Control Method');
+                } else {
+                    methods.push('Event Study Design');
+                    methods.push('Instrumental Variables (policy variation)');
+                }
+                
+                if (heterogeneity === 'high') {
+                    methods.push('Quantile Regression (Chapter 18)');
+                    methods.push('Machine Learning Methods');
+                    methods.push('Subgroup Analysis');
+                }
+                
+                // Period-specific considerations
+                if (period === 'long') {
+                    challenges.push('Long-term follow-up and attrition');
+                    challenges.push('Changing policy environment');
+                    challenges.push('General equilibrium effects');
+                } else if (period === 'short') {
+                    challenges.push('May miss important delayed effects');
+                    challenges.push('Implementation period adjustments');
+                }
+                
+                // Scope-specific challenges
+                if (scope === 'national') {
+                    challenges.push('No clear control group');
+                    challenges.push('Spillover effects');
+                } else {
+                    challenges.push('External validity concerns');
+                    challenges.push('Hawthorne effects');
+                }
+                
+                framework = `
+                    <h5 style="color: var(--accent-policy); margin-bottom: 1rem;">🎯 Key Outcomes to Measure:</h5>
+                    <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                        ${outcomes.map(outcome => `<li>${outcome}</li>`).join('')}
+                    </ul>
+                    
+                    <h5 style="color: var(--accent-empirical); margin-bottom: 1rem;">📊 Recommended Methods:</h5>
+                    <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                        ${methods.map(method => `<li>${method}</li>`).join('')}
+                    </ul>
+                    
+                    <h5 style="color: var(--accent-causal); margin-bottom: 1rem;">⚠️ Key Challenges:</h5>
+                    <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                        ${challenges.map(challenge => `<li>${challenge}</li>`).join('')}
+                    </ul>
+                    
+                    <h5 style="color: var(--accent-synthesis); margin-bottom: 1rem;">🔄 Implementation Timeline:</h5>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Pre-policy baseline data collection</li>
+                        <li>Implementation monitoring</li>
+                        <li>${period}-term outcome evaluation</li>
+                        <li>Cost-benefit analysis</li>
+                        <li>Policy recommendations</li>
+                    </ul>
+                `;
+                
+                document.getElementById('policyDetails').innerHTML = framework;
+                document.getElementById('policyOutput').style.display = 'block';
+                
+                console.log('Policy evaluation designed successfully');
+                
+            } catch (error) {
+                console.error('Error in policy evaluation design:', error);
+                alert('Error designing policy evaluation. Check console for details.');
+            }
+        }
+        
+        // Final Assessment Questions (comprehensive across all chapters)
+        const finalAssessmentBank = [
+            // Chapter 2-3: Basic Regression
+            {
+                question: "In the regression Y = β₀ + β₁X + u, the Gauss-Markov assumptions ensure:",
+                options: [
+                    "β₁ is unbiased, consistent, and efficient among linear unbiased estimators",
+                    "β₁ has a normal distribution",
+                    "The model explains 100% of the variation in Y", 
+                    "There is no measurement error in X"
+                ],
+                correct: 0,
+                chapter: "2-3",
+                explanation: "Under Gauss-Markov assumptions, OLS is BLUE (Best Linear Unbiased Estimator), meaning it's unbiased and has the smallest variance among linear unbiased estimators."
+            },
+            
+            // Chapter 4: Multiple Regression
+            {
+                question: "Omitted variable bias occurs when:",
+                options: [
+                    "We include irrelevant variables in the regression",
+                    "We omit a variable that is correlated with both the dependent and independent variables",
+                    "The sample size is too small",
+                    "The dependent variable is not normally distributed"
+                ],
+                correct: 1,
+                chapter: "4",
+                explanation: "OVB = β₁ × δ₁ where β₁ is the effect of omitted variable on Y and δ₁ is the correlation between omitted and included variables."
+            },
+            
+            // Chapter 7: Qualitative Information
+            {
+                question: "In the model log(wage) = β₀ + β₁education + β₂female + u, the coefficient β₂ represents:",
+                options: [
+                    "The wage difference between women and men in dollars",
+                    "The percentage wage difference between women and men",
+                    "The log wage difference between women and men",
+                    "The correlation between gender and wages"
+                ],
+                correct: 1,
+                chapter: "7",
+                explanation: "With log-linear specification and binary variables, coefficients represent percentage differences: exp(β₂) - 1 ≈ β₂ for small β₂."
+            },
+            
+            // Chapter 8: Heteroskedasticity
+            {
+                question: "When heteroskedasticity is present but ignored:",
+                options: [
+                    "OLS estimators become biased",
+                    "OLS estimators remain unbiased but standard errors are incorrect",
+                    "The R-squared becomes unreliable",
+                    "The model cannot be estimated"
+                ],
+                correct: 1,
+                chapter: "8",
+                explanation: "Heteroskedasticity doesn't bias OLS coefficients but makes standard errors inconsistent, leading to invalid inference."
+            },
+            
+            // Chapter 9: Advanced Topics
+            {
+                question: "The RESET test checks for:",
+                options: [
+                    "Heteroskedasticity",
+                    "Functional form misspecification", 
+                    "Autocorrelation",
+                    "Multicollinearity"
+                ],
+                correct: 1,
+                chapter: "9",
+                explanation: "RESET (Regression Equation Specification Error Test) adds powers of fitted values to test for functional form misspecification."
+            },
+            
+            // Chapter 11: Time Series Basics
+            {
+                question: "A time series is strictly stationary if:",
+                options: [
+                    "Its mean is constant over time",
+                    "Its joint distributions are invariant to shifts in time",
+                    "It has no trend",
+                    "Its variance is constant"
+                ],
+                correct: 1,
+                chapter: "11", 
+                explanation: "Strict stationarity requires that all joint distributions are invariant to time shifts, which is stronger than just constant mean/variance."
+            },
+            
+            // Chapter 12: Serial Correlation
+            {
+                question: "The Durbin-Watson test:",
+                options: [
+                    "Tests for heteroskedasticity",
+                    "Tests for AR(1) serial correlation",
+                    "Tests for unit roots",
+                    "Tests for cointegration"
+                ],
+                correct: 1,
+                chapter: "12",
+                explanation: "DW tests H₀: no serial correlation vs H₁: AR(1) serial correlation. DW ≈ 2(1-ρ) where ρ is the AR(1) coefficient."
+            },
+            
+            // Chapter 13: Panel Data Basics
+            {
+                question: "Fixed effects estimation eliminates:",
+                options: [
+                    "All unobserved heterogeneity",
+                    "Time-invariant unobserved heterogeneity",
+                    "Time-varying unobserved factors",
+                    "Measurement error"
+                ],
+                correct: 1,
+                chapter: "13",
+                explanation: "Fixed effects removes time-invariant unobserved individual characteristics (αᵢ) but not time-varying unobserved factors."
+            },
+            
+            // Chapter 14: Advanced Panel Data
+            {
+                question: "The Hausman test compares:",
+                options: [
+                    "OLS vs. IV estimates",
+                    "Fixed effects vs. random effects estimates", 
+                    "Static vs. dynamic panel models",
+                    "Short panel vs. long panel estimators"
+                ],
+                correct: 1,
+                chapter: "14",
+                explanation: "Hausman test: H₀: RE consistent and efficient vs H₁: FE consistent but RE inconsistent (due to correlation between αᵢ and xᵢₜ)."
+            },
+            
+            // Chapter 15: IV and 2SLS
+            {
+                question: "A valid instrument must be:",
+                options: [
+                    "Correlated with the dependent variable",
+                    "Uncorrelated with the independent variable",
+                    "Correlated with the endogenous variable and uncorrelated with the error term",
+                    "Normally distributed"
+                ],
+                correct: 2,
+                chapter: "15",
+                explanation: "Valid IV requires: (1) Relevance: Cov(z,x) ≠ 0, and (2) Exogeneity: Cov(z,u) = 0."
+            },
+            
+            // Chapter 16: Simultaneous Equations
+            {
+                question: "In a simultaneous equations system, OLS generally produces:",
+                options: [
+                    "Unbiased and consistent estimates",
+                    "Biased but consistent estimates",
+                    "Biased and inconsistent estimates",
+                    "Unbiased but inconsistent estimates"
+                ],
+                correct: 2,
+                chapter: "16",
+                explanation: "Simultaneity creates endogeneity: explanatory variables are correlated with error terms, making OLS both biased and inconsistent."
+            },
+            
+            // Chapter 17: Limited Dependent Variables
+            {
+                question: "In logit models, the marginal effect of x on P(y=1) is:",
+                options: [
+                    "The coefficient β directly",
+                    "β × exp(xβ)",
+                    "β × Λ(xβ) × [1 - Λ(xβ)] where Λ is the logistic CDF",
+                    "β / [1 + exp(xβ)]"
+                ],
+                correct: 2,
+                chapter: "17",
+                explanation: "Logit marginal effect: ∂P/∂x = β × Λ(xβ) × [1-Λ(xβ)] where Λ is the logistic function."
+            },
+            
+            // Chapter 18: Advanced Topics
+            {
+                question: "The bootstrap method:",
+                options: [
+                    "Requires knowledge of the population distribution",
+                    "Resamples from the original data to approximate the sampling distribution",
+                    "Only works for large samples",
+                    "Always produces exact confidence intervals"
+                ],
+                correct: 1,
+                chapter: "18",
+                explanation: "Bootstrap resamples from the original data (treating it as the population) to approximate the sampling distribution without distributional assumptions."
+            },
+            
+            // Advanced Integration Questions
+            {
+                question: "When choosing between fixed effects and first differences for panel data:",
+                options: [
+                    "Always use fixed effects as it's more efficient",
+                    "Use first differences when T=2, otherwise fixed effects",
+                    "First differences is preferred when serial correlation is present",
+                    "The choice depends on the error structure"
+                ],
+                correct: 3,
+                chapter: "13-14",
+                explanation: "If errors are serially uncorrelated, FE is more efficient. If errors follow random walk, FD is more efficient. Choice depends on error structure."
+            },
+            
+            {
+                question: "Difference-in-differences estimation requires:",
+                options: [
+                    "Random assignment of treatment",
+                    "Parallel trends in the absence of treatment",
+                    "Linear time trends",
+                    "No spillover effects"
+                ],
+                correct: 1,
+                chapter: "13",
+                explanation: "DiD key assumption: parallel trends - treated and control groups would have followed the same trend in absence of treatment."
+            },
+            
+            {
+                question: "Sample selection bias can be corrected using:",
+                options: [
+                    "Instrumental variables only",
+                    "Heckman two-step procedure",
+                    "Propensity score matching only", 
+                    "Fixed effects estimation"
+                ],
+                correct: 1,
+                chapter: "17",
+                explanation: "Heckman two-step: (1) Estimate selection equation (probit), (2) Include inverse Mills ratio in outcome equation to correct for selection bias."
+            },
+            
+            {
+                question: "The weak instruments problem in IV estimation leads to:",
+                options: [
+                    "Unbiased but imprecise estimates",
+                    "Finite sample bias toward OLS and unreliable inference",
+                    "Heteroskedastic errors",
+                    "Perfect multicollinearity"
+                ],
+                correct: 1,
+                chapter: "15",
+                explanation: "Weak IV causes finite sample bias toward OLS estimates and makes standard inference unreliable, even with large samples."
+            },
+            
+            {
+                question: "Quantile regression is particularly useful for:",
+                options: [
+                    "Binary dependent variables",
+                    "Studying effects across the entire distribution of the outcome",
+                    "Time series with unit roots",
+                    "Count data models"
+                ],
+                correct: 1,
+                chapter: "18",
+                explanation: "Quantile regression models conditional quantiles Q_τ(Y|X), showing how effects vary across the distribution, not just at the mean."
+            },
+            
+            {
+                question: "The fundamental problem of causal inference is that:",
+                options: [
+                    "We cannot randomize in observational studies",
+                    "We cannot observe both potential outcomes for the same individual",
+                    "Sample sizes are always too small",
+                    "Measurement error is unavoidable"
+                ],
+                correct: 1,
+                chapter: "19",
+                explanation: "Cannot observe both Y₁ᵢ (treated) and Y₀ᵢ (untreated) for the same individual i, making individual causal effects unobservable."
+            },
+            
+            {
+                question: "In policy evaluation, external validity concerns:",
+                options: [
+                    "Whether results generalize to other populations, settings, or time periods",
+                    "Whether the estimates are statistically significant",
+                    "Whether the sample size is adequate",
+                    "Whether there is measurement error"
+                ],
+                correct: 0,
+                chapter: "19",
+                explanation: "External validity asks whether causal estimates from one context generalize to other populations, settings, treatments, or time periods."
+            }
+        ];
+        
+        function startFinalAssessment() {
+            console.log('Starting final assessment...');
+            
+            try {
+                if (assessmentStarted) {
+                    if (confirm('Restart the final assessment? This will reset your progress.')) {
+                        finalAnsweredQuestions = {};
+                        assessmentStarted = false;
+                    } else {
+                        return;
+                    }
+                }
+                
+                // Select 20 questions randomly from the bank
+                finalQuizQuestions = [];
+                const availableQuestions = [...finalAssessmentBank];
+                
+                for (let i = 0; i < 20 && availableQuestions.length > 0; i++) {
+                    const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+                    const selectedQuestion = {
+                        ...availableQuestions[randomIndex],
+                        id: `final_q${i + 1}`
+                    };
+                    finalQuizQuestions.push(selectedQuestion);
+                    availableQuestions.splice(randomIndex, 1);
+                }
+                
+                renderFinalAssessment();
+                assessmentStarted = true;
+                
+                console.log('Final assessment started with', finalQuizQuestions.length, 'questions');
+                
+            } catch (error) {
+                console.error('Error starting final assessment:', error);
+                alert('Error starting assessment. Check console for details.');
+            }
+        }
+        
+        function renderFinalAssessment() {
+            console.log('Rendering final assessment...');
+            
+            try {
+                const container = document.getElementById('finalQuizContainer');
+                if (!container) {
+                    console.error('Final quiz container not found!');
+                    return;
+                }
+                
+                let html = '<h4 style="text-align: center; margin-bottom: 2rem; color: var(--primary-capstone);">📝 Final Comprehensive Assessment</h4>';
+                
+                finalQuizQuestions.forEach((question, index) => {
+                    html += `
+                        <div class="quiz-question">
+                            <p><strong>Question ${index + 1}:</strong> ${question.question}</p>
+                            <p style="font-size: 0.9rem; color: var(--accent-research); margin-bottom: 1.5rem;"><em>Chapter ${question.chapter}</em></p>
+                            <div class="quiz-options">
+                    `;
+                    question.options.forEach((option, optIndex) => {
+                        html += `
+                            <label class="quiz-option" onclick="selectFinalAnswer('${question.id}', ${optIndex})">
+                                <input type="radio" name="${question.id}" value="${optIndex}">
+                                ${String.fromCharCode(65 + optIndex)}) ${option}
+                            </label>
+                        `;
+                    });
+                    html += `
+                            </div>
+                            <div id="feedback${question.id}" class="quiz-feedback"></div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                container.style.display = 'block';
+                console.log('Final assessment rendered successfully');
+                
+            } catch (error) {
+                console.error('Error rendering final assessment:', error);
+            }
+        }
+        
+        function selectFinalAnswer(questionId, selectedAnswer) {
+            const question = finalQuizQuestions.find(q => q.id === questionId);
+            if (!question) return;
+            
+            const isCorrect = selectedAnswer === question.correct;
+            finalAnsweredQuestions[questionId] = {
+                selected: selectedAnswer,
+                correct: isCorrect,
+                question: question
+            };
+            
+            const options = document.querySelectorAll(`input[name="${questionId}"]`);
+            options.forEach((option, index) => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (index === question.correct) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            const feedbackEl = document.getElementById(`feedback${questionId}`);
+            feedbackEl.textContent = question.explanation;
+            feedbackEl.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackEl.style.display = 'block';
+            
+            // Check if all questions answered
+            if (Object.keys(finalAnsweredQuestions).length === finalQuizQuestions.length) {
+                setTimeout(() => showFinalResults(), 1500);
+            }
+        }
+        
+        function showFinalResults() {
+            const totalQuestions = finalQuizQuestions.length;
+            const correctAnswers = Object.values(finalAnsweredQuestions).filter(a => a.correct).length;
+            const score = Math.round((correctAnswers / totalQuestions) * 100);
+            
+            document.getElementById('finalCorrect').textContent = correctAnswers;
+            document.getElementById('finalScore').textContent = score + '%';
+            
+            let masteryLevel = '';
+            let feedback = '';
+            let showCertificate = false;
+            
+            if (score >= 90) {
+                masteryLevel = 'Expert';
+                feedback = '🌟 Outstanding mastery! You have demonstrated exceptional understanding of econometric methods across all topics. You\'re ready to conduct independent econometric research and handle complex empirical challenges with confidence.';
+                showCertificate = true;
+            } else if (score >= 80) {
+                masteryLevel = 'Advanced';
+                feedback = '🎯 Excellent performance! You have strong command of econometric concepts and methods. With this foundation, you\'re well-prepared for graduate-level econometrics and applied research.';
+                showCertificate = true;
+            } else if (score >= 70) {
+                masteryLevel = 'Proficient';
+                feedback = '💡 Good understanding of econometric methods! You\'ve grasped most key concepts. Review the areas where you missed questions to strengthen your foundation before tackling advanced applications.';
+                showCertificate = true;
+            } else if (score >= 60) {
+                masteryLevel = 'Developing';
+                feedback = '📈 You\'re making good progress! You understand the basics but need more practice with advanced concepts. Review the tutorial chapters corresponding to missed questions.';
+            } else {
+                masteryLevel = 'Beginning';
+                feedback = '📚 This is a learning opportunity! Econometrics is challenging - review the tutorial systematically, practice with the interactive simulators, and retake the assessment when ready.';
+            }
+            
+            document.getElementById('masteryLevel').textContent = masteryLevel;
+            document.getElementById('finalFeedback').textContent = feedback;
+            
+            if (showCertificate) {
+                document.getElementById('generateCertificate').style.display = 'inline-block';
+            }
+            
+            document.getElementById('finalQuizResults').style.display = 'block';
+            document.getElementById('finalQuizResults').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        function generateCertificate() {
+            document.getElementById('certificateSection').style.display = 'block';
+            document.getElementById('certificateSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        function downloadCertificate() {
+            // In a real implementation, this would generate a PDF certificate
+            alert('🏆 Congratulations! Your completion certificate would be generated and downloaded. This demonstrates your mastery of econometric methods from basic regression through advanced research techniques.');
+        }
+        
+        // Navigation and utility functions
+        function scrollToSection(sectionId) {
+            console.log('Scrolling to section:', sectionId);
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                console.log('Scrolled to:', sectionId);
+            } else {
+                console.error('Section not found:', sectionId);
+            }
+        }
+        
+        function toggleAIChat() {
+            const panel = document.getElementById('aiChatPanel');
+            const icon = document.getElementById('aiChatIcon');
+            
+            if (isAIChatOpen) {
+                panel.classList.remove('show');
+                icon.textContent = '🎓';
+                isAIChatOpen = false;
+            } else {
+                panel.classList.add('show');
+                icon.textContent = '✖️';
+                isAIChatOpen = true;
+                document.getElementById('aiInput').focus();
+            }
+        }
+        
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addAIMessage('user', message);
+            input.value = '';
+            setTimeout(() => {
+                const response = getAIResponse(message);
+                addAIMessage('claude', response);
+            }, 500);
+        }
+        
+        function addAIMessage(sender, message) {
+            const messagesContainer = document.getElementById('aiChatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender}`;
+            
+            if (sender === 'user') {
+                messageDiv.textContent = message;
+            } else {
+                messageDiv.innerHTML = `<strong>🎓 Claude:</strong> ${message}`;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function getAIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            if (message.includes('research design') || message.includes('methodology')) {
+                return "Research design: Start with clear question → literature review → theoretical framework → identification strategy → data collection → estimation → robustness checks → interpretation. Let the research question drive method choice!";
+            }
+            if (message.includes('causal') || message.includes('identification')) {
+                return "Causal inference hierarchy: RCT (gold standard) → Natural experiments → RDD → IV → DiD → Fixed effects → Matching. Key: establish credible identification strategy and test assumptions.";
+            }
+            if (message.includes('policy') || message.includes('evaluation')) {
+                return "Policy evaluation framework: Define intervention → establish counterfactual → estimate effects (average + distributional) → welfare analysis → external validity → recommendations. Consider heterogeneous effects and spillovers.";
+            }
+            if (message.includes('method') || message.includes('choose') || message.includes('select')) {
+                return "Method selection: Binary outcome → logit/probit; Count → Poisson/NB; Panel → FE/RE; Endogeneity → IV; Selection → Heckman; Distributional effects → quantile regression. Match method to research question and data structure.";
+            }
+            if (message.includes('robustness') || message.includes('sensitivity')) {
+                return "Robustness checks: Alternative specifications, different samples, placebo tests, sensitivity analysis. Test key assumptions. If results change dramatically, investigate why - may reveal important insights about mechanisms.";
+            }
+            if (message.includes('final') || message.includes('assessment') || message.includes('ready')) {
+                return "Final assessment tests mastery across all 19 chapters. Review key concepts: OLS assumptions, endogeneity solutions, panel methods, time series, limited DVs, advanced topics. Practice identifying appropriate methods for different research scenarios.";
+            }
+            if (message.includes('help') || message.includes('stuck')) {
+                return "I'm here to help! You've completed an impressive journey through econometric methods. What specific research methodology challenge can I assist with? Whether it's study design, method selection, or interpreting results.";
+            }
+            
+            return "Congratulations on reaching the capstone chapter! I can help with research design, causal inference strategies, method selection, policy evaluation frameworks, or preparing for your final assessment. What research methodology question interests you?";
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing Chapter 19...');
+            
+            // Test if all required elements exist
+            const requiredElements = [
+                'finalQuizContainer', 'strategyOutput', 'policyOutput', 'certificateSection'
+            ];
+            
+            const missingElements = [];
+            requiredElements.forEach(id => {
+                if (!document.getElementById(id)) {
+                    missingElements.push(id);
+                }
+            });
+            
+            if (missingElements.length > 0) {
+                console.error('Missing required elements:', missingElements);
+            } else {
+                console.log('All required elements found');
+            }
+            
+            console.log('Chapter 19: Econometric Research Methods and Applications loaded successfully! 🎓');
+            console.log('🏆 Tutorial Complete! All 19 chapters finished.');
+        });
+        
+    </script>
+
+</body>
+</html>
