@@ -1,0 +1,2721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 18: Advanced Topics in Econometrics - Wooldridge Econometrics</title>
+    <style>
+        :root {
+            /* Advanced Topics Theme - Cutting-edge methods and modern techniques */
+            --primary-advanced: #0c0a09;
+            --secondary-advanced: #1c1917;
+            --accent-duration: #dc2626;
+            --accent-count: #ea580c;
+            --accent-quantile: #d97706;
+            --accent-nonparam: #16a34a;
+            --accent-bootstrap: #2563eb;
+            --accent-robust: #7c3aed;
+            --flow-50: #fafaf9;
+            --flow-100: #f5f5f4;
+            --flow-200: #e7e5e4;
+            --flow-300: #d6d3d1;
+            --flow-400: #a8a29e;
+            --flow-500: #78716c;
+            --flow-600: #57534e;
+            --flow-700: #44403c;
+            --flow-800: #292524;
+            --flow-900: #1c1917;
+            
+            /* Method-specific colors */
+            --status-duration: #dc2626;
+            --status-count: #ea580c;
+            --status-quantile: #d97706;
+            --status-nonparam: #16a34a;
+            --status-bootstrap: #2563eb;
+            --status-robust: #7c3aed;
+            
+            /* Typography */
+            --font-primary: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            line-height: 1.6;
+            color: var(--flow-900);
+            background: linear-gradient(135deg, var(--flow-50) 0%, #ffffff 40%, var(--flow-100) 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated advanced methods background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(220, 38, 38, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(234, 88, 12, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(37, 99, 235, 0.03) 0%, transparent 50%),
+                linear-gradient(45deg, transparent 48%, rgba(22, 163, 74, 0.02) 50%, transparent 52%);
+            background-size: 100px 100px, 150px 150px, 120px 120px, 80px 80px;
+            z-index: -1;
+            animation: advancedFlow 18s ease-in-out infinite;
+        }
+
+        @keyframes advancedFlow {
+            0%, 100% { opacity: 0.5; transform: rotate(0deg) scale(1); }
+            33% { opacity: 0.7; transform: rotate(2deg) scale(1.02); }
+            66% { opacity: 0.6; transform: rotate(-1deg) scale(0.98); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, var(--primary-advanced), var(--secondary-advanced), var(--accent-duration));
+            color: white;
+            margin-bottom: 3rem;
+            border-radius: 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(12, 10, 9, 0.3);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(45deg, transparent 30%, rgba(220, 38, 38, 0.1) 50%, transparent 70%),
+                linear-gradient(-45deg, transparent 30%, rgba(37, 99, 235, 0.05) 50%, transparent 70%);
+            animation: advancedPattern 15s ease-in-out infinite alternate;
+        }
+
+        @keyframes advancedPattern {
+            0% { opacity: 0.3; transform: scale(1) rotate(0deg); }
+            100% { opacity: 0.7; transform: scale(1.03) rotate(2deg); }
+        }
+
+        .chapter-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff, var(--accent-duration), var(--accent-bootstrap));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.03em;
+        }
+
+        .chapter-subtitle {
+            font-size: 1.4rem;
+            opacity: 0.95;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.5px;
+        }
+
+        /* Navigation */
+        .nav-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--flow-200);
+            position: relative;
+        }
+
+        .nav-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 25px;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--accent-duration), var(--accent-count), var(--accent-bootstrap));
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: xor;
+            opacity: 0.3;
+        }
+
+        .nav-pills {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            justify-items: center;
+        }
+
+        .nav-pill {
+            padding: 1.25rem 2rem;
+            background: var(--flow-100);
+            border: 2px solid var(--flow-300);
+            border-radius: 20px;
+            color: var(--flow-700);
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            width: 100%;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-pill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-pill:hover::before {
+            left: 100%;
+        }
+
+        .nav-pill:hover {
+            background: var(--primary-advanced);
+            color: white;
+            transform: translateY(-4px);
+            border-color: var(--accent-duration);
+            box-shadow: 0 12px 35px rgba(12, 10, 9, 0.3);
+        }
+
+        /* Section Styling */
+        .section {
+            background: white;
+            border-radius: 25px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--flow-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent-duration), var(--accent-bootstrap));
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-advanced);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section p {
+            margin-bottom: 1rem;
+            color: var(--flow-700);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        /* Concept Boxes */
+        .concept-box {
+            background: var(--flow-50);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 1px solid var(--flow-200);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .concept-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.15);
+        }
+
+        .concept-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+        }
+
+        .concept-box.duration::before { background: var(--status-duration); }
+        .concept-box.count::before { background: var(--status-count); }
+        .concept-box.quantile::before { background: var(--status-quantile); }
+        .concept-box.nonparam::before { background: var(--status-nonparam); }
+        .concept-box.bootstrap::before { background: var(--status-bootstrap); }
+        .concept-box.robust::before { background: var(--status-robust); }
+
+        .concept-title {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-advanced);
+            font-size: 1.2rem;
+        }
+
+        .concept-box.duration .concept-title { color: var(--status-duration); }
+        .concept-box.count .concept-title { color: var(--status-count); }
+        .concept-box.quantile .concept-title { color: var(--status-quantile); }
+        .concept-box.nonparam .concept-title { color: var(--status-nonparam); }
+        .concept-box.bootstrap .concept-title { color: var(--status-bootstrap); }
+        .concept-box.robust .concept-title { color: var(--status-robust); }
+
+        /* Formula Boxes */
+        .formula {
+            background: var(--flow-900);
+            color: var(--flow-100);
+            padding: 1.5rem;
+            border-radius: 15px;
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .formula::before {
+            content: '∞';
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 1.5rem;
+            opacity: 0.3;
+        }
+
+        /* Interactive Controls */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .control-group {
+            background: var(--flow-50);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--flow-200);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-group::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-duration), var(--accent-bootstrap));
+            border-radius: 20px 20px 0 0;
+        }
+
+        .control-group:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(220, 38, 38, 0.2);
+        }
+
+        .control-group h4 {
+            color: var(--primary-advanced);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--flow-700);
+            margin-bottom: 0.75rem;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--flow-300);
+            border-radius: 12px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary-advanced);
+            box-shadow: 0 0 0 3px rgba(12, 10, 9, 0.1);
+        }
+
+        .input-group input[type="range"] {
+            background: var(--flow-200);
+            border: none;
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--primary-advanced), var(--secondary-advanced));
+            color: white;
+            border: none;
+            padding: 1.25rem 2.5rem;
+            border-radius: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 1.05rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .action-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(12, 10, 9, 0.4);
+        }
+
+        /* Results Display */
+        .results-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 1px solid var(--flow-200);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            display: none;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: var(--flow-50);
+            border-radius: 15px;
+            border: 1px solid var(--flow-200);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-duration);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.15);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            font-family: var(--font-mono);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--flow-600);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-duration {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--status-duration);
+            border: 2px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .status-count {
+            background: rgba(234, 88, 12, 0.1);
+            color: var(--status-count);
+            border: 2px solid rgba(234, 88, 12, 0.3);
+        }
+
+        .status-quantile {
+            background: rgba(217, 119, 6, 0.1);
+            color: var(--status-quantile);
+            border: 2px solid rgba(217, 119, 6, 0.3);
+        }
+
+        .status-nonparam {
+            background: rgba(22, 163, 74, 0.1);
+            color: var(--status-nonparam);
+            border: 2px solid rgba(22, 163, 74, 0.3);
+        }
+
+        .status-bootstrap {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--status-bootstrap);
+            border: 2px solid rgba(37, 99, 235, 0.3);
+        }
+
+        .status-robust {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--status-robust);
+            border: 2px solid rgba(124, 58, 237, 0.3);
+        }
+
+        /* Chart containers */
+        .chart-container {
+            position: relative;
+            height: 350px;
+            background: white;
+            border: 1px solid var(--flow-200);
+            border-radius: 15px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-duration), var(--accent-count), var(--accent-bootstrap));
+        }
+
+        /* Method comparison */
+        .method-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+            padding: 1.5rem;
+            background: var(--flow-50);
+            border-radius: 12px;
+            border: 1px solid var(--flow-200);
+        }
+
+        .method-card {
+            text-align: center;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--flow-300);
+            transition: all 0.3s ease;
+        }
+
+        .method-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.1);
+        }
+
+        .method-card .method-label {
+            font-size: 0.9rem;
+            color: var(--flow-600);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .method-card .method-value {
+            font-size: 1.3rem;
+            color: var(--primary-advanced);
+            font-family: var(--font-mono);
+            font-weight: 700;
+        }
+
+        /* Quiz Section */
+        .quiz-section {
+            background: linear-gradient(135deg, var(--flow-50), #ffffff);
+            border-radius: 25px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 1px solid var(--flow-200);
+            position: relative;
+        }
+
+        .quiz-question {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 1px solid var(--flow-200);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .quiz-question::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-duration), var(--accent-bootstrap));
+            border-radius: 20px 20px 0 0;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .quiz-question:hover::before {
+            transform: scaleX(1);
+        }
+
+        .quiz-question:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.15);
+        }
+
+        .quiz-question p {
+            font-weight: 600;
+            color: var(--flow-800);
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: var(--flow-50);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .quiz-option:hover {
+            background: var(--flow-100);
+            border-color: var(--accent-duration);
+            transform: translateX(8px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(220, 38, 38, 0.1);
+            border-color: var(--status-duration);
+            color: var(--status-duration);
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(124, 58, 237, 0.1);
+            border-color: var(--status-robust);
+            color: var(--status-robust);
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1.25rem;
+            border-radius: 15px;
+            display: none;
+            line-height: 1.7;
+        }
+
+        .quiz-feedback.correct {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--status-duration);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .quiz-feedback.incorrect {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--status-robust);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+        }
+
+        /* AI Chat Widget */
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        .ai-chat-button {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-advanced), var(--secondary-advanced));
+            border: none;
+            color: white;
+            font-size: 1.7rem;
+            cursor: pointer;
+            box-shadow: 0 10px 40px rgba(12, 10, 9, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-chat-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .ai-chat-button:hover::before {
+            width: 80px;
+            height: 80px;
+        }
+
+        .ai-chat-button:hover {
+            transform: scale(1.15) translateY(-3px);
+            box-shadow: 0 15px 50px rgba(12, 10, 9, 0.4);
+        }
+
+        .ai-chat-panel {
+            position: absolute;
+            bottom: 85px;
+            right: 0;
+            width: 380px;
+            height: 500px;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--flow-200);
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.4s ease;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ai-chat-panel.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .ai-chat-header {
+            background: linear-gradient(135deg, var(--primary-advanced), var(--secondary-advanced));
+            color: white;
+            padding: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .ai-message {
+            max-width: 85%;
+            padding: 1rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .ai-message.user {
+            background: var(--primary-advanced);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-message.claude {
+            background: var(--flow-100);
+            color: var(--flow-800);
+            border-bottom-left-radius: 4px;
+        }
+
+        .ai-input-area {
+            padding: 1.5rem;
+            border-top: 1px solid var(--flow-200);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid var(--flow-300);
+            border-radius: 25px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .ai-send-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary-advanced);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .ai-send-btn:hover {
+            background: var(--secondary-advanced);
+            transform: scale(1.1);
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .fade-in.delay-1 { animation-delay: 0.1s; }
+        .fade-in.delay-2 { animation-delay: 0.2s; }
+        .fade-in.delay-3 { animation-delay: 0.3s; }
+        .fade-in.delay-4 { animation-delay: 0.4s; }
+        .fade-in.delay-5 { animation-delay: 0.5s; }
+        .fade-in.delay-6 { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .chapter-title { font-size: 2.5rem; }
+            .nav-pills { grid-template-columns: 1fr; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: repeat(2, 1fr); }
+            .ai-chat-panel { width: calc(100vw - 4rem); right: 2rem; left: 2rem; }
+        }
+
+        @media (max-width: 480px) {
+            .results-grid { grid-template-columns: 1fr; }
+            .chapter-title { font-size: 2rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header fade-in">
+            <h1 class="chapter-title">🚀 Chapter 18</h1>
+            <p class="chapter-subtitle">Advanced Topics in Econometrics</p>
+        </header>
+
+        <!-- Navigation -->
+        <div class="nav-container fade-in delay-1">
+            <div class="nav-pills">
+                <button onclick="scrollToSection('duration')" class="nav-pill">
+                    ⏱️ Duration Models
+                </button>
+                <button onclick="scrollToSection('count')" class="nav-pill">
+                    🔢 Count Data Models
+                </button>
+                <button onclick="scrollToSection('quantile')" class="nav-pill">
+                    📊 Quantile Regression
+                </button>
+                <button onclick="scrollToSection('nonparametric')" class="nav-pill">
+                    🌊 Nonparametric Methods
+                </button>
+                <button onclick="scrollToSection('bootstrap')" class="nav-pill">
+                    🔄 Bootstrap & Resampling
+                </button>
+                <button onclick="scrollToSection('quiz')" class="nav-pill">
+                    🎯 Knowledge Check
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 18.1: Duration Models -->
+        <section class="section fade-in delay-2" id="duration">
+            <h2 class="section-title">18.1 ⏱️ Duration Models (Survival Analysis)</h2>
+            
+            <p>Duration models analyze the time until an event occurs (unemployment duration, firm survival, time to patent, etc.). These models handle censored observations where the event hasn't occurred by the end of the observation period.</p>
+
+            <div class="concept-box duration">
+                <div class="concept-title">⏱️ Hazard Function Approach</div>
+                <p>Key concepts for duration analysis:</p>
+                <div class="formula">
+                    Survival Function: S(t) = P(T > t) = probability of surviving past time t
+                    
+                    Hazard Function: λ(t) = lim(dt→0) P(t ≤ T < t+dt | T ≥ t)/dt
+                                   = f(t)/S(t) = instantaneous failure rate at time t
+                    
+                    Cumulative Hazard: Λ(t) = ∫₀ᵗ λ(s)ds
+                    
+                    Relationship: S(t) = exp(-Λ(t))
+                </div>
+                <p><strong>Interpretation:</strong> λ(t) is the instantaneous probability of event occurrence at time t, conditional on surviving to time t.</p>
+            </div>
+
+            <div class="concept-box duration">
+                <div class="concept-title">📈 Parametric Duration Models</div>
+                <p><strong>Exponential Model:</strong> Constant hazard λ(t) = λ</p>
+                <p><strong>Weibull Model:</strong> λ(t) = γλtᵞ⁻¹ (γ > 1: increasing hazard, γ < 1: decreasing)</p>
+                <p><strong>Log-normal Model:</strong> For log-duration data</p>
+                <div class="formula">
+                    Weibull with covariates: λ(t|x) = γλ₀tᵞ⁻¹exp(x'β)
+                    
+                    Log-likelihood: L = Σᵢ[δᵢlog λ(tᵢ|xᵢ) + log S(tᵢ|xᵢ)]
+                    where δᵢ = 1 if event observed, 0 if censored
+                </div>
+                <p><strong>Accelerated Failure Time (AFT):</strong> log T = x'β + σε where ε has known distribution</p>
+            </div>
+
+            <div class="concept-box duration">
+                <div class="concept-title">🎯 Cox Proportional Hazards Model</div>
+                <p>Semi-parametric approach - doesn't specify baseline hazard λ₀(t):</p>
+                <div class="formula">
+                    λ(t|x) = λ₀(t) × exp(x'β)
+                    
+                    Partial Likelihood: L = Π [exp(xᵢ'β) / Σⱼ∈R(tᵢ) exp(xⱼ'β)]
+                    where R(tᵢ) = risk set at time tᵢ
+                    
+                    Hazard Ratio: λ(t|x+1)/λ(t|x) = exp(β) (constant over time)
+                </div>
+                <p><strong>Advantage:</strong> No need to specify baseline hazard<br>
+                <strong>Proportional hazards assumption:</strong> HR constant over time (testable)</p>
+            </div>
+
+            <!-- Duration Model Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>⏱️ Duration Model Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="durationModel">Duration Model Type:</label>
+                        <select id="durationModel">
+                            <option value="exponential">Exponential (Constant hazard)</option>
+                            <option value="weibull" selected>Weibull (Flexible hazard)</option>
+                            <option value="cox">Cox Proportional Hazards</option>
+                            <option value="lognormal">Log-normal</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="hazardShape">Hazard Shape (Weibull γ):</label>
+                        <input type="range" id="hazardShape" min="0.5" max="3" step="0.1" value="1.2">
+                        <span id="hazardShapeValue">1.2</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="censoringRate">Censoring Rate:</label>
+                        <input type="range" id="censoringRate" min="0.1" max="0.6" step="0.05" value="0.3">
+                        <span id="censoringRateValue">30%</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="treatmentEffect">Treatment Effect (HR):</label>
+                        <input type="range" id="treatmentEffect" min="0.3" max="2.5" step="0.1" value="0.7">
+                        <span id="treatmentEffectValue">0.7</span>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateDuration()">
+                        ⏱️ Run Duration Analysis
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Survival Curves</h4>
+                    <div class="chart-container" id="survivalChart" style="background: var(--flow-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--flow-400); text-align: center;">
+                            Run duration model to display<br>survival curves and hazard functions
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="durationResults">
+                <h4 style="color: var(--primary-advanced); margin-bottom: 1rem;">Duration Model Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="hazardRatio" style="color: var(--status-duration);">-</div>
+                        <div class="stat-label">Hazard Ratio</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="medianSurvival" style="color: var(--flow-600);">-</div>
+                        <div class="stat-label">Median Survival</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="logLikDuration" style="color: var(--status-nonparam);">-</div>
+                        <div class="stat-label">Log Likelihood</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="concordanceIndex" style="color: var(--status-bootstrap);">-</div>
+                        <div class="stat-label">C-Index</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="durationAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="durationInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 18.2: Count Data Models -->
+        <section class="section fade-in delay-3" id="count">
+            <h2 class="section-title">18.2 🔢 Count Data Models</h2>
+            
+            <p>Count data models handle non-negative integer outcomes (patents, accidents, purchases, etc.). Standard regression is inappropriate due to discrete nature and typical overdispersion.</p>
+
+            <div class="concept-box count">
+                <div class="concept-title">🔢 Poisson Regression Model</div>
+                <p>For count outcome y with rate parameter λ:</p>
+                <div class="formula">
+                    P(Y = y|x) = exp(-λ)λʸ/y!  where λ = E[Y|x] = Var[Y|x] = exp(x'β)
+                    
+                    Log-likelihood: L = Σᵢ[yᵢlog λᵢ - λᵢ - log(yᵢ!)]
+                    
+                    Marginal Effect: ∂E[y|x]/∂xⱼ = βⱼ × λ = βⱼ × exp(x'β)
+                    
+                    Incidence Rate Ratio: IRR = exp(βⱼ) = E[y|xⱼ+1]/E[y|xⱼ]
+                </div>
+                <p><strong>Key restriction:</strong> Mean = Variance (equidispersion)<br>
+                <strong>Interpretation:</strong> exp(βⱼ) gives multiplicative effect on count rate</p>
+            </div>
+
+            <div class="concept-box count">
+                <div class="concept-title">📊 Negative Binomial Model</div>
+                <p>Relaxes Poisson equidispersion assumption:</p>
+                <div class="formula">
+                    Y|x ~ NB(μ, α) where μ = exp(x'β)
+                    
+                    E[Y|x] = μ,  Var[Y|x] = μ + αμ² (quadratic variance function)
+                    
+                    If α = 0: reduces to Poisson
+                    If α > 0: allows overdispersion (Var > Mean)
+                    
+                    Test: H₀: α = 0 (Poisson) vs H₁: α > 0 (NB)
+                </div>
+                <p><strong>NB2 model:</strong> Variance increases quadratically with mean<br>
+                <strong>NB1 model:</strong> Variance proportional to mean (rare)</p>
+            </div>
+
+            <div class="concept-box count">
+                <div class="concept-title">🎯 Zero-Inflated Models</div>
+                <p>Handle excess zeros beyond what Poisson/NB predict:</p>
+                <div class="formula">
+                    Zero-Inflated Poisson (ZIP):
+                    P(Y = 0) = π + (1-π)exp(-λ)     (structural + sampling zeros)
+                    P(Y = k) = (1-π) × Poisson(k)   for k > 0
+                    
+                    Two-part process:
+                    1. Participation: P(participant) = 1-π = logit(z'γ)  
+                    2. Count: Y|participant ~ Poisson(λ = exp(x'β))
+                </div>
+                <p><strong>Use case:</strong> When many zeros arise from two different processes<br>
+                <strong>Examples:</strong> Patent applications, doctor visits, recreational demand</p>
+            </div>
+
+            <!-- Count Data Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🔢 Count Data Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="countModel">Count Model Type:</label>
+                        <select id="countModel">
+                            <option value="poisson" selected>Poisson Regression</option>
+                            <option value="negbin">Negative Binomial</option>
+                            <option value="zip">Zero-Inflated Poisson</option>
+                            <option value="zinb">Zero-Inflated NB</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="overdispersion">Overdispersion Level (α):</label>
+                        <input type="range" id="overdispersion" min="0" max="2" step="0.1" value="0.5">
+                        <span id="overdispersionValue">0.5</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="zeroInflation">Zero Inflation Rate:</label>
+                        <input type="range" id="zeroInflation" min="0" max="0.5" step="0.05" value="0.2">
+                        <span id="zeroInflationValue">20%</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="countScenario">Application Scenario:</label>
+                        <select id="countScenario">
+                            <option value="patents" selected>Patent Applications</option>
+                            <option value="accidents">Traffic Accidents</option>
+                            <option value="visits">Hospital Visits</option>
+                            <option value="purchases">Product Purchases</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateCount()">
+                        🔢 Analyze Count Data
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Count Distribution</h4>
+                    <div class="chart-container" id="countChart" style="background: var(--flow-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--flow-400); text-align: center;">
+                            Run count model to display<br>predicted vs. actual distributions
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="countResults">
+                <h4 style="color: var(--primary-advanced); margin-bottom: 1rem;">Count Data Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="incidenceRateRatio" style="color: var(--status-count);">-</div>
+                        <div class="stat-label">IRR</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="dispersionTest" style="color: var(--flow-600);">-</div>
+                        <div class="stat-label">Dispersion Test</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="zeroTestStat" style="color: var(--status-nonparam);">-</div>
+                        <div class="stat-label">Zero Test</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="modelFitCount" style="color: var(--status-bootstrap);">-</div>
+                        <div class="stat-label">Model Fit</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="countAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="countInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 18.3: Quantile Regression -->
+        <section class="section fade-in delay-4" id="quantile">
+            <h2 class="section-title">18.3 📊 Quantile Regression</h2>
+            
+            <p>Quantile regression models conditional quantiles rather than conditional means, providing a complete picture of how explanatory variables affect the entire outcome distribution.</p>
+
+            <div class="concept-box quantile">
+                <div class="concept-title">📊 Quantile Regression Framework</div>
+                <p>For quantile τ ∈ (0,1), model the τ-th conditional quantile:</p>
+                <div class="formula">
+                    Q_τ(y|x) = x'β_τ    (conditional τ-quantile function)
+                    
+                    Objective Function: min Σᵢ ρ_τ(yᵢ - xᵢ'β_τ)
+                    
+                    where ρ_τ(u) = u(τ - I(u < 0)) is the "check function"
+                                 = τu if u ≥ 0, (τ-1)u if u < 0
+                    
+                    Special cases: τ = 0.5 gives median regression (LAD)
+                                  τ = 0.1, 0.9 give extreme quantiles
+                </div>
+                <p><strong>Interpretation:</strong> β_τ shows effect of x on the τ-th quantile of y distribution</p>
+            </div>
+
+            <div class="concept-box quantile">
+                <div class="concept-title">🎯 Advantages over OLS</div>
+                <p><strong>Robustness:</strong> Less sensitive to outliers than OLS (especially median regression)</p>
+                <p><strong>Heteroskedasticity:</strong> Naturally handles changing variance across x</p>
+                <p><strong>Distributional insights:</strong> Shows how effects vary across outcome distribution</p>
+                <div class="formula">
+                    OLS: E[Y|X] = X'β    (only captures central tendency)
+                    QR:  Q_τ(Y|X) = X'β_τ (captures entire conditional distribution)
+                    
+                    Quantile Treatment Effect: QTE_τ = Q_τ(Y¹|X) - Q_τ(Y⁰|X)
+                    vs. Average Treatment Effect: ATE = E[Y¹|X] - E[Y⁰|X]
+                </div>
+                <p><strong>Applications:</strong> Wage inequality, risk analysis, environmental economics, finance</p>
+            </div>
+
+            <div class="concept-box quantile">
+                <div class="concept-title">🔧 Inference and Testing</div>
+                <p><strong>Standard Errors:</strong> Bootstrap or asymptotic (kernel density estimation)</p>
+                <p><strong>Quantile equality test:</strong> H₀: β_τ₁ = β_τ₂ = ... (constant effects across quantiles)</p>
+                <div class="formula">
+                    Wald Test: W = (Rβ̂)'[R V̂ R']⁻¹(Rβ̂) ~ χ²(q)
+                    where R tests linear restrictions across quantiles
+                    
+                    Interpretation tests:
+                    • Monotonicity: coefficients should order properly
+                    • Quantile crossing: fitted quantiles shouldn't cross
+                    • Location-scale model: linear relationship between quantiles
+                </div>
+                <p><strong>Goodness of fit:</strong> Pseudo R² based on objective function reduction</p>
+            </div>
+
+            <!-- Quantile Regression Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>📊 Quantile Regression Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="quantileLevel">Quantile Level (τ):</label>
+                        <input type="range" id="quantileLevel" min="0.1" max="0.9" step="0.1" value="0.5">
+                        <span id="quantileLevelValue">0.5</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="heteroskedasticity">Heteroskedasticity Level:</label>
+                        <input type="range" id="heteroskedasticity" min="0" max="2" step="0.2" value="1">
+                        <span id="heteroskedasticityValue">1</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="outlierProportion">Outlier Proportion:</label>
+                        <input type="range" id="outlierProportion" min="0" max="0.2" step="0.02" value="0.05">
+                        <span id="outlierProportionValue">5%</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="distributionType">Error Distribution:</label>
+                        <select id="distributionType">
+                            <option value="normal">Normal (Symmetric)</option>
+                            <option value="skewed" selected>Skewed Distribution</option>
+                            <option value="heavy">Heavy Tails</option>
+                            <option value="bimodal">Bimodal</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateQuantile()">
+                        📊 Run Quantile Regression
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Quantile Processes</h4>
+                    <div class="chart-container" id="quantileChart" style="background: var(--flow-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--flow-400); text-align: center;">
+                            Run quantile regression to display<br>coefficient paths across quantiles
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="quantileResults">
+                <h4 style="color: var(--primary-advanced); margin-bottom: 1rem;">Quantile Regression Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="quantileCoeff" style="color: var(--status-quantile);">-</div>
+                        <div class="stat-label">QR Coefficient</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="olsCoeff" style="color: var(--flow-600);">-</div>
+                        <div class="stat-label">OLS Coefficient</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="pseudoR2" style="color: var(--status-nonparam);">-</div>
+                        <div class="stat-label">Pseudo R²</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="quantileEquality" style="color: var(--status-bootstrap);">-</div>
+                        <div class="stat-label">Equality Test</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="quantileAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="quantileInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 18.4: Nonparametric and Semiparametric Methods -->
+        <section class="section fade-in delay-5" id="nonparametric">
+            <h2 class="section-title">18.4 🌊 Nonparametric and Semiparametric Methods</h2>
+            
+            <p>Nonparametric methods impose minimal functional form assumptions, letting the data reveal underlying relationships. Semiparametric methods combine parametric components with nonparametric flexibility.</p>
+
+            <div class="concept-box nonparam">
+                <div class="concept-title">🌊 Kernel Regression</div>
+                <p>Nonparametric estimation of conditional expectation:</p>
+                <div class="formula">
+                    Nadaraya-Watson Estimator: 
+                    m̂(x) = Σᵢ Wᵢ(x) yᵢ
+                    
+                    where Wᵢ(x) = K((xᵢ-x)/h) / Σⱼ K((xⱼ-x)/h)
+                    
+                    K(·) = kernel function (Gaussian, Epanechnikov, etc.)
+                    h = bandwidth (controls smoothness)
+                    
+                    Bias-Variance Tradeoff: Small h → low bias, high variance
+                                           Large h → high bias, low variance
+                </div>
+                <p><strong>Bandwidth selection:</strong> Cross-validation, plug-in methods, AIC<br>
+                <strong>Curse of dimensionality:</strong> Performance degrades rapidly with # regressors</p>
+            </div>
+
+            <div class="concept-box nonparam">
+                <div class="concept-title">🎯 Partially Linear Models</div>
+                <p>Semiparametric: some variables parametric, others nonparametric:</p>
+                <div class="formula">
+                    Y = X'β + g(Z) + U    where g(·) is unknown smooth function
+                    
+                    Robinson's Double Residual Method:
+                    1. Regress Y on Z nonparametrically: Ỹ = Y - Ê[Y|Z]
+                    2. Regress X on Z nonparametrically: X̃ = X - Ê[X|Z]  
+                    3. OLS: Ỹ = X̃'β + residual
+                    
+                    Then estimate: ĝ(z) = Ê[Y - X'β̂|Z = z]
+                </div>
+                <p><strong>Advantage:</strong> β̂ has √n convergence rate (parametric rate)<br>
+                <strong>Applications:</strong> Returns to education, Engel curves, production functions</p>
+            </div>
+
+            <div class="concept-box nonparam">
+                <div class="concept-title">🔧 Single Index Models</div>
+                <p>Dimension reduction through linear projection:</p>
+                <div class="formula">
+                    Y = g(X'β) + U    where g(·) is unknown function
+                    
+                    Estimation procedure:
+                    1. For given β, estimate g(·) nonparametrically
+                    2. Choose β to minimize sum of squared residuals
+                    3. Iterate until convergence
+                    
+                    Identification: ||β|| = 1, β₁ > 0 (normalization)
+                </div>
+                <p><strong>Interpretation:</strong> Only X'β matters, not individual components of X<br>
+                <strong>Use case:</strong> When theory suggests single composite index affects outcome</p>
+            </div>
+
+            <!-- Nonparametric Methods Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🌊 Nonparametric Methods Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="nonparamMethod">Nonparametric Method:</label>
+                        <select id="nonparamMethod">
+                            <option value="kernel" selected>Kernel Regression</option>
+                            <option value="partially_linear">Partially Linear Model</option>
+                            <option value="single_index">Single Index Model</option>
+                            <option value="local_polynomial">Local Polynomial</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="bandwidth">Bandwidth (h):</label>
+                        <input type="range" id="bandwidth" min="0.1" max="2" step="0.1" value="0.5">
+                        <span id="bandwidthValue">0.5</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="kernelType">Kernel Function:</label>
+                        <select id="kernelType">
+                            <option value="gaussian" selected>Gaussian</option>
+                            <option value="epanechnikov">Epanechnikov</option>
+                            <option value="uniform">Uniform</option>
+                            <option value="triangular">Triangular</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="nonlinearityType">Nonlinearity Type:</label>
+                        <select id="nonlinearityType">
+                            <option value="polynomial">Polynomial</option>
+                            <option value="exponential">Exponential</option>
+                            <option value="sine" selected>Sine Wave</option>
+                            <option value="threshold">Threshold</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateNonparametric()">
+                        🌊 Run Nonparametric Estimation
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Smoothing Functions</h4>
+                    <div class="chart-container" id="nonparamChart" style="background: var(--flow-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--flow-400); text-align: center;">
+                            Run nonparametric estimation to display<br>true vs estimated functions
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="nonparamResults">
+                <h4 style="color: var(--primary-advanced); margin-bottom: 1rem;">Nonparametric Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="nonparamMSE" style="color: var(--status-nonparam);">-</div>
+                        <div class="stat-label">Mean Squared Error</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="optimalBandwidth" style="color: var(--flow-600);">-</div>
+                        <div class="stat-label">Optimal Bandwidth</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="biasVarianceRatio" style="color: var(--status-quantile);">-</div>
+                        <div class="stat-label">Bias/Variance</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="effectiveParams" style="color: var(--status-bootstrap);">-</div>
+                        <div class="stat-label">Effective Parameters</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="nonparamAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="nonparamInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Section 18.5: Bootstrap and Resampling Methods -->
+        <section class="section fade-in delay-6" id="bootstrap">
+            <h2 class="section-title">18.5 🔄 Bootstrap and Resampling Methods</h2>
+            
+            <p>Bootstrap methods provide distribution-free inference by resampling from the data. They're especially useful when analytical standard errors are difficult to derive or when small sample properties are unknown.</p>
+
+            <div class="concept-box bootstrap">
+                <div class="concept-title">🔄 Nonparametric Bootstrap</div>
+                <p>Resample with replacement from original data:</p>
+                <div class="formula">
+                    Bootstrap Algorithm:
+                    1. From sample {(xᵢ,yᵢ)}ⁿᵢ₌₁, draw B bootstrap samples
+                    2. For each sample b: compute θ̂ᵦ (estimator of interest)  
+                    3. Bootstrap distribution: {θ̂₁, θ̂₂, ..., θ̂ᵦ}
+                    
+                    Bootstrap Standard Error: se_boot = √(1/B Σ(θ̂ᵦ - θ̄)²)
+                    
+                    Bootstrap Confidence Interval (percentile):
+                    [θ̂_{(α/2)}, θ̂_{(1-α/2)}] where θ̂_{(p)} is p-th quantile
+                </div>
+                <p><strong>Advantages:</strong> No distributional assumptions, handles complex estimators<br>
+                <strong>Requirement:</strong> Original sample representative of population</p>
+            </div>
+
+            <div class="concept-box bootstrap">
+                <div class="concept-title">🎯 Parametric and Model-Based Bootstrap</div>
+                <p><strong>Parametric Bootstrap:</strong> Resample from fitted parametric model</p>
+                <p><strong>Residual Bootstrap:</strong> Resample residuals for regression models</p>
+                <div class="formula">
+                    Residual Bootstrap for Y = Xβ + u:
+                    1. Estimate β̂, get residuals: ûᵢ = yᵢ - xᵢ'β̂
+                    2. Center residuals: ũᵢ = ûᵢ - ū
+                    3. Bootstrap: yᵢ* = xᵢ'β̂ + ũᵢ* (resample ũ)
+                    4. Re-estimate: β̂* from (xᵢ, yᵢ*)
+                    
+                    Wild Bootstrap: yᵢ* = xᵢ'β̂ + vᵢũᵢ where vᵢ ~ Rademacher
+                    (Handles heteroskedasticity without specifying form)
+                </div>
+                <p><strong>Block Bootstrap:</strong> For time series (preserve temporal dependence)<br>
+                <strong>Cluster Bootstrap:</strong> Resample entire clusters for clustered data</p>
+            </div>
+
+            <div class="concept-box bootstrap">
+                <div class="concept-title">🔧 Bootstrap Applications</div>
+                <p><strong>Bias Correction:</strong> θ̂ₒc = 2θ̂ - θ̂ᵦₒₒₜ (bias-corrected estimator)</p>
+                <p><strong>Hypothesis Testing:</strong> Bootstrap p-values when analytical distribution unknown</p>
+                <div class="formula">
+                    Bootstrap Test of H₀: θ = θ₀:
+                    1. Impose null: create data consistent with H₀
+                    2. Bootstrap under null: get distribution of test statistic
+                    3. Compare observed statistic to bootstrap distribution
+                    
+                    Bootstrap p-value = P̂(|T*| > |T_obs|)
+                    
+                    Applications: Non-standard tests, complex models, finite sample inference
+                </div>
+                <p><strong>Model Selection:</strong> Bootstrap model averaging, variable selection stability</p>
+            </div>
+
+            <!-- Bootstrap Simulator -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>🔄 Bootstrap Methods Lab</h4>
+                    
+                    <div class="input-group">
+                        <label for="bootstrapType">Bootstrap Type:</label>
+                        <select id="bootstrapType">
+                            <option value="nonparametric" selected>Nonparametric Bootstrap</option>
+                            <option value="parametric">Parametric Bootstrap</option>
+                            <option value="residual">Residual Bootstrap</option>
+                            <option value="wild">Wild Bootstrap</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="bootstrapReps">Bootstrap Replications (B):</label>
+                        <select id="bootstrapReps">
+                            <option value="100">100 (Quick)</option>
+                            <option value="500" selected>500 (Standard)</option>
+                            <option value="1000">1000 (Precise)</option>
+                            <option value="2000">2000 (High Precision)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="originalSampleSize">Original Sample Size:</label>
+                        <select id="originalSampleSize">
+                            <option value="50">50 (Small)</option>
+                            <option value="100" selected>100 (Medium)</option>
+                            <option value="200">200 (Large)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="estimandType">Estimand:</label>
+                        <select id="estimandType">
+                            <option value="mean" selected>Sample Mean</option>
+                            <option value="regression">Regression Coefficient</option>
+                            <option value="correlation">Correlation</option>
+                            <option value="quantile">95th Percentile</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-button" onclick="simulateBootstrap()">
+                        🔄 Run Bootstrap Analysis
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>📊 Bootstrap Distribution</h4>
+                    <div class="chart-container" id="bootstrapChart" style="background: var(--flow-50);">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--flow-400); text-align: center;">
+                            Run bootstrap to display<br>sampling distribution comparison
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel" id="bootstrapResults">
+                <h4 style="color: var(--primary-advanced); margin-bottom: 1rem;">Bootstrap Results</h4>
+                <div class="results-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="bootstrapSE" style="color: var(--status-bootstrap);">-</div>
+                        <div class="stat-label">Bootstrap SE</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="analyticSE" style="color: var(--flow-600);">-</div>
+                        <div class="stat-label">Analytic SE</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="bootstrapBias" style="color: var(--status-nonparam);">-</div>
+                        <div class="stat-label">Bootstrap Bias</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="coverageProbability" style="color: var(--status-quantile);">-</div>
+                        <div class="stat-label">Coverage Rate</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <span id="bootstrapAssessment" class="status-indicator">Analyzing...</span>
+                </div>
+                <p id="bootstrapInterpretation" style="color: var(--flow-700); text-align: center; line-height: 1.6;"></p>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section class="section fade-in delay-6" id="quiz">
+            <div class="quiz-section">
+                <h3 style="text-align: center; margin-bottom: 1rem; color: var(--primary-advanced);">
+                    🎯 Chapter 18 Knowledge Check: Advanced Topics in Econometrics
+                </h3>
+                <p style="text-align: center; color: var(--flow-600); margin-bottom: 1rem;">
+                    Test your understanding of duration models, count data, quantile regression, nonparametric methods, and bootstrap techniques
+                </p>
+                
+                <!-- Regenerate Button -->
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <button onclick="regenerateQuiz()" class="action-button" style="margin: 0; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                        🔄 Generate New Questions
+                    </button>
+                    <p style="font-size: 0.8rem; color: var(--flow-600); margin-top: 0.5rem;">
+                        Click to get fresh questions on advanced econometric methods
+                    </p>
+                </div>
+                
+                <div id="quizContainer">
+                    <!-- Questions will be dynamically generated here -->
+                </div>
+                
+                <!-- Quiz Results Summary -->
+                <div id="quizSummary" style="display: none; margin-top: 2rem; padding: 1.5rem; background: var(--flow-50); border-radius: 15px; border-left: 4px solid var(--primary-advanced);">
+                    <h4 style="color: var(--primary-advanced); margin-bottom: 1rem;">Quiz Results</h4>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 10px;">
+                            <div id="correctCount" style="font-size: 1.5rem; font-weight: bold; color: var(--status-duration);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--flow-600);">Correct</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 10px;">
+                            <div id="totalQuestions" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-advanced);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--flow-600);">Total</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: white; border-radius: 10px;">
+                            <div id="quizScore" style="font-size: 1.5rem; font-weight: bold; color: var(--secondary-advanced);">-</div>
+                            <div style="font-size: 0.8rem; color: var(--flow-600);">Score</div>
+                        </div>
+                    </div>
+                    <div id="quizFeedback" style="color: var(--flow-700); line-height: 1.6;"></div>
+                    <button onclick="regenerateQuiz()" class="action-button" style="margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                        Try Again with New Questions
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div class="ai-chat-widget">
+        <button class="ai-chat-button" onclick="toggleAIChat()" title="Ask Claude about Advanced Econometric Methods">
+            <span id="aiChatIcon">🚀</span>
+        </button>
+        
+        <div class="ai-chat-panel" id="aiChatPanel">
+            <div class="ai-chat-header">
+                <span>🚀 Advanced Methods Tutor</span>
+                <button onclick="toggleAIChat()" style="background: none; border: none; color: white; cursor: pointer;">×</button>
+            </div>
+            
+            <div class="ai-chat-messages" id="aiChatMessages">
+                <div class="ai-message claude">
+                    <strong>🚀 Claude:</strong> Hi! I can help you understand duration models, count data regression, quantile regression, nonparametric methods, and bootstrap techniques. What advanced econometric method interests you?
+                </div>
+            </div>
+            
+            <div class="ai-input-area">
+                <input type="text" class="ai-input" id="aiInput" placeholder="Ask about advanced methods..." 
+                       onkeydown="if(event.key==='Enter') sendAIMessage()">
+                <button class="ai-send-btn" onclick="sendAIMessage()">→</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let isAIChatOpen = false;
+        let currentQuestions = [];
+        let answeredQuestions = {};
+        
+        // Slider event listeners
+        document.getElementById('hazardShape').addEventListener('input', function(e) {
+            document.getElementById('hazardShapeValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('censoringRate').addEventListener('input', function(e) {
+            document.getElementById('censoringRateValue').textContent = (e.target.value * 100).toFixed(0) + '%';
+        });
+        
+        document.getElementById('treatmentEffect').addEventListener('input', function(e) {
+            document.getElementById('treatmentEffectValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('overdispersion').addEventListener('input', function(e) {
+            document.getElementById('overdispersionValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('zeroInflation').addEventListener('input', function(e) {
+            document.getElementById('zeroInflationValue').textContent = (e.target.value * 100).toFixed(0) + '%';
+        });
+        
+        document.getElementById('quantileLevel').addEventListener('input', function(e) {
+            document.getElementById('quantileLevelValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('heteroskedasticity').addEventListener('input', function(e) {
+            document.getElementById('heteroskedasticityValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('outlierProportion').addEventListener('input', function(e) {
+            document.getElementById('outlierProportionValue').textContent = (e.target.value * 100).toFixed(0) + '%';
+        });
+        
+        document.getElementById('bandwidth').addEventListener('input', function(e) {
+            document.getElementById('bandwidthValue').textContent = e.target.value;
+        });
+        
+        // Duration Model Simulation
+        function simulateDuration() {
+            console.log('Starting duration model simulation...');
+            
+            try {
+                const model = document.getElementById('durationModel').value;
+                const shape = parseFloat(document.getElementById('hazardShape').value);
+                const censoring = parseFloat(document.getElementById('censoringRate').value);
+                const treatment = parseFloat(document.getElementById('treatmentEffect').value);
+                
+                console.log('Duration Parameters:', { model, shape, censoring, treatment });
+                
+                // Simulate duration results
+                const hazardRatio = treatment;
+                const medianSurvival = 12 + Math.random() * 8; // months
+                const logLikDuration = -450 - Math.random() * 100;
+                const concordanceIndex = 0.6 + treatment * 0.2 + Math.random() * 0.1;
+                
+                document.getElementById('hazardRatio').textContent = hazardRatio.toFixed(3);
+                document.getElementById('medianSurvival').textContent = medianSurvival.toFixed(1);
+                document.getElementById('logLikDuration').textContent = logLikDuration.toFixed(1);
+                document.getElementById('concordanceIndex').textContent = concordanceIndex.toFixed(3);
+                
+                // Survival chart
+                const chartContainer = document.getElementById('survivalChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-advanced);">${model.charAt(0).toUpperCase() + model.slice(1)} Model</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--status-duration); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Hazard Ratio</strong><br>
+                                HR = ${hazardRatio.toFixed(3)}
+                            </div>
+                            <div style="background: var(--status-nonparam); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Median Survival</strong><br>
+                                ${medianSurvival.toFixed(1)} months
+                            </div>
+                        </div>
+                        <div style="background: var(--flow-100); padding: 12px; border-radius: 8px;">
+                            C-Index: ${concordanceIndex.toFixed(3)} | Censoring: ${(censoring*100).toFixed(0)}%
+                        </div>
+                    </div>
+                `;
+                
+                const assessmentEl = document.getElementById('durationAssessment');
+                const protectiveEffect = treatment < 1;
+                const strongEffect = Math.abs(Math.log(treatment)) > 0.5;
+                
+                if (protectiveEffect && strongEffect) {
+                    assessmentEl.textContent = 'Strong Protective Effect';
+                    assessmentEl.className = 'status-indicator status-nonparam';
+                } else if (protectiveEffect) {
+                    assessmentEl.textContent = 'Moderate Protection';
+                    assessmentEl.className = 'status-indicator status-bootstrap';
+                } else if (strongEffect) {
+                    assessmentEl.textContent = 'Increased Hazard Risk';
+                    assessmentEl.className = 'status-indicator status-duration';
+                } else {
+                    assessmentEl.textContent = 'Weak Effect';
+                    assessmentEl.className = 'status-indicator status-quantile';
+                }
+                
+                document.getElementById('durationInterpretation').textContent = 
+                    `${model} duration model: HR = ${hazardRatio.toFixed(3)} (${protectiveEffect ? 'protective' : 'harmful'} effect). Median survival: ${medianSurvival.toFixed(1)} months. C-index = ${concordanceIndex.toFixed(3)} (discrimination). ${(censoring*100).toFixed(0)}% censoring rate. ${strongEffect ? 'Clinically significant effect.' : 'Weak treatment effect.'}`;
+                
+                document.getElementById('durationResults').style.display = 'block';
+                console.log('Duration model simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in duration model simulation:', error);
+                alert('Error running duration model simulation. Check console for details.');
+            }
+        }
+        
+        // Count Data Simulation
+        function simulateCount() {
+            console.log('Starting count data simulation...');
+            
+            try {
+                const model = document.getElementById('countModel').value;
+                const overdispersion = parseFloat(document.getElementById('overdispersion').value);
+                const zeroInf = parseFloat(document.getElementById('zeroInflation').value);
+                const scenario = document.getElementById('countScenario').value;
+                
+                console.log('Count Parameters:', { model, overdispersion, zeroInf, scenario });
+                
+                // Simulate count results
+                const incidenceRateRatio = 1.2 + Math.random() * 0.8;
+                const dispersionTestPValue = overdispersion > 0.3 ? 0.01 + Math.random() * 0.05 : 0.2 + Math.random() * 0.5;
+                const zeroTestPValue = zeroInf > 0.15 ? 0.02 + Math.random() * 0.08 : 0.3 + Math.random() * 0.4;
+                
+                let modelFit;
+                if (model === 'poisson' && overdispersion > 0.3) modelFit = 'Poor';
+                else if (model.includes('zip') && zeroInf > 0.2) modelFit = 'Good';
+                else if (model === 'negbin') modelFit = 'Adequate';
+                else modelFit = 'Fair';
+                
+                document.getElementById('incidenceRateRatio').textContent = incidenceRateRatio.toFixed(3);
+                document.getElementById('dispersionTest').textContent = dispersionTestPValue.toFixed(3);
+                document.getElementById('zeroTestStat').textContent = zeroTestPValue.toFixed(3);
+                document.getElementById('modelFitCount').textContent = modelFit;
+                
+                // Count chart
+                const chartContainer = document.getElementById('countChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-advanced);">${scenario.charAt(0).toUpperCase() + scenario.slice(1)} Count Model</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--status-count); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>IRR</strong><br>
+                                ${incidenceRateRatio.toFixed(3)}
+                            </div>
+                            <div style="background: var(--status-nonparam); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Model Fit</strong><br>
+                                ${modelFit}
+                            </div>
+                        </div>
+                        <div style="background: var(--flow-100); padding: 12px; border-radius: 8px;">
+                            Dispersion p: ${dispersionTestPValue.toFixed(3)} | Zero test: ${zeroTestPValue.toFixed(3)}
+                        </div>
+                    </div>
+                `;
+                
+                const assessmentEl = document.getElementById('countAssessment');
+                const overdispersed = dispersionTestPValue < 0.05;
+                const excessZeros = zeroTestPValue < 0.05;
+                
+                if (overdispersed && excessZeros) {
+                    assessmentEl.textContent = 'Zero-Inflated NB Needed';
+                    assessmentEl.className = 'status-indicator status-duration';
+                } else if (overdispersed) {
+                    assessmentEl.textContent = 'Negative Binomial Preferred';
+                    assessmentEl.className = 'status-indicator status-count';
+                } else if (excessZeros) {
+                    assessmentEl.textContent = 'Zero-Inflated Model';
+                    assessmentEl.className = 'status-indicator status-quantile';
+                } else {
+                    assessmentEl.textContent = 'Poisson Adequate';
+                    assessmentEl.className = 'status-indicator status-bootstrap';
+                }
+                
+                document.getElementById('countInterpretation').textContent = 
+                    `${model.toUpperCase()} model for ${scenario}. IRR = ${incidenceRateRatio.toFixed(3)} (${incidenceRateRatio > 1 ? 'increased' : 'decreased'} rate). ${overdispersed ? 'Overdispersion detected (p=' + dispersionTestPValue.toFixed(3) + ')' : 'Equidispersion OK'}. ${excessZeros ? 'Excess zeros (p=' + zeroTestPValue.toFixed(3) + ')' : 'Zero inflation not significant'}. Model fit: ${modelFit.toLowerCase()}.`;
+                
+                document.getElementById('countResults').style.display = 'block';
+                console.log('Count data simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in count data simulation:', error);
+                alert('Error running count data simulation. Check console for details.');
+            }
+        }
+        
+        // Quantile Regression Simulation
+        function simulateQuantile() {
+            console.log('Starting quantile regression simulation...');
+            
+            try {
+                const tau = parseFloat(document.getElementById('quantileLevel').value);
+                const hetero = parseFloat(document.getElementById('heteroskedasticity').value);
+                const outliers = parseFloat(document.getElementById('outlierProportion').value);
+                const distribution = document.getElementById('distributionType').value;
+                
+                console.log('Quantile Parameters:', { tau, hetero, outliers, distribution });
+                
+                // Simulate quantile results
+                const quantileCoeff = 0.8 + (tau - 0.5) * 0.6 + (Math.random() - 0.5) * 0.2;
+                const olsCoeff = 0.8 + (Math.random() - 0.5) * 0.15;
+                const pseudoR2 = 0.15 + hetero * 0.1 + Math.random() * 0.1;
+                
+                // Test for coefficient equality across quantiles
+                const equalityTestPValue = hetero > 1 ? 0.01 + Math.random() * 0.05 : 0.2 + Math.random() * 0.4;
+                
+                document.getElementById('quantileCoeff').textContent = quantileCoeff.toFixed(3);
+                document.getElementById('olsCoeff').textContent = olsCoeff.toFixed(3);
+                document.getElementById('pseudoR2').textContent = pseudoR2.toFixed(3);
+                document.getElementById('quantileEquality').textContent = equalityTestPValue.toFixed(3);
+                
+                // Quantile chart
+                const chartContainer = document.getElementById('quantileChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-advanced);">Quantile Regression (τ = ${tau})</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--status-quantile); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>QR Coefficient</strong><br>
+                                β(${tau}) = ${quantileCoeff.toFixed(3)}
+                            </div>
+                            <div style="background: var(--flow-600); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>OLS Coefficient</strong><br>
+                                β̄ = ${olsCoeff.toFixed(3)}
+                            </div>
+                        </div>
+                        <div style="background: var(--flow-100); padding: 12px; border-radius: 8px;">
+                            Pseudo R²: ${pseudoR2.toFixed(3)} | Equality test p: ${equalityTestPValue.toFixed(3)}
+                        </div>
+                    </div>
+                `;
+                
+                const assessmentEl = document.getElementById('quantileAssessment');
+                const significantDifference = Math.abs(quantileCoeff - olsCoeff) > 0.2;
+                const heterogeneousEffects = equalityTestPValue < 0.05;
+                
+                if (significantDifference && heterogeneousEffects) {
+                    assessmentEl.textContent = 'Heterogeneous Treatment Effects';
+                    assessmentEl.className = 'status-indicator status-quantile';
+                } else if (significantDifference) {
+                    assessmentEl.textContent = 'Quantile-Specific Effects';
+                    assessmentEl.className = 'status-indicator status-nonparam';
+                } else if (outliers > 0.1) {
+                    assessmentEl.textContent = 'Robust to Outliers';
+                    assessmentEl.className = 'status-indicator status-bootstrap';
+                } else {
+                    assessmentEl.textContent = 'Similar to OLS';
+                    assessmentEl.className = 'status-indicator status-duration';
+                }
+                
+                document.getElementById('quantileInterpretation').textContent = 
+                    `Quantile regression at τ = ${tau}: β̂(${tau}) = ${quantileCoeff.toFixed(3)} vs OLS β̂ = ${olsCoeff.toFixed(3)}. ${significantDifference ? 'Effect varies across distribution.' : 'Similar to mean effect.'} Equality test p = ${equalityTestPValue.toFixed(3)} ${heterogeneousEffects ? '(heterogeneous effects)' : '(homogeneous effects)'}. Pseudo R² = ${pseudoR2.toFixed(3)}.`;
+                
+                document.getElementById('quantileResults').style.display = 'block';
+                console.log('Quantile regression simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in quantile regression simulation:', error);
+                alert('Error running quantile regression simulation. Check console for details.');
+            }
+        }
+        
+        // Nonparametric Methods Simulation
+        function simulateNonparametric() {
+            console.log('Starting nonparametric simulation...');
+            
+            try {
+                const method = document.getElementById('nonparamMethod').value;
+                const bandwidth = parseFloat(document.getElementById('bandwidth').value);
+                const kernel = document.getElementById('kernelType').value;
+                const nonlinearity = document.getElementById('nonlinearityType').value;
+                
+                console.log('Nonparametric Parameters:', { method, bandwidth, kernel, nonlinearity });
+                
+                // Simulate nonparametric results
+                const mse = 0.1 + (bandwidth - 0.8) ** 2 + Math.random() * 0.05;
+                const optimalBW = 0.3 + Math.random() * 0.4;
+                const biasVariance = bandwidth < 0.5 ? 0.3 : 1.8; // Small h: low bias, high variance
+                const effectiveParams = Math.round(100 / bandwidth);
+                
+                document.getElementById('nonparamMSE').textContent = mse.toFixed(4);
+                document.getElementById('optimalBandwidth').textContent = optimalBW.toFixed(3);
+                document.getElementById('biasVarianceRatio').textContent = biasVariance.toFixed(2);
+                document.getElementById('effectiveParams').textContent = effectiveParams;
+                
+                // Nonparametric chart
+                const chartContainer = document.getElementById('nonparamChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-advanced);">${method.replace('_', ' ').charAt(0).toUpperCase() + method.replace('_', ' ').slice(1)}</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--status-nonparam); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>MSE</strong><br>
+                                ${mse.toFixed(4)}
+                            </div>
+                            <div style="background: var(--status-bootstrap); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Effective Params</strong><br>
+                                ${effectiveParams}
+                            </div>
+                        </div>
+                        <div style="background: var(--flow-100); padding: 12px; border-radius: 8px;">
+                            Bandwidth: ${bandwidth.toFixed(2)} | Optimal: ${optimalBW.toFixed(3)} | ${kernel} kernel
+                        </div>
+                    </div>
+                `;
+                
+                const assessmentEl = document.getElementById('nonparamAssessment');
+                const oversmoothed = bandwidth > optimalBW + 0.2;
+                const undersmoothed = bandwidth < optimalBW - 0.2;
+                
+                if (Math.abs(bandwidth - optimalBW) < 0.15) {
+                    assessmentEl.textContent = 'Near-Optimal Bandwidth';
+                    assessmentEl.className = 'status-indicator status-nonparam';
+                } else if (oversmoothed) {
+                    assessmentEl.textContent = 'Oversmoothed (High Bias)';
+                    assessmentEl.className = 'status-indicator status-duration';
+                } else if (undersmoothed) {
+                    assessmentEl.textContent = 'Undersmoothed (High Variance)';
+                    assessmentEl.className = 'status-indicator status-quantile';
+                } else {
+                    assessmentEl.textContent = 'Reasonable Smoothing';
+                    assessmentEl.className = 'status-indicator status-bootstrap';
+                }
+                
+                document.getElementById('nonparamInterpretation').textContent = 
+                    `${method.replace('_', ' ')} with ${kernel} kernel, h = ${bandwidth.toFixed(2)}. MSE = ${mse.toFixed(4)}, optimal h ≈ ${optimalBW.toFixed(3)}. Effective parameters: ${effectiveParams}. ${oversmoothed ? 'Increase flexibility (smaller h).' : undersmoothed ? 'Reduce overfitting (larger h).' : 'Well-balanced bias-variance trade-off.'}`;
+                
+                document.getElementById('nonparamResults').style.display = 'block';
+                console.log('Nonparametric simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in nonparametric simulation:', error);
+                alert('Error running nonparametric simulation. Check console for details.');
+            }
+        }
+        
+        // Bootstrap Simulation
+        function simulateBootstrap() {
+            console.log('Starting bootstrap simulation...');
+            
+            try {
+                const type = document.getElementById('bootstrapType').value;
+                const reps = parseInt(document.getElementById('bootstrapReps').value);
+                const sampleSize = parseInt(document.getElementById('originalSampleSize').value);
+                const estimand = document.getElementById('estimandType').value;
+                
+                console.log('Bootstrap Parameters:', { type, reps, sampleSize, estimand });
+                
+                // Simulate bootstrap results
+                const bootstrapSE = 0.1 + (1 / Math.sqrt(sampleSize)) + Math.random() * 0.05;
+                const analyticSE = bootstrapSE * (0.9 + Math.random() * 0.2);
+                const bootstrapBias = (Math.random() - 0.5) * 0.02; // Small bias
+                const coverageProbability = 0.85 + Math.random() * 0.1; // Should be near 0.95
+                
+                document.getElementById('bootstrapSE').textContent = bootstrapSE.toFixed(4);
+                document.getElementById('analyticSE').textContent = analyticSE.toFixed(4);
+                document.getElementById('bootstrapBias').textContent = bootstrapBias.toFixed(4);
+                document.getElementById('coverageProbability').textContent = (coverageProbability * 100).toFixed(1) + '%';
+                
+                // Bootstrap chart
+                const chartContainer = document.getElementById('bootstrapChart');
+                chartContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: var(--primary-advanced);">${type.charAt(0).toUpperCase() + type.slice(1)} Bootstrap</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: var(--status-bootstrap); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Bootstrap SE</strong><br>
+                                ${bootstrapSE.toFixed(4)}
+                            </div>
+                            <div style="background: var(--flow-600); color: white; padding: 12px; border-radius: 8px;">
+                                <strong>Analytic SE</strong><br>
+                                ${analyticSE.toFixed(4)}
+                            </div>
+                        </div>
+                        <div style="background: var(--flow-100); padding: 12px; border-radius: 8px;">
+                            Coverage: ${(coverageProbability*100).toFixed(1)}% | ${reps} bootstrap replications
+                        </div>
+                    </div>
+                `;
+                
+                const assessmentEl = document.getElementById('bootstrapAssessment');
+                const goodCoverage = Math.abs(coverageProbability - 0.95) < 0.05;
+                const smallSample = sampleSize < 100;
+                
+                if (goodCoverage && reps >= 500) {
+                    assessmentEl.textContent = 'Accurate Bootstrap Inference';
+                    assessmentEl.className = 'status-indicator status-bootstrap';
+                } else if (smallSample) {
+                    assessmentEl.textContent = 'Small Sample Bootstrap';
+                    assessmentEl.className = 'status-indicator status-quantile';
+                } else if (reps < 500) {
+                    assessmentEl.textContent = 'Need More Replications';
+                    assessmentEl.className = 'status-indicator status-duration';
+                } else {
+                    assessmentEl.textContent = 'Bootstrap Working';
+                    assessmentEl.className = 'status-indicator status-nonparam';
+                }
+                
+                document.getElementById('bootstrapInterpretation').textContent = 
+                    `${type} bootstrap with ${reps} replications, n=${sampleSize}. Bootstrap SE = ${bootstrapSE.toFixed(4)}, analytic SE = ${analyticSE.toFixed(4)}. Coverage: ${(coverageProbability*100).toFixed(1)}% (target: 95%). ${goodCoverage ? 'Accurate inference.' : 'Coverage issue - check assumptions.'} ${smallSample ? 'Small sample may affect performance.' : 'Sample size adequate.'}`;
+                
+                document.getElementById('bootstrapResults').style.display = 'block';
+                console.log('Bootstrap simulation completed successfully');
+                
+            } catch (error) {
+                console.error('Error in bootstrap simulation:', error);
+                alert('Error running bootstrap simulation. Check console for details.');
+            }
+        }
+        
+        // Quiz question bank - Advanced Topics
+        const questionBank = {
+            duration_models: [
+                {
+                    question: "The hazard function λ(t) represents:",
+                    options: [
+                        "The probability of surviving past time t",
+                        "The instantaneous failure rate at time t, given survival to t",
+                        "The cumulative probability of failure by time t",
+                        "The expected duration until failure"
+                    ],
+                    correct: 1,
+                    explanation: "The hazard function λ(t) = lim(dt→0) P(t ≤ T < t+dt | T ≥ t)/dt is the instantaneous probability of event occurrence at time t, conditional on surviving to time t."
+                },
+                {
+                    question: "In the Cox proportional hazards model:",
+                    options: [
+                        "The baseline hazard λ₀(t) must be specified parametrically",
+                        "The hazard ratio exp(β) varies over time", 
+                        "The baseline hazard cancels out in the partial likelihood",
+                        "Covariates can have time-varying effects"
+                    ],
+                    correct: 2,
+                    explanation: "Cox model uses partial likelihood where the baseline hazard λ₀(t) cancels out, avoiding the need to specify it parametrically. The proportional hazards assumption requires constant hazard ratios."
+                },
+                {
+                    question: "Censoring in duration models means:",
+                    options: [
+                        "We observe the exact failure time for all subjects",
+                        "We know the event occurred but not exactly when",
+                        "We only know the event had not occurred by the end of observation",
+                        "Some subjects are excluded from the analysis"
+                    ],
+                    correct: 2,
+                    explanation: "Right censoring means we observe subjects until the study ends or they drop out, knowing only that if the event occurs, it happens after the last observation time."
+                },
+                {
+                    question: "The Weibull distribution allows for:",
+                    options: [
+                        "Constant hazard rates only",
+                        "Increasing, decreasing, or constant hazard rates",
+                        "Time-varying covariates",
+                        "Non-proportional hazards"
+                    ],
+                    correct: 1,
+                    explanation: "Weibull model has hazard λ(t) = γλt^(γ-1). If γ > 1: increasing hazard, γ < 1: decreasing hazard, γ = 1: constant hazard (exponential)."
+                },
+                {
+                    question: "Accelerated Failure Time (AFT) models assume:",
+                    options: [
+                        "Hazards are proportional across groups",
+                        "Log survival times follow a specified distribution",
+                        "The baseline hazard is constant",
+                        "Censoring is non-informative"
+                    ],
+                    correct: 1,
+                    explanation: "AFT models specify that log T = x'β + σε where ε follows a known distribution. This implies covariates accelerate or decelerate the time scale."
+                },
+                {
+                    question: "The concordance index (C-index) measures:",
+                    options: [
+                        "Model goodness of fit",
+                        "Proportional hazards assumption validity", 
+                        "Discrimination ability - ranking subjects by risk",
+                        "Calibration of predicted survival probabilities"
+                    ],
+                    correct: 2,
+                    explanation: "The C-index measures the proportion of pairs where the subject with higher predicted risk fails first. It's analogous to AUC for survival models."
+                }
+            ],
+            count_data: [
+                {
+                    question: "The key assumption of the Poisson regression model is:",
+                    options: [
+                        "Mean equals variance (equidispersion)",
+                        "Errors are normally distributed",
+                        "Linear relationship between covariates and outcome",
+                        "No zero counts in the data"
+                    ],
+                    correct: 0,
+                    explanation: "Poisson regression assumes E[Y|x] = Var[Y|x] = λ = exp(x'β). When this fails (overdispersion), negative binomial models are preferred."
+                },
+                {
+                    question: "Overdispersion in count data means:",
+                    options: [
+                        "The mean is greater than the variance",
+                        "The variance exceeds the mean",
+                        "There are too many zero observations",
+                        "The distribution is left-skewed"
+                    ],
+                    correct: 1,
+                    explanation: "Overdispersion occurs when Var[Y|x] > E[Y|x], violating the Poisson equidispersion assumption. This leads to underestimated standard errors if ignored."
+                },
+                {
+                    question: "The incidence rate ratio (IRR) in Poisson regression:",
+                    options: [
+                        "Is the coefficient β directly",
+                        "Is exp(β), showing multiplicative effect on the rate",
+                        "Cannot exceed 1.0",
+                        "Is only meaningful for binary covariates"
+                    ],
+                    correct: 1,
+                    explanation: "IRR = exp(β) gives the multiplicative effect on the count rate. IRR > 1 increases the rate, IRR < 1 decreases it, IRR = 1 indicates no effect."
+                },
+                {
+                    question: "Zero-inflated Poisson (ZIP) models are appropriate when:",
+                    options: [
+                        "All zeros are sampling zeros",
+                        "There are more zeros than a Poisson model predicts",
+                        "The data has no overdispersion",
+                        "Covariates have nonlinear effects"
+                    ],
+                    correct: 1,
+                    explanation: "ZIP models handle excess zeros by modeling two processes: participation (logit) and count given participation (Poisson). Useful when zeros arise from different mechanisms."
+                },
+                {
+                    question: "Negative binomial regression addresses:",
+                    options: [
+                        "Excess zeros only",
+                        "Overdispersion only", 
+                        "Both overdispersion and excess zeros",
+                        "Underdispersion"
+                    ],
+                    correct: 1,
+                    explanation: "Negative binomial relaxes Poisson equidispersion by adding parameter α: Var[Y|x] = μ + αμ². It handles overdispersion but not excess zeros specifically."
+                },
+                {
+                    question: "To test for overdispersion in Poisson regression:",
+                    options: [
+                        "Compare Poisson and negative binomial log-likelihoods",
+                        "Test H₀: α = 0 in negative binomial model",
+                        "Use auxiliary regression of squared residuals",
+                        "All of the above"
+                    ],
+                    correct: 3,
+                    explanation: "Multiple tests exist: likelihood ratio test (NB vs Poisson), score test for α = 0, or auxiliary regression. All test whether variance exceeds the mean."
+                }
+            ],
+            quantile_regression: [
+                {
+                    question: "Quantile regression estimates:",
+                    options: [
+                        "The conditional mean E[Y|X]",
+                        "The conditional quantile Q_τ(Y|X)",
+                        "The conditional variance Var[Y|X]",
+                        "The conditional mode"
+                    ],
+                    correct: 1,
+                    explanation: "Quantile regression models the τ-th conditional quantile: Q_τ(Y|X) = X'β_τ. This provides a complete picture of how X affects the entire distribution of Y."
+                },
+                {
+                    question: "The check function ρ_τ(u) used in quantile regression:",
+                    options: [
+                        "Is symmetric around zero",
+                        "Gives equal weight to positive and negative residuals", 
+                        "Weights positive and negative residuals differently based on τ",
+                        "Is the same as squared error loss"
+                    ],
+                    correct: 2,
+                    explanation: "ρ_τ(u) = u(τ - I(u < 0)) weights residuals asymmetrically: positive residuals get weight τ, negative get weight (τ-1). This targets the τ-quantile."
+                },
+                {
+                    question: "Compared to OLS, quantile regression:",
+                    options: [
+                        "Is always more efficient",
+                        "Is more robust to outliers",
+                        "Requires larger sample sizes",
+                        "Assumes normality"
+                    ],
+                    correct: 1,
+                    explanation: "Quantile regression (especially median regression) is robust to outliers and doesn't assume normality. It naturally handles heteroskedasticity by modeling different quantiles."
+                },
+                {
+                    question: "Quantile treatment effects (QTE) show:",
+                    options: [
+                        "Only the average treatment effect",
+                        "How treatment effects vary across the outcome distribution",
+                        "Treatment effects only for the median",
+                        "Whether treatment is statistically significant"
+                    ],
+                    correct: 1,
+                    explanation: "QTE_τ = Q_τ(Y¹|X) - Q_τ(Y⁰|X) shows how treatment effects differ across quantiles, revealing distributional impacts beyond just mean effects."
+                },
+                {
+                    question: "The coefficient β_τ in quantile regression for quantile τ:",
+                    options: [
+                        "Shows the effect on the mean of Y",
+                        "Shows the effect on the τ-th quantile of Y",
+                        "Is the same across all quantiles",
+                        "Must be positive"
+                    ],
+                    correct: 1,
+                    explanation: "β_τ shows how a unit change in X affects the τ-th conditional quantile of Y. Different β_τ across quantiles indicate heterogeneous treatment effects."
+                },
+                {
+                    question: "Testing for quantile coefficient equality across τ values:",
+                    options: [
+                        "Tests whether OLS and quantile regression give the same results",
+                        "Tests whether treatment effects are constant across the distribution",
+                        "Is unnecessary if the model fits well",
+                        "Requires bootstrap methods exclusively"
+                    ],
+                    correct: 1,
+                    explanation: "Testing H₀: β_τ₁ = β_τ₂ = ... tests whether covariate effects are homogeneous across quantiles. Rejection suggests distributional heterogeneity."
+                }
+            ],
+            nonparametric_methods: [
+                {
+                    question: "Kernel regression estimates:",
+                    options: [
+                        "Parametric relationships with flexible functional forms",
+                        "The conditional expectation E[Y|X] nonparametrically",
+                        "Only linear relationships",
+                        "Discrete choice probabilities"
+                    ],
+                    correct: 1,
+                    explanation: "Kernel regression uses local averaging with weights determined by kernel function K((x_i-x)/h) to estimate m(x) = E[Y|X=x] without assuming functional form."
+                },
+                {
+                    question: "The bandwidth h in kernel regression controls:",
+                    options: [
+                        "The sample size",
+                        "The number of regressors",
+                        "The bias-variance trade-off",
+                        "The significance level"
+                    ],
+                    correct: 2,
+                    explanation: "Smaller h gives lower bias but higher variance (wiggly fit). Larger h gives higher bias but lower variance (smooth fit). Optimal h minimizes MSE."
+                },
+                {
+                    question: "The curse of dimensionality in nonparametric estimation means:",
+                    options: [
+                        "More data always improves estimates",
+                        "Performance degrades rapidly as the number of regressors increases",
+                        "Only works with univariate data",
+                        "Requires larger bandwidths"
+                    ],
+                    correct: 1,
+                    explanation: "With d dimensions, you need exponentially more data to maintain the same density of points around any given point, making nonparametric estimation impractical for high dimensions."
+                },
+                {
+                    question: "Partially linear models Y = X'β + g(Z) + U:",
+                    options: [
+                        "Require g(Z) to be specified parametrically",
+                        "Estimate β at the parametric √n rate",
+                        "Cannot identify both β and g(·)",
+                        "Are purely nonparametric"
+                    ],
+                    correct: 1,
+                    explanation: "Semiparametric models like partially linear achieve √n convergence for β while estimating g(·) nonparametrically. Robinson's method uses double residuals."
+                },
+                {
+                    question: "Single index models Y = g(X'β) + U assume:",
+                    options: [
+                        "g(·) is linear",
+                        "Only the linear combination X'β matters, not individual X components",
+                        "β is known",
+                        "U is heteroskedastic"
+                    ],
+                    correct: 1,
+                    explanation: "Single index models reduce dimensionality by assuming only the index X'β matters. Useful when theory suggests a composite effect but the functional form is unknown."
+                },
+                {
+                    question: "Local polynomial regression:",
+                    options: [
+                        "Fits polynomials globally",
+                        "Fits low-order polynomials locally around each point",
+                        "Requires the degree to equal the number of variables",
+                        "Only works for quadratic relationships"
+                    ],
+                    correct: 1,
+                    explanation: "Local polynomial regression fits polynomials (often linear or quadratic) in neighborhoods around each point, automatically adapting to local curvature."
+                }
+            ],
+            bootstrap_methods: [
+                {
+                    question: "The bootstrap principle relies on:",
+                    options: [
+                        "The sample being a good approximation to the population",
+                        "Large sample theory",
+                        "Normality assumptions",
+                        "Known population parameters"
+                    ],
+                    correct: 0,
+                    explanation: "Bootstrap treats the sample as the 'population' and resamples from it. This works when the original sample is representative of the true population."
+                },
+                {
+                    question: "Nonparametric bootstrap resamples:",
+                    options: [
+                        "From a fitted parametric distribution",
+                        "Residuals from a regression",
+                        "Directly from the observed data with replacement",
+                        "From the population"
+                    ],
+                    correct: 2,
+                    explanation: "Nonparametric bootstrap draws observations {(x_i,y_i)} with replacement from the original sample, making no distributional assumptions."
+                },
+                {
+                    question: "Bootstrap confidence intervals (percentile method):",
+                    options: [
+                        "Use the normal approximation",
+                        "Use quantiles of the bootstrap distribution directly",
+                        "Require bias correction",
+                        "Always have exact coverage"
+                    ],
+                    correct: 1,
+                    explanation: "Percentile CIs use [θ̂_{(α/2)}, θ̂_{(1-α/2)}] from the bootstrap distribution. Simple but may have coverage issues if the bootstrap distribution is biased."
+                },
+                {
+                    question: "The wild bootstrap is useful for:",
+                    options: [
+                        "Time series data",
+                        "Heteroskedastic regression models",
+                        "Count data models",
+                        "Survival analysis"
+                    ],
+                    correct: 1,
+                    explanation: "Wild bootstrap resamples y*_i = x'β̂ + v_i û_i where v_i is random (e.g., Rademacher). This preserves heteroskedasticity patterns without specifying the form."
+                },
+                {
+                    question: "Block bootstrap is designed for:",
+                    options: [
+                        "Cross-sectional data",
+                        "Time series data with temporal dependence",
+                        "Panel data",
+                        "Survival data"
+                    ],
+                    correct: 1,
+                    explanation: "Block bootstrap resamples blocks of consecutive observations to preserve temporal dependence structure in time series data that standard bootstrap would destroy."
+                },
+                {
+                    question: "Bootstrap hypothesis testing:",
+                    options: [
+                        "Always gives exact p-values",
+                        "Requires the null hypothesis to be imposed on the resampled data",
+                        "Only works for simple null hypotheses",
+                        "Cannot handle composite hypotheses"
+                    ],
+                    correct: 1,
+                    explanation: "For valid bootstrap tests, the null hypothesis must be imposed when generating bootstrap samples. This ensures the bootstrap distribution is centered correctly under H₀."
+                }
+            ]
+        };
+        
+        function regenerateQuiz() {
+            console.log('Starting quiz regeneration...');
+            
+            try {
+                answeredQuestions = {};
+                currentQuestions = [];
+                
+                const categories = Object.keys(questionBank);
+                console.log('Found categories:', categories);
+                
+                if (categories.length === 0) {
+                    console.error('No question categories found!');
+                    return;
+                }
+                
+                categories.forEach((category, index) => {
+                    const categoryQuestions = questionBank[category];
+                    if (!categoryQuestions || categoryQuestions.length === 0) {
+                        console.error(`No questions found for category: ${category}`);
+                        return;
+                    }
+                    
+                    const randomIndex = Math.floor(Math.random() * categoryQuestions.length);
+                    const selectedQuestion = {
+                        ...categoryQuestions[randomIndex],
+                        category: category,
+                        id: `q${index + 1}`
+                    };
+                    
+                    console.log(`Selected question for ${category}:`, selectedQuestion.question.substring(0, 50) + '...');
+                    currentQuestions.push(selectedQuestion);
+                });
+                
+                console.log(`Generated ${currentQuestions.length} questions`);
+                
+                if (currentQuestions.length > 0) {
+                    renderQuiz();
+                    document.getElementById('quizSummary').style.display = 'none';
+                    console.log('Quiz regenerated successfully');
+                } else {
+                    console.error('No questions were generated');
+                }
+                
+            } catch (error) {
+                console.error('Error regenerating quiz:', error);
+                alert('Error generating quiz. Check console for details.');
+            }
+        }
+        
+        function renderQuiz() {
+            console.log('Rendering quiz...');
+            
+            try {
+                const container = document.getElementById('quizContainer');
+                if (!container) {
+                    console.error('Quiz container not found!');
+                    return;
+                }
+                
+                let html = '';
+                currentQuestions.forEach((question, index) => {
+                    html += `
+                        <div class="quiz-question">
+                            <p><strong>Question ${index + 1}:</strong> ${question.question}</p>
+                            <div class="quiz-options">
+                    `;
+                    question.options.forEach((option, optIndex) => {
+                        html += `
+                            <label class="quiz-option" onclick="selectDynamicAnswer('${question.id}', ${optIndex})">
+                                <input type="radio" name="${question.id}" value="${optIndex}">
+                                ${String.fromCharCode(65 + optIndex)}) ${option}
+                            </label>
+                        `;
+                    });
+                    html += `
+                            </div>
+                            <div id="feedback${question.id}" class="quiz-feedback"></div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                console.log('Quiz rendered successfully');
+                
+            } catch (error) {
+                console.error('Error rendering quiz:', error);
+            }
+        }
+        
+        function selectDynamicAnswer(questionId, selectedAnswer) {
+            const question = currentQuestions.find(q => q.id === questionId);
+            if (!question) return;
+            
+            const isCorrect = selectedAnswer === question.correct;
+            answeredQuestions[questionId] = {
+                selected: selectedAnswer,
+                correct: isCorrect,
+                question: question
+            };
+            
+            const options = document.querySelectorAll(`input[name="${questionId}"]`);
+            options.forEach((option, index) => {
+                const label = option.closest('.quiz-option');
+                label.classList.remove('correct', 'incorrect');
+                if (index === question.correct) {
+                    label.classList.add('correct');
+                } else if (option.checked) {
+                    label.classList.add('incorrect');
+                }
+            });
+            
+            const feedbackEl = document.getElementById(`feedback${questionId}`);
+            feedbackEl.textContent = question.explanation;
+            feedbackEl.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackEl.style.display = 'block';
+            
+            if (Object.keys(answeredQuestions).length === currentQuestions.length) {
+                setTimeout(() => showQuizSummary(), 1000);
+            }
+        }
+        
+        function showQuizSummary() {
+            const totalQuestions = currentQuestions.length;
+            const correctAnswers = Object.values(answeredQuestions).filter(a => a.correct).length;
+            const score = Math.round((correctAnswers / totalQuestions) * 100);
+            
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            document.getElementById('quizScore').textContent = score + '%';
+            
+            let feedback = '';
+            if (score >= 90) {
+                feedback = '🌟 Exceptional mastery of advanced econometric methods! Outstanding understanding of duration models, count data, quantile regression, and bootstrap techniques.';
+            } else if (score >= 80) {
+                feedback = '🎯 Strong grasp of advanced econometric tools! Excellent knowledge of nonparametric methods and modern estimation techniques.';
+            } else if (score >= 70) {
+                feedback = '💡 Good foundation in advanced methods. Review duration model concepts, quantile regression interpretation, and bootstrap principles.';
+            } else if (score >= 60) {
+                feedback = '📈 Developing understanding of advanced econometrics. Focus on survival analysis, count data models, and nonparametric concepts.';
+            } else {
+                feedback = '🚀 Advanced topics need more study. Review basic concepts in each method and their appropriate applications.';
+            }
+            
+            document.getElementById('quizFeedback').textContent = feedback;
+            document.getElementById('quizSummary').style.display = 'block';
+            document.getElementById('quizSummary').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        // Navigation and utility functions
+        function scrollToSection(sectionId) {
+            console.log('Scrolling to section:', sectionId);
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                console.log('Scrolled to:', sectionId);
+            } else {
+                console.error('Section not found:', sectionId);
+            }
+        }
+        
+        function toggleAIChat() {
+            const panel = document.getElementById('aiChatPanel');
+            const icon = document.getElementById('aiChatIcon');
+            
+            if (isAIChatOpen) {
+                panel.classList.remove('show');
+                icon.textContent = '🚀';
+                isAIChatOpen = false;
+            } else {
+                panel.classList.add('show');
+                icon.textContent = '✖️';
+                isAIChatOpen = true;
+                document.getElementById('aiInput').focus();
+            }
+        }
+        
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addAIMessage('user', message);
+            input.value = '';
+            setTimeout(() => {
+                const response = getAIResponse(message);
+                addAIMessage('claude', response);
+            }, 500);
+        }
+        
+        function addAIMessage(sender, message) {
+            const messagesContainer = document.getElementById('aiChatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender}`;
+            
+            if (sender === 'user') {
+                messageDiv.textContent = message;
+            } else {
+                messageDiv.innerHTML = `<strong>🚀 Claude:</strong> ${message}`;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function getAIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            if (message.includes('duration') || message.includes('survival') || message.includes('hazard')) {
+                return "Duration models: Hazard λ(t) = instantaneous failure rate. Cox model: λ(t|x) = λ₀(t)exp(x'β) - baseline hazard cancels in partial likelihood. Weibull allows increasing/decreasing hazards. AFT models: log(T) = x'β + σε.";
+            }
+            if (message.includes('count') || message.includes('poisson') || message.includes('negative binomial')) {
+                return "Count data: Poisson assumes mean=variance. IRR = exp(β) = multiplicative rate effect. Overdispersion → negative binomial. Excess zeros → ZIP/ZINB. Test: compare log-likelihoods or auxiliary regression.";
+            }
+            if (message.includes('quantile') || message.includes('median') || message.includes('percentile')) {
+                return "Quantile regression: Models Q_τ(Y|X) = X'β_τ using check function ρ_τ(u). Robust to outliers, handles heteroskedasticity naturally. QTE shows distributional treatment effects. Test β_τ equality across quantiles.";
+            }
+            if (message.includes('nonparametric') || message.includes('kernel') || message.includes('bandwidth')) {
+                return "Nonparametric: Kernel regression m̂(x) = Σ W_i(x)y_i with weights from K((x_i-x)/h). Bandwidth h controls bias-variance trade-off. Partially linear: Y = X'β + g(Z) + U. Curse of dimensionality limits applicability.";
+            }
+            if (message.includes('bootstrap') || message.includes('resample') || message.includes('confidence')) {
+                return "Bootstrap: Resample from data with replacement. Nonparametric: direct resampling. Residual: resample residuals. Wild: for heteroskedasticity. Block: for time series. Coverage depends on representativeness of original sample.";
+            }
+            if (message.includes('when') || message.includes('choose') || message.includes('appropriate')) {
+                return "Method selection: Duration models for time-to-event. Count models for non-negative integers. Quantile regression for distributional effects/outliers. Nonparametric when functional form unknown. Bootstrap when analytical SE unavailable.";
+            }
+            
+            return "I can help with duration models (survival analysis), count data (Poisson/NB), quantile regression, nonparametric methods (kernel regression), and bootstrap techniques. Which advanced method interests you?";
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing Chapter 18...');
+            
+            // Test if all required elements exist
+            const requiredElements = [
+                'quizContainer', 'survivalChart', 'countChart', 'quantileChart',
+                'nonparamChart', 'bootstrapChart', 'durationResults', 'countResults',
+                'quantileResults', 'nonparamResults', 'bootstrapResults'
+            ];
+            
+            const missingElements = [];
+            requiredElements.forEach(id => {
+                if (!document.getElementById(id)) {
+                    missingElements.push(id);
+                }
+            });
+            
+            if (missingElements.length > 0) {
+                console.error('Missing required elements:', missingElements);
+            } else {
+                console.log('All required elements found');
+            }
+            
+            // Initialize quiz with a delay
+            setTimeout(() => {
+                console.log('Initializing quiz...');
+                regenerateQuiz();
+            }, 500);
+            
+            console.log('Chapter 18: Advanced Topics in Econometrics loaded successfully! 🚀');
+        });
+        
+    </script>
+
+</body>
+</html>
