@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendix B: Econometric Theory and Derivations - Wooldridge Econometrics</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+                tags: 'ams'
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <style>
+        :root {
+            /* Econometric Theory Theme - Deep mathematical rigor */
+            --primary-theory: #0f172a;
+            --secondary-theory: #1e293b;
+            --accent-ols: #2563eb;
+            --accent-iv: #7c3aed;
+            --accent-panel: #dc2626;
+            --accent-time-series: #059669;
+            --accent-limited-dv: #ea580c;
+            --accent-advanced: #0891b2;
+            --accent-proofs: #be185d;
+            --accent-asymptotic: #4338ca;
+            --flow-50: #f8fafc;
+            --flow-100: #f1f5f9;
+            --flow-200: #e2e8f0;
+            --flow-300: #cbd5e1;
+            --flow-400: #94a3b8;
+            --flow-500: #64748b;
+            --flow-600: #475569;
+            --flow-700: #334155;
+            --flow-800: #1e293b;
+            --flow-900: #0f172a;
+            
+            /* Theory colors */
+            --status-ols: #2563eb;
+            --status-iv: #7c3aed;
+            --status-panel: #dc2626;
+            --status-time-series: #059669;
+            --status-limited-dv: #ea580c;
+            --status-advanced: #0891b2;
+            --status-proofs: #be185d;
+            --status-asymptotic: #4338ca;
+            
+            /* Typography */
+            --font-primary: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+            --font-math: 'Computer Modern', 'Latin Modern Math', 'STIX Two Math', serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            line-height: 1.6;
+            color: var(--flow-900);
+            background: linear-gradient(135deg, var(--flow-50) 0%, #ffffff 40%, var(--flow-100) 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated theoretical background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 25% 20%, rgba(37, 99, 235, 0.04) 0%, transparent 60%),
+                radial-gradient(circle at 75% 80%, rgba(124, 58, 237, 0.04) 0%, transparent 60%),
+                radial-gradient(circle at 60% 30%, rgba(220, 38, 38, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 40% 70%, rgba(5, 150, 105, 0.03) 0%, transparent 50%),
+                linear-gradient(45deg, transparent 46%, rgba(190, 24, 93, 0.02) 48%, transparent 50%),
+                linear-gradient(-45deg, transparent 46%, rgba(67, 56, 202, 0.02) 48%, transparent 50%);
+            background-size: 130px 130px, 180px 180px, 100px 100px, 140px 140px, 50px 50px, 70px 70px;
+            z-index: -1;
+            animation: theoryFlow 35s ease-in-out infinite;
+        }
+
+        @keyframes theoryFlow {
+            0%, 100% { opacity: 0.6; transform: rotate(0deg) scale(1); }
+            25% { opacity: 0.8; transform: rotate(1.5deg) scale(1.02); }
+            50% { opacity: 0.7; transform: rotate(-1deg) scale(0.98); }
+            75% { opacity: 0.9; transform: rotate(1.2deg) scale(1.01); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 5rem 0;
+            background: linear-gradient(135deg, var(--primary-theory), var(--secondary-theory), var(--accent-ols), var(--accent-iv));
+            color: white;
+            margin-bottom: 3rem;
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 25px 80px rgba(15, 23, 42, 0.4);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(45deg, transparent 25%, rgba(37, 99, 235, 0.15) 50%, transparent 75%),
+                linear-gradient(-45deg, transparent 25%, rgba(190, 24, 93, 0.08) 50%, transparent 75%),
+                radial-gradient(circle at center, transparent 40%, rgba(15, 23, 42, 0.1) 70%, transparent 100%);
+            animation: theoryPattern 30s ease-in-out infinite alternate;
+        }
+
+        @keyframes theoryPattern {
+            0% { opacity: 0.4; transform: scale(1) rotate(0deg); }
+            50% { opacity: 0.7; transform: scale(1.025) rotate(1.5deg); }
+            100% { opacity: 0.6; transform: scale(1.01) rotate(-0.8deg); }
+        }
+
+        .appendix-title {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff, var(--accent-ols), var(--accent-proofs));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.04em;
+        }
+
+        .appendix-subtitle {
+            font-size: 1.6rem;
+            opacity: 0.95;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.8px;
+        }
+
+        .theory-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Navigation */
+        .nav-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(25px);
+            border-radius: 30px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--flow-200);
+            position: relative;
+        }
+
+        .nav-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 30px;
+            padding: 3px;
+            background: linear-gradient(135deg, var(--accent-ols), var(--accent-iv), var(--accent-proofs));
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: xor;
+            opacity: 0.4;
+        }
+
+        .nav-pills {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.8rem;
+            justify-items: center;
+        }
+
+        .nav-pill {
+            padding: 1.5rem 2rem;
+            background: var(--flow-100);
+            border: 2px solid var(--flow-300);
+            border-radius: 25px;
+            color: var(--flow-700);
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            width: 100%;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-pill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(15, 23, 42, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .nav-pill:hover::before {
+            left: 100%;
+        }
+
+        .nav-pill:hover {
+            background: var(--primary-theory);
+            color: white;
+            transform: translateY(-5px);
+            border-color: var(--accent-ols);
+            box-shadow: 0 15px 45px rgba(15, 23, 42, 0.4);
+        }
+
+        /* Section Styling */
+        .section {
+            background: white;
+            border-radius: 30px;
+            padding: 3rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--flow-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent-ols), var(--accent-proofs));
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary-theory);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section p {
+            margin-bottom: 1.2rem;
+            color: var(--flow-700);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        /* Theory Boxes */
+        .theory-box {
+            background: var(--flow-50);
+            border-radius: 25px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 1px solid var(--flow-200);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .theory-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(15, 23, 42, 0.15);
+        }
+
+        .theory-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+        }
+
+        .theory-box.ols::before { background: var(--status-ols); }
+        .theory-box.iv::before { background: var(--status-iv); }
+        .theory-box.panel::before { background: var(--status-panel); }
+        .theory-box.time-series::before { background: var(--status-time-series); }
+        .theory-box.limited-dv::before { background: var(--status-limited-dv); }
+        .theory-box.advanced::before { background: var(--status-advanced); }
+        .theory-box.proofs::before { background: var(--status-proofs); }
+        .theory-box.asymptotic::before { background: var(--status-asymptotic); }
+
+        .theory-title {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--primary-theory);
+            font-size: 1.3rem;
+        }
+
+        .theory-box.ols .theory-title { color: var(--status-ols); }
+        .theory-box.iv .theory-title { color: var(--status-iv); }
+        .theory-box.panel .theory-title { color: var(--status-panel); }
+        .theory-box.time-series .theory-title { color: var(--status-time-series); }
+        .theory-box.limited-dv .theory-title { color: var(--status-limited-dv); }
+        .theory-box.advanced .theory-title { color: var(--status-advanced); }
+        .theory-box.proofs .theory-title { color: var(--status-proofs); }
+        .theory-box.asymptotic .theory-title { color: var(--status-asymptotic); }
+
+        /* Mathematical Display Areas */
+        .math-display {
+            background: var(--primary-theory);
+            color: var(--flow-100);
+            padding: 2.5rem;
+            border-radius: 20px;
+            font-family: var(--font-math);
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            position: relative;
+            border: 1px solid var(--flow-300);
+        }
+
+        .math-display::before {
+            content: '∂';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 2.5rem;
+            opacity: 0.3;
+            font-family: var(--font-math);
+        }
+
+        /* Specialized Theorem Boxes */
+        .theorem-box {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(124, 58, 237, 0.05));
+            border: 2px solid var(--accent-ols);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .theorem-box::before {
+            content: 'THEOREM';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--accent-ols);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .lemma-box {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(220, 38, 38, 0.05));
+            border: 2px solid var(--accent-iv);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .lemma-box::before {
+            content: 'LEMMA';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--accent-iv);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .proposition-box {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.05), rgba(5, 150, 105, 0.05));
+            border: 2px solid var(--accent-panel);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .proposition-box::before {
+            content: 'PROPOSITION';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--accent-panel);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .proof-box {
+            background: linear-gradient(135deg, rgba(190, 24, 93, 0.05), rgba(67, 56, 202, 0.05));
+            border: 2px solid var(--accent-proofs);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            position: relative;
+            border-left: 6px solid var(--accent-proofs);
+        }
+
+        .proof-box::before {
+            content: 'PROOF';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--accent-proofs);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .corollary-box {
+            background: linear-gradient(135deg, rgba(67, 56, 202, 0.05), rgba(8, 145, 178, 0.05));
+            border: 2px solid var(--accent-asymptotic);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .corollary-box::before {
+            content: 'COROLLARY';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--accent-asymptotic);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        /* Derivation Steps */
+        .derivation-step {
+            background: rgba(37, 99, 235, 0.02);
+            border-left: 4px solid var(--accent-ols);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0 15px 15px 0;
+            position: relative;
+        }
+
+        .derivation-step::before {
+            content: 'STEP';
+            position: absolute;
+            top: -8px;
+            left: 15px;
+            background: var(--accent-ols);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        /* Assumption Boxes */
+        .assumption-box {
+            background: rgba(5, 150, 105, 0.05);
+            border: 2px solid var(--accent-time-series);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .assumption-box::before {
+            content: 'ASSUMPTION';
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: var(--accent-time-series);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        /* Example Boxes */
+        .example-box {
+            background: rgba(234, 88, 12, 0.05);
+            border-left: 5px solid var(--accent-limited-dv);
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border-radius: 0 15px 15px 0;
+            position: relative;
+        }
+
+        .example-box::before {
+            content: 'EXAMPLE';
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: var(--accent-limited-dv);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        /* Chapter Reference Tags */
+        .chapter-ref {
+            display: inline-block;
+            background: var(--flow-200);
+            color: var(--flow-700);
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 0 0.5rem 0.5rem 0;
+        }
+
+        /* Interactive Elements */
+        .interactive-theory {
+            background: white;
+            border-radius: 25px;
+            padding: 3rem;
+            margin: 2rem 0;
+            border: 1px solid var(--flow-200);
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .interactive-theory::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--accent-ols), var(--accent-proofs), var(--accent-asymptotic));
+            border-radius: 25px 25px 0 0;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .control-group {
+            background: var(--flow-50);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--flow-200);
+            transition: all 0.3s ease;
+        }
+
+        .control-group:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--flow-700);
+            margin-bottom: 0.8rem;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--flow-300);
+            border-radius: 12px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary-theory);
+            box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--primary-theory), var(--secondary-theory));
+            color: white;
+            border: none;
+            padding: 1.2rem 2.5rem;
+            border-radius: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            width: 100%;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transition: all 0.4s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .action-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(15, 23, 42, 0.4);
+        }
+
+        /* Equation Numbering */
+        .equation {
+            position: relative;
+            margin: 1.5rem 0;
+        }
+
+        .equation-number {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--flow-200);
+            color: var(--flow-700);
+            padding: 0.3rem 0.8rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .fade-in.delay-1 { animation-delay: 0.15s; }
+        .fade-in.delay-2 { animation-delay: 0.3s; }
+        .fade-in.delay-3 { animation-delay: 0.45s; }
+        .fade-in.delay-4 { animation-delay: 0.6s; }
+        .fade-in.delay-5 { animation-delay: 0.75s; }
+        .fade-in.delay-6 { animation-delay: 0.9s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* AI Chat Widget */
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        .ai-chat-button {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-theory), var(--accent-proofs));
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            box-shadow: 0 12px 40px rgba(15, 23, 42, 0.4);
+            transition: all 0.4s ease;
+        }
+
+        .ai-chat-button:hover {
+            transform: scale(1.15) translateY(-3px);
+            box-shadow: 0 18px 50px rgba(15, 23, 42, 0.5);
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .appendix-title { font-size: 2.8rem; }
+            .nav-pills { grid-template-columns: 1fr; }
+            .controls-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .appendix-title { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header fade-in">
+            <h1 class="appendix-title">∂ Appendix B</h1>
+            <p class="appendix-subtitle">Econometric Theory and Derivations</p>
+            <div class="theory-badge">
+                🔍 Mathematical Proofs and Theoretical Foundations
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <div class="nav-container fade-in delay-1">
+            <div class="nav-pills">
+                <button onclick="scrollToSection('ols-theory')" class="nav-pill">
+                    📐 OLS Theory
+                </button>
+                <button onclick="scrollToSection('iv-theory')" class="nav-pill">
+                    🎯 IV Theory
+                </button>
+                <button onclick="scrollToSection('panel-theory')" class="nav-pill">
+                    📊 Panel Data Theory
+                </button>
+                <button onclick="scrollToSection('time-series-theory')" class="nav-pill">
+                    ⏱️ Time Series Theory
+                </button>
+                <button onclick="scrollToSection('limited-dv-theory')" class="nav-pill">
+                    🎲 Limited DV Theory
+                </button>
+                <button onclick="scrollToSection('asymptotic-theory')" class="nav-pill">
+                    ∞ Asymptotic Theory
+                </button>
+            </div>
+        </div>
+
+        <!-- Section B.1: OLS Theory -->
+        <section class="section fade-in delay-2" id="ols-theory">
+            <h2 class="section-title">B.1 📐 Ordinary Least Squares Theory</h2>
+            
+            <p>This section provides complete mathematical derivations and proofs for OLS estimation, covering the Gauss-Markov theorem, hypothesis testing, and finite sample properties.</p>
+
+            <div class="chapter-ref">Chapters 2-4</div>
+            <div class="chapter-ref">Chapters 7-8</div>
+
+            <div class="theory-box ols">
+                <div class="theory-title">📐 OLS Estimator Derivation</div>
+                
+                <div class="assumption-box">
+                    <strong>Assumptions (MLR.1 - MLR.6):</strong>
+                    <ol style="margin: 1rem 0 0 2rem;">
+                        <li><strong>Linearity:</strong> $y = \mathbf{x}'\boldsymbol{\beta} + u$ where $\mathbf{x}$ is $k \times 1$</li>
+                        <li><strong>Random Sampling:</strong> $\{(\mathbf{x}_i, y_i): i = 1, \ldots, n\}$ i.i.d.</li>
+                        <li><strong>No Perfect Multicollinearity:</strong> $\text{rank}(\mathbf{X}) = k$ w.p. 1</li>
+                        <li><strong>Zero Conditional Mean:</strong> $E[u | \mathbf{x}] = 0$</li>
+                        <li><strong>Homoskedasticity:</strong> $\text{Var}(u | \mathbf{x}) = \sigma^2$</li>
+                        <li><strong>Normality:</strong> $u | \mathbf{x} \sim N(0, \sigma^2)$</li>
+                    </ol>
+                </div>
+
+                <div class="derivation-step">
+                    <strong>Step 1: Setup the Optimization Problem</strong><br>
+                    Minimize the sum of squared residuals:
+                    $$S(\boldsymbol{\beta}) = \sum_{i=1}^n (y_i - \mathbf{x}_i'\boldsymbol{\beta})^2 = (\mathbf{y} - \mathbf{X}\boldsymbol{\beta})'(\mathbf{y} - \mathbf{X}\boldsymbol{\beta})$$
+                </div>
+
+                <div class="derivation-step">
+                    <strong>Step 2: Expand the Objective Function</strong><br>
+                    $$S(\boldsymbol{\beta}) = \mathbf{y}'\mathbf{y} - 2\boldsymbol{\beta}'\mathbf{X}'\mathbf{y} + \boldsymbol{\beta}'\mathbf{X}'\mathbf{X}\boldsymbol{\beta}$$
+                </div>
+
+                <div class="derivation-step">
+                    <strong>Step 3: First-Order Conditions</strong><br>
+                    $$\frac{\partial S}{\partial \boldsymbol{\beta}} = -2\mathbf{X}'\mathbf{y} + 2\mathbf{X}'\mathbf{X}\boldsymbol{\beta} = \mathbf{0}$$
+                    This gives the normal equations:
+                    $$\mathbf{X}'\mathbf{X}\hat{\boldsymbol{\beta}} = \mathbf{X}'\mathbf{y}$$
+                </div>
+
+                <div class="derivation-step">
+                    <strong>Step 4: Solve for OLS Estimator</strong><br>
+                    Assuming $\mathbf{X}'\mathbf{X}$ is invertible (MLR.3):
+                    $$\hat{\boldsymbol{\beta}} = (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{y}$$
+                </div>
+
+                <div class="math-display equation">
+                    $$\boxed{\hat{\boldsymbol{\beta}} = (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{y}}$$
+                    <div class="equation-number">(B.1)</div>
+                </div>
+            </div>
+
+            <div class="theorem-box">
+                <strong>Theorem B.1.1: Unbiasedness of OLS</strong><br>
+                Under assumptions MLR.1-MLR.4: $E[\hat{\boldsymbol{\beta}}] = \boldsymbol{\beta}$
+            </div>
+
+            <div class="proof-box">
+                <strong>Proof of Theorem B.1.1:</strong>
+                $$\hat{\boldsymbol{\beta}} = (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{y} = (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'(\mathbf{X}\boldsymbol{\beta} + \mathbf{u})$$
+                $$= \boldsymbol{\beta} + (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{u}$$
+                Taking conditional expectation:
+                $$E[\hat{\boldsymbol{\beta}} | \mathbf{X}] = \boldsymbol{\beta} + (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'E[\mathbf{u} | \mathbf{X}] = \boldsymbol{\beta}$$
+                By the law of iterated expectations: $E[\hat{\boldsymbol{\beta}}] = E[E[\hat{\boldsymbol{\beta}} | \mathbf{X}]] = E[\boldsymbol{\beta}] = \boldsymbol{\beta}$ ∎
+            </div>
+
+            <div class="theorem-box">
+                <strong>Theorem B.1.2: Gauss-Markov Theorem</strong><br>
+                Under assumptions MLR.1-MLR.5, OLS is BLUE (Best Linear Unbiased Estimator).
+            </div>
+
+            <div class="proof-box">
+                <strong>Proof Outline of Theorem B.1.2:</strong>
+                <p>Consider any other linear unbiased estimator $\tilde{\boldsymbol{\beta}} = \mathbf{C}\mathbf{y}$ where $\mathbf{C}$ is $k \times n$.</p>
+                
+                <p><strong>Unbiasedness requires:</strong> $E[\tilde{\boldsymbol{\beta}}] = \mathbf{C}\mathbf{X}\boldsymbol{\beta} = \boldsymbol{\beta}$ for all $\boldsymbol{\beta}$</p>
+                <p>This implies: $\mathbf{C}\mathbf{X} = \mathbf{I}_k$</p>
+                
+                <p><strong>Variance comparison:</strong></p>
+                $$\text{Var}(\tilde{\boldsymbol{\beta}}) = \sigma^2\mathbf{C}\mathbf{C}'$$
+                $$\text{Var}(\hat{\boldsymbol{\beta}}) = \sigma^2(\mathbf{X}'\mathbf{X})^{-1}$$
+                
+                <p>By matrix algebra, we can show that $\text{Var}(\tilde{\boldsymbol{\beta}}) - \text{Var}(\hat{\boldsymbol{\beta}})$ is positive semi-definite, proving OLS has minimum variance among all linear unbiased estimators. ∎</p>
+            </div>
+
+            <div class="theory-box ols">
+                <div class="theory-title">📊 Variance-Covariance Matrix</div>
+                
+                <div class="math-display equation">
+                    $$\text{Var}(\hat{\boldsymbol{\beta}} | \mathbf{X}) = \sigma^2(\mathbf{X}'\mathbf{X})^{-1}$$
+                    <div class="equation-number">(B.2)</div>
+                </div>
+
+                <div class="derivation-step">
+                    <strong>Derivation:</strong><br>
+                    From $\hat{\boldsymbol{\beta}} = \boldsymbol{\beta} + (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{u}$:
+                    $$\text{Var}(\hat{\boldsymbol{\beta}} | \mathbf{X}) = \text{Var}[(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{u} | \mathbf{X}]$$
+                    $$= (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\text{Var}(\mathbf{u} | \mathbf{X})\mathbf{X}(\mathbf{X}'\mathbf{X})^{-1}$$
+                    $$= (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'(\sigma^2\mathbf{I})\mathbf{X}(\mathbf{X}'\mathbf{X})^{-1}$$
+                    $$= \sigma^2(\mathbf{X}'\mathbf{X})^{-1}$$
+                </div>
+            </div>
+
+            <div class="theory-box ols">
+                <div class="theory-title">📈 Statistical Inference</div>
+                
+                <div class="theorem-box">
+                    <strong>Theorem B.1.3: Distribution of OLS Estimator</strong><br>
+                    Under MLR.1-MLR.6: $\hat{\boldsymbol{\beta}} | \mathbf{X} \sim N(\boldsymbol{\beta}, \sigma^2(\mathbf{X}'\mathbf{X})^{-1})$
+                </div>
+
+                <p><strong>Standardized Test Statistics:</strong></p>
+                <div class="math-display equation">
+                    $$t_j = \frac{\hat{\beta}_j - \beta_j^0}{\text{se}(\hat{\beta}_j)} \sim t_{n-k}$$
+                    <div class="equation-number">(B.3)</div>
+                </div>
+
+                <p>where $\text{se}(\hat{\beta}_j) = \sqrt{\hat{\sigma}^2[(\mathbf{X}'\mathbf{X})^{-1}]_{jj}}$ and $\hat{\sigma}^2 = \frac{SSR}{n-k}$</p>
+
+                <div class="theorem-box">
+                    <strong>Theorem B.1.4: F-Statistic for Joint Hypotheses</strong><br>
+                    For testing $H_0: \mathbf{R}\boldsymbol{\beta} = \mathbf{r}$ where $\mathbf{R}$ is $q \times k$ with full row rank:
+                    $$F = \frac{(\mathbf{R}\hat{\boldsymbol{\beta}} - \mathbf{r})'[\mathbf{R}(\mathbf{X}'\mathbf{X})^{-1}\mathbf{R}']^{-1}(\mathbf{R}\hat{\boldsymbol{\beta}} - \mathbf{r})/q}{\hat{\sigma}^2} \sim F_{q,n-k}$$
+                </div>
+            </div>
+        </section>
+
+        <!-- Section B.2: Instrumental Variables Theory -->
+        <section class="section fade-in delay-3" id="iv-theory">
+            <h2 class="section-title">B.2 🎯 Instrumental Variables Theory</h2>
+            
+            <p>This section covers the theoretical foundations of instrumental variables estimation, including identification conditions, two-stage least squares, and testing for instrument validity.</p>
+
+            <div class="chapter-ref">Chapter 15</div>
+            <div class="chapter-ref">Chapter 16</div>
+
+            <div class="theory-box iv">
+                <div class="theory-title">🎯 IV Identification</div>
+                
+                <div class="assumption-box">
+                    <strong>IV Assumptions:</strong>
+                    <ol style="margin: 1rem 0 0 2rem;">
+                        <li><strong>Instrument Relevance:</strong> $\text{Cov}(\mathbf{z}, \mathbf{x}) \neq 0$</li>
+                        <li><strong>Instrument Exogeneity:</strong> $E[\mathbf{z} u] = 0$</li>
+                        <li><strong>Rank Condition:</strong> $\text{rank}(E[\mathbf{z}\mathbf{x}']) = k$ (number of endogenous variables)</li>
+                        <li><strong>Order Condition:</strong> $L \geq k$ where $L$ is number of instruments</li>
+                    </ol>
+                </div>
+
+                <div class="proposition-box">
+                    <strong>Proposition B.2.1: IV Moment Conditions</strong><br>
+                    Under IV assumptions, the population moment condition is:
+                    $$E[\mathbf{z}(y - \mathbf{x}'\boldsymbol{\beta})] = 0$$
+                    This provides $L$ equations in $k$ unknowns.
+                </div>
+
+                <div class="derivation-step">
+                    <strong>Just-Identified Case (L = k):</strong><br>
+                    The IV estimator is:
+                    $$\hat{\boldsymbol{\beta}}_{IV} = (\mathbf{Z}'\mathbf{X})^{-1}\mathbf{Z}'\mathbf{y}$$
+                    where $\mathbf{Z}$ is $n \times k$ matrix of instruments and $\mathbf{X}$ is $n \times k$ matrix of regressors.
+                </div>
+
+                <div class="derivation-step">
+                    <strong>Over-Identified Case (L > k):</strong><br>
+                    Use Two-Stage Least Squares (2SLS):
+                    $$\hat{\boldsymbol{\beta}}_{2SLS} = (\mathbf{X}'\mathbf{P}_Z\mathbf{X})^{-1}\mathbf{X}'\mathbf{P}_Z\mathbf{y}$$
+                    where $\mathbf{P}_Z = \mathbf{Z}(\mathbf{Z}'\mathbf{Z})^{-1}\mathbf{Z}'$ is the projection matrix onto the column space of $\mathbf{Z}$.
+                </div>
+            </div>
+
+            <div class="theorem-box">
+                <strong>Theorem B.2.1: Consistency of IV Estimator</strong><br>
+                Under IV assumptions and regularity conditions: $\hat{\boldsymbol{\beta}}_{IV} \xrightarrow{p} \boldsymbol{\beta}$
+            </div>
+
+            <div class="proof-box">
+                <strong>Proof Sketch of Theorem B.2.1:</strong>
+                $$\hat{\boldsymbol{\beta}}_{IV} = (\mathbf{Z}'\mathbf{X}/n)^{-1}(\mathbf{Z}'\mathbf{y}/n)$$
+                $$= (\mathbf{Z}'\mathbf{X}/n)^{-1}(\mathbf{Z}'(\mathbf{X}\boldsymbol{\beta} + \mathbf{u})/n)$$
+                $$= \boldsymbol{\beta} + (\mathbf{Z}'\mathbf{X}/n)^{-1}(\mathbf{Z}'\mathbf{u}/n)$$
+                
+                By WLLN: $\mathbf{Z}'\mathbf{X}/n \xrightarrow{p} E[\mathbf{z}\mathbf{x}']$ and $\mathbf{Z}'\mathbf{u}/n \xrightarrow{p} E[\mathbf{z}u] = 0$
+                
+                Since $E[\mathbf{z}\mathbf{x}']$ is invertible (rank condition), we have:
+                $$\hat{\boldsymbol{\beta}}_{IV} \xrightarrow{p} \boldsymbol{\beta} + (E[\mathbf{z}\mathbf{x}'])^{-1} \cdot 0 = \boldsymbol{\beta}$$ ∎
+            </div>
+
+            <div class="theory-box iv">
+                <div class="theory-title">📊 Two-Stage Least Squares</div>
+                
+                <div class="derivation-step">
+                    <strong>Stage 1: Reduced Form</strong><br>
+                    Regress endogenous variables on all instruments:
+                    $$\mathbf{X} = \mathbf{Z}\boldsymbol{\Pi} + \mathbf{V}$$
+                    Get fitted values: $\hat{\mathbf{X}} = \mathbf{Z}\hat{\boldsymbol{\Pi}} = \mathbf{P}_Z\mathbf{X}$
+                </div>
+
+                <div class="derivation-step">
+                    <strong>Stage 2: Structural Form</strong><br>
+                    Regress $y$ on fitted values $\hat{\mathbf{X}}$:
+                    $$\hat{\boldsymbol{\beta}}_{2SLS} = (\hat{\mathbf{X}}'\hat{\mathbf{X}})^{-1}\hat{\mathbf{X}}'\mathbf{y}$$
+                </div>
+
+                <div class="math-display equation">
+                    $$\hat{\boldsymbol{\beta}}_{2SLS} = (\mathbf{X}'\mathbf{P}_Z\mathbf{X})^{-1}\mathbf{X}'\mathbf{P}_Z\mathbf{y}$$
+                    <div class="equation-number">(B.4)</div>
+                </div>
+
+                <div class="lemma-box">
+                    <strong>Lemma B.2.1: 2SLS Variance</strong><br>
+                    $$\text{Var}(\hat{\boldsymbol{\beta}}_{2SLS}) = \sigma^2(\mathbf{X}'\mathbf{P}_Z\mathbf{X})^{-1}$$
+                    Estimated as: $\widehat{\text{Var}}(\hat{\boldsymbol{\beta}}_{2SLS}) = \hat{\sigma}^2(\mathbf{X}'\mathbf{P}_Z\mathbf{X})^{-1}$
+                </div>
+            </div>
+
+            <div class="theory-box iv">
+                <div class="theory-title">🧪 Testing Instrument Validity</div>
+                
+                <div class="theorem-box">
+                    <strong>Theorem B.2.2: Sargan Test for Overidentification</strong><br>
+                    For testing $H_0$: all instruments are exogenous (when $L > k$):
+                    $$J = n \cdot R^2_{2SLS} \xrightarrow{d} \chi^2_{L-k}$$
+                    where $R^2_{2SLS}$ is from regressing 2SLS residuals on all instruments.
+                </div>
+
+                <div class="theorem-box">
+                    <strong>Theorem B.2.3: Weak Instruments Test</strong><br>
+                    Stock-Yogo critical values for first-stage F-statistic testing $H_0: \boldsymbol{\Pi} = 0$:
+                    <ul style="margin: 1rem 0 0 2rem;">
+                        <li>F < 10: Weak instruments (bias > 10%)</li>
+                        <li>F < 16.38: Size distortion > 10%</li>
+                        <li>Rule of thumb: F > 10 for adequate instrument strength</li>
+                    </ul>
+                </div>
+
+                <div class="example-box">
+                    <strong>Example B.2.1: Weak Instruments Bias</strong><br>
+                    When instruments are weak, IV estimator has finite-sample bias toward OLS:
+                    $$E[\hat{\beta}_{IV}] \approx \beta + \frac{\text{bias factor}}{F_{first-stage}} \times \text{OLS bias}$$
+                    As F-statistic → 0, IV bias approaches OLS bias.
+                </div>
+            </div>
+        </section>
+
+        <!-- Section B.3: Panel Data Theory -->
+        <section class="section fade-in delay-4" id="panel-theory">
+            <h2 class="section-title">B.3 📊 Panel Data Theory</h2>
+            
+            <p>This section develops the mathematical foundations for fixed effects, random effects, and dynamic panel data models, including consistency and efficiency results.</p>
+
+            <div class="chapter-ref">Chapter 13</div>
+            <div class="chapter-ref">Chapter 14</div>
+
+            <div class="theory-box panel">
+                <div class="theory-title">📊 Fixed Effects Model</div>
+                
+                <div class="assumption-box">
+                    <strong>Panel Data Model:</strong>
+                    $$y_{it} = \alpha_i + \mathbf{x}_{it}'\boldsymbol{\beta} + u_{it}$$
+                    where $\alpha_i$ is time-invariant individual heterogeneity.
+                </div>
+
+                <div class="derivation-step">
+                    <strong>Within Transformation:</strong><br>
+                    Define time averages: $\bar{y}_i = T^{-1}\sum_{t=1}^T y_{it}$, $\bar{\mathbf{x}}_i = T^{-1}\sum_{t=1}^T \mathbf{x}_{it}$
+                    
+                    Subtract means:
+                    $$\ddot{y}_{it} = y_{it} - \bar{y}_i = (\mathbf{x}_{it} - \bar{\mathbf{x}}_i)'\boldsymbol{\beta} + (u_{it} - \bar{u}_i)$$
+                    $$\ddot{y}_{it} = \ddot{\mathbf{x}}_{it}'\boldsymbol{\beta} + \ddot{u}_{it}$$
+                </div>
+
+                <div class="math-display equation">
+                    $$\hat{\boldsymbol{\beta}}_{FE} = \left(\sum_{i=1}^N \sum_{t=1}^T \ddot{\mathbf{x}}_{it}\ddot{\mathbf{x}}_{it}'\right)^{-1} \sum_{i=1}^N \sum_{t=1}^T \ddot{\mathbf{x}}_{it}\ddot{y}_{it}$$
+                    <div class="equation-number">(B.5)</div>
+                </div>
+
+                <div class="theorem-box">
+                    <strong>Theorem B.3.1: FE Consistency</strong><br>
+                    Under strict exogeneity $E[u_{it} | \mathbf{x}_{i1}, \ldots, \mathbf{x}_{iT}, \alpha_i] = 0$:
+                    $$\hat{\boldsymbol{\beta}}_{FE} \xrightarrow{p} \boldsymbol{\beta} \text{ as } N \to \infty$$
+                </div>
+            </div>
+
+            <div class="theory-box panel">
+                <div class="theory-title">🎲 Random Effects Model</div>
+                
+                <div class="assumption-box">
+                    <strong>RE Assumptions:</strong>
+                    <ol style="margin: 1rem 0 0 2rem;">
+                        <li>$\alpha_i \sim \text{iid}(0, \sigma_\alpha^2)$</li>
+                        <li>$u_{it} \sim \text{iid}(0, \sigma_u^2)$</li>
+                        <li>$E[\alpha_i | \mathbf{x}_{i1}, \ldots, \mathbf{x}_{iT}] = 0$ (key assumption)</li>
+                        <li>$\alpha_i \perp u_{it}$ for all $i,t$</li>
+                    </ol>
+                </div>
+
+                <div class="derivation-step">
+                    <strong>Error Structure:</strong><br>
+                    Composite error: $v_{it} = \alpha_i + u_{it}$
+                    
+                    Variance-covariance structure:
+                    $$\text{Var}(v_{it}) = \sigma_\alpha^2 + \sigma_u^2 = \sigma_v^2$$
+                    $$\text{Cov}(v_{it}, v_{is}) = \sigma_\alpha^2 \text{ for } t \neq s$$
+                    $$\text{Corr}(v_{it}, v_{is}) = \frac{\sigma_\alpha^2}{\sigma_\alpha^2 + \sigma_u^2} = \rho$$
+                </div>
+
+                <div class="derivation-step">
+                    <strong>GLS Transformation:</strong><br>
+                    Define $\theta = 1 - \sqrt{\frac{\sigma_u^2}{\sigma_u^2 + T\sigma_\alpha^2}}$
+                    
+                    Quasi-demeaned data:
+                    $$y_{it}^* = y_{it} - \theta\bar{y}_i$$
+                    $$\mathbf{x}_{it}^* = \mathbf{x}_{it} - \theta\bar{\mathbf{x}}_i$$
+                </div>
+
+                <div class="math-display equation">
+                    $$\hat{\boldsymbol{\beta}}_{RE} = \left(\sum_{i=1}^N \sum_{t=1}^T \mathbf{x}_{it}^{*}\mathbf{x}_{it}^{*'}\right)^{-1} \sum_{i=1}^N \sum_{t=1}^T \mathbf{x}_{it}^*y_{it}^*$$
+                    <div class="equation-number">(B.6)</div>
+                </div>
+            </div>
+
+            <div class="theory-box panel">
+                <div class="theory-title">🧪 Hausman Test</div>
+                
+                <div class="theorem-box">
+                    <strong>Theorem B.3.2: Hausman Test Statistic</strong><br>
+                    Under $H_0$: $E[\alpha_i | \mathbf{x}_{i1}, \ldots, \mathbf{x}_{iT}] = 0$ (RE consistent):
+                    $$H = (\hat{\boldsymbol{\beta}}_{FE} - \hat{\boldsymbol{\beta}}_{RE})'[\widehat{\text{Var}}(\hat{\boldsymbol{\beta}}_{FE}) - \widehat{\text{Var}}(\hat{\boldsymbol{\beta}}_{RE})]^{-1}(\hat{\boldsymbol{\beta}}_{FE} - \hat{\boldsymbol{\beta}}_{RE}) \xrightarrow{d} \chi^2_k$$
+                </div>
+
+                <div class="proof-box">
+                    <strong>Intuition:</strong>
+                    <ul style="margin: 1rem 0 0 2rem;">
+                        <li>Under $H_0$: Both FE and RE are consistent, but RE is efficient</li>
+                        <li>Under $H_1$: FE is consistent, RE is inconsistent</li>
+                        <li>Large differences suggest correlation between $\alpha_i$ and $\mathbf{x}_{it}$</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="interactive-theory">
+                <h4 style="color: var(--accent-panel); margin-bottom: 1.5rem;">📊 Panel Data Efficiency Comparison</h4>
+                
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <div class="input-group">
+                            <label for="panelN">Number of Individuals (N):</label>
+                            <input type="number" id="panelN" value="100" min="50" max="500" step="50">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="panelT">Time Periods (T):</label>
+                            <input type="number" id="panelT" value="10" min="5" max="20" step="1">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="rho">Intraclass Correlation (ρ):</label>
+                            <input type="number" id="rho" value="0.5" min="0" max="0.9" step="0.1">
+                        </div>
+                        
+                        <button class="action-button" onclick="comparePanelEfficiency()">
+                            📊 Compare FE vs RE Efficiency
+                        </button>
+                    </div>
+                    
+                    <div class="control-group" id="panelResults" style="display: none;">
+                        <h5>📈 Efficiency Results</h5>
+                        <div id="panelOutput" style="background: white; padding: 1.5rem; border-radius: 15px; margin-top: 1rem;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section B.4: Time Series Theory -->
+        <section class="section fade-in delay-5" id="time-series-theory">
+            <h2 class="section-title">B.4 ⏱️ Time Series Theory</h2>
+            
+            <p>This section covers stationarity, unit roots, cointegration, and the theoretical foundations of time series econometrics.</p>
+
+            <div class="chapter-ref">Chapter 10-12</div>
+            <div class="chapter-ref">Chapter 15</div>
+            <div class="chapter-ref">Chapter 18</div>
+
+            <div class="theory-box time-series">
+                <div class="theory-title">⏱️ Stationarity Concepts</div>
+                
+                <div class="theorem-box">
+                    <strong>Definition B.4.1: Strict Stationarity</strong><br>
+                    A process $\{X_t\}$ is strictly stationary if for any $k$, $h$, and $t_1, \ldots, t_k$:
+                    $$F(x_{t_1}, \ldots, x_{t_k}) = F(x_{t_1+h}, \ldots, x_{t_k+h})$$
+                    The joint distribution is invariant to time shifts.
+                </div>
+
+                <div class="theorem-box">
+                    <strong>Definition B.4.2: Weak Stationarity (Covariance Stationarity)</strong><br>
+                    A process $\{X_t\}$ is covariance stationary if:
+                    <ol style="margin: 1rem 0 0 2rem;">
+                        <li>$E[X_t] = \mu$ (constant mean)</li>
+                        <li>$\text{Var}(X_t) = \sigma^2 < \infty$ (constant variance)</li>
+                        <li>$\text{Cov}(X_t, X_{t-j}) = \gamma_j$ (depends only on lag $j$)</li>
+                    </ol>
+                </div>
+
+                <div class="example-box">
+                    <strong>Example B.4.1: AR(1) Process</strong><br>
+                    $X_t = \phi X_{t-1} + \epsilon_t$ where $\epsilon_t \sim WN(0, \sigma^2)$
+                    
+                    <strong>Stationary when:</strong> $|\phi| < 1$
+                    <ul style="margin: 1rem 0 0 2rem;">
+                        <li>Unconditional mean: $E[X_t] = 0$</li>
+                        <li>Unconditional variance: $\text{Var}(X_t) = \frac{\sigma^2}{1-\phi^2}$</li>
+                        <li>Autocovariance: $\gamma_j = \frac{\sigma^2\phi^j}{1-\phi^2}$</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="theory-box time-series">
+                <div class="theory-title">🌊 Unit Roots and Integration</div>
+                
+                <div class="theorem-box">
+                    <strong>Definition B.4.3: Integrated Process</strong><br>
+                    A process $\{X_t\}$ is integrated of order $d$, written $X_t \sim I(d)$, if:
+                    $$(1-L)^d X_t \sim I(0)$$
+                    where $L$ is the lag operator and $I(0)$ denotes stationarity.
+                </div>
+
+                <div class="derivation-step">
+                    <strong>Random Walk:</strong> $X_t = X_{t-1} + \epsilon_t$<br>
+                    Characteristic equation: $(1-\phi z) = 0$ has root $z = 1/\phi = 1$<br>
+                    This is the unit root case: $X_t \sim I(1)$
+                </div>
+
+                <div class="theorem-box">
+                    <strong>Theorem B.4.1: Dickey-Fuller Test</strong><br>
+                    Consider: $\Delta X_t = \rho X_{t-1} + \epsilon_t$ where $\rho = \phi - 1$
+                    
+                    Under $H_0: \rho = 0$ (unit root):
+                    $$t_\rho = \frac{\hat{\rho}}{\text{se}(\hat{\rho})} \xrightarrow{d} DF$$
+                    where $DF$ is the Dickey-Fuller distribution (non-standard).
+                </div>
+
+                <div class="math-display equation">
+                    $$ADF: \Delta X_t = \rho X_{t-1} + \sum_{i=1}^p \gamma_i \Delta X_{t-i} + \epsilon_t$$
+                    <div class="equation-number">(B.7)</div>
+                </div>
+            </div>
+
+            <div class="theory-box time-series">
+                <div class="theory-title">⚖️ Cointegration</div>
+                
+                <div class="theorem-box">
+                    <strong>Definition B.4.4: Cointegration</strong><br>
+                    Variables $X_t$ and $Y_t$ are cointegrated $CI(1,1)$ if:
+                    <ol style="margin: 1rem 0 0 2rem;">
+                        <li>$X_t \sim I(1)$ and $Y_t \sim I(1)$</li>
+                        <li>$\exists \beta \neq 0$ such that $X_t - \beta Y_t \sim I(0)$</li>
+                    </ol>
+                    The vector $[1, -\beta]$ is called the cointegrating vector.
+                </div>
+
+                <div class="theorem-box">
+                    <strong>Theorem B.4.2: Granger Representation Theorem</strong><br>
+                    If $X_t$ and $Y_t$ are cointegrated, then there exists a Vector Error Correction Model (VECM):
+                    $$\begin{bmatrix} \Delta X_t \\ \Delta Y_t \end{bmatrix} = \begin{bmatrix} \alpha_1 \\ \alpha_2 \end{bmatrix} (X_{t-1} - \beta Y_{t-1}) + \sum_{i=1}^{p-1} \boldsymbol{\Gamma}_i \begin{bmatrix} \Delta X_{t-i} \\ \Delta Y_{t-i} \end{bmatrix} + \boldsymbol{\epsilon}_t$$
+                </div>
+
+                <div class="derivation-step">
+                    <strong>Engle-Granger Two-Step:</strong>
+                    <ol style="margin: 1rem 0 0 2rem;">
+                        <li>Estimate cointegrating regression: $X_t = \alpha + \beta Y_t + u_t$</li>
+                        <li>Test residuals for stationarity: $\Delta \hat{u}_t = \rho \hat{u}_{t-1} + \epsilon_t$</li>
+                    </ol>
+                    If $\hat{u}_t \sim I(0)$, then $X_t$ and $Y_t$ are cointegrated.
+                </div>
+            </div>
+        </section>
+
+        <!-- Section B.5: Limited Dependent Variables Theory -->
+        <section class="section fade-in delay-6" id="limited-dv-theory">
+            <h2 class="section-title">B.5 🎲 Limited Dependent Variables Theory</h2>
+            
+            <p>This section covers the mathematical foundations of binary choice models, ordered models, and censored regression models.</p>
+
+            <div class="chapter-ref">Chapter 17</div>
+
+            <div class="theory-box limited-dv">
+                <div class="theory-title">🎲 Binary Choice Models</div>
+                
+                <div class="assumption-box">
+                    <strong>Latent Variable Framework:</strong>
+                    $$y_i^* = \mathbf{x}_i'\boldsymbol{\beta} + u_i$$
+                    $$y_i = \mathbf{1}[y_i^* > 0]$$
+                    where $\mathbf{1}[\cdot]$ is the indicator function.
+                </div>
+
+                <div class="theorem-box">
+                    <strong>Theorem B.5.1: Logit Model</strong><br>
+                    If $u_i$ follows logistic distribution: $F(u) = \frac{\exp(u)}{1+\exp(u)} = \Lambda(u)$
+                    
+                    Then: $P(y_i = 1 | \mathbf{x}_i) = \Lambda(\mathbf{x}_i'\boldsymbol{\beta}) = \frac{\exp(\mathbf{x}_i'\boldsymbol{\beta})}{1+\exp(\mathbf{x}_i'\boldsymbol{\beta})}$
+                </div>
+
+                <div class="theorem-box">
+                    <strong>Theorem B.5.2: Probit Model</strong><br>
+                    If $u_i \sim N(0, 1)$:
+                    
+                    Then: $P(y_i = 1 | \mathbf{x}_i) = \Phi(\mathbf{x}_i'\boldsymbol{\beta})$
+                    where $\Phi$ is the standard normal CDF.
+                </div>
+
+                <div class="derivation-step">
+                    <strong>Maximum Likelihood Estimation:</strong><br>
+                    Log-likelihood function:
+                    $$\ell(\boldsymbol{\beta}) = \sum_{i=1}^n [y_i \log F(\mathbf{x}_i'\boldsymbol{\beta}) + (1-y_i) \log(1-F(\mathbf{x}_i'\boldsymbol{\beta}))]$$
+                    
+                    First-order condition:
+                    $$\frac{\partial \ell}{\partial \boldsymbol{\beta}} = \sum_{i=1}^n \left[y_i - F(\mathbf{x}_i'\boldsymbol{\beta})\right] \frac{f(\mathbf{x}_i'\boldsymbol{\beta})}{F(\mathbf{x}_i'\boldsymbol{\beta})[1-F(\mathbf{x}_i'\boldsymbol{\beta})]} \mathbf{x}_i = \mathbf{0}$$
+                </div>
+
+                <div class="math-display equation">
+                    $$\text{ME}_j = \frac{\partial P(y=1|\mathbf{x})}{\partial x_j} = \beta_j f(\mathbf{x}'\boldsymbol{\beta})$$
+                    <div class="equation-number">(B.8)</div>
+                </div>
+            </div>
+
+            <div class="theory-box limited-dv">
+                <div class="theory-title">📊 Tobit Model</div>
+                
+                <div class="assumption-box">
+                    <strong>Censored Regression Model:</strong>
+                    $$y_i^* = \mathbf{x}_i'\boldsymbol{\beta} + u_i, \quad u_i \sim N(0, \sigma^2)$$
+                    $$y_i = \max(0, y_i^*)$$
+                </div>
+
+                <div class="derivation-step">
+                    <strong>Likelihood Function:</strong><br>
+                    For $y_i = 0$ (censored): $P(y_i = 0) = P(y_i^* \leq 0) = \Phi\left(-\frac{\mathbf{x}_i'\boldsymbol{\beta}}{\sigma}\right)$
+                    
+                    For $y_i > 0$ (uncensored): $f(y_i) = \frac{1}{\sigma}\phi\left(\frac{y_i - \mathbf{x}_i'\boldsymbol{\beta}}{\sigma}\right)$
+                </div>
+
+                <div class="math-display equation">
+                    $$L = \prod_{y_i=0} \Phi\left(-\frac{\mathbf{x}_i'\boldsymbol{\beta}}{\sigma}\right) \prod_{y_i>0} \frac{1}{\sigma}\phi\left(\frac{y_i - \mathbf{x}_i'\boldsymbol{\beta}}{\sigma}\right)$$
+                    <div class="equation-number">(B.9)</div>
+                </div>
+
+                <div class="theorem-box">
+                    <strong>Theorem B.5.3: Tobit Marginal Effects</strong><br>
+                    <strong>Unconditional expectation:</strong>
+                    $$E[y | \mathbf{x}] = \Phi\left(\frac{\mathbf{x}'\boldsymbol{\beta}}{\sigma}\right) \left[\mathbf{x}'\boldsymbol{\beta} + \sigma \lambda\left(\frac{\mathbf{x}'\boldsymbol{\beta}}{\sigma}\right)\right]$$
+                    
+                    <strong>Conditional expectation:</strong>
+                    $$E[y | \mathbf{x}, y > 0] = \mathbf{x}'\boldsymbol{\beta} + \sigma \lambda\left(\frac{\mathbf{x}'\boldsymbol{\beta}}{\sigma}\right)$$
+                    
+                    where $\lambda(z) = \frac{\phi(z)}{\Phi(z)}$ is the inverse Mills ratio.
+                </div>
+            </div>
+        </section>
+
+        <!-- Section B.6: Asymptotic Theory -->
+        <section class="section fade-in delay-6" id="asymptotic-theory">
+            <h2 class="section-title">B.6 ∞ Asymptotic Theory</h2>
+            
+            <p>This section covers the large-sample theory underlying econometric estimators, including consistency, asymptotic normality, and efficiency.</p>
+
+            <div class="theory-box asymptotic">
+                <div class="theory-title">∞ Modes of Convergence</div>
+                
+                <div class="theorem-box">
+                    <strong>Definition B.6.1: Convergence in Probability</strong><br>
+                    $X_n \xrightarrow{p} c$ if for any $\epsilon > 0$:
+                    $$\lim_{n \to \infty} P(|X_n - c| > \epsilon) = 0$$
+                </div>
+
+                <div class="theorem-box">
+                    <strong>Definition B.6.2: Convergence in Distribution</strong><br>
+                    $X_n \xrightarrow{d} X$ if for all continuity points $x$ of $F$:
+                    $$\lim_{n \to \infty} F_n(x) = F(x)$$
+                    where $F_n$ and $F$ are CDFs of $X_n$ and $X$.
+                </div>
+
+                <div class="theorem-box">
+                    <strong>Theorem B.6.1: Weak Law of Large Numbers</strong><br>
+                    If $\{X_i\}$ are i.i.d. with $E[X_i] = \mu$ and $\text{Var}(X_i) = \sigma^2 < \infty$:
+                    $$\bar{X}_n = \frac{1}{n}\sum_{i=1}^n X_i \xrightarrow{p} \mu$$
+                </div>
+
+                <div class="theorem-box">
+                    <strong>Theorem B.6.2: Central Limit Theorem</strong><br>
+                    If $\{X_i\}$ are i.i.d. with $E[X_i] = \mu$ and $\text{Var}(X_i) = \sigma^2 < \infty$:
+                    $$\sqrt{n}(\bar{X}_n - \mu) \xrightarrow{d} N(0, \sigma^2)$$
+                </div>
+            </div>
+
+            <div class="theory-box asymptotic">
+                <div class="theory-title">📈 Asymptotic Properties of Estimators</div>
+                
+                <div class="theorem-box">
+                    <strong>Theorem B.6.3: Consistency of OLS</strong><br>
+                    Under assumptions ensuring $\text{plim}_{n \to \infty} \frac{1}{n}\mathbf{X}'\mathbf{X} = \mathbf{Q}$ (positive definite) and $\text{plim}_{n \to \infty} \frac{1}{n}\mathbf{X}'\mathbf{u} = \mathbf{0}$:
+                    $$\hat{\boldsymbol{\beta}} \xrightarrow{p} \boldsymbol{\beta}$$
+                </div>
+
+                <div class="theorem-box">
+                    <strong>Theorem B.6.4: Asymptotic Normality of OLS</strong><br>
+                    Under regularity conditions:
+                    $$\sqrt{n}(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}) \xrightarrow{d} N(\mathbf{0}, \sigma^2\mathbf{Q}^{-1})$$
+                    where $\mathbf{Q} = \text{plim}_{n \to \infty} \frac{1}{n}\mathbf{X}'\mathbf{X}$.
+                </div>
+
+                <div class="corollary-box">
+                    <strong>Corollary B.6.1: Asymptotic Distribution</strong><br>
+                    $$\hat{\boldsymbol{\beta}} \xrightarrow{d} N\left(\boldsymbol{\beta}, \frac{\sigma^2}{n}\mathbf{Q}^{-1}\right)$$
+                    For large $n$: $\hat{\boldsymbol{\beta}} \approx N\left(\boldsymbol{\beta}, \sigma^2(\mathbf{X}'\mathbf{X})^{-1}\right)$
+                </corollary-box>
+            </div>
+
+            <div class="theory-box asymptotic">
+                <div class="theory-title">🏆 Asymptotic Efficiency</div>
+                
+                <div class="theorem-box">
+                    <strong>Theorem B.6.5: Cramér-Rao Lower Bound</strong><br>
+                    For any unbiased estimator $\hat{\theta}$ of parameter $\theta$:
+                    $$\text{Var}(\hat{\theta}) \geq \left[-E\left[\frac{\partial^2 \log f(X;\theta)}{\partial \theta^2}\right]\right]^{-1} = \mathcal{I}(\theta)^{-1}$$
+                    where $\mathcal{I}(\theta)$ is the Fisher information matrix.
+                </div>
+
+                <div class="theorem-box">
+                    <strong>Theorem B.6.6: Asymptotic Efficiency of MLE</strong><br>
+                    Under regularity conditions, the MLE $\hat{\theta}_{MLE}$ satisfies:
+                    $$\sqrt{n}(\hat{\theta}_{MLE} - \theta_0) \xrightarrow{d} N(0, \mathcal{I}(\theta_0)^{-1})$$
+                    This achieves the Cramér-Rao lower bound asymptotically.
+                </div>
+            </div>
+
+            <div class="interactive-theory">
+                <h4 style="color: var(--accent-asymptotic); margin-bottom: 1.5rem;">∞ Asymptotic Distribution Visualizer</h4>
+                
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <div class="input-group">
+                            <label for="sampleSizes">Sample Sizes (comma-separated):</label>
+                            <input type="text" id="sampleSizes" value="30,100,500,1000" placeholder="30,100,500,1000">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="trueParameter">True Parameter Value:</label>
+                            <input type="number" id="trueParameter" value="2" step="0.1">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="errorVariance">Error Variance (σ²):</label>
+                            <input type="number" id="errorVariance" value="1" step="0.1" min="0.1">
+                        </div>
+                        
+                        <button class="action-button" onclick="visualizeAsymptotics()">
+                            ∞ Show Asymptotic Convergence
+                        </button>
+                    </div>
+                    
+                    <div class="control-group" id="asymptoticResults" style="display: none;">
+                        <h5>📊 Convergence Results</h5>
+                        <div id="asymptoticOutput" style="background: white; padding: 1.5rem; border-radius: 15px; margin-top: 1rem;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div class="ai-chat-widget">
+        <button class="ai-chat-button" onclick="toggleTheoryAIChat()" title="Ask Claude about Econometric Theory">
+            ∂
+        </button>
+    </div>
+
+    <script>
+        // Interactive theory functions
+        
+        function comparePanelEfficiency() {
+            console.log('Comparing panel data efficiency...');
+            
+            try {
+                const N = parseInt(document.getElementById('panelN').value) || 100;
+                const T = parseInt(document.getElementById('panelT').value) || 10;
+                const rho = parseFloat(document.getElementById('rho').value) || 0.5;
+                
+                // Calculate efficiency metrics
+                const sigma_alpha_squared = rho / (1 - rho);  // Implied individual variance
+                const sigma_u_squared = 1;  // Normalized idiosyncratic variance
+                
+                // Theta parameter for RE transformation
+                const theta = 1 - Math.sqrt(sigma_u_squared / (sigma_u_squared + T * sigma_alpha_squared));
+                
+                // Efficiency calculations (simplified)
+                const fe_efficiency = 1;  // Baseline (FE always consistent when assumptions hold)
+                const re_efficiency_under_h0 = 1 + (T - 1) * rho;  // RE more efficient under H0
+                const re_efficiency_under_h1 = 0;  // RE inconsistent under H1
+                
+                // Effective sample size
+                const ess_fe = N * (T - 1);  // FE loses one observation per individual
+                const ess_re = N * T;  // RE uses all observations
+                
+                // Hausman test power (simplified calculation)
+                const hausman_power = Math.min(0.95, 0.1 + 0.8 * Math.sqrt(N * T) / 100);
+                
+                const output = `
+                    <h6>Panel Data Setup:</h6>
+                    <p>N = ${N} individuals, T = ${T} periods</p>
+                    <p>Intraclass correlation ρ = ${rho.toFixed(2)}</p>
+                    <p>Total observations = ${(N * T).toLocaleString()}</p>
+                    
+                    <h6>Efficiency Analysis:</h6>
+                    <p><strong>Fixed Effects (FE):</strong></p>
+                    <ul style="margin-left: 2rem;">
+                        <li>Always consistent (under strict exogeneity)</li>
+                        <li>Effective sample size: ${ess_fe.toLocaleString()}</li>
+                        <li>Uses within variation only</li>
+                    </ul>
+                    
+                    <p><strong>Random Effects (RE):</strong></p>
+                    <ul style="margin-left: 2rem;">
+                        <li>Efficient when H₀ true (no correlation)</li>
+                        <li>Efficiency gain: ${re_efficiency_under_h0.toFixed(2)}x</li>
+                        <li>Theta parameter: θ = ${theta.toFixed(4)}</li>
+                        <li>Effective sample size: ${ess_re.toLocaleString()}</li>
+                    </ul>
+                    
+                    <h6>Hausman Test Properties:</h6>
+                    <p>Power to detect correlation ≈ ${(hausman_power * 100).toFixed(1)}%</p>
+                    <p>Critical value (5%): χ²₀.₀₅(k) ≈ 3.84 (for k=1)</p>
+                    
+                    <h6>Recommendation:</h6>
+                    <p style="color: var(--accent-panel); font-weight: 600;">
+                        ${rho < 0.3 ? 'Low correlation suggests RE may be appropriate' : 
+                          rho < 0.6 ? 'Moderate correlation - run Hausman test' : 
+                          'High correlation suggests FE preferred'}
+                    </p>
+                `;
+                
+                document.getElementById('panelOutput').innerHTML = output;
+                document.getElementById('panelResults').style.display = 'block';
+                
+                console.log('Panel efficiency comparison completed');
+                
+            } catch (error) {
+                console.error('Error in panel efficiency comparison:', error);
+                alert('Error comparing panel efficiency. Check console for details.');
+            }
+        }
+        
+        function visualizeAsymptotics() {
+            console.log('Visualizing asymptotic properties...');
+            
+            try {
+                const sampleSizesStr = document.getElementById('sampleSizes').value;
+                const trueParam = parseFloat(document.getElementById('trueParameter').value) || 2;
+                const errorVar = parseFloat(document.getElementById('errorVariance').value) || 1;
+                
+                const sampleSizes = sampleSizesStr.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+                
+                if (sampleSizes.length === 0) {
+                    alert('Please enter valid sample sizes');
+                    return;
+                }
+                
+                let output = `
+                    <h6>Asymptotic Properties Demonstration:</h6>
+                    <p>True parameter value β = ${trueParam}</p>
+                    <p>Error variance σ² = ${errorVar}</p>
+                    
+                    <h6>Convergence Results:</h6>
+                    <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                        <tr style="background: var(--flow-100); font-weight: 600;">
+                            <td style="border: 1px solid var(--flow-300); padding: 0.5rem;">Sample Size (n)</td>
+                            <td style="border: 1px solid var(--flow-300); padding: 0.5rem;">Asymptotic SE</td>
+                            <td style="border: 1px solid var(--flow-300); padding: 0.5rem;">95% CI Width</td>
+                            <td style="border: 1px solid var(--flow-300); padding: 0.5rem;">Precision Gain</td>
+                        </tr>
+                `;
+                
+                let baselineWidth = null;
+                
+                sampleSizes.forEach((n, index) => {
+                    // Asymptotic standard error (simplified for illustration)
+                    const asymptotic_se = Math.sqrt(errorVar / n);
+                    
+                    // 95% Confidence interval width
+                    const ci_width = 2 * 1.96 * asymptotic_se;
+                    
+                    if (baselineWidth === null) baselineWidth = ci_width;
+                    const precision_gain = baselineWidth / ci_width;
+                    
+                    output += `
+                        <tr>
+                            <td style="border: 1px solid var(--flow-300); padding: 0.5rem;">${n.toLocaleString()}</td>
+                            <td style="border: 1px solid var(--flow-300); padding: 0.5rem;">${asymptotic_se.toFixed(4)}</td>
+                            <td style="border: 1px solid var(--flow-300); padding: 0.5rem;">${ci_width.toFixed(4)}</td>
+                            <td style="border: 1px solid var(--flow-300); padding: 0.5rem;">${precision_gain.toFixed(2)}x</td>
+                        </tr>
+                    `;
+                });
+                
+                output += `
+                    </table>
+                    
+                    <h6>Key Asymptotic Results:</h6>
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Consistency:</strong> SE → 0 as n → ∞</li>
+                        <li><strong>Rate:</strong> SE ∝ 1/√n (precision ∝ √n)</li>
+                        <li><strong>Normality:</strong> √n(β̂ - β) → N(0, σ²) for large n</li>
+                        <li><strong>Efficiency:</strong> OLS achieves Cramér-Rao bound under Gauss-Markov</li>
+                    </ul>
+                    
+                    <h6>Practical Implications:</h6>
+                    <p>To halve the confidence interval width, need 4x sample size.</p>
+                    <p>Largest sample (n=${Math.max(...sampleSizes).toLocaleString()}) gives ${(Math.sqrt(Math.max(...sampleSizes)/Math.min(...sampleSizes))).toFixed(1)}x better precision than smallest.</p>
+                `;
+                
+                document.getElementById('asymptoticOutput').innerHTML = output;
+                document.getElementById('asymptoticResults').style.display = 'block';
+                
+                console.log('Asymptotic visualization completed');
+                
+            } catch (error) {
+                console.error('Error in asymptotic visualization:', error);
+                alert('Error visualizing asymptotics. Check console for details.');
+            }
+        }
+        
+        // Navigation function
+        function scrollToSection(sectionId) {
+            console.log('Scrolling to section:', sectionId);
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                console.log('Scrolled to:', sectionId);
+            } else {
+                console.error('Section not found:', sectionId);
+            }
+        }
+        
+        // AI Chat placeholder
+        function toggleTheoryAIChat() {
+            alert('∂ Econometric Theory Assistant\n\nI can help you with:\n• Mathematical proofs and derivations\n• Asymptotic theory\n• Hypothesis testing\n• Identification strategies\n• Maximum likelihood estimation\n• Model assumptions and their implications\n\nWhat theoretical concept would you like to explore?');
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing Appendix B...');
+            
+            // Test if MathJax is available
+            if (typeof MathJax !== 'undefined') {
+                console.log('MathJax loaded successfully');
+            } else {
+                console.warn('MathJax not loaded - mathematical formulas may not render properly');
+            }
+            
+            console.log('Appendix B: Econometric Theory and Derivations loaded successfully! ∂');
+        });
+        
+    </script>
+
+</body>
+</html>
